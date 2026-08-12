@@ -3,10 +3,12 @@
  * Endpoint URL is configured via NEXT_PUBLIC_ANALYZE_SERVICE_URL or ANALYZE_SERVICE_URL.
  */
 export type AnalysisResult = {
-  tags: string[];
-  caption: string;
-  objects: string[];
-  ocr: string;
+	tags: string[];
+	caption: string;
+	objects: string[];
+	ocr: string;
+	averagePrice: string;
+	lowestPriceLink: string;
 };
 
 /**
@@ -22,22 +24,22 @@ export type AnalyzeLocale = "pt-BR" | "en" | "de";
  * user has selected.
  */
 export type AnalyzeFailure =
-  | { kind: "network"; url: string; reason: string }
-  | { kind: "serviceStatus"; status: number; detail?: string };
+	| { kind: "network"; url: string; reason: string }
+	| { kind: "serviceStatus"; status: number; detail?: string };
 
 export class AnalyzeError extends Error {
-  readonly failure: AnalyzeFailure;
+	readonly failure: AnalyzeFailure;
 
-  constructor(failure: AnalyzeFailure) {
-    super(failure.kind);
-    this.failure = failure;
-  }
+	constructor(failure: AnalyzeFailure) {
+		super(failure.kind);
+		this.failure = failure;
+	}
 }
 
 const SERVICE_URL =
-  process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL ??
-  process.env.ANALYZE_SERVICE_URL ??
-  "http://localhost:8000/analyze";
+	process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL ??
+	process.env.ANALYZE_SERVICE_URL ??
+	"http://localhost:8000/analyze";
 
 /**
  * Sends the image to the analysis service as multipart/form-data and returns
@@ -45,44 +47,50 @@ const SERVICE_URL =
  * instructs the model to render every human-readable field in that language.
  */
 export async function analyzeImage(
-  file: File,
-  locale: AnalyzeLocale = "de",
+	file: File,
+	locale: AnalyzeLocale = "de",
 ): Promise<AnalysisResult> {
-  const form = new FormData();
-  form.append("image", file);
-  form.append("language", locale);
+	const form = new FormData();
+	form.append("image", file);
+	form.append("language", locale);
 
-  let res: Response;
-  try {
-    res = await fetch(SERVICE_URL, { method: "POST", body: form });
-  } catch (err) {
-    const reason = err instanceof Error ? err.message : "network error";
-    throw new AnalyzeError({ kind: "network", url: SERVICE_URL, reason });
-  }
+	let res: Response;
+	try {
+		res = await fetch("/api/analyze", { method: "POST", body: form });
+	} catch (err) {
+		const reason = err instanceof Error ? err.message : "network error";
+		throw new AnalyzeError({ kind: "network", url: SERVICE_URL, reason });
+	}
 
-  if (!res.ok) {
-    // Try to surface the backend's error message if it provided one.
-    let detail: string | undefined;
-    try {
-      const body = (await res.json()) as { detail?: unknown };
-      if (typeof body?.detail === "string") detail = body.detail;
-    } catch {
-      /* ignore */
-    }
-    throw new AnalyzeError(
-      detail !== undefined
-        ? { kind: "serviceStatus", status: res.status, detail }
-        : { kind: "serviceStatus", status: res.status },
-    );
-  }
+	if (!res.ok) {
+		// Try to surface the backend's error message if it provided one.
+		let detail: string | undefined;
+		try {
+			const body = (await res.json()) as { detail?: unknown };
+			if (typeof body?.detail === "string") detail = body.detail;
+		} catch {
+			/* ignore */
+		}
+		throw new AnalyzeError(
+			detail !== undefined
+				? { kind: "serviceStatus", status: res.status, detail }
+				: { kind: "serviceStatus", status: res.status },
+		);
+	}
 
-  const data = (await res.json()) as Partial<AnalysisResult>;
-  return {
-    caption: typeof data.caption === "string" ? data.caption : "",
-    tags: Array.isArray(data.tags) ? data.tags.filter((t) => typeof t === "string") : [],
-    objects: Array.isArray(data.objects)
-      ? data.objects.filter((o) => typeof o === "string")
-      : [],
-    ocr: typeof data.ocr === "string" ? data.ocr : "",
-  };
+	const data = (await res.json()) as Partial<AnalysisResult>;
+	return {
+		caption: typeof data.caption === "string" ? data.caption : "",
+		tags: Array.isArray(data.tags)
+			? data.tags.filter((t) => typeof t === "string")
+			: [],
+		objects: Array.isArray(data.objects)
+			? data.objects.filter((o) => typeof o === "string")
+			: [],
+		ocr: typeof data.ocr === "string" ? data.ocr : "",
+		averagePrice:
+			typeof data.averagePrice === "string" ? data.averagePrice : "",
+		lowestPriceLink:
+			typeof data.lowestPriceLink === "string" ? data.lowestPriceLink : "",
+	};
 }

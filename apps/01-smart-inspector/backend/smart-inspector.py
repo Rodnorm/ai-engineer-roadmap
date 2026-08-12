@@ -2,7 +2,7 @@
 Smart Inspector — backend (Azure OpenAI, /openai/v1, AAD).
 
 Exposes:
-    POST /analyze   multipart/form-data, field "image"  -> { caption, tags, objects, ocr }
+    POST /analyze   multipart/form-data, field "image"  -> { caption, tags, objects, ocr, averagePrice, lowestPriceLink }
     GET  /health
 
 Env vars (see .env.example):
@@ -77,7 +77,8 @@ class AnalysisResult(BaseModel):
     tags: List[str] = Field(default_factory=list, description="Short keyword tags.")
     objects: List[str] = Field(default_factory=list, description="Detected objects in the image.")
     ocr: str = Field("", description="All visible text in the image.")
-
+    averagePrice: str = Field("", description="The average price of the item in the image.")
+    lowestPriceLink: str = Field("", description="The link to the lowest price of the item in the image to be bought online, if applicable.")
 
 SYSTEM_PROMPT = (
     "You are a vision inspector. "
@@ -107,6 +108,8 @@ def _build_user_prompt(language: str) -> str:
   "objects": string[], // list of distinct objects you can identify (nouns, lowercase)
   "ocr": string        // every piece of visible text in the image, with line breaks preserved;
                        // use an empty string if no text is visible
+  "averagePrice": string // the average price of the item in the image either in Reais, Dollars or Euros depending on the language used, if applicable. You can only add a price if you also sent a link with the lowest price of the item in the image to be bought online. If not applicable, use an empty string.
+  "lowestPriceLink": string // the link to the lowest price of the item in the image to be bought online, if applicable
 }}
 
 Rules:
@@ -115,6 +118,8 @@ Rules:
 - Keep tags and objects lowercase and free of duplicates.
 - Write the `caption` and every value in `tags` and `objects` in {LANGUAGE_NAMES.get(language.lower(), LANGUAGE_NAMES[DEFAULT_LANGUAGE_CODE])}.
 - The `ocr` field must be a verbatim transcription of the text visible in the image, in its original language.
+- the `averagePrice` field must be a string with the average price of the item in the image either in Reais, Dollars or Euros depending on the language used, if applicable, example: "R$ 199,90". Search also with the help of the OCR text. This info is important, so try to find an average price, look on the amazon website using the OCR text and the name of the item. If not applicable, use an empty string.
+- the `lowestPriceLink` field must be a string with the link to the lowest price of the item in the image to be bought online, if applicable. DO not get creative here, if you do not find any link do not make one up. In that case, send an empty string.
 """
 
 
@@ -285,14 +290,18 @@ async def analyze(
     ocr = parsed.get("ocr") if isinstance(parsed.get("ocr"), str) else ""
     tags = _clean_str_list(parsed.get("tags"))
     objects = _clean_str_list(parsed.get("objects"))
+    averagePrice = parsed.get("averagePrice") if isinstance(parsed.get("averagePrice"), str) else ""
+    lowestPriceLink = parsed.get("lowestPriceLink") if isinstance(parsed.get("lowestPriceLink"), str) else ""
 
-    result = AnalysisResult(caption=caption.strip(), tags=tags, objects=objects, ocr=ocr)
+    result = AnalysisResult(caption=caption.strip(), tags=tags, objects=objects, ocr=ocr, averagePrice=averagePrice, lowestPriceLink=lowestPriceLink)
     log.info(
-        "Result: caption=%r tags=%d objects=%d ocr_len=%d",
+        "Result: caption=%r tags=%d objects=%d ocr_len=%d averagePrice_len=%d lowestPriceLink_len=%d",
         result.caption[:80],
         len(result.tags),
         len(result.objects),
         len(result.ocr),
+        len(result.averagePrice),
+        len(result.lowestPriceLink)
     )
     return result
 
