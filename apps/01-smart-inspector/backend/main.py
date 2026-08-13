@@ -44,16 +44,21 @@ log = logging.getLogger("smart-inspector")
 
 ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
 DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
+API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 PORT = int(os.getenv("PORT", "8000"))
 
 
 def _build_client() -> OpenAI | None:
     if not ENDPOINT or not DEPLOYMENT:
         return None
-    token_provider = get_bearer_token_provider(
-        DefaultAzureCredential(), "https://ai.azure.com/.default"
+    return OpenAI(
+        base_url=ENDPOINT,
+        api_key=API_KEY
     )
-    return OpenAI(base_url=ENDPOINT, api_key=token_provider)
+    # token_provider = get_bearer_token_provider(
+    #     DefaultAzureCredential(), "https://ai.azure.com/.default"
+    # )
+    # return OpenAI(base_url=ENDPOINT, api_key=token_provider)
 
 
 client: OpenAI | None = _build_client()
