@@ -22,9 +22,8 @@ import logging
 import os
 from typing import List
 
-from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel, Field
@@ -132,7 +131,7 @@ Rules:
 # App
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="Smart Inspector", version="1.0.0")
+app = FastAPI(title="Smart Inspector", version="1.0.0", root_path="/api/backend")
 
 # CORS — the Next.js dev server runs on :3000. We allow any localhost/127.0.0.1
 # origin on any port to avoid Origin mismatches when the browser normalizes
@@ -150,6 +149,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def remove_backend_prefix(request: Request, call_next):
+    prefix = "/api/backend"
+
+    if request.scope["path"].startswith(prefix):
+        request.scope["path"] = request.scope["path"][len(prefix):]
+
+    response = await call_next(request)
+    return response
+
 
 
 @app.get("/health")
