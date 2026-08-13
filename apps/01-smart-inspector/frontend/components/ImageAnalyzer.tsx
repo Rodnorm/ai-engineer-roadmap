@@ -9,6 +9,7 @@ import {
 import { useLanguage } from "@/components/LanguageProvider";
 import { splitEmphasis } from "@/lib/i18n";
 import ResultSkeleton from "./resultSkeleton";
+import { Captions, CircleDollarSign, Copy, ExternalLink, Image, Scan, ScanBox, SquareDashedText, Tag, Upload } from "lucide-react";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -95,16 +96,6 @@ export default function ImageAnalyzer() {
 		if (fileInputRef.current) fileInputRef.current.value = "";
 	}, [previewUrl]);
 
-	const onUseCamera = useCallback(() => {
-		if (fileInputRef.current) {
-			console.log(
-				"Setting capture attribute to 'environment' for camera input",
-			);
-			fileInputRef.current.setAttribute("capture", "environment");
-			fileInputRef.current.click();
-		}
-	}, []);
-
 	const isLoading = status === "loading";
 	const canSubmit = !!file && !isLoading;
 
@@ -138,6 +129,7 @@ export default function ImageAnalyzer() {
 						/>
 					) : (
 						<>
+							<Upload className="mb-2 h-10 w-10" />
 							<span className="text-base font-medium text-text">
 								{t("left.dropzonePrompt")}
 							</span>
@@ -156,6 +148,7 @@ export default function ImageAnalyzer() {
 				</label>
 
 				<div className="flex items-center justify-between gap-3">
+					<Image className="h-4 w-4" />
 					<span className="truncate text-xs text-muted">
 						{file ? file.name : t("left.noFile")}
 					</span>
@@ -218,12 +211,18 @@ export default function ImageAnalyzer() {
 				{result && (
 					<div className="flex flex-col gap-5">
 						<div>
-							<p className="label mb-2">{t("result.caption")}</p>
+							<div className="flex items-center gap-2">
+								<Captions className="h-4 w-4 mb-2 stroke-sky-500" />
+								<p className="label mb-2">{t("result.caption")}</p>
+							</div>
 							<p className="text-sm text-text">{result.caption || "—"}</p>
 						</div>
 
 						<div>
-							<p className="label mb-2">{t("result.tags")}</p>
+							<div className="flex items-center gap-2">
+								<Tag className="h-4 w-4 mb-2 stroke-sky-500" />
+								<p className="label mb-2">{t("result.tags")}</p>
+							</div>
 							{result.tags.length > 0 ? (
 								<div className="flex flex-wrap gap-2">
 									{result.tags.map((tag) => (
@@ -238,7 +237,10 @@ export default function ImageAnalyzer() {
 						</div>
 
 						<div>
-							<p className="label mb-2">{t("result.objects")}</p>
+							<div className="flex items-center gap-2">
+								<ScanBox className="h-4 w-4 mb-2 stroke-sky-500" />
+								<p className="label mb-2">{t("result.objects")}</p>
+							</div>
 							{result.objects.length > 0 ? (
 								<ul className="list-inside list-disc text-sm text-text">
 									{result.objects.map((obj) => (
@@ -251,17 +253,27 @@ export default function ImageAnalyzer() {
 						</div>
 
 						<div>
-							<p className="label mb-2">{t("result.ocr")}</p>
+							<div className="flex items-center gap-2">
+								<SquareDashedText className="h-4 w-4 mb-2 stroke-sky-500" />
+								<p className="label mb-2">{t("result.ocr")}</p>
+							</div>							
 							<pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-bg p-3 text-xs text-text">
+								<Copy className="ml-auto stroke-sky-500" />
 								{result.ocr?.trim() ? result.ocr : "—"}
 							</pre>
 						</div>
 						<div>
-							<p className="label mb-2">{t("result.averagePrice")}</p>
+							<div className="flex items-center gap-2">
+								<CircleDollarSign className="h-4 w-4 mb-2 stroke-lime-500" />
+								<p className="label mb-2">{t("result.averagePrice")}</p>
+							</div>
 							<p className="text-sm text-text">{result.averagePrice || "—"}</p>
 						</div>
 						<div>
-							<p className="label mb-2">{t("result.lowestPriceLink")}</p>
+							<div className="flex items-center gap-2">
+								<ExternalLink className="h-4 w-4 mb-2 stroke-blue-500" />
+								<p className="label mb-2">{t("result.lowestPriceLink")}</p>
+							</div>
 							<a
 								href={result.lowestPriceLink}
 								target="_blank"
