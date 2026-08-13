@@ -1,9 +1,9 @@
 // app/api/analyze/route.ts
-
+const SERVICE_URL = process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL;
 export async function POST(request: Request) {
 	const formData = await request.formData();
-
-	const response = await fetch("http://localhost:8000/analyze", {
+	if (!SERVICE_URL) throw new Error("service URL not configured");
+	const response = await fetch(SERVICE_URL, {
 		method: "POST",
 		body: formData,
 	});

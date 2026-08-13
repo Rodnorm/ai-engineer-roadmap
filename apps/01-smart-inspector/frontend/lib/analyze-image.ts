@@ -36,10 +36,7 @@ export class AnalyzeError extends Error {
 	}
 }
 
-const SERVICE_URL =
-	process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL ??
-	process.env.ANALYZE_SERVICE_URL ??
-	"http://localhost:8000/analyze";
+const SERVICE_URL = process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL;
 
 /**
  * Sends the image to the analysis service as multipart/form-data and returns
@@ -56,9 +53,10 @@ export async function analyzeImage(
 
 	let res: Response;
 	try {
-		res = await fetch("/api/analyze", { method: "POST", body: form });
+		res = await fetch("/api/backend/analyze", { method: "POST", body: form });
 	} catch (err) {
 		const reason = err instanceof Error ? err.message : "network error";
+		if (!SERVICE_URL) throw new Error("service URL not configured");
 		throw new AnalyzeError({ kind: "network", url: SERVICE_URL, reason });
 	}
 
