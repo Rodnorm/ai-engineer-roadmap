@@ -37,6 +37,8 @@ const translations = {
 		"right.heading": "Resultado da análise",
 		"right.success": "Sucesso",
 		"right.processing": "Processando...",
+		"right.copy": "Copiar texto",
+		"right.copied": "Copiado!",
 		"right.emptyFile":
 			"Anexe uma imagem à esquerda e clique em **Enviar** para ver aqui as tags, o caption, os objetos detectados e o texto OCR.",
 		"right.readyToSubmit":
@@ -80,10 +82,13 @@ const translations = {
 		"right.heading": "Analysis result",
 		"right.success": "Success",
 		"right.processing": "Processing...",
+		"right.copy": "Copy text",
+		"right.copied": "Copied!",
 		"right.emptyFile":
 			"Attach an image on the left and click **Submit** to see the tags, caption, detected objects, and OCR text here.",
 		"right.readyToSubmit":
 			"Ready to submit. Click **Submit** whenever you want.",
+			
 
 		"result.caption": "Caption",
 		"result.tags": "Tags",
@@ -120,6 +125,8 @@ const translations = {
 		"left.submitting": "Wird gesendet...",
 
 		"right.heading": "Analyseergebnis",
+		"right.copy": "Text kopieren",
+		"right.copied": "Kopiert!",
 		"right.success": "Erfolgreich",
 		"right.processing": "Wird verarbeitet...",
 		"right.emptyFile":

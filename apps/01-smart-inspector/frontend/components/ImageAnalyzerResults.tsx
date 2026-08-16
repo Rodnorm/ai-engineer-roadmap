@@ -3,6 +3,7 @@ import { useLanguage } from "./LanguageProvider";
 import { AnalysisResult } from "@/lib/analyze-image";
 import ResultSkeleton from "./resultSkeleton";
 import { splitEmphasis } from "@/lib/i18n";
+import { useState } from "react";
 
 export function ImageAnalyzerResults({ isLoading, file, result, error }: {
     isLoading: boolean;
@@ -11,6 +12,21 @@ export function ImageAnalyzerResults({ isLoading, file, result, error }: {
     error: string | null;
 }) {
     const { t } = useLanguage();
+
+    const [copied, setCopied] = useState(false);
+
+    const onCopy = async () => {
+        if (!result?.ocr?.trim()) return;
+
+        await navigator.clipboard.writeText(result.ocr);
+
+        setCopied(true);
+
+        setTimeout(() => {
+            setCopied(false);
+        }, 1500);
+    };
+
     return (
         <section className="card flex flex-col gap-5">
             <div className="flex items-center justify-between">
@@ -93,16 +109,41 @@ export function ImageAnalyzerResults({ isLoading, file, result, error }: {
                             <p className="text-sm text-muted">—</p>
                         )}
                     </div>
-
                     <div>
                         <div className="flex items-center gap-2">
-                            <SquareDashedText className="h-4 w-4 mb-2 stroke-sky-500" />
+                            <SquareDashedText className="mb-2 h-4 w-4 stroke-sky-500" />
                             <p className="label mb-2">{t("result.ocr")}</p>
                         </div>
-                        <pre className="max-h-60 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-bg p-3 text-xs text-text">
-                            <Copy className="ml-auto stroke-sky-500" />
-                            {result.ocr?.trim() ? result.ocr : "—"}
-                        </pre>
+
+                        <div className="rounded-md border border-border bg-bg">
+                            <div className="flex items-center justify-between border-b border-border px-3 py-2">
+                                <span className="text-xs text-text-muted">
+                                    {result.ocr?.trim() ? "OCR" : "—"}
+                                </span>
+
+                                <div className="flex items-center gap-2">
+                                    {copied && (
+                                        <span className="text-xs text-sky-500">
+                                            {t("right.copied")}
+                                        </span>
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={onCopy}
+                                        disabled={!result.ocr?.trim()}
+                                        className="cursor-pointer rounded p-1.5 transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40"
+                                        title={t("right.copy")}
+                                    >
+                                        <Copy className="h-4 w-4 stroke-sky-500" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <pre className="max-h-60 overflow-auto whitespace-pre-wrap p-3 text-xs text-text">
+                                {result.ocr?.trim() ? result.ocr : "—"}
+                            </pre>
+                        </div>
                     </div>
                     <div>
                         <div className="flex items-center gap-2">

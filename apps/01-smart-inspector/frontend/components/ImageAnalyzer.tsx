@@ -76,6 +76,7 @@ export default function ImageAnalyzer() {
 		setStatus("loading");
 		setError(null);
 		try {
+			setResult(null);
 			const data = await analyzeImage(file, locale);
 			setResult(data);
 			setStatus("success");
