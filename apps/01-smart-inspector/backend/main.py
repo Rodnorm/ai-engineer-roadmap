@@ -17,7 +17,6 @@ AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_CLIENT_SECRET for a service principal.
 from __future__ import annotations
 
 import base64
-import json
 import logging
 import os
 from typing import List
@@ -54,10 +53,6 @@ def _build_client() -> OpenAI | None:
         base_url=ENDPOINT,
         api_key=API_KEY
     )
-    # token_provider = get_bearer_token_provider(
-    #     DefaultAzureCredential(), "https://ai.azure.com/.default"
-    # )
-    # return OpenAI(base_url=ENDPOINT, api_key=token_provider)
 
 
 client: OpenAI | None = _build_client()
@@ -77,17 +72,35 @@ else:
 # ---------------------------------------------------------------------------
 
 class AnalysisResult(BaseModel):
-    caption: str = Field("", description="One-line description of the image.")
-    tags: List[str] = Field(default_factory=list, description="Short keyword tags.")
-    objects: List[str] = Field(default_factory=list, description="Detected objects in the image.")
-    ocr: str = Field("", description="All visible text in the image.")
-    averagePrice: str = Field("", description="The average price of the item in the image.")
-    lowestPriceLink: str = Field("", description="The link to the lowest price of the item in the image to be bought online, if applicable.")
+    caption: str = Field(
+        "",
+        description="One-line description of the image."
+    )
+    tags: List[str] = Field(
+        default_factory=list,
+        description="Short keyword tags."
+    )
+    objects: List[str] = Field(
+        default_factory=list,
+        description="Detected objects in the image."
+    )
+    ocr: str = Field(
+        "",
+        description="All visible text in the image."
+    )
+    averagePrice: str = Field(
+        "",
+        description="The average price of the item in the image."
+    )
+    lowestPriceLink: str = Field(
+        "",
+        description="The link to the lowest price of the item in the image to be bought online, if applicable."
+    )
 
 SYSTEM_PROMPT = (
     "You are a vision inspector. "
-    "Always respond with a single valid JSON object that matches the requested schema. "
-    "Do not include any prose, markdown, or code fences."
+    "Analyze the provided image according to the user's instructions. "
+    "Return the requested information using the provided response schema."
 )
 
 # Map of locale codes the frontend may send → human-readable language name
@@ -101,31 +114,30 @@ DEFAULT_LANGUAGE_CODE = "de"
 
 
 def _build_user_prompt(language: str) -> str:
-    """Build the user prompt with an explicit language directive for the
-    caption/tags/objects fields. The `ocr` field is intentionally exempt —
-    it must mirror whatever is actually printed in the image."""
-    return f"""Analyze the attached image and respond with a JSON object using this exact schema:
+    language_name = LANGUAGE_NAMES.get(
+        language.lower(),
+        LANGUAGE_NAMES[DEFAULT_LANGUAGE_CODE]
+    )
 
-{{
-  "caption": string,   // a single concise line (max ~20 words) describing what is in the image
-  "tags": string[],    // 3-8 short, lowercase keyword tags (e.g. "indoor", "document", "blurry")
-  "objects": string[], // list of distinct objects you can identify (nouns, lowercase)
-  "ocr": string        // every piece of visible text in the image, with line breaks preserved;
-                       // use an empty string if no text is visible
-  "averagePrice": string // the average price of the item in the image either in Reais, Dollars or Euros depending on the language used, if applicable. You can only add a price if you also sent a link with the lowest price of the item in the image to be bought online. If not applicable, use an empty string.
-  "lowestPriceLink": string // the link to the lowest price of the item in the image to be bought online, if applicable
-}}
+    return f"""
+Analyze the attached image.
+
+Extract:
+- A concise caption with a maximum of 20 words.
+- 3-8 short, lowercase tags.
+- Distinct objects visible in the image.
+- All visible text, preserving line breaks.
+- The average price of the identified item, if applicable.
+- A link to the lowest price found online, if applicable.
 
 Rules:
-- Output ONLY the JSON object. No explanations, no markdown.
-- If a field has no content, use an empty array or empty string.
-- Keep tags and objects lowercase and free of duplicates.
-- Write the `caption` and every value in `tags` and `objects` in {LANGUAGE_NAMES.get(language.lower(), LANGUAGE_NAMES[DEFAULT_LANGUAGE_CODE])}.
-- The `ocr` field must be a verbatim transcription of the text visible in the image, in its original language.
-- the `averagePrice` field must be a string with the average price of the item in the image either in Reais, Dollars or Euros depending on the language used, if applicable, example: "R$ 199,90". Search also with the help of the OCR text. This info is important, so try to find an average price, look on the amazon website using the OCR text and the name of the item. If not applicable, use an empty string.
-- the `lowestPriceLink` field must be a string with the link to the lowest price of the item in the image to be bought online, if applicable. DO not get creative here, if you do not find any link do not make one up. In that case, send an empty string.
+- Write the caption, tags and objects in {language_name}.
+- The OCR must preserve the original language and wording visible in the image.
+- If no text is visible, return an empty OCR string.
+- If a price cannot be reliably identified, return an empty string.
+- Do not invent prices or links.
+- Only provide a price when a corresponding valid product can be identified.
 """
-
 
 # ---------------------------------------------------------------------------
 # App
@@ -255,69 +267,37 @@ async def analyze(
     ]
 
     try:
-        response = client.responses.create(
+        response = client.responses.parse(
             model=DEPLOYMENT,
             instructions=SYSTEM_PROMPT,
             input=input_payload,
+            text_format=AnalysisResult,
             max_output_tokens=800,
         )
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log.exception("Azure OpenAI call failed.")
-        raise HTTPException(status_code=502, detail=f"Azure OpenAI error: {exc}") from exc
-
-    # Pull the assistant text out of the Responses output.
-    raw_content = ""
-    for item in getattr(response, "output", []) or []:
-        # output_text items have a .text attribute
-        if getattr(item, "type", None) == "output_text":
-            raw_content += getattr(item, "text", "") or ""
-        # some SDK versions use a 'content' list
-        elif getattr(item, "content", None):
-            for part in item.content:
-                if getattr(part, "type", None) in ("output_text", "text"):
-                    raw_content += getattr(part, "text", "") or ""
-
-    raw_content = raw_content.strip() or "{}"
-
-    # Defensive parse: tolerate markdown fences and missing fields.
-    text = raw_content.strip()
-    if text.startswith("```"):
-        text = text.strip("`")
-        if text.lower().startswith("json"):
-            text = text[4:]
-        text = text.strip()
-
-    try:
-        parsed = json.loads(text)
-    except json.JSONDecodeError as exc:
-        log.error("Model returned non-JSON content: %r", raw_content[:500])
         raise HTTPException(
             status_code=502,
-            detail=f"Model returned non-JSON content: {exc}",
+            detail=f"Azure OpenAI error: {exc}"
         ) from exc
 
-    if not isinstance(parsed, dict):
+    result = response.output_parsed
+
+    if result is None:
         raise HTTPException(
             status_code=502,
-            detail="Model returned JSON of unexpected shape (expected object).",
+            detail="Model did not return a structured response."
         )
 
-    caption = parsed.get("caption") if isinstance(parsed.get("caption"), str) else ""
-    ocr = parsed.get("ocr") if isinstance(parsed.get("ocr"), str) else ""
-    tags = _clean_str_list(parsed.get("tags"))
-    objects = _clean_str_list(parsed.get("objects"))
-    averagePrice = parsed.get("averagePrice") if isinstance(parsed.get("averagePrice"), str) else ""
-    lowestPriceLink = parsed.get("lowestPriceLink") if isinstance(parsed.get("lowestPriceLink"), str) else ""
-
-    result = AnalysisResult(caption=caption.strip(), tags=tags, objects=objects, ocr=ocr, averagePrice=averagePrice, lowestPriceLink=lowestPriceLink)
     log.info(
-        "Result: caption=%r tags=%d objects=%d ocr_len=%d averagePrice_len=%d lowestPriceLink_len=%d",
+        "Result: caption=%r tags=%d objects=%d ocr_len=%d "
+        "averagePrice_len=%d lowestPriceLink_len=%d",
         result.caption[:80],
         len(result.tags),
         len(result.objects),
         len(result.ocr),
         len(result.averagePrice),
-        len(result.lowestPriceLink)
+        len(result.lowestPriceLink),
     )
     return result
 
