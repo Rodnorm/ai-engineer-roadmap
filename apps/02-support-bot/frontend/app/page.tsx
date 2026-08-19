@@ -1,9 +1,16 @@
 "use client";
 
 import Cards from "@/components/Cards";
-import ChatInput from "@/components/ChatInput";
+import ChatInput, { ChatInputHandle } from "@/components/ChatInput";
+import { useRef } from "react";
 
 export default function HomePage() {
+	const chatRef = useRef<ChatInputHandle>(null);
+
+	const handleCardSelect = (question: string) => {
+		chatRef.current?.submit(question);
+	};
+
 	return (
 		<div className="w-screen h-screen bg-gradient-to-bl from-red-200 to-sky-200 flex flex-col">
 			<main className="flex-1 min-h-0">
@@ -24,13 +31,13 @@ export default function HomePage() {
 							or chat with us directly by typing your question in the input box below.
 						</p>
 
-						<Cards />
+						<Cards onSelect={handleCardSelect} />
 					</div>
 				</div>
 			</main>
 
 			<div className="shrink-0 w-[80%] max-w-2xl mx-auto pb-4">
-				<ChatInput />
+				<ChatInput ref={chatRef} />
 			</div>
 		</div>
 	);

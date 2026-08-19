@@ -3,50 +3,45 @@ import MessageContainer, {
 	MessageType,
 	MessageUserType,
 } from "./MessageContainer";
-import { useEffect, useRef, useState } from "react";
+import {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+	useState,
+} from "react";
+import { queryMessage } from "@/lib/queryKB";
 
 const initialMessage = {
 	text: "",
 	type: MessageUserType.USER,
 };
 
-// Mocked bot call. Will be replaced with a real API request later.
-async function fetchBotReply(
-	userMessage: string,
-	signal: AbortSignal,
-): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const timer = setTimeout(() => {
-			resolve(
-				`(mock) You said: "${userMessage}". Here's a placeholder bot reply.`,
-			);
-		}, 1500);
+export type ChatInputHandle = {
+	submit: (text: string) => void;
+};
 
-		signal.addEventListener("abort", () => {
-			clearTimeout(timer);
-			reject(new DOMException("Aborted", "AbortError"));
-		});
-	});
-}
-
-export default function ChatInput() {
+const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 	const [draft, setDraft] = useState<MessageType>(initialMessage);
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const abortRef = useRef<AbortController | null>(null);
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    
-    useEffect(() => {
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
 		if (!isLoading) {
 			textAreaRef.current?.focus();
 		}
 	}, [isLoading]);
 
-	const sendMessage = async () => {
-		const text = draft.text.trim();
-		if (!text || isLoading) return;
+	const sendMessage = async (text: string) => {
+		const trimmed = text.trim();
+		if (!trimmed || isLoading) return;
 
-		const userMessage: MessageType = { text, type: MessageUserType.USER };
+		const userMessage: MessageType = {
+			text: trimmed,
+			type: MessageUserType.USER,
+		};
 		setMessages((prev) => [...prev, userMessage]);
 		setDraft(initialMessage);
 
@@ -55,10 +50,10 @@ export default function ChatInput() {
 		setIsLoading(true);
 
 		try {
-			const reply = await fetchBotReply(text, controller.signal);
+			const reply = await queryMessage(trimmed);
 			setMessages((prev) => [
 				...prev,
-				{ text: reply, type: MessageUserType.BOT },
+				{ text: reply.response, type: MessageUserType.BOT },
 			]);
 		} catch (err) {
 			if ((err as DOMException)?.name !== "AbortError") {
@@ -76,6 +71,8 @@ export default function ChatInput() {
 		}
 	};
 
+	useImperativeHandle(ref, () => ({ submit: sendMessage }), [isLoading]);
+
 	const stopRequest = () => {
 		abortRef.current?.abort();
 		setIsLoading(false);
@@ -84,7 +81,7 @@ export default function ChatInput() {
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			sendMessage();
+			sendMessage(draft.text);
 		}
 	};
 
@@ -113,7 +110,7 @@ export default function ChatInput() {
 						<Send
 							role="button"
 							aria-label="Send message"
-							onClick={sendMessage}
+							onClick={() => sendMessage(draft.text)}
 							className="absolute bottom-0 right-0 w-6 h-6 m-2 text-sky-500 hover:text-sky-700 cursor-pointer"
 						/>
 					)}
@@ -121,4 +118,6 @@ export default function ChatInput() {
 			</div>
 		</>
 	);
-}
+});
+
+export default ChatInput;

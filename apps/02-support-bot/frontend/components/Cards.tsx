@@ -1,19 +1,30 @@
 import { ArrowRightIcon } from "lucide-react";
 
-export default function Cards() {
+type CardsProps = {
+	onSelect?: (question: string) => void;
+};
+
+export default function Cards({ onSelect }: CardsProps) {
 	const cards = [
-		"Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
-		"Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
-		"Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
-		"Lorem, ipsum dolor sit amet consectetur adipisicing elit.",
+		"How can I update my billing address?",
+		"I accidentally paid twice for the same appointment. What should I do?",
+		"Where can I download an invoice from last month?",
+		"My refund has not arrived yet. How long should I wait?",
+		"My insurance refused to cover my appointment. What can I do?",
+		"I paid my bill, but my account still shows it as unpaid.",
+		"Can I change the date of my appointment?",
+		"I don't recognize a charge on my account. Can you help?",
+		"I need to talk to a real person about my billing problem.",
+		"Can you help me book a flight?",
 	];
 
 	return (
-		<div className="flex w-full mb-6 gap-3 text-sm text-neutral-800">
+		<div className="chat-scroll flex flex-wrap content-start w-full mb-6 gap-3 h-64 overflow-y-auto text-sm text-neutral-800">
 			{cards.map((card, index) => (
 				<div
 					key={index}
-					className="hover:border-sky-500 group relative grow border border-ccc shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:bg-neutral-100/30 rounded-xl p-4 transition-all duration-300"
+					onClick={() => onSelect?.(card)}
+					className="basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-[calc(25%-0.75rem)] hover:border-sky-500 group relative grow border border-ccc shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:bg-neutral-100/30 rounded-xl p-4 transition-all duration-300 cursor-pointer"
 				>
 					<p>{card}</p>
 					<div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
