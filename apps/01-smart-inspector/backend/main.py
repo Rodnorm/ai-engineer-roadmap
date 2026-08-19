@@ -185,26 +185,6 @@ def health() -> dict:
     }
 
 
-def _clean_str_list(value: object) -> list[str]:
-    if not isinstance(value, list):
-        return []
-    out: list[str] = []
-    for v in value:
-        if isinstance(v, str):
-            s = v.strip()
-            if s:
-                out.append(s)
-    seen: set[str] = set()
-    deduped: list[str] = []
-    for s in out:
-        key = s.lower()
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(s)
-    return deduped
-
-
 @app.post("/analyze", response_model=AnalysisResult)
 async def analyze(
     image: UploadFile = File(...),
