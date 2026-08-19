@@ -1,26 +1,34 @@
 import { ArrowRightIcon } from "lucide-react";
+import { useState } from "react";
 
 type CardsProps = {
 	onSelect?: (question: string) => void;
 };
 
-export default function Cards({ onSelect }: CardsProps) {
-	const cards = [
-		"How can I update my billing address?",
-		"I accidentally paid twice for the same appointment. What should I do?",
-		"Where can I download an invoice from last month?",
-		"My refund has not arrived yet. How long should I wait?",
-		"My insurance refused to cover my appointment. What can I do?",
-		"I paid my bill, but my account still shows it as unpaid.",
-		"Can I change the date of my appointment?",
-		"I don't recognize a charge on my account. Can you help?",
-		"I need to talk to a real person about my billing problem.",
-		"Can you help me book a flight?",
-	];
+const cards = [
+	"How can I update my billing address?",
+	"I accidentally paid twice for the same appointment. What should I do?",
+	"Where can I download an invoice from last month?",
+	"My refund has not arrived yet. How long should I wait?",
+	"My insurance refused to cover my appointment. What can I do?",
+	"I paid my bill, but my account still shows it as unpaid.",
+	"Can I change the date of my appointment?",
+	"I don't recognize a charge on my account. Can you help?",
+	"I need to talk to a real person about my billing problem.",
+	"Can you help me book a flight?",
+];
 
+function getRandomCards() {
+	return [...cards]
+		.sort(() => Math.random() - 0.5)
+		.slice(0, 4);
+}
+
+export default function Cards({ onSelect }: CardsProps) {
+		const [randomCards] = useState(getRandomCards);
 	return (
 		<div className="chat-scroll flex flex-wrap content-start w-full mb-6 gap-3 h-64 overflow-y-auto text-sm text-neutral-800">
-			{cards.map((card, index) => (
+			{randomCards.map((card, index) => (
 				<div
 					key={index}
 					onClick={() => onSelect?.(card)}
