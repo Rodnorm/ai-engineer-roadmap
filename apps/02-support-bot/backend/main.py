@@ -139,7 +139,7 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        "subort-main:app",
+        "main:app",
         host="0.0.0.0",
         port=PORT,
         reload=False,
