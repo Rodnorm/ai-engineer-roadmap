@@ -1,0 +1,259 @@
+{
+  "name": "healthcare-billing-support",
+  "description": "Knowledge base for the Industry Support Bot used in Week 2 of the AI Engineer Roadmap.",
+  "language": "en",
+  "domain": "Healthcare Billing",
+  "version": "1.0.0",
+  "entries": [
+    {
+      "id": 1,
+      "question": "How can I request a refund?",
+      "answer": "You can request a refund through the Billing Portal. Open the payment you want to dispute, select \"Request Refund\", and follow the instructions. Refund requests are reviewed by our billing team."
+    },
+    {
+      "id": 2,
+      "question": "I want my money back. How do I get a refund?",
+      "answer": "You can request a refund through the Billing Portal. Open the payment you want to dispute, select \"Request Refund\", and follow the instructions. Refund requests are reviewed by our billing team."
+    },
+    {
+      "id": 3,
+      "question": "I was charged twice for the same appointment. What should I do?",
+      "answer": "If you were charged twice for the same appointment, please submit a refund request through the Billing Portal. Include the appointment date and payment information so our billing team can investigate the duplicate charge."
+    },
+    {
+      "id": 4,
+      "question": "Why was I charged twice?",
+      "answer": "Duplicate charges can sometimes occur because of a payment processing error. Please check your payment history first. If two identical charges appear, contact the billing team or submit a refund request through the Billing Portal."
+    },
+    {
+      "id": 5,
+      "question": "How long does a refund take?",
+      "answer": "Once a refund has been approved, it usually takes 5 to 10 business days to appear on your original payment method. Processing times may vary depending on your bank or payment provider."
+    },
+    {
+      "id": 6,
+      "question": "When will I receive my refunded money?",
+      "answer": "Once a refund has been approved, it usually takes 5 to 10 business days to appear on your original payment method. Processing times may vary depending on your bank or payment provider."
+    },
+    {
+      "id": 7,
+      "question": "Can I cancel a refund request?",
+      "answer": "Contact the billing team as soon as possible if you want to cancel a refund request. Cancellation may not be possible once the refund has already been processed."
+    },
+    {
+      "id": 8,
+      "question": "Why was my refund rejected?",
+      "answer": "A refund may be rejected if the payment is outside the applicable refund period, if the charge is valid under the billing policy, or if additional information is required. Contact the billing team for details about your specific case."
+    },
+    {
+      "id": 9,
+      "question": "Can I get a refund for a cancelled appointment?",
+      "answer": "Refund eligibility depends on the cancellation policy associated with the appointment. Check the appointment details in the Billing Portal or contact the billing team for assistance."
+    },
+    {
+      "id": 10,
+      "question": "I don't recognize a payment on my account.",
+      "answer": "If you do not recognize a payment, review your payment history and appointment records first. If the charge still appears unfamiliar, contact the billing team immediately so the payment can be investigated."
+    },
+    {
+      "id": 11,
+      "question": "Where can I find my invoice?",
+      "answer": "Your invoices are available in the Billing Portal under the \"Invoices\" section. Select an invoice to view or download it."
+    },
+    {
+      "id": 12,
+      "question": "How can I download my invoice?",
+      "answer": "Open the Billing Portal, go to \"Invoices\", select the invoice you need, and choose \"Download PDF\"."
+    },
+    {
+      "id": 13,
+      "question": "Can I get a copy of an old invoice?",
+      "answer": "Yes. Previous invoices are stored in the Billing Portal. Go to the \"Invoices\" section and select the date range containing the invoice you need."
+    },
+    {
+      "id": 14,
+      "question": "I never received my invoice.",
+      "answer": "First, check the \"Invoices\" section of the Billing Portal. If the invoice is not available there, contact the billing team and provide your appointment date and account information."
+    },
+    {
+      "id": 15,
+      "question": "Can I receive my invoice by email?",
+      "answer": "Yes. You can download the invoice from the Billing Portal and send it from your preferred email account. If you need an invoice sent directly by the billing team, contact support."
+    },
+    {
+      "id": 16,
+      "question": "Can I change the information on my invoice?",
+      "answer": "Some invoice information can be corrected. Contact the billing team with the invoice number and the information that needs to be changed."
+    },
+    {
+      "id": 17,
+      "question": "My name is incorrect on my invoice.",
+      "answer": "Contact the billing team to request a correction. Provide the invoice number and the correct name. The team will review and update the invoice when appropriate."
+    },
+    {
+      "id": 18,
+      "question": "The amount on my invoice looks wrong.",
+      "answer": "Compare the invoice with your appointment and payment history. If the amount still appears incorrect, contact the billing team and provide the invoice number so the charge can be reviewed."
+    },
+    {
+      "id": 19,
+      "question": "How long are my invoices available?",
+      "answer": "Your invoices remain available in the Billing Portal according to the organization's document retention policy. If you cannot find an older invoice, contact the billing team."
+    },
+    {
+      "id": 20,
+      "question": "Can I export my billing history?",
+      "answer": "The Billing Portal allows you to download individual invoices. If you need a complete billing history or another export format, contact the billing team."
+    },
+    {
+      "id": 21,
+      "question": "What payment methods do you accept?",
+      "answer": "Available payment methods are displayed during checkout and in the Billing Portal. Supported methods may vary depending on your location and the service you are paying for."
+    },
+    {
+      "id": 22,
+      "question": "Can I pay with a credit card?",
+      "answer": "Credit card payments are supported when the option is available during checkout. Enter your card information and follow the payment instructions."
+    },
+    {
+      "id": 23,
+      "question": "Can I change my payment method?",
+      "answer": "You can update your payment method in the Billing Portal when the option is available. Select \"Payment Methods\" and follow the instructions."
+    },
+    {
+      "id": 24,
+      "question": "My credit card payment failed. What should I do?",
+      "answer": "Check that your card information is correct and that your card has sufficient funds. You can also try another payment method. If the problem continues, contact your bank or the billing team."
+    },
+    {
+      "id": 25,
+      "question": "Why did my payment fail?",
+      "answer": "A payment can fail because of incorrect card information, insufficient funds, bank restrictions, or a temporary payment provider issue. Verify your payment details and try again."
+    },
+    {
+      "id": 26,
+      "question": "Can I pay my bill later?",
+      "answer": "Payment deadlines depend on the specific invoice and billing policy. Check your invoice for the due date. Contact the billing team if you need information about payment arrangements."
+    },
+    {
+      "id": 27,
+      "question": "Is there a payment deadline?",
+      "answer": "Yes. The payment deadline is displayed on your invoice. Please make sure the payment is completed before the stated due date."
+    },
+    {
+      "id": 28,
+      "question": "I paid my bill but it still says unpaid.",
+      "answer": "Payment records can take some time to update. Check your payment history first. If the payment is not reflected after the expected processing period, contact the billing team with your payment confirmation."
+    },
+    {
+      "id": 29,
+      "question": "Do you accept health insurance?",
+      "answer": "Insurance coverage depends on the provider and service. Check the available insurance information in your account or contact the billing team before receiving the service."
+    },
+    {
+      "id": 30,
+      "question": "How do I submit an insurance claim?",
+      "answer": "The process depends on your insurance provider. Contact your insurance company for instructions on submitting a claim and ask the billing team for any documentation required from us."
+    },
+    {
+      "id": 31,
+      "question": "Why was my insurance claim rejected?",
+      "answer": "Insurance claims can be rejected for several reasons, including missing information, incorrect policy details, or services that are not covered. Contact your insurance provider for the specific rejection reason."
+    },
+    {
+      "id": 32,
+      "question": "My insurance did not cover the appointment. What should I do?",
+      "answer": "Review the explanation provided by your insurance company. If you believe the decision is incorrect, contact your insurer about an appeal. You can contact our billing team if you need supporting documentation."
+    },
+    {
+      "id": 33,
+      "question": "Can you contact my insurance company for me?",
+      "answer": "The billing team can provide relevant billing documentation, but insurance coverage and claim decisions are generally handled by your insurance provider. Contact your insurer for coverage-specific questions."
+    },
+    {
+      "id": 34,
+      "question": "What information do I need for an insurance claim?",
+      "answer": "You may need your insurance policy information, appointment details, invoice, and supporting medical or billing documentation. Your insurance provider can confirm the exact requirements."
+    },
+    {
+      "id": 35,
+      "question": "Can I update my insurance information?",
+      "answer": "Contact the billing team to update your insurance information. Have your current insurance provider and policy details available."
+    },
+    {
+      "id": 36,
+      "question": "How can I cancel an appointment?",
+      "answer": "You can cancel an appointment through the appointment management system. Cancellation and refund eligibility depend on the applicable cancellation policy."
+    },
+    {
+      "id": 37,
+      "question": "Can I reschedule my appointment?",
+      "answer": "Yes. Use the appointment management system to select a new available date and time. If you cannot reschedule online, contact support."
+    },
+    {
+      "id": 38,
+      "question": "Will I be charged if I miss my appointment?",
+      "answer": "Missed appointment charges depend on the cancellation and no-show policy associated with your appointment. Check your appointment information or contact the billing team."
+    },
+    {
+      "id": 39,
+      "question": "I cancelled my appointment but I was still charged.",
+      "answer": "Check the cancellation time and the applicable cancellation policy. If you believe the charge was incorrect, contact the billing team with your appointment details."
+    },
+    {
+      "id": 40,
+      "question": "How can I see my previous appointments?",
+      "answer": "Previous appointments are available through your account's appointment history. Select an appointment to view its date, service, and related billing information."
+    },
+    {
+      "id": 41,
+      "question": "How can I update my billing address?",
+      "answer": "You can update your billing address through your account settings when the option is available. If you cannot change it online, contact the billing team."
+    },
+    {
+      "id": 42,
+      "question": "Can I change my personal information?",
+      "answer": "Some personal information can be updated through your account settings. For information that cannot be changed online, contact support."
+    },
+    {
+      "id": 43,
+      "question": "How can I check my payment history?",
+      "answer": "Open the Billing Portal and select \"Payment History\". You can view previous payments, dates, amounts, and payment statuses."
+    },
+    {
+      "id": 44,
+      "question": "How do I know if my payment went through?",
+      "answer": "Check your payment history in the Billing Portal. A successful payment should appear with a completed or paid status. You may also receive a payment confirmation."
+    },
+    {
+      "id": 45,
+      "question": "I need help understanding my bill.",
+      "answer": "Review the individual charges and services listed on your invoice. If you still have questions about a charge, contact the billing team with the invoice number."
+    },
+    {
+      "id": 46,
+      "question": "How can I speak to a human?",
+      "answer": "If the information in the support bot does not resolve your issue, you can request assistance from a member of the billing team. Select \"Speak to an Agent\" or contact support through the available support channels."
+    },
+    {
+      "id": 47,
+      "question": "I want to talk to someone about my bill.",
+      "answer": "You can request assistance from a member of the billing team by selecting \"Speak to an Agent\" or contacting support through the available support channels."
+    },
+    {
+      "id": 48,
+      "question": "My billing problem has not been resolved.",
+      "answer": "If your issue has not been resolved, request assistance from the billing team. Provide your invoice number, appointment date, and a description of the problem so the team can investigate."
+    },
+    {
+      "id": 49,
+      "question": "Hello, can you help me?",
+      "answer": "Hello! I can help you with questions about billing, payments, invoices, refunds, insurance, and appointment-related charges. Tell me what you need help with."
+    },
+    {
+      "id": 50,
+      "question": "Can you tell me tomorrow's weather?",
+      "answer": "I'm sorry, but I can only help with healthcare billing, payments, invoices, refunds, insurance, and appointment-related questions. Please ask me a question related to one of these topics."
+    }
+  ]
+}
