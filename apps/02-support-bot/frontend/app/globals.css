@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #090b0f;
-  --color-surface: #12161b;
-  --color-surface-hover: #181d23;
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-hover: #f1f5f9;
 
-  --color-border: #252b33;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
 
-  --color-text: #f5f7fa;
-  --color-muted: #8d99aa;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
 
-  --color-accent: #6366f1;
-  --color-accent-blue: #38bdf8;
-  --color-accent-purple: #6366f1;
+  --color-accent: #0ea5e9;
+  --color-accent-blue: #0ea5e9;
+  --color-accent-pink: #ec4899;
   --color-accent-red: #f43f5e;
 
-  --color-success: #34d399;
-  --color-error: #f87171;
+  --color-success: #10b981;
+  --color-error: #ef4444;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
@@ -27,7 +28,7 @@
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-border bg-surface p-6 shadow-sm;
+    @apply rounded-2xl border border-border bg-white p-6 shadow-sm;
   }
 
   .btn-primary {
@@ -35,11 +36,11 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-border bg-bg px-4 py-2 text-sm font-medium text-text transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border border-border bg-bg px-3 py-1 text-xs text-muted;
+    @apply inline-flex items-center rounded-full border border-border bg-white px-3 py-1 text-xs text-muted;
   }
 
   .label {
@@ -48,7 +49,7 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -59,7 +60,7 @@ body {
 
 .chat-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #9ca3af transparent;
+  scrollbar-color: var(--color-border-strong) transparent;
 }
 
 .chat-scroll::-webkit-scrollbar {
@@ -71,10 +72,10 @@ body {
 }
 
 .chat-scroll::-webkit-scrollbar-thumb {
-  background: #9ca3af;
+  background: var(--color-border-strong);
   border-radius: 9999px;
 }
 
 .chat-scroll::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: var(--color-muted);
 }

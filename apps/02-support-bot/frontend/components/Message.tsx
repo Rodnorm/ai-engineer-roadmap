@@ -4,8 +4,8 @@ export default function Message({ message }: { message: MessageType }) {
     if (message.type === MessageUserType.USER) {
         return (
             <div className="flex justify-end">
-                <div className="bg-[#333333] px-3 py-2 text-white rounded-2xl rounded-br-none shadow-md">
-                    <p>{message.text}</p>
+                <div className="bg-slate-900 px-4 py-2.5 text-white rounded-2xl rounded-br-md shadow-sm max-w-[80%]">
+                    <p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
                 </div>
             </div>
         );
@@ -13,8 +13,8 @@ export default function Message({ message }: { message: MessageType }) {
 
     return (
         <div className="flex">
-            <div className="bg-gradient-to-bl from-red-200 to-sky-200 px-3 py-2 text-gray-700 rounded-2xl rounded-bl-none shadow-md">
-                <p>{message.text}</p>
+            <div className="bg-slate-100 border border-slate-200 px-4 py-2.5 text-slate-800 rounded-2xl rounded-bl-md shadow-sm max-w-[80%]">
+                <p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
             </div>
         </div>
     );

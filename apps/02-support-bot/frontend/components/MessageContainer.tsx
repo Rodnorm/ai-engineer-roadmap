@@ -30,12 +30,12 @@ export default function MessageContainer({
 
 	return (
 		<div
-			className="chat-scroll p-5 space-y-3 overflow-y-auto min-h-auto max-h-70 rounded-2xl"
+			className="chat-scroll p-2 space-y-3 overflow-y-auto min-h-[60px] max-h-[480px] rounded-2xl"
 			style={{
 				maskImage:
-					"linear-gradient(to bottom, transparent 0%, black 20%, black 100%)",
+					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
 				WebkitMaskImage:
-					"linear-gradient(to bottom, transparent 0%, black 20%, black 100%)",
+					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
 			}}
 		>
 			{messages.map((message, index) => (
@@ -44,8 +44,11 @@ export default function MessageContainer({
 
 			{isLoading && (
 				<div className="flex">
-					<div className="bg-gradient-to-bl from-red-200 to-sky-200 px-3 py-2 text-gray-700 rounded-2xl rounded-bl-none shadow-md">
-						<p className="animate-pulse">Thinking...</p>
+					<div className="bg-slate-100 border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm flex items-center gap-1.5">
+						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
+						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
+						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />
+						<span className="sr-only">Thinking</span>
 					</div>
 				</div>
 			)}

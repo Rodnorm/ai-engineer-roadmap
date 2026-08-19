@@ -88,8 +88,8 @@ const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 	return (
 		<>
 			<MessageContainer messages={messages} isLoading={isLoading} />
-			<div className="bg-white h-28 rounded-2xl shadow-md border border-neutral-200 relative">
-				<div className="flex">
+			<div className="bg-white h-28 rounded-2xl shadow-sm border border-slate-200 relative focus-within:border-sky-300 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-200">
+				<div className="flex h-full">
 					<textarea
 						ref={textAreaRef}
 						value={draft.text}
@@ -97,22 +97,27 @@ const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 						placeholder="Type your question here ..."
 						onChange={(e) => setDraft({ ...draft, text: e.target.value })}
 						disabled={isLoading}
-						className="resize-none text-mauve-500 grow m-4 outline outline-0 focus:outline-0 active:border-transparent min-h-16 disabled:opacity-60"
+						className="resize-none text-slate-900 placeholder:text-slate-400 grow m-4 outline-none border-0 bg-transparent min-h-16 disabled:opacity-60 leading-relaxed"
 					/>
 					{isLoading ? (
-						<Square
-							role="button"
+						<button
+							type="button"
 							aria-label="Stop generating"
 							onClick={stopRequest}
-							className="absolute bottom-0 right-0 w-6 h-6 m-2 text-red-500 hover:text-red-700 cursor-pointer"
-						/>
+							className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+						>
+							<Square className="w-4 h-4" aria-hidden="true" />
+						</button>
 					) : (
-						<Send
-							role="button"
+						<button
+							type="button"
 							aria-label="Send message"
 							onClick={() => sendMessage(draft.text)}
-							className="absolute bottom-0 right-0 w-6 h-6 m-2 text-sky-500 hover:text-sky-700 cursor-pointer"
-						/>
+							disabled={!draft.text.trim()}
+							className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+						>
+							<Send className="w-4 h-4" aria-hidden="true" />
+						</button>
 					)}
 				</div>
 			</div>

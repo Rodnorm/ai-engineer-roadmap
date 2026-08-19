@@ -12,21 +12,21 @@ export default function HomePage() {
 	};
 
 	return (
-		<div className="w-screen h-screen bg-gradient-to-bl from-red-200 to-sky-200 flex flex-col">
+		<div className="w-screen h-screen bg-white flex flex-col">
 			<main className="flex-1 min-h-0">
 				<div className="h-full w-[80%] max-w-2xl mx-auto flex items-center">
 					<div className="w-full">
-						<h1 className="bg-gradient-to-r from-pink-500 via-pink-500 to-violet-800 inline-block text-transparent bg-clip-text font-normal text-5xl leading-tight">
+						<h1 className="text-slate-900 font-semibold text-5xl leading-tight tracking-tight">
 							Hello there,
 						</h1>
 
 						<br />
 
-						<h1 className="bg-gradient-to-r from-blue-500 via-pink-500 to-violet-800 inline-block text-transparent bg-clip-text font-normal text-5xl -mt-2 mb-2 leading-tight">
+						<h1 className="bg-gradient-to-r from-sky-500 to-pink-500 inline-block text-transparent bg-clip-text font-semibold text-5xl -mt-2 mb-3 leading-tight tracking-tight">
 							How can I help you?
 						</h1>
 
-						<p className="text-neutral-500 leading-tight tracking-tight mb-6 text-lg">
+						<p className="text-slate-500 leading-relaxed tracking-tight mb-8 text-base max-w-lg">
 							Use one of the most common prompts below <br />
 							or chat with us directly by typing your question in the input box below.
 						</p>
@@ -36,7 +36,7 @@ export default function HomePage() {
 				</div>
 			</main>
 
-			<div className="shrink-0 w-[80%] max-w-2xl mx-auto pb-4">
+			<div className="shrink-0 w-[80%] max-w-2xl mx-auto pb-6">
 				<ChatInput ref={chatRef} />
 			</div>
 		</div>

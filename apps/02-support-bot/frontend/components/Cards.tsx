@@ -27,18 +27,20 @@ function getRandomCards() {
 export default function Cards({ onSelect }: CardsProps) {
 		const [randomCards] = useState(getRandomCards);
 	return (
-		<div className="chat-scroll flex flex-wrap content-start w-full mb-6 gap-3 h-64 overflow-y-auto text-sm text-neutral-800">
+		<div className="flex flex-wrap content-start w-full mb-6 gap-3 text-sm text-slate-700">
 			{randomCards.map((card, index) => (
-				<div
+				<button
 					key={index}
+					type="button"
+					aria-label={`Ask: ${card}`}
 					onClick={() => onSelect?.(card)}
-					className="basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-[calc(25%-0.75rem)] hover:border-sky-500 group relative grow border border-ccc shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:bg-neutral-100/30 rounded-xl p-4 transition-all duration-300 cursor-pointer"
+					className="group relative grow basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-[calc(25%-0.75rem)] text-left border border-slate-200 bg-white shadow-sm hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:bg-sky-50/40 rounded-xl p-4 pr-9 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
 				>
-					<p>{card}</p>
-					<div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-						<ArrowRightIcon className="w-4 h-4 text-neutral-500" />
+					<p className="leading-relaxed">{card}</p>
+					<div className="absolute top-3 right-3 text-slate-300 group-hover:text-sky-500 transition-colors duration-200">
+						<ArrowRightIcon className="w-4 h-4" aria-hidden="true" />
 					</div>
-				</div>
+				</button>
 			))}
 		</div>
 	);
