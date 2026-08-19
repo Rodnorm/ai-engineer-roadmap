@@ -1,8 +1,0 @@
-openai>=1.40
-pydantic>=2.7
-python-dotenv
-azure-identity
-fastapi>=0.111
-azure-ai-projects
-azure-ai-textanalytics
-uvicorn[standard]>=0.30
