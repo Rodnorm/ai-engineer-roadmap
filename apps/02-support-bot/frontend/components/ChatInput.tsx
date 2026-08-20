@@ -11,6 +11,7 @@ import {
 	useState,
 } from "react";
 import { queryMessage } from "@/lib/queryKB";
+import { NLPAnalysis, NLPAnalysisCard } from "./NLPAnalysisCard";
 
 const initialMessage = {
 	text: "",
@@ -24,6 +25,7 @@ export type ChatInputHandle = {
 const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 	const [draft, setDraft] = useState<MessageType>(initialMessage);
 	const [messages, setMessages] = useState<MessageType[]>([]);
+	const [nlpAnalysis, setNlpAnalysis] = useState<NLPAnalysis>();
 	const [isLoading, setIsLoading] = useState(false);
 	const abortRef = useRef<AbortController | null>(null);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -58,6 +60,7 @@ const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 					type: MessageUserType.BOT,
 				},
 			]);
+			setNlpAnalysis(reply.nlpAnalysis);
 		} catch (err) {
 			if ((err as DOMException)?.name !== "AbortError") {
 				setMessages((prev) => [
@@ -123,6 +126,7 @@ const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 						</button>
 					)}
 				</div>
+				<NLPAnalysisCard analysis={nlpAnalysis} />
 			</div>
 		</>
 	);
