@@ -83,7 +83,7 @@ export function useI18n(): I18nContextValue {
 /**
  * `useT` returns a translation function scoped to a namespace, plus the
  * active locale. It supports `{placeholder}` substitution, e.g.
- * `t("faq.summary", { count: 10 })`.
+ * `t("faq.summary")`.
  */
 export function useT<K extends keyof Dictionary>(namespace: K) {
 	const { dict } = useI18n();

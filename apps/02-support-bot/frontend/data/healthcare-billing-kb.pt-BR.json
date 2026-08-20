@@ -1,0 +1,1009 @@
+{
+  "name": "healthcare-billing-support",
+  "description": "Base de conhecimento de suporte a cobranças na área da saúde com 200 pares exclusivos de perguntas e respostas.",
+  "language": "pt-BR",
+  "domain": "Healthcare Billing",
+  "version": "2.0.0",
+  "entries": [
+    {
+      "id": 1,
+      "question": "Como posso solicitar um reembolso?",
+      "answer": "Você pode solicitar um reembolso pelo Portal de Cobrança. Abra o pagamento que deseja contestar, selecione \"Solicitar reembolso\" e siga as instruções. As solicitações de reembolso são analisadas pela nossa equipe de cobrança."
+    },
+    {
+      "id": 2,
+      "question": "Quero meu dinheiro de volta. Como faço para receber um reembolso?",
+      "answer": "Você pode solicitar um reembolso pelo Portal de Cobrança. Abra o pagamento que deseja contestar, selecione \"Solicitar reembolso\" e siga as instruções. As solicitações de reembolso são analisadas pela nossa equipe de cobrança."
+    },
+    {
+      "id": 3,
+      "question": "Fui cobrado duas vezes pela mesma consulta. O que devo fazer?",
+      "answer": "Se você foi cobrado duas vezes pela mesma consulta, envie uma solicitação de reembolso pelo Portal de Cobrança. Inclua a data da consulta e as informações do pagamento para que nossa equipe possa investigar a cobrança duplicada."
+    },
+    {
+      "id": 4,
+      "question": "Por que fui cobrado duas vezes?",
+      "answer": "Cobranças duplicadas podem ocorrer por erro no processamento do pagamento. Verifique primeiro seu histórico de pagamentos. Se houver duas cobranças idênticas, entre em contato com a equipe de cobrança ou solicite um reembolso pelo Portal de Cobrança."
+    },
+    {
+      "id": 5,
+      "question": "Quanto tempo leva um reembolso?",
+      "answer": "Depois que o reembolso é aprovado, normalmente leva de 5 a 10 dias úteis para aparecer no método de pagamento original. O prazo pode variar conforme o banco ou provedor de pagamento."
+    },
+    {
+      "id": 6,
+      "question": "Quando vou receber o dinheiro do reembolso?",
+      "answer": "Depois que o reembolso é aprovado, normalmente leva de 5 a 10 dias úteis para aparecer no método de pagamento original. O prazo pode variar conforme o banco ou provedor de pagamento."
+    },
+    {
+      "id": 7,
+      "question": "Posso cancelar uma solicitação de reembolso?",
+      "answer": "Entre em contato com a equipe de cobrança o mais rápido possível se quiser cancelar uma solicitação de reembolso. O cancelamento pode não ser possível se o reembolso já tiver sido processado."
+    },
+    {
+      "id": 8,
+      "question": "Por que meu reembolso foi recusado?",
+      "answer": "Um reembolso pode ser recusado se o pagamento estiver fora do prazo aplicável, se a cobrança for válida segundo a política de cobrança ou se forem necessárias informações adicionais. Entre em contato com a equipe de cobrança para detalhes sobre seu caso."
+    },
+    {
+      "id": 9,
+      "question": "Posso receber reembolso por uma consulta cancelada?",
+      "answer": "A elegibilidade para reembolso depende da política de cancelamento da consulta. Verifique os detalhes no Portal de Cobrança ou entre em contato com a equipe de cobrança."
+    },
+    {
+      "id": 10,
+      "question": "Não reconheço um pagamento na minha conta.",
+      "answer": "Se você não reconhecer um pagamento, verifique primeiro seu histórico de pagamentos e de consultas. Se a cobrança continuar desconhecida, entre em contato imediatamente com a equipe de cobrança para que ela seja investigada."
+    },
+    {
+      "id": 11,
+      "question": "Onde posso encontrar minha fatura?",
+      "answer": "Suas faturas estão disponíveis no Portal de Cobrança, na seção \"Faturas\". Selecione uma fatura para visualizar ou baixar."
+    },
+    {
+      "id": 12,
+      "question": "Como posso baixar minha fatura?",
+      "answer": "Abra o Portal de Cobrança, acesse \"Faturas\", selecione a fatura desejada e escolha \"Baixar PDF\"."
+    },
+    {
+      "id": 13,
+      "question": "Posso obter uma cópia de uma fatura antiga?",
+      "answer": "Sim. As faturas anteriores ficam armazenadas no Portal de Cobrança. Acesse a seção \"Faturas\" e selecione o período que contém a fatura desejada."
+    },
+    {
+      "id": 14,
+      "question": "Nunca recebi minha fatura.",
+      "answer": "Primeiro, verifique a seção \"Faturas\" do Portal de Cobrança. Se a fatura não estiver disponível, entre em contato com a equipe de cobrança e informe a data da consulta e os dados da sua conta."
+    },
+    {
+      "id": 15,
+      "question": "Posso receber minha fatura por e-mail?",
+      "answer": "Sim. Você pode baixar a fatura no Portal de Cobrança e enviá-la pelo e-mail de sua preferência. Se precisar que a equipe de cobrança envie a fatura diretamente, entre em contato com o suporte."
+    },
+    {
+      "id": 16,
+      "question": "Posso alterar as informações da minha fatura?",
+      "answer": "Algumas informações da fatura podem ser corrigidas. Entre em contato com a equipe de cobrança informando o número da fatura e os dados que precisam ser alterados."
+    },
+    {
+      "id": 17,
+      "question": "Meu nome está incorreto na fatura.",
+      "answer": "Entre em contato com a equipe de cobrança para solicitar uma correção. Informe o número da fatura e o nome correto. A equipe analisará e atualizará a fatura quando aplicável."
+    },
+    {
+      "id": 18,
+      "question": "O valor da minha fatura parece incorreto.",
+      "answer": "Compare a fatura com seu histórico de consultas e pagamentos. Se o valor continuar incorreto, entre em contato com a equipe de cobrança e informe o número da fatura para que a cobrança seja analisada."
+    },
+    {
+      "id": 19,
+      "question": "Por quanto tempo minhas faturas ficam disponíveis?",
+      "answer": "Suas faturas permanecem disponíveis no Portal de Cobrança de acordo com a política de retenção de documentos da organização. Se não encontrar uma fatura antiga, entre em contato com a equipe de cobrança."
+    },
+    {
+      "id": 20,
+      "question": "Posso exportar meu histórico de cobrança?",
+      "answer": "O Portal de Cobrança permite baixar faturas individuais. Se precisar do histórico completo ou de outro formato de exportação, entre em contato com a equipe de cobrança."
+    },
+    {
+      "id": 21,
+      "question": "Quais métodos de pagamento vocês aceitam?",
+      "answer": "Os métodos de pagamento disponíveis são exibidos durante o checkout e no Portal de Cobrança. As opções podem variar conforme sua localização e o serviço pago."
+    },
+    {
+      "id": 22,
+      "question": "Posso pagar com cartão de crédito?",
+      "answer": "Pagamentos com cartão de crédito são aceitos quando essa opção estiver disponível no checkout. Informe os dados do cartão e siga as instruções de pagamento."
+    },
+    {
+      "id": 23,
+      "question": "Posso alterar meu método de pagamento?",
+      "answer": "Você pode atualizar seu método de pagamento no Portal de Cobrança quando essa opção estiver disponível. Selecione \"Métodos de pagamento\" e siga as instruções."
+    },
+    {
+      "id": 24,
+      "question": "Meu pagamento com cartão de crédito falhou. O que devo fazer?",
+      "answer": "Verifique se os dados do cartão estão corretos e se há saldo ou limite suficiente. Você também pode tentar outro método de pagamento. Se o problema continuar, entre em contato com seu banco ou com a equipe de cobrança."
+    },
+    {
+      "id": 25,
+      "question": "Por que meu pagamento falhou?",
+      "answer": "Um pagamento pode falhar por dados incorretos do cartão, saldo ou limite insuficiente, restrições do banco ou um problema temporário do provedor de pagamento. Verifique os dados e tente novamente."
+    },
+    {
+      "id": 26,
+      "question": "Posso pagar minha fatura mais tarde?",
+      "answer": "Os prazos de pagamento dependem da fatura e da política de cobrança. Verifique a data de vencimento na sua fatura. Entre em contato com a equipe de cobrança se precisar de informações sobre acordos de pagamento."
+    },
+    {
+      "id": 27,
+      "question": "Existe um prazo para pagamento?",
+      "answer": "Sim. A data de vencimento é exibida na sua fatura. Certifique-se de concluir o pagamento antes da data indicada."
+    },
+    {
+      "id": 28,
+      "question": "Paguei minha fatura, mas ela ainda aparece como não paga.",
+      "answer": "Os registros de pagamento podem levar algum tempo para ser atualizados. Verifique primeiro seu histórico de pagamentos. Se o pagamento não aparecer após o prazo normal de processamento, entre em contato com a equipe de cobrança e envie o comprovante."
+    },
+    {
+      "id": 29,
+      "question": "Vocês aceitam plano de saúde?",
+      "answer": "A cobertura depende da operadora e do serviço. Verifique as informações de seguro disponíveis na sua conta ou entre em contato com a equipe de cobrança antes de receber o serviço."
+    },
+    {
+      "id": 30,
+      "question": "Como faço para enviar uma solicitação ao meu seguro?",
+      "answer": "O processo depende da sua operadora. Entre em contato com ela para obter instruções e peça à equipe de cobrança os documentos necessários."
+    },
+    {
+      "id": 31,
+      "question": "Por que minha solicitação ao seguro foi recusada?",
+      "answer": "Solicitações podem ser recusadas por vários motivos, incluindo informações ausentes, dados incorretos da apólice ou serviços não cobertos. Entre em contato com sua operadora para saber o motivo específico."
+    },
+    {
+      "id": 32,
+      "question": "Meu seguro não cobriu a consulta. O que devo fazer?",
+      "answer": "Revise a explicação fornecida pela sua operadora. Se acreditar que a decisão está errada, entre em contato com ela para recorrer. Nossa equipe de cobrança pode fornecer documentos de apoio, se necessário."
+    },
+    {
+      "id": 33,
+      "question": "Vocês podem entrar em contato com meu seguro por mim?",
+      "answer": "A equipe de cobrança pode fornecer documentos relevantes, mas decisões sobre cobertura e solicitações são normalmente tratadas pela operadora. Para questões específicas de cobertura, entre em contato com seu seguro."
+    },
+    {
+      "id": 34,
+      "question": "Quais informações preciso para uma solicitação ao seguro?",
+      "answer": "Você pode precisar dos dados da apólice, informações da consulta, fatura e documentos médicos ou de cobrança. Sua operadora pode confirmar os requisitos exatos."
+    },
+    {
+      "id": 35,
+      "question": "Posso atualizar meus dados do seguro?",
+      "answer": "Entre em contato com a equipe de cobrança para atualizar seus dados do seguro. Tenha em mãos as informações da operadora atual e da apólice."
+    },
+    {
+      "id": 36,
+      "question": "Como posso cancelar uma consulta?",
+      "answer": "Você pode cancelar uma consulta pelo sistema de gerenciamento de consultas. A cobrança e a elegibilidade para reembolso dependem da política de cancelamento aplicável."
+    },
+    {
+      "id": 37,
+      "question": "Posso remarcar minha consulta?",
+      "answer": "Sim. Use o sistema de gerenciamento de consultas para escolher uma nova data e horário disponíveis. Se não conseguir remarcar online, entre em contato com o suporte."
+    },
+    {
+      "id": 38,
+      "question": "Serei cobrado se faltar à consulta?",
+      "answer": "Cobranças por ausência dependem da política de cancelamento e falta da consulta. Verifique as informações da consulta ou entre em contato com a equipe de cobrança."
+    },
+    {
+      "id": 39,
+      "question": "Cancelei minha consulta, mas fui cobrado mesmo assim.",
+      "answer": "Verifique o horário do cancelamento e a política aplicável. Se acreditar que a cobrança foi incorreta, entre em contato com a equipe de cobrança informando os detalhes da consulta."
+    },
+    {
+      "id": 40,
+      "question": "Como posso ver minhas consultas anteriores?",
+      "answer": "As consultas anteriores estão disponíveis no histórico da sua conta. Selecione uma consulta para ver a data, o serviço e as informações de cobrança relacionadas."
+    },
+    {
+      "id": 41,
+      "question": "Como posso atualizar meu endereço de cobrança?",
+      "answer": "Você pode atualizar seu endereço de cobrança nas configurações da conta quando essa opção estiver disponível. Se não conseguir alterar online, entre em contato com a equipe de cobrança."
+    },
+    {
+      "id": 42,
+      "question": "Posso alterar meus dados pessoais?",
+      "answer": "Alguns dados pessoais podem ser atualizados nas configurações da conta. Para informações que não podem ser alteradas online, entre em contato com o suporte."
+    },
+    {
+      "id": 43,
+      "question": "Como posso verificar meu histórico de pagamentos?",
+      "answer": "Abra o Portal de Cobrança e selecione \"Histórico de pagamentos\". Você poderá ver pagamentos anteriores, datas, valores e status."
+    },
+    {
+      "id": 44,
+      "question": "Como sei se meu pagamento foi concluído?",
+      "answer": "Verifique seu histórico de pagamentos no Portal de Cobrança. Um pagamento bem-sucedido deve aparecer como concluído ou pago. Você também pode receber uma confirmação."
+    },
+    {
+      "id": 45,
+      "question": "Preciso de ajuda para entender minha fatura.",
+      "answer": "Revise as cobranças e serviços individuais listados na fatura. Se ainda tiver dúvidas sobre alguma cobrança, entre em contato com a equipe de cobrança informando o número da fatura."
+    },
+    {
+      "id": 46,
+      "question": "Como posso falar com uma pessoa?",
+      "answer": "Se o bot de suporte não resolver seu problema, você pode solicitar ajuda de um membro da equipe de cobrança. Selecione \"Falar com um atendente\" ou use os canais de suporte disponíveis."
+    },
+    {
+      "id": 47,
+      "question": "Quero falar com alguém sobre minha fatura.",
+      "answer": "Você pode solicitar ajuda de um membro da equipe de cobrança selecionando \"Falar com um atendente\" ou entrando em contato pelos canais de suporte disponíveis."
+    },
+    {
+      "id": 48,
+      "question": "Meu problema de cobrança não foi resolvido.",
+      "answer": "Se o problema não foi resolvido, solicite ajuda à equipe de cobrança. Informe o número da fatura, a data da consulta e uma descrição do problema para que a equipe possa investigar."
+    },
+    {
+      "id": 49,
+      "question": "Olá, você pode me ajudar?",
+      "answer": "Olá! Posso ajudar com dúvidas sobre cobranças, pagamentos, faturas, reembolsos, seguro e cobranças relacionadas a consultas. Diga no que você precisa de ajuda."
+    },
+    {
+      "id": 50,
+      "question": "Você pode me dizer a previsão do tempo de amanhã?",
+      "answer": "Desculpe, mas só posso ajudar com questões relacionadas a cobranças de saúde, pagamentos, faturas, reembolsos, seguro e consultas. Faça uma pergunta sobre um desses temas."
+    },
+    {
+      "id": 51,
+      "question": "Posso solicitar um reembolso parcial?",
+      "answer": "Reembolsos parciais dependem da cobrança e da política de reembolso. Envie uma solicitação com o valor contestado e o motivo."
+    },
+    {
+      "id": 52,
+      "question": "O reembolso pode ser enviado para outro método de pagamento?",
+      "answer": "Os reembolsos normalmente retornam ao método de pagamento original. Entre em contato com a cobrança se esse método não estiver mais disponível."
+    },
+    {
+      "id": 53,
+      "question": "Quais informações devo incluir em uma solicitação de reembolso?",
+      "answer": "Inclua a data da consulta, a referência do pagamento, o valor e o motivo da solicitação."
+    },
+    {
+      "id": 54,
+      "question": "Como verifico o status do meu reembolso?",
+      "answer": "Verifique o pagamento relacionado no Portal de Cobrança ou entre em contato com a equipe de cobrança informando a referência do pagamento."
+    },
+    {
+      "id": 55,
+      "question": "Meu reembolso aprovado ainda não chegou. E agora?",
+      "answer": "Aguarde de 5 a 10 dias úteis. Se esse prazo já passou, entre em contato com seu banco e com a equipe de cobrança."
+    },
+    {
+      "id": 56,
+      "question": "Vou receber uma confirmação do reembolso?",
+      "answer": "Uma confirmação pode aparecer no Portal de Cobrança ou pelos canais de notificação disponíveis."
+    },
+    {
+      "id": 57,
+      "question": "Posso contestar apenas parte de uma cobrança?",
+      "answer": "Sim. Informe a parte contestada e o número da fatura ao entrar em contato com a cobrança."
+    },
+    {
+      "id": 58,
+      "question": "Fui cobrado com o valor errado. O que devo fazer?",
+      "answer": "Compare a cobrança com sua fatura e entre em contato com a cobrança, informando a referência do pagamento, se o valor estiver incorreto."
+    },
+    {
+      "id": 59,
+      "question": "Posso solicitar reembolso meses depois?",
+      "answer": "A elegibilidade depende do prazo de reembolso. Envie a solicitação o quanto antes para análise."
+    },
+    {
+      "id": 60,
+      "question": "Uma cobrança duplicada pode desaparecer sozinha?",
+      "answer": "Algumas autorizações pendentes desaparecem automaticamente. Duas cobranças concluídas devem ser informadas à equipe de cobrança."
+    },
+    {
+      "id": 61,
+      "question": "Quais informações aparecem em uma fatura?",
+      "answer": "As faturas normalmente mostram número da fatura, data, serviços, cobranças, status do pagamento e informações de cobrança."
+    },
+    {
+      "id": 62,
+      "question": "Onde encontro o número da minha fatura?",
+      "answer": "Ele aparece na própria fatura e também pode ser exibido nos detalhes da fatura no Portal de Cobrança."
+    },
+    {
+      "id": 63,
+      "question": "Posso baixar várias faturas de uma vez?",
+      "answer": "A disponibilidade de download em lote depende do portal. Entre em contato com a cobrança se precisar de várias faturas juntas."
+    },
+    {
+      "id": 64,
+      "question": "Posso imprimir minha fatura?",
+      "answer": "Sim. Baixe o PDF e use a função de impressão do seu dispositivo."
+    },
+    {
+      "id": 65,
+      "question": "Posso receber uma fatura em outro idioma?",
+      "answer": "Os idiomas disponíveis dependem do sistema de cobrança. Entre em contato com a equipe para perguntar sobre alternativas."
+    },
+    {
+      "id": 66,
+      "question": "O nome da minha empresa pode aparecer na fatura?",
+      "answer": "Se houver suporte para cobrança empresarial, forneça os dados da empresa à equipe de cobrança."
+    },
+    {
+      "id": 67,
+      "question": "Posso adicionar um número fiscal a uma fatura?",
+      "answer": "Entre em contato com a cobrança informando o número da fatura e os dados fiscais. Alterações dependem das exigências de faturamento."
+    },
+    {
+      "id": 68,
+      "question": "Por que há uma taxa de serviço na minha fatura?",
+      "answer": "Alguns serviços possuem taxas adicionais. Revise os detalhes da fatura ou peça esclarecimentos à equipe de cobrança."
+    },
+    {
+      "id": 69,
+      "question": "Por que minha fatura ainda mostra saldo depois do pagamento?",
+      "answer": "O pagamento pode ainda não ter sido associado à fatura. Verifique o histórico de pagamentos e entre em contato com a cobrança se necessário."
+    },
+    {
+      "id": 70,
+      "question": "Posso obter um recibo de um pagamento concluído?",
+      "answer": "Verifique o Portal de Cobrança para encontrar um recibo ou entre em contato com a cobrança se precisar de um documento separado."
+    },
+    {
+      "id": 71,
+      "question": "Como posso adicionar um novo método de pagamento?",
+      "answer": "Abra \"Métodos de pagamento\" no Portal de Cobrança e siga as instruções disponíveis."
+    },
+    {
+      "id": 72,
+      "question": "Como posso remover um método de pagamento antigo?",
+      "answer": "Revise os métodos de pagamento salvos e remova o antigo se essa opção estiver disponível."
+    },
+    {
+      "id": 73,
+      "question": "Por que meu cartão foi recusado mesmo tendo limite disponível?",
+      "answer": "Regras de segurança do banco, restrições para compras online ou dados incorretos podem causar a recusa. Entre em contato com seu banco se necessário."
+    },
+    {
+      "id": 74,
+      "question": "Posso tentar novamente um pagamento que falhou?",
+      "answer": "Sim. Verifique os dados e tente novamente ou use outro método de pagamento aceito."
+    },
+    {
+      "id": 75,
+      "question": "Tentar novamente um pagamento pode me cobrar duas vezes?",
+      "answer": "Um pagamento que falhou não deveria ser concluído, mas autorizações temporárias podem aparecer. Verifique o histórico de pagamentos antes de tentar novamente."
+    },
+    {
+      "id": 76,
+      "question": "O que significa um pagamento pendente?",
+      "answer": "A transação foi iniciada, mas ainda não foi totalmente confirmada pelo provedor de pagamento."
+    },
+    {
+      "id": 77,
+      "question": "Por quanto tempo um pagamento pode ficar pendente?",
+      "answer": "O prazo depende do provedor. Entre em contato com seu banco ou com a cobrança se o pagamento permanecer pendente por muito tempo."
+    },
+    {
+      "id": 78,
+      "question": "Posso pagar por transferência bancária?",
+      "answer": "Se transferência bancária for aceita, os dados necessários serão exibidos nas informações de cobrança."
+    },
+    {
+      "id": 79,
+      "question": "Outra pessoa pode pagar minha fatura?",
+      "answer": "Isso pode ser possível se a referência correta da fatura ou do pagamento for utilizada."
+    },
+    {
+      "id": 80,
+      "question": "Posso dividir um pagamento entre dois cartões?",
+      "answer": "Pagamentos divididos nem sempre são aceitos. Verifique as opções no checkout ou entre em contato com a cobrança."
+    },
+    {
+      "id": 81,
+      "question": "Posso pagar uma fatura parcelada?",
+      "answer": "As opções de parcelamento dependem da política. Entre em contato com a cobrança antes do vencimento."
+    },
+    {
+      "id": 82,
+      "question": "O que acontece se eu pagar depois do vencimento?",
+      "answer": "As consequências dependem dos termos da fatura. Entre em contato com a cobrança se espera um atraso."
+    },
+    {
+      "id": 83,
+      "question": "Vou receber um lembrete de pagamento?",
+      "answer": "Lembretes podem ser enviados pelos canais de notificação disponíveis. A data de vencimento também aparece na fatura."
+    },
+    {
+      "id": 84,
+      "question": "Posso prorrogar a data de vencimento da minha fatura?",
+      "answer": "Prorrogações são analisadas individualmente. Entre em contato com a cobrança antes do vencimento."
+    },
+    {
+      "id": 85,
+      "question": "Usei a referência de pagamento errada. O que devo fazer?",
+      "answer": "Envie à equipe de cobrança o comprovante, o valor, a data e o número correto da fatura."
+    },
+    {
+      "id": 86,
+      "question": "Como confirmo que uma transferência bancária foi recebida?",
+      "answer": "Verifique o status no portal e entre em contato com a cobrança se ele não for atualizado após o prazo normal de processamento."
+    },
+    {
+      "id": 87,
+      "question": "Por que meu pagamento aparece como estornado?",
+      "answer": "A transação foi devolvida ou cancelada após ter sido iniciada. Entre em contato com seu banco ou com a cobrança para obter detalhes."
+    },
+    {
+      "id": 88,
+      "question": "O que significa o status de pagamento \"em processamento\"?",
+      "answer": "O pagamento foi enviado, mas a confirmação final do provedor ainda não foi recebida."
+    },
+    {
+      "id": 89,
+      "question": "Posso pagar antes de uma fatura ser gerada?",
+      "answer": "Se o pré-pagamento for aceito, as instruções aparecerão durante o agendamento ou o checkout."
+    },
+    {
+      "id": 90,
+      "question": "Posso usar um cartão pré-pago?",
+      "answer": "Ele pode ser usado se o provedor de pagamento aceitá-lo durante o checkout."
+    },
+    {
+      "id": 91,
+      "question": "Posso usar um plano de saúde privado?",
+      "answer": "A cobertura depende da operadora e do serviço. Confirme com seu seguro."
+    },
+    {
+      "id": 92,
+      "question": "Posso usar um plano de saúde público?",
+      "answer": "A cobertura depende do serviço e das regras locais. Confirme antes da consulta."
+    },
+    {
+      "id": 93,
+      "question": "Como envio um comprovante de seguro?",
+      "answer": "Forneça os dados ou documentos do seguro solicitados durante o processo de cobrança."
+    },
+    {
+      "id": 94,
+      "question": "O que devo fazer quando meus dados do seguro mudarem?",
+      "answer": "Atualize as informações na sua conta ou entre em contato rapidamente com a equipe de cobrança."
+    },
+    {
+      "id": 95,
+      "question": "Posso adicionar um seguro secundário?",
+      "answer": "O suporte a um seguro secundário depende do processo de cobrança. Entre em contato com a equipe informando os dados das duas apólices."
+    },
+    {
+      "id": 96,
+      "question": "O que é pré-autorização do seguro?",
+      "answer": "É uma aprovação da operadora exigida antes da realização de determinados serviços."
+    },
+    {
+      "id": 97,
+      "question": "Preciso de pré-autorização para minha consulta?",
+      "answer": "Pergunte à sua operadora, pois os requisitos dependem da sua apólice e do serviço."
+    },
+    {
+      "id": 98,
+      "question": "A equipe de cobrança pode fornecer documentos para reembolso pelo seguro?",
+      "answer": "A equipe de cobrança normalmente pode fornecer faturas e documentos de apoio relevantes."
+    },
+    {
+      "id": 99,
+      "question": "Meu seguro precisa de uma fatura detalhada. Como consigo uma?",
+      "answer": "Entre em contato com a cobrança e explique quais informações adicionais sua operadora exige."
+    },
+    {
+      "id": 100,
+      "question": "Posso enviar a fatura para meu seguro por conta própria?",
+      "answer": "Sim. Baixe a fatura e siga o processo de reembolso da sua operadora."
+    },
+    {
+      "id": 101,
+      "question": "E se o seguro pagou apenas parte da minha fatura?",
+      "answer": "Revise a decisão de cobertura da sua operadora. O saldo restante pode ser de sua responsabilidade."
+    },
+    {
+      "id": 102,
+      "question": "Por que ainda devo dinheiro depois que o seguro pagou?",
+      "answer": "Franquias, coparticipações ou cobertura parcial podem deixar um saldo restante."
+    },
+    {
+      "id": 103,
+      "question": "Posso recorrer de uma decisão do seguro?",
+      "answer": "Recursos são tratados pela sua operadora. A equipe de cobrança pode fornecer documentos de apoio."
+    },
+    {
+      "id": 104,
+      "question": "Como obtenho comprovante de pagamento para o seguro?",
+      "answer": "Use o recibo ou a confirmação de pagamento disponível no portal."
+    },
+    {
+      "id": 105,
+      "question": "Posso obter um demonstrativo anual de cobrança para fins fiscais?",
+      "answer": "Verifique o portal ou entre em contato com a cobrança para solicitar um demonstrativo anual oficial."
+    },
+    {
+      "id": 106,
+      "question": "O seguro pode cobrir retroativamente uma consulta passada?",
+      "answer": "Isso depende da sua apólice. Pergunte à operadora se o serviço ainda pode ser enviado para análise."
+    },
+    {
+      "id": 107,
+      "question": "Por que meu seguro não aparece na fatura?",
+      "answer": "As informações do seguro nem sempre aparecem em todas as faturas. Entre em contato com a cobrança se elas precisarem constar."
+    },
+    {
+      "id": 108,
+      "question": "Uma solicitação recusada pode ser enviada novamente?",
+      "answer": "Muitas vezes sim, se informações ausentes ou incorretas forem corrigidas. Confirme com sua operadora."
+    },
+    {
+      "id": 109,
+      "question": "Quem decide se um serviço é coberto?",
+      "answer": "Sua operadora decide a cobertura de acordo com sua apólice."
+    },
+    {
+      "id": 110,
+      "question": "Posso obter uma estimativa de custo antes de falar com meu seguro?",
+      "answer": "Quando disponível, solicite uma estimativa e use-a para discutir a cobertura esperada com sua operadora."
+    },
+    {
+      "id": 111,
+      "question": "Posso cancelar uma consulta no mesmo dia?",
+      "answer": "O cancelamento no mesmo dia pode ser possível, mas podem ser aplicadas taxas."
+    },
+    {
+      "id": 112,
+      "question": "Até quando posso cancelar sem pagar taxa?",
+      "answer": "O prazo depende da política de cancelamento da consulta."
+    },
+    {
+      "id": 113,
+      "question": "Posso remarcar uma consulta mais de uma vez?",
+      "answer": "Isso depende da política de agendamento e da disponibilidade."
+    },
+    {
+      "id": 114,
+      "question": "Meu pagamento passa para a nova data depois de remarcar?",
+      "answer": "Normalmente ele continua associado à consulta, mas verifique os detalhes atualizados."
+    },
+    {
+      "id": 115,
+      "question": "O que acontece com meu pagamento se o prestador cancelar?",
+      "answer": "Você pode ter direito a reembolso ou a uma remarcação sem custo."
+    },
+    {
+      "id": 116,
+      "question": "Posso receber reembolso se o prestador cancelar?",
+      "answer": "Você pode ter direito se não aceitar uma consulta alternativa."
+    },
+    {
+      "id": 117,
+      "question": "Por que fui cobrado por não comparecer?",
+      "answer": "Uma taxa por ausência pode ser aplicada quando a consulta é perdida sem cancelamento dentro do prazo."
+    },
+    {
+      "id": 118,
+      "question": "A taxa por falta pode ser dispensada?",
+      "answer": "A dispensa é analisada individualmente conforme a política e as circunstâncias."
+    },
+    {
+      "id": 119,
+      "question": "Por que fui cobrado depois de chegar atrasado?",
+      "answer": "Uma cobrança pode ser aplicada se a consulta não puder ser realizada como planejado."
+    },
+    {
+      "id": 120,
+      "question": "Onde posso ler a política de cancelamento?",
+      "answer": "Ela deve estar disponível durante o agendamento ou nos detalhes da consulta."
+    },
+    {
+      "id": 121,
+      "question": "Posso marcar uma consulta tendo um saldo em aberto?",
+      "answer": "As restrições de agendamento dependem da política da organização."
+    },
+    {
+      "id": 122,
+      "question": "Onde estão os detalhes de cobrança de uma consulta específica?",
+      "answer": "Abra o histórico de consultas e selecione a consulta."
+    },
+    {
+      "id": 123,
+      "question": "Por que minha consulta ainda não tem fatura?",
+      "answer": "A fatura talvez ainda não tenha sido gerada ou pode não ser necessária."
+    },
+    {
+      "id": 124,
+      "question": "Várias consultas podem ser combinadas em uma única fatura?",
+      "answer": "Isso depende do sistema de cobrança e da política adotada."
+    },
+    {
+      "id": 125,
+      "question": "Os serviços de uma mesma fatura podem ser separados?",
+      "answer": "Entre em contato com a cobrança para saber se faturas separadas podem ser emitidas."
+    },
+    {
+      "id": 126,
+      "question": "Posso ver um custo estimado antes de agendar?",
+      "answer": "Quando disponível, o custo estimado é exibido durante o agendamento."
+    },
+    {
+      "id": 127,
+      "question": "Por que o valor final foi diferente da estimativa?",
+      "answer": "Os serviços, cobranças adicionais ou a cobertura do seguro podem ter mudado."
+    },
+    {
+      "id": 128,
+      "question": "Posso perguntar o preço antes de confirmar uma consulta?",
+      "answer": "Sim. Consulte as informações de preço ou entre em contato com o suporte antes de agendar."
+    },
+    {
+      "id": 129,
+      "question": "Os preços das consultas são iguais para todos?",
+      "answer": "Os preços podem variar conforme serviço, localização, seguro e condições de cobrança."
+    },
+    {
+      "id": 130,
+      "question": "Onde posso encontrar o preço de um serviço?",
+      "answer": "O preço pode aparecer durante o agendamento ou nas informações do serviço."
+    },
+    {
+      "id": 131,
+      "question": "Como altero o e-mail usado para notificações de cobrança?",
+      "answer": "Atualize seus dados de contato nas configurações da conta ou entre em contato com o suporte."
+    },
+    {
+      "id": 132,
+      "question": "Como posso atualizar meu número de telefone?",
+      "answer": "Use as configurações da conta, se disponível, ou entre em contato com o suporte."
+    },
+    {
+      "id": 133,
+      "question": "Quais dados da conta devo manter atualizados?",
+      "answer": "Mantenha atualizadas as informações de contato, cobrança e seguro."
+    },
+    {
+      "id": 134,
+      "question": "Meu endereço de cobrança pode ser diferente do endereço residencial?",
+      "answer": "Sim, se o sistema de cobrança aceitar um endereço de cobrança separado."
+    },
+    {
+      "id": 135,
+      "question": "Por que meu endereço antigo ainda aparece em uma fatura?",
+      "answer": "A fatura pode ter sido criada antes da atualização. Entre em contato com a cobrança se precisar de correção."
+    },
+    {
+      "id": 136,
+      "question": "Posso alterar o e-mail em uma fatura já emitida?",
+      "answer": "Entre em contato com a cobrança; a possibilidade de alteração depende da política de faturamento."
+    },
+    {
+      "id": 137,
+      "question": "Como acesso informações de cobrança se não consigo entrar na conta?",
+      "answer": "Use primeiro a recuperação de conta e, se necessário, entre em contato com o suporte."
+    },
+    {
+      "id": 138,
+      "question": "Os históricos de cobrança de duas contas podem ser unificados?",
+      "answer": "Isso depende das políticas do sistema e de dados. Entre em contato com o suporte."
+    },
+    {
+      "id": 139,
+      "question": "Posso excluir informações de cobrança salvas?",
+      "answer": "Algumas informações podem ser removidas, enquanto registros exigidos por lei podem ser mantidos."
+    },
+    {
+      "id": 140,
+      "question": "Quem pode visualizar minhas informações de cobrança?",
+      "answer": "O acesso é controlado conforme as políticas de privacidade e segurança da organização."
+    },
+    {
+      "id": 141,
+      "question": "Um familiar pode acessar minhas faturas?",
+      "answer": "O acesso depende das permissões e regras de privacidade."
+    },
+    {
+      "id": 142,
+      "question": "Outra pessoa pode entrar em contato com a cobrança em meu nome?",
+      "answer": "Pode ser necessária uma autorização. Entre em contato com o suporte para saber o procedimento aplicável."
+    },
+    {
+      "id": 143,
+      "question": "Como posso corrigir minha data de nascimento?",
+      "answer": "Alterações sensíveis na conta podem exigir verificação de identidade."
+    },
+    {
+      "id": 144,
+      "question": "Posso alterar o nome do titular da conta?",
+      "answer": "Isso pode exigir verificação de identidade e documentos de apoio."
+    },
+    {
+      "id": 145,
+      "question": "Posso obter um demonstrativo de todos os pagamentos deste ano?",
+      "answer": "Use o histórico de pagamentos ou entre em contato com a cobrança para solicitar um demonstrativo anual oficial."
+    },
+    {
+      "id": 146,
+      "question": "Posso solicitar um demonstrativo de um período específico?",
+      "answer": "Use os filtros de data disponíveis ou entre em contato com a cobrança para solicitar um demonstrativo personalizado."
+    },
+    {
+      "id": 147,
+      "question": "Por que um pagamento está faltando no meu histórico?",
+      "answer": "Ele pode ainda estar em processamento ou associado a outra fatura."
+    },
+    {
+      "id": 148,
+      "question": "Posso filtrar as faturas por data?",
+      "answer": "Use os filtros de data do Portal de Cobrança quando estiverem disponíveis."
+    },
+    {
+      "id": 149,
+      "question": "Posso pesquisar uma fatura pelo número?",
+      "answer": "Use a busca do portal ou entre em contato com a cobrança informando o número da fatura."
+    },
+    {
+      "id": 150,
+      "question": "Posso ver qual cartão usei em um pagamento antigo?",
+      "answer": "Os detalhes do pagamento podem mostrar dados mascarados do cartão para identificação."
+    },
+    {
+      "id": 151,
+      "question": "Como entro em contato com o suporte de cobrança?",
+      "answer": "Use os canais oficiais de suporte disponíveis no aplicativo."
+    },
+    {
+      "id": 152,
+      "question": "Quais informações devo fornecer ao suporte de cobrança?",
+      "answer": "Informe o número da fatura, a referência do pagamento, a data da consulta e uma descrição do problema."
+    },
+    {
+      "id": 153,
+      "question": "Quanto tempo o suporte de cobrança leva para responder?",
+      "answer": "O tempo de resposta depende do volume de atendimentos e do canal utilizado."
+    },
+    {
+      "id": 154,
+      "question": "Posso enviar uma captura de tela do meu problema de cobrança?",
+      "answer": "Sim, se o envio de anexos for permitido. Oculte informações sensíveis de pagamento."
+    },
+    {
+      "id": 155,
+      "question": "Posso anexar uma fatura à minha solicitação de suporte?",
+      "answer": "Sim, quando o envio de anexos for permitido."
+    },
+    {
+      "id": 156,
+      "question": "O que faço se o suporte de cobrança não responder?",
+      "answer": "Entre em contato novamente pelo canal oficial e informe a referência do chamado já existente."
+    },
+    {
+      "id": 157,
+      "question": "Como faço para escalar uma reclamação de cobrança?",
+      "answer": "Solicite o escalonamento e informe o histórico do problema e as referências dos chamados anteriores."
+    },
+    {
+      "id": 158,
+      "question": "Um chamado de cobrança encerrado pode ser reaberto?",
+      "answer": "Entre em contato com o suporte informando a referência do chamado anterior."
+    },
+    {
+      "id": 159,
+      "question": "Vou receber um número de chamado para minha solicitação?",
+      "answer": "Um número de chamado ou de referência pode ser fornecido, dependendo do sistema de suporte."
+    },
+    {
+      "id": 160,
+      "question": "Como verifico o status de um chamado de suporte?",
+      "answer": "Use o portal de suporte ou entre em contato com a cobrança informando a referência do chamado."
+    },
+    {
+      "id": 161,
+      "question": "O que devo fazer se meus dados de pagamento forem roubados?",
+      "answer": "Entre em contato imediatamente com seu banco e comunique o problema pelos canais oficiais de suporte."
+    },
+    {
+      "id": 162,
+      "question": "Devo informar meu número completo do cartão ao suporte?",
+      "answer": "Não. Nunca envie o número completo do cartão, PIN ou código de segurança."
+    },
+    {
+      "id": 163,
+      "question": "Por que o portal mostra apenas quatro dígitos do meu cartão?",
+      "answer": "Os dados do cartão são mascarados para proteger informações sensíveis de pagamento."
+    },
+    {
+      "id": 164,
+      "question": "Os dados do meu cartão ficam armazenados no aplicativo?",
+      "answer": "Dados sensíveis de pagamento normalmente são processados por sistemas de pagamento seguros."
+    },
+    {
+      "id": 165,
+      "question": "O que devo fazer com uma cobrança suspeita?",
+      "answer": "Revise seu histórico e, se a cobrança continuar suspeita, entre em contato imediatamente com seu banco e com a equipe de cobrança."
+    },
+    {
+      "id": 166,
+      "question": "O suporte pode pedir o código de segurança do meu cartão?",
+      "answer": "Não. Nunca forneça o código de segurança, PIN ou número completo do cartão."
+    },
+    {
+      "id": 167,
+      "question": "Como denuncio uma possível fraude de cobrança?",
+      "answer": "Entre em contato com seu banco e denuncie a transação pelo canal oficial de cobrança."
+    },
+    {
+      "id": 168,
+      "question": "Posso bloquear cobranças futuras?",
+      "answer": "Entre em contato com seu banco e com o suporte para verificar as restrições de pagamento disponíveis."
+    },
+    {
+      "id": 169,
+      "question": "E se alguém usou minha conta sem permissão?",
+      "answer": "Altere sua senha, entre em contato com o suporte e informe ao seu banco sobre pagamentos não autorizados."
+    },
+    {
+      "id": 170,
+      "question": "Posso ver onde um pagamento foi feito?",
+      "answer": "Informações básicas da transação podem estar disponíveis; uma investigação detalhada pode exigir contato com seu banco."
+    },
+    {
+      "id": 171,
+      "question": "Por que paguei uma taxa de cancelamento?",
+      "answer": "A taxa pode ser aplicada quando o cancelamento ocorre após o prazo permitido."
+    },
+    {
+      "id": 172,
+      "question": "Por que existe uma taxa administrativa?",
+      "answer": "Alguns processos de cobrança incluem taxas administrativas. Revise os detalhes da fatura."
+    },
+    {
+      "id": 173,
+      "question": "Por que há várias cobranças no mesmo dia?",
+      "answer": "Serviços diferentes podem ser cobrados separadamente mesmo na mesma data."
+    },
+    {
+      "id": 174,
+      "question": "Por que minha fatura inclui impostos?",
+      "answer": "Impostos podem ser aplicados dependendo do serviço e das regulamentações locais."
+    },
+    {
+      "id": 175,
+      "question": "Os impostos também são devolvidos em um reembolso?",
+      "answer": "O tratamento dos impostos segue as regras aplicáveis de reembolso e cobrança."
+    },
+    {
+      "id": 176,
+      "question": "Posso ver uma discriminação dos preços antes de pagar?",
+      "answer": "Quando disponível, o checkout ou a fatura mostra a composição da cobrança."
+    },
+    {
+      "id": 177,
+      "question": "Qual é a diferença entre uma fatura e um recibo?",
+      "answer": "A fatura registra um valor a pagar; o recibo confirma que o pagamento foi realizado."
+    },
+    {
+      "id": 178,
+      "question": "Qual é a diferença entre pagamento pendente e concluído?",
+      "answer": "Pendente ainda está em processamento; concluído já foi confirmado."
+    },
+    {
+      "id": 179,
+      "question": "O que significa saldo em aberto?",
+      "answer": "É um valor que ainda não foi pago."
+    },
+    {
+      "id": 180,
+      "question": "O que significa saldo de crédito?",
+      "answer": "Pode representar um pagamento a maior ou um ajuste disponível para futuras cobranças ou reembolso."
+    },
+    {
+      "id": 181,
+      "question": "Um crédito na conta pode ser reembolsado?",
+      "answer": "As opções de reembolso dependem de como o crédito foi gerado e da política aplicável."
+    },
+    {
+      "id": 182,
+      "question": "Posso usar o crédito da conta em uma consulta futura?",
+      "answer": "Se houver suporte, o crédito pode ser aplicado a cobranças futuras elegíveis."
+    },
+    {
+      "id": 183,
+      "question": "Por que minha conta mostra saldo negativo?",
+      "answer": "Isso pode indicar um crédito, ajuste ou pagamento a maior."
+    },
+    {
+      "id": 184,
+      "question": "Por que meu saldo mudou depois de um ajuste?",
+      "answer": "Um ajuste pode alterar o valor devido ou gerar um crédito."
+    },
+    {
+      "id": 185,
+      "question": "Um ajuste de cobrança incorreto pode ser revertido?",
+      "answer": "Entre em contato com a cobrança para solicitar uma análise do ajuste."
+    },
+    {
+      "id": 186,
+      "question": "Posso receber uma fatura corrigida depois de um ajuste?",
+      "answer": "Uma fatura corrigida ou atualizada pode ser emitida quando necessário."
+    },
+    {
+      "id": 187,
+      "question": "E se a mesma fatura aparecer duas vezes?",
+      "answer": "Compare os números e valores das faturas e entre em contato com a cobrança antes de pagar novamente."
+    },
+    {
+      "id": 188,
+      "question": "Por que uma consulta gerou duas faturas?",
+      "answer": "Serviços ou componentes de cobrança diferentes podem ser faturados separadamente."
+    },
+    {
+      "id": 189,
+      "question": "Um pagamento pode cobrir várias faturas?",
+      "answer": "Isso depende do sistema de cobrança e do uso correto das referências das faturas."
+    },
+    {
+      "id": 190,
+      "question": "Como descubro qual fatura corresponde a um pagamento?",
+      "answer": "Abra os detalhes do pagamento e verifique a fatura ou referência associada."
+    },
+    {
+      "id": 191,
+      "question": "O suporte pode ajudar com problemas técnicos no Portal de Cobrança?",
+      "answer": "Sim. Entre em contato com o suporte e descreva o problema no portal."
+    },
+    {
+      "id": 192,
+      "question": "O que devo fazer se o Portal de Cobrança não carregar?",
+      "answer": "Atualize a página, verifique sua conexão e entre em contato com o suporte se o problema continuar."
+    },
+    {
+      "id": 193,
+      "question": "Por que o botão de download da fatura não funciona?",
+      "answer": "Atualize a página ou tente outro navegador compatível antes de entrar em contato com o suporte."
+    },
+    {
+      "id": 194,
+      "question": "Por que meu pagamento mais recente ainda não aparece?",
+      "answer": "Pagamentos recentes podem levar algum tempo para aparecer. Entre em contato com a cobrança se o processamento demorar mais do que o normal."
+    },
+    {
+      "id": 195,
+      "question": "Por que consigo ver uma fatura, mas não abri-la?",
+      "answer": "Pode ser um problema técnico temporário ou uma questão de permissão."
+    },
+    {
+      "id": 196,
+      "question": "Posso usar o Portal de Cobrança no celular?",
+      "answer": "Sim, se o portal for compatível com navegadores móveis."
+    },
+    {
+      "id": 197,
+      "question": "Preciso de uma conta para usar o Portal de Cobrança?",
+      "answer": "Alguns recursos de cobrança exigem autenticação para proteger informações pessoais."
+    },
+    {
+      "id": 198,
+      "question": "Por que o Portal de Cobrança encerrou minha sessão?",
+      "answer": "As sessões podem expirar após um período de inatividade ou por motivos de segurança."
+    },
+    {
+      "id": 199,
+      "question": "Este bot pode me dar orientações médicas?",
+      "answer": "Não. Este bot é limitado a questões de cobrança e assuntos administrativos relacionados."
+    },
+    {
+      "id": 200,
+      "question": "Este bot pode emitir um reembolso diretamente?",
+      "answer": "Não. Ele pode explicar o processo, mas os reembolsos devem ser feitos pelo Portal de Cobrança ou pela equipe de cobrança."
+    }
+  ]
+}

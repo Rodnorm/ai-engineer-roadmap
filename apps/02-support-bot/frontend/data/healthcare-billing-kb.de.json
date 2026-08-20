@@ -1,0 +1,1009 @@
+{
+  "name": "healthcare-billing-support",
+  "description": "Wissensdatenbank für Unterstützung bei Abrechnungsfragen im Gesundheitswesen mit 200 einzigartigen FAQ-Paaren.",
+  "language": "de",
+  "domain": "Healthcare Billing",
+  "version": "2.0.0",
+  "entries": [
+    {
+      "id": 1,
+      "question": "Wie kann ich eine Rückerstattung beantragen?",
+      "answer": "Sie können eine Rückerstattung über das Abrechnungsportal beantragen. Öffnen Sie die Zahlung, die Sie anfechten möchten, wählen Sie „Rückerstattung beantragen“ und folgen Sie den Anweisungen. Rückerstattungsanträge werden von unserem Abrechnungsteam geprüft."
+    },
+    {
+      "id": 2,
+      "question": "Ich möchte mein Geld zurück. Wie bekomme ich eine Rückerstattung?",
+      "answer": "Sie können eine Rückerstattung über das Abrechnungsportal beantragen. Öffnen Sie die Zahlung, die Sie anfechten möchten, wählen Sie „Rückerstattung beantragen“ und folgen Sie den Anweisungen. Rückerstattungsanträge werden von unserem Abrechnungsteam geprüft."
+    },
+    {
+      "id": 3,
+      "question": "Mir wurde derselbe Termin zweimal berechnet. Was soll ich tun?",
+      "answer": "Wenn Ihnen derselbe Termin zweimal berechnet wurde, reichen Sie bitte über das Abrechnungsportal einen Rückerstattungsantrag ein. Geben Sie das Termindatum und die Zahlungsinformationen an, damit unser Abrechnungsteam die doppelte Belastung prüfen kann."
+    },
+    {
+      "id": 4,
+      "question": "Warum wurde mir zweimal etwas berechnet?",
+      "answer": "Doppelte Belastungen können gelegentlich durch einen Fehler bei der Zahlungsabwicklung entstehen. Prüfen Sie zuerst Ihren Zahlungsverlauf. Wenn zwei identische Belastungen angezeigt werden, kontaktieren Sie das Abrechnungsteam oder stellen Sie über das Abrechnungsportal einen Rückerstattungsantrag."
+    },
+    {
+      "id": 5,
+      "question": "Wie lange dauert eine Rückerstattung?",
+      "answer": "Nach der Genehmigung einer Rückerstattung dauert es in der Regel 5 bis 10 Werktage, bis sie auf der ursprünglichen Zahlungsmethode erscheint. Die Bearbeitungszeit kann je nach Bank oder Zahlungsanbieter variieren."
+    },
+    {
+      "id": 6,
+      "question": "Wann erhalte ich mein erstattetes Geld?",
+      "answer": "Nach der Genehmigung einer Rückerstattung dauert es in der Regel 5 bis 10 Werktage, bis sie auf der ursprünglichen Zahlungsmethode erscheint. Die Bearbeitungszeit kann je nach Bank oder Zahlungsanbieter variieren."
+    },
+    {
+      "id": 7,
+      "question": "Kann ich einen Rückerstattungsantrag stornieren?",
+      "answer": "Kontaktieren Sie das Abrechnungsteam so schnell wie möglich, wenn Sie einen Rückerstattungsantrag stornieren möchten. Eine Stornierung ist möglicherweise nicht mehr möglich, wenn die Rückerstattung bereits verarbeitet wurde."
+    },
+    {
+      "id": 8,
+      "question": "Warum wurde meine Rückerstattung abgelehnt?",
+      "answer": "Eine Rückerstattung kann abgelehnt werden, wenn die Zahlung außerhalb des geltenden Rückerstattungszeitraums liegt, die Belastung gemäß den Abrechnungsrichtlinien berechtigt ist oder zusätzliche Informationen benötigt werden. Wenden Sie sich für Details zu Ihrem Fall an das Abrechnungsteam."
+    },
+    {
+      "id": 9,
+      "question": "Kann ich für einen abgesagten Termin eine Rückerstattung erhalten?",
+      "answer": "Ob eine Rückerstattung möglich ist, hängt von den Stornierungsbedingungen des Termins ab. Prüfen Sie die Termindetails im Abrechnungsportal oder kontaktieren Sie das Abrechnungsteam."
+    },
+    {
+      "id": 10,
+      "question": "Ich erkenne eine Zahlung in meinem Konto nicht.",
+      "answer": "Wenn Sie eine Zahlung nicht erkennen, prüfen Sie zuerst Ihren Zahlungsverlauf und Ihre Terminübersicht. Wenn Ihnen die Belastung weiterhin unbekannt ist, kontaktieren Sie sofort das Abrechnungsteam, damit die Zahlung geprüft werden kann."
+    },
+    {
+      "id": 11,
+      "question": "Wo finde ich meine Rechnung?",
+      "answer": "Ihre Rechnungen finden Sie im Abrechnungsportal im Bereich „Rechnungen“. Wählen Sie eine Rechnung aus, um sie anzusehen oder herunterzuladen."
+    },
+    {
+      "id": 12,
+      "question": "Wie kann ich meine Rechnung herunterladen?",
+      "answer": "Öffnen Sie das Abrechnungsportal, gehen Sie zu „Rechnungen“, wählen Sie die gewünschte Rechnung aus und klicken Sie auf „PDF herunterladen“."
+    },
+    {
+      "id": 13,
+      "question": "Kann ich eine Kopie einer alten Rechnung bekommen?",
+      "answer": "Ja. Frühere Rechnungen werden im Abrechnungsportal gespeichert. Öffnen Sie den Bereich „Rechnungen“ und wählen Sie den Zeitraum aus, in dem sich die gewünschte Rechnung befindet."
+    },
+    {
+      "id": 14,
+      "question": "Ich habe meine Rechnung nie erhalten.",
+      "answer": "Prüfen Sie zuerst den Bereich „Rechnungen“ im Abrechnungsportal. Wenn die Rechnung dort nicht verfügbar ist, kontaktieren Sie das Abrechnungsteam und geben Sie Ihr Termindatum sowie Ihre Kontoinformationen an."
+    },
+    {
+      "id": 15,
+      "question": "Kann ich meine Rechnung per E-Mail erhalten?",
+      "answer": "Ja. Sie können die Rechnung im Abrechnungsportal herunterladen und über Ihr bevorzugtes E-Mail-Konto versenden. Wenn die Rechnung direkt vom Abrechnungsteam verschickt werden soll, kontaktieren Sie den Support."
+    },
+    {
+      "id": 16,
+      "question": "Kann ich die Angaben auf meiner Rechnung ändern?",
+      "answer": "Einige Rechnungsangaben können korrigiert werden. Kontaktieren Sie das Abrechnungsteam mit der Rechnungsnummer und den Informationen, die geändert werden müssen."
+    },
+    {
+      "id": 17,
+      "question": "Mein Name ist auf der Rechnung falsch.",
+      "answer": "Kontaktieren Sie das Abrechnungsteam und bitten Sie um eine Korrektur. Geben Sie die Rechnungsnummer und den richtigen Namen an. Das Team prüft die Anfrage und aktualisiert die Rechnung gegebenenfalls."
+    },
+    {
+      "id": 18,
+      "question": "Der Betrag auf meiner Rechnung scheint falsch zu sein.",
+      "answer": "Vergleichen Sie die Rechnung mit Ihrem Termin- und Zahlungsverlauf. Wenn der Betrag weiterhin falsch erscheint, kontaktieren Sie das Abrechnungsteam und geben Sie die Rechnungsnummer an, damit die Belastung geprüft werden kann."
+    },
+    {
+      "id": 19,
+      "question": "Wie lange sind meine Rechnungen verfügbar?",
+      "answer": "Ihre Rechnungen bleiben gemäß der Aufbewahrungsrichtlinie der Organisation im Abrechnungsportal verfügbar. Wenn Sie eine ältere Rechnung nicht finden, kontaktieren Sie das Abrechnungsteam."
+    },
+    {
+      "id": 20,
+      "question": "Kann ich meinen Abrechnungsverlauf exportieren?",
+      "answer": "Im Abrechnungsportal können Sie einzelne Rechnungen herunterladen. Wenn Sie einen vollständigen Abrechnungsverlauf oder ein anderes Exportformat benötigen, kontaktieren Sie das Abrechnungsteam."
+    },
+    {
+      "id": 21,
+      "question": "Welche Zahlungsmethoden akzeptieren Sie?",
+      "answer": "Die verfügbaren Zahlungsmethoden werden beim Bezahlvorgang und im Abrechnungsportal angezeigt. Unterstützte Methoden können je nach Standort und bezahlter Leistung variieren."
+    },
+    {
+      "id": 22,
+      "question": "Kann ich mit Kreditkarte bezahlen?",
+      "answer": "Kreditkartenzahlungen werden unterstützt, wenn diese Option beim Bezahlvorgang verfügbar ist. Geben Sie Ihre Kartendaten ein und folgen Sie den Zahlungsanweisungen."
+    },
+    {
+      "id": 23,
+      "question": "Kann ich meine Zahlungsmethode ändern?",
+      "answer": "Sie können Ihre Zahlungsmethode im Abrechnungsportal aktualisieren, sofern die Option verfügbar ist. Wählen Sie „Zahlungsmethoden“ und folgen Sie den Anweisungen."
+    },
+    {
+      "id": 24,
+      "question": "Meine Kreditkartenzahlung ist fehlgeschlagen. Was soll ich tun?",
+      "answer": "Prüfen Sie, ob Ihre Kartendaten korrekt sind und ausreichend Guthaben vorhanden ist. Sie können auch eine andere Zahlungsmethode versuchen. Wenn das Problem weiterhin besteht, kontaktieren Sie Ihre Bank oder das Abrechnungsteam."
+    },
+    {
+      "id": 25,
+      "question": "Warum ist meine Zahlung fehlgeschlagen?",
+      "answer": "Eine Zahlung kann aufgrund falscher Kartendaten, unzureichenden Guthabens, Bankbeschränkungen oder eines vorübergehenden Problems beim Zahlungsanbieter fehlschlagen. Prüfen Sie Ihre Zahlungsdaten und versuchen Sie es erneut."
+    },
+    {
+      "id": 26,
+      "question": "Kann ich meine Rechnung später bezahlen?",
+      "answer": "Zahlungsfristen hängen von der jeweiligen Rechnung und den Abrechnungsrichtlinien ab. Prüfen Sie das Fälligkeitsdatum auf Ihrer Rechnung. Kontaktieren Sie das Abrechnungsteam, wenn Sie Informationen zu Zahlungsvereinbarungen benötigen."
+    },
+    {
+      "id": 27,
+      "question": "Gibt es eine Zahlungsfrist?",
+      "answer": "Ja. Die Zahlungsfrist steht auf Ihrer Rechnung. Bitte stellen Sie sicher, dass die Zahlung vor dem angegebenen Fälligkeitsdatum erfolgt."
+    },
+    {
+      "id": 28,
+      "question": "Ich habe meine Rechnung bezahlt, aber sie wird noch als unbezahlt angezeigt.",
+      "answer": "Es kann etwas dauern, bis Zahlungsdaten aktualisiert werden. Prüfen Sie zuerst Ihren Zahlungsverlauf. Wenn die Zahlung nach der üblichen Bearbeitungszeit nicht angezeigt wird, kontaktieren Sie das Abrechnungsteam mit Ihrer Zahlungsbestätigung."
+    },
+    {
+      "id": 29,
+      "question": "Akzeptieren Sie Krankenversicherungen?",
+      "answer": "Die Kostenübernahme hängt vom Versicherer und der Leistung ab. Prüfen Sie die verfügbaren Versicherungsinformationen in Ihrem Konto oder kontaktieren Sie das Abrechnungsteam vor der Inanspruchnahme der Leistung."
+    },
+    {
+      "id": 30,
+      "question": "Wie reiche ich einen Versicherungsantrag ein?",
+      "answer": "Der Ablauf hängt von Ihrem Versicherer ab. Wenden Sie sich an Ihre Versicherung, um Anweisungen zur Einreichung zu erhalten, und fragen Sie das Abrechnungsteam nach den benötigten Unterlagen."
+    },
+    {
+      "id": 31,
+      "question": "Warum wurde mein Versicherungsantrag abgelehnt?",
+      "answer": "Versicherungsanträge können aus mehreren Gründen abgelehnt werden, darunter fehlende Angaben, falsche Versicherungsdaten oder nicht abgedeckte Leistungen. Kontaktieren Sie Ihren Versicherer, um den konkreten Ablehnungsgrund zu erfahren."
+    },
+    {
+      "id": 32,
+      "question": "Meine Versicherung hat den Termin nicht übernommen. Was soll ich tun?",
+      "answer": "Prüfen Sie die Begründung Ihrer Versicherung. Wenn Sie die Entscheidung für falsch halten, wenden Sie sich wegen eines Widerspruchs an Ihren Versicherer. Unser Abrechnungsteam kann Ihnen bei Bedarf unterstützende Unterlagen bereitstellen."
+    },
+    {
+      "id": 33,
+      "question": "Können Sie meine Versicherung für mich kontaktieren?",
+      "answer": "Das Abrechnungsteam kann relevante Abrechnungsunterlagen bereitstellen, aber Fragen zur Kostenübernahme und Entscheidungen über Versicherungsanträge werden in der Regel von Ihrem Versicherer bearbeitet. Wenden Sie sich bei Fragen zur Deckung an Ihre Versicherung."
+    },
+    {
+      "id": 34,
+      "question": "Welche Informationen brauche ich für einen Versicherungsantrag?",
+      "answer": "Möglicherweise benötigen Sie Angaben zu Ihrer Versicherungspolice, Termindetails, die Rechnung sowie unterstützende medizinische oder abrechnungsbezogene Unterlagen. Ihr Versicherer kann die genauen Anforderungen bestätigen."
+    },
+    {
+      "id": 35,
+      "question": "Kann ich meine Versicherungsdaten aktualisieren?",
+      "answer": "Kontaktieren Sie das Abrechnungsteam, um Ihre Versicherungsdaten zu aktualisieren. Halten Sie Angaben zu Ihrem aktuellen Versicherer und Ihrer Police bereit."
+    },
+    {
+      "id": 36,
+      "question": "Wie kann ich einen Termin absagen?",
+      "answer": "Sie können einen Termin über das Terminverwaltungssystem absagen. Ob eine Gebühr oder Rückerstattung anfällt, hängt von den geltenden Stornierungsbedingungen ab."
+    },
+    {
+      "id": 37,
+      "question": "Kann ich meinen Termin verschieben?",
+      "answer": "Ja. Nutzen Sie das Terminverwaltungssystem, um ein neues verfügbares Datum und eine neue Uhrzeit auszuwählen. Wenn Sie den Termin nicht online verschieben können, kontaktieren Sie den Support."
+    },
+    {
+      "id": 38,
+      "question": "Wird mir etwas berechnet, wenn ich meinen Termin verpasse?",
+      "answer": "Gebühren für versäumte Termine hängen von den Stornierungs- und Nichterscheinensregeln des jeweiligen Termins ab. Prüfen Sie Ihre Termininformationen oder kontaktieren Sie das Abrechnungsteam."
+    },
+    {
+      "id": 39,
+      "question": "Ich habe meinen Termin abgesagt, wurde aber trotzdem belastet.",
+      "answer": "Prüfen Sie den Zeitpunkt der Absage und die geltenden Stornierungsbedingungen. Wenn Sie die Belastung für falsch halten, kontaktieren Sie das Abrechnungsteam mit Ihren Termindetails."
+    },
+    {
+      "id": 40,
+      "question": "Wie kann ich meine früheren Termine sehen?",
+      "answer": "Frühere Termine finden Sie im Terminverlauf Ihres Kontos. Wählen Sie einen Termin aus, um Datum, Leistung und zugehörige Abrechnungsinformationen anzuzeigen."
+    },
+    {
+      "id": 41,
+      "question": "Wie kann ich meine Rechnungsadresse aktualisieren?",
+      "answer": "Sie können Ihre Rechnungsadresse in den Kontoeinstellungen aktualisieren, sofern die Option verfügbar ist. Wenn Sie sie nicht online ändern können, kontaktieren Sie das Abrechnungsteam."
+    },
+    {
+      "id": 42,
+      "question": "Kann ich meine persönlichen Daten ändern?",
+      "answer": "Einige persönliche Daten können in den Kontoeinstellungen aktualisiert werden. Für Angaben, die online nicht geändert werden können, kontaktieren Sie den Support."
+    },
+    {
+      "id": 43,
+      "question": "Wie kann ich meinen Zahlungsverlauf prüfen?",
+      "answer": "Öffnen Sie das Abrechnungsportal und wählen Sie „Zahlungsverlauf“. Dort sehen Sie frühere Zahlungen, Daten, Beträge und Zahlungsstatus."
+    },
+    {
+      "id": 44,
+      "question": "Wie weiß ich, ob meine Zahlung erfolgreich war?",
+      "answer": "Prüfen Sie Ihren Zahlungsverlauf im Abrechnungsportal. Eine erfolgreiche Zahlung sollte mit dem Status abgeschlossen oder bezahlt angezeigt werden. Möglicherweise erhalten Sie zusätzlich eine Zahlungsbestätigung."
+    },
+    {
+      "id": 45,
+      "question": "Ich brauche Hilfe dabei, meine Rechnung zu verstehen.",
+      "answer": "Prüfen Sie die einzelnen Positionen und Leistungen auf Ihrer Rechnung. Wenn Sie weiterhin Fragen zu einer Belastung haben, kontaktieren Sie das Abrechnungsteam mit der Rechnungsnummer."
+    },
+    {
+      "id": 46,
+      "question": "Wie kann ich mit einem Mitarbeiter sprechen?",
+      "answer": "Wenn der Support-Bot Ihr Problem nicht löst, können Sie Unterstützung durch ein Mitglied des Abrechnungsteams anfordern. Wählen Sie „Mit einem Mitarbeiter sprechen“ oder nutzen Sie die verfügbaren Supportkanäle."
+    },
+    {
+      "id": 47,
+      "question": "Ich möchte mit jemandem über meine Rechnung sprechen.",
+      "answer": "Sie können Unterstützung durch ein Mitglied des Abrechnungsteams anfordern, indem Sie „Mit einem Mitarbeiter sprechen“ wählen oder die verfügbaren Supportkanäle nutzen."
+    },
+    {
+      "id": 48,
+      "question": "Mein Abrechnungsproblem wurde nicht gelöst.",
+      "answer": "Wenn Ihr Problem nicht gelöst wurde, wenden Sie sich an das Abrechnungsteam. Geben Sie Ihre Rechnungsnummer, das Termindatum und eine Beschreibung des Problems an, damit das Team den Fall prüfen kann."
+    },
+    {
+      "id": 49,
+      "question": "Hallo, können Sie mir helfen?",
+      "answer": "Hallo! Ich kann Ihnen bei Fragen zu Abrechnung, Zahlungen, Rechnungen, Rückerstattungen, Versicherungen und terminbezogenen Gebühren helfen. Sagen Sie mir, wobei Sie Unterstützung benötigen."
+    },
+    {
+      "id": 50,
+      "question": "Können Sie mir das Wetter für morgen sagen?",
+      "answer": "Entschuldigung, aber ich kann nur bei Fragen zu Abrechnung im Gesundheitswesen, Zahlungen, Rechnungen, Rückerstattungen, Versicherungen und terminbezogenen Themen helfen. Bitte stellen Sie eine Frage zu einem dieser Bereiche."
+    },
+    {
+      "id": 51,
+      "question": "Kann ich eine teilweise Rückerstattung beantragen?",
+      "answer": "Teilrückerstattungen hängen von der Belastung und den Rückerstattungsrichtlinien ab. Reichen Sie einen Antrag mit dem strittigen Betrag und dem Grund ein."
+    },
+    {
+      "id": 52,
+      "question": "Kann eine Rückerstattung auf eine andere Zahlungsmethode erfolgen?",
+      "answer": "Rückerstattungen werden normalerweise auf die ursprüngliche Zahlungsmethode zurückgebucht. Kontaktieren Sie die Abrechnung, wenn diese nicht mehr verfügbar ist."
+    },
+    {
+      "id": 53,
+      "question": "Welche Angaben sollte ich in einem Rückerstattungsantrag machen?",
+      "answer": "Geben Sie das Termindatum, die Zahlungsreferenz, den Betrag und den Grund für den Antrag an."
+    },
+    {
+      "id": 54,
+      "question": "Wie prüfe ich den Status meiner Rückerstattung?",
+      "answer": "Prüfen Sie die zugehörige Zahlung im Abrechnungsportal oder kontaktieren Sie die Abrechnung mit der Zahlungsreferenz."
+    },
+    {
+      "id": 55,
+      "question": "Meine genehmigte Rückerstattung ist nicht angekommen. Was nun?",
+      "answer": "Warten Sie 5 bis 10 Werktage. Wenn dieser Zeitraum verstrichen ist, kontaktieren Sie Ihre Bank und das Abrechnungsteam."
+    },
+    {
+      "id": 56,
+      "question": "Erhalte ich eine Bestätigung für die Rückerstattung?",
+      "answer": "Eine Bestätigung kann im Abrechnungsportal oder über die verfügbaren Benachrichtigungskanäle erscheinen."
+    },
+    {
+      "id": 57,
+      "question": "Kann ich nur einen Teil einer Belastung anfechten?",
+      "answer": "Ja. Geben Sie den strittigen Teil und die Rechnungsnummer an, wenn Sie die Abrechnung kontaktieren."
+    },
+    {
+      "id": 58,
+      "question": "Mir wurde ein falscher Betrag berechnet. Was soll ich tun?",
+      "answer": "Vergleichen Sie die Belastung mit Ihrer Rechnung und kontaktieren Sie die Abrechnung mit der Zahlungsreferenz, wenn sie falsch ist."
+    },
+    {
+      "id": 59,
+      "question": "Kann ich Monate später noch eine Rückerstattung beantragen?",
+      "answer": "Die Berechtigung hängt vom Rückerstattungszeitraum ab. Reichen Sie den Antrag so schnell wie möglich zur Prüfung ein."
+    },
+    {
+      "id": 60,
+      "question": "Kann eine doppelte Belastung automatisch verschwinden?",
+      "answer": "Einige vorläufige Autorisierungen verschwinden automatisch. Zwei abgeschlossene Belastungen sollten der Abrechnung gemeldet werden."
+    },
+    {
+      "id": 61,
+      "question": "Welche Informationen enthält eine Rechnung?",
+      "answer": "Rechnungen enthalten normalerweise Rechnungsnummer, Datum, Leistungen, Beträge, Zahlungsstatus und Rechnungsinformationen."
+    },
+    {
+      "id": 62,
+      "question": "Wo finde ich meine Rechnungsnummer?",
+      "answer": "Sie steht auf der Rechnung und kann auch in den Rechnungsdetails im Abrechnungsportal angezeigt werden."
+    },
+    {
+      "id": 63,
+      "question": "Kann ich mehrere Rechnungen auf einmal herunterladen?",
+      "answer": "Ob ein Massendownload möglich ist, hängt vom Portal ab. Kontaktieren Sie die Abrechnung, wenn Sie mehrere Rechnungen zusammen benötigen."
+    },
+    {
+      "id": 64,
+      "question": "Kann ich meine Rechnung ausdrucken?",
+      "answer": "Ja. Laden Sie das PDF herunter und verwenden Sie die Druckfunktion Ihres Geräts."
+    },
+    {
+      "id": 65,
+      "question": "Kann ich eine Rechnung in einer anderen Sprache erhalten?",
+      "answer": "Die verfügbaren Sprachen hängen vom Abrechnungssystem ab. Fragen Sie die Abrechnung nach Alternativen."
+    },
+    {
+      "id": 66,
+      "question": "Kann mein Firmenname auf der Rechnung erscheinen?",
+      "answer": "Wenn Geschäftsabrechnungen unterstützt werden, übermitteln Sie die Firmendaten an das Abrechnungsteam."
+    },
+    {
+      "id": 67,
+      "question": "Kann ich eine Steuernummer auf einer Rechnung ergänzen?",
+      "answer": "Kontaktieren Sie die Abrechnung mit Rechnungsnummer und Steuerinformationen. Änderungen hängen von den Rechnungsanforderungen ab."
+    },
+    {
+      "id": 68,
+      "question": "Warum gibt es eine Servicegebühr auf meiner Rechnung?",
+      "answer": "Für einige Leistungen fallen zusätzliche Gebühren an. Prüfen Sie die Rechnungsdetails oder fragen Sie die Abrechnung nach einer Erklärung."
+    },
+    {
+      "id": 69,
+      "question": "Warum zeigt meine Rechnung nach der Zahlung noch einen offenen Betrag?",
+      "answer": "Die Zahlung wurde möglicherweise noch nicht zugeordnet. Prüfen Sie den Zahlungsverlauf und kontaktieren Sie bei Bedarf die Abrechnung."
+    },
+    {
+      "id": 70,
+      "question": "Kann ich einen Beleg für eine abgeschlossene Zahlung erhalten?",
+      "answer": "Prüfen Sie das Abrechnungsportal auf einen Zahlungsbeleg oder kontaktieren Sie die Abrechnung, wenn Sie ein separates Dokument benötigen."
+    },
+    {
+      "id": 71,
+      "question": "Wie kann ich eine neue Zahlungsmethode hinzufügen?",
+      "answer": "Öffnen Sie „Zahlungsmethoden“ im Abrechnungsportal und folgen Sie den verfügbaren Anweisungen."
+    },
+    {
+      "id": 72,
+      "question": "Wie kann ich eine alte Zahlungsmethode entfernen?",
+      "answer": "Prüfen Sie Ihre gespeicherten Zahlungsmethoden und entfernen Sie die alte Methode, sofern diese Option verfügbar ist."
+    },
+    {
+      "id": 73,
+      "question": "Warum wurde meine Karte trotz ausreichenden Guthabens abgelehnt?",
+      "answer": "Sicherheitsregeln der Bank, Online-Beschränkungen oder falsche Angaben können zu einer Ablehnung führen. Kontaktieren Sie bei Bedarf Ihre Bank."
+    },
+    {
+      "id": 74,
+      "question": "Kann ich eine fehlgeschlagene Zahlung erneut versuchen?",
+      "answer": "Ja. Prüfen Sie die Angaben und versuchen Sie es erneut oder verwenden Sie eine andere unterstützte Zahlungsmethode."
+    },
+    {
+      "id": 75,
+      "question": "Kann ein erneuter Zahlungsversuch zu einer doppelten Belastung führen?",
+      "answer": "Eine fehlgeschlagene Zahlung sollte nicht abgeschlossen werden, allerdings können vorübergehende Autorisierungen erscheinen. Prüfen Sie vor einem erneuten Versuch den Zahlungsverlauf."
+    },
+    {
+      "id": 76,
+      "question": "Was bedeutet eine ausstehende Zahlung?",
+      "answer": "Die Transaktion wurde gestartet, aber vom Zahlungsanbieter noch nicht vollständig bestätigt."
+    },
+    {
+      "id": 77,
+      "question": "Wie lange kann eine Zahlung ausstehend bleiben?",
+      "answer": "Die Dauer hängt vom Anbieter ab. Kontaktieren Sie Ihre Bank oder die Abrechnung, wenn der Status ungewöhnlich lange bestehen bleibt."
+    },
+    {
+      "id": 78,
+      "question": "Kann ich per Banküberweisung bezahlen?",
+      "answer": "Wenn Banküberweisung unterstützt wird, werden die erforderlichen Daten in den Abrechnungsinformationen angezeigt."
+    },
+    {
+      "id": 79,
+      "question": "Kann jemand anderes meine Rechnung bezahlen?",
+      "answer": "Das kann möglich sein, wenn die richtige Rechnungs- oder Zahlungsreferenz verwendet wird."
+    },
+    {
+      "id": 80,
+      "question": "Kann ich eine Zahlung auf zwei Karten aufteilen?",
+      "answer": "Geteilte Zahlungen werden nicht immer unterstützt. Prüfen Sie die Zahlungsoptionen oder kontaktieren Sie die Abrechnung."
+    },
+    {
+      "id": 81,
+      "question": "Kann ich eine Rechnung in Raten bezahlen?",
+      "answer": "Ratenzahlungen hängen von den Richtlinien ab. Kontaktieren Sie die Abrechnung vor dem Fälligkeitsdatum."
+    },
+    {
+      "id": 82,
+      "question": "Was passiert, wenn ich nach dem Fälligkeitsdatum bezahle?",
+      "answer": "Die Folgen hängen von den Rechnungsbedingungen ab. Kontaktieren Sie die Abrechnung, wenn Sie mit einer Verzögerung rechnen."
+    },
+    {
+      "id": 83,
+      "question": "Erhalte ich eine Zahlungserinnerung?",
+      "answer": "Erinnerungen können über die verfügbaren Benachrichtigungskanäle versendet werden. Das Fälligkeitsdatum steht auch auf der Rechnung."
+    },
+    {
+      "id": 84,
+      "question": "Kann die Zahlungsfrist meiner Rechnung verlängert werden?",
+      "answer": "Verlängerungen werden individuell geprüft. Kontaktieren Sie die Abrechnung vor dem Fälligkeitsdatum."
+    },
+    {
+      "id": 85,
+      "question": "Ich habe die falsche Zahlungsreferenz verwendet. Was soll ich tun?",
+      "answer": "Senden Sie der Abrechnung die Zahlungsbestätigung, den Betrag, das Datum und die richtige Rechnungsnummer."
+    },
+    {
+      "id": 86,
+      "question": "Wie kann ich bestätigen, dass eine Banküberweisung eingegangen ist?",
+      "answer": "Prüfen Sie den Status im Portal und kontaktieren Sie die Abrechnung, wenn er sich nach der üblichen Bearbeitungszeit nicht aktualisiert."
+    },
+    {
+      "id": 87,
+      "question": "Warum ist meine Zahlung als zurückgebucht markiert?",
+      "answer": "Die Transaktion wurde nach dem Start zurückgegeben oder storniert. Kontaktieren Sie Ihre Bank oder die Abrechnung für Details."
+    },
+    {
+      "id": 88,
+      "question": "Was bedeutet der Zahlungsstatus „in Bearbeitung“?",
+      "answer": "Die Zahlung wurde übermittelt, aber die endgültige Bestätigung des Zahlungsanbieters steht noch aus."
+    },
+    {
+      "id": 89,
+      "question": "Kann ich bezahlen, bevor eine Rechnung erstellt wurde?",
+      "answer": "Wenn Vorauszahlungen unterstützt werden, erscheinen entsprechende Anweisungen bei der Buchung oder beim Bezahlvorgang."
+    },
+    {
+      "id": 90,
+      "question": "Kann ich eine Prepaid-Karte verwenden?",
+      "answer": "Sie kann verwendet werden, wenn der Zahlungsanbieter sie beim Bezahlvorgang akzeptiert."
+    },
+    {
+      "id": 91,
+      "question": "Kann ich eine private Krankenversicherung nutzen?",
+      "answer": "Die Kostenübernahme hängt vom Versicherer und der Leistung ab. Klären Sie dies mit Ihrer Versicherung."
+    },
+    {
+      "id": 92,
+      "question": "Kann ich eine gesetzliche Krankenversicherung nutzen?",
+      "answer": "Die Kostenübernahme hängt von der Leistung und den lokalen Vereinbarungen ab. Klären Sie dies vor dem Termin."
+    },
+    {
+      "id": 93,
+      "question": "Wie kann ich einen Versicherungsnachweis einreichen?",
+      "answer": "Stellen Sie die Versicherungsdaten oder Dokumente bereit, die im Abrechnungsprozess verlangt werden."
+    },
+    {
+      "id": 94,
+      "question": "Was soll ich tun, wenn sich meine Versicherungsdaten ändern?",
+      "answer": "Aktualisieren Sie die Informationen in Ihrem Konto oder kontaktieren Sie zeitnah das Abrechnungsteam."
+    },
+    {
+      "id": 95,
+      "question": "Kann ich eine Zweitversicherung hinzufügen?",
+      "answer": "Die Unterstützung einer Zweitversicherung hängt vom Abrechnungsprozess ab. Kontaktieren Sie die Abrechnung mit den Daten beider Versicherungen."
+    },
+    {
+      "id": 96,
+      "question": "Was ist eine Vorabgenehmigung der Versicherung?",
+      "answer": "Dabei handelt es sich um eine Genehmigung des Versicherers, die vor bestimmten Leistungen erforderlich ist."
+    },
+    {
+      "id": 97,
+      "question": "Brauche ich eine Vorabgenehmigung für meinen Termin?",
+      "answer": "Fragen Sie Ihren Versicherer, da die Anforderungen von Ihrer Police und der Leistung abhängen."
+    },
+    {
+      "id": 98,
+      "question": "Kann die Abrechnung Unterlagen für eine Kostenerstattung bereitstellen?",
+      "answer": "Die Abrechnung kann in der Regel Rechnungen und relevante unterstützende Dokumente bereitstellen."
+    },
+    {
+      "id": 99,
+      "question": "Mein Versicherer benötigt eine detaillierte Rechnung. Wie bekomme ich sie?",
+      "answer": "Kontaktieren Sie die Abrechnung und erklären Sie, welche zusätzlichen Angaben Ihr Versicherer benötigt."
+    },
+    {
+      "id": 100,
+      "question": "Kann ich die Rechnung selbst bei meiner Versicherung einreichen?",
+      "answer": "Ja. Laden Sie sie herunter und folgen Sie dem Erstattungsverfahren Ihres Versicherers."
+    },
+    {
+      "id": 101,
+      "question": "Was ist, wenn die Versicherung nur einen Teil meiner Rechnung bezahlt hat?",
+      "answer": "Prüfen Sie die Leistungsentscheidung Ihres Versicherers. Der verbleibende Betrag kann von Ihnen zu zahlen sein."
+    },
+    {
+      "id": 102,
+      "question": "Warum muss ich nach der Zahlung durch die Versicherung noch etwas bezahlen?",
+      "answer": "Selbstbehalte, Zuzahlungen oder eine teilweise Kostenübernahme können einen Restbetrag verursachen."
+    },
+    {
+      "id": 103,
+      "question": "Kann ich gegen eine Versicherungsentscheidung Widerspruch einlegen?",
+      "answer": "Widersprüche werden von Ihrem Versicherer bearbeitet. Die Abrechnung kann unterstützende Unterlagen bereitstellen."
+    },
+    {
+      "id": 104,
+      "question": "Wie erhalte ich einen Zahlungsnachweis für die Versicherung?",
+      "answer": "Verwenden Sie den Beleg oder die Zahlungsbestätigung aus dem Portal."
+    },
+    {
+      "id": 105,
+      "question": "Kann ich eine jährliche Abrechnungsübersicht für die Steuer erhalten?",
+      "answer": "Prüfen Sie das Portal oder kontaktieren Sie die Abrechnung für eine offizielle Jahresübersicht."
+    },
+    {
+      "id": 106,
+      "question": "Kann die Versicherung einen früheren Termin rückwirkend übernehmen?",
+      "answer": "Das hängt von Ihrer Police ab. Fragen Sie Ihren Versicherer, ob die Leistung noch eingereicht werden kann."
+    },
+    {
+      "id": 107,
+      "question": "Warum fehlt meine Versicherung auf der Rechnung?",
+      "answer": "Versicherungsinformationen erscheinen nicht auf jeder Rechnung. Kontaktieren Sie die Abrechnung, wenn sie enthalten sein müssen."
+    },
+    {
+      "id": 108,
+      "question": "Kann ein abgelehnter Versicherungsantrag erneut eingereicht werden?",
+      "answer": "Oft ist das möglich, wenn fehlende oder falsche Angaben korrigiert werden. Klären Sie dies mit Ihrem Versicherer."
+    },
+    {
+      "id": 109,
+      "question": "Wer entscheidet, ob eine Leistung übernommen wird?",
+      "answer": "Ihr Versicherer entscheidet gemäß Ihrer Police über die Kostenübernahme."
+    },
+    {
+      "id": 110,
+      "question": "Kann ich einen Kostenvoranschlag erhalten, bevor ich meine Versicherung frage?",
+      "answer": "Wenn verfügbar, fordern Sie einen Kostenvoranschlag an und besprechen Sie damit die erwartete Kostenübernahme mit Ihrem Versicherer."
+    },
+    {
+      "id": 111,
+      "question": "Kann ich einen Termin am selben Tag absagen?",
+      "answer": "Eine Absage am selben Tag kann möglich sein, es können jedoch Gebühren anfallen."
+    },
+    {
+      "id": 112,
+      "question": "Wie spät kann ich ohne Gebühr absagen?",
+      "answer": "Die Frist hängt von den Stornierungsbedingungen des Termins ab."
+    },
+    {
+      "id": 113,
+      "question": "Kann ich einen Termin mehrmals verschieben?",
+      "answer": "Das hängt von den Terminrichtlinien und der Verfügbarkeit ab."
+    },
+    {
+      "id": 114,
+      "question": "Wird meine Zahlung nach einer Terminverschiebung auf das neue Datum übertragen?",
+      "answer": "Normalerweise bleibt sie dem Termin zugeordnet. Prüfen Sie jedoch die aktualisierten Details."
+    },
+    {
+      "id": 115,
+      "question": "Was passiert mit meiner Zahlung, wenn der Anbieter den Termin absagt?",
+      "answer": "Sie haben möglicherweise Anspruch auf eine Rückerstattung oder eine kostenlose Terminverschiebung."
+    },
+    {
+      "id": 116,
+      "question": "Kann ich eine Rückerstattung bekommen, wenn der Anbieter absagt?",
+      "answer": "Sie haben möglicherweise Anspruch darauf, wenn Sie keinen Ersatztermin akzeptieren."
+    },
+    {
+      "id": 117,
+      "question": "Warum wurde mir eine Nichterscheinensgebühr berechnet?",
+      "answer": "Eine Gebühr kann anfallen, wenn ein Termin ohne rechtzeitige Absage versäumt wird."
+    },
+    {
+      "id": 118,
+      "question": "Kann eine Nichterscheinensgebühr erlassen werden?",
+      "answer": "Ein Erlass wird je nach Richtlinie und Umständen individuell geprüft."
+    },
+    {
+      "id": 119,
+      "question": "Warum wurde mir etwas berechnet, obwohl ich zu spät gekommen bin?",
+      "answer": "Eine Gebühr kann anfallen, wenn der Termin dadurch nicht wie geplant durchgeführt werden konnte."
+    },
+    {
+      "id": 120,
+      "question": "Wo kann ich die Stornierungsbedingungen lesen?",
+      "answer": "Sie sollten bei der Buchung oder in den Termindetails verfügbar sein."
+    },
+    {
+      "id": 121,
+      "question": "Kann ich trotz eines offenen Betrags einen Termin buchen?",
+      "answer": "Buchungsbeschränkungen hängen von den Richtlinien der Organisation ab."
+    },
+    {
+      "id": 122,
+      "question": "Wo finde ich die Abrechnungsdetails für einen bestimmten Termin?",
+      "answer": "Öffnen Sie den Terminverlauf und wählen Sie den betreffenden Termin aus."
+    },
+    {
+      "id": 123,
+      "question": "Warum hat mein Termin noch keine Rechnung?",
+      "answer": "Die Rechnung wurde möglicherweise noch nicht erstellt oder ist eventuell nicht erforderlich."
+    },
+    {
+      "id": 124,
+      "question": "Können mehrere Termine auf einer Rechnung zusammengefasst werden?",
+      "answer": "Ob Sammelrechnungen möglich sind, hängt vom Abrechnungssystem und den Richtlinien ab."
+    },
+    {
+      "id": 125,
+      "question": "Können Leistungen auf einer Rechnung getrennt werden?",
+      "answer": "Kontaktieren Sie die Abrechnung und fragen Sie, ob separate Rechnungen ausgestellt werden können."
+    },
+    {
+      "id": 126,
+      "question": "Kann ich vor der Buchung die geschätzten Kosten sehen?",
+      "answer": "Wenn verfügbar, werden geschätzte Kosten während der Buchung angezeigt."
+    },
+    {
+      "id": 127,
+      "question": "Warum war der endgültige Betrag anders als der Kostenvoranschlag?",
+      "answer": "Leistungen, zusätzliche Gebühren oder die Versicherungsdeckung können sich geändert haben."
+    },
+    {
+      "id": 128,
+      "question": "Kann ich vor der Terminbestätigung nach dem Preis fragen?",
+      "answer": "Ja. Prüfen Sie die Preisinformationen oder kontaktieren Sie den Support vor der Buchung."
+    },
+    {
+      "id": 129,
+      "question": "Sind die Terminpreise für alle gleich?",
+      "answer": "Preise können je nach Leistung, Standort, Versicherung und Abrechnungsbedingungen variieren."
+    },
+    {
+      "id": 130,
+      "question": "Wo finde ich den Preis einer Leistung?",
+      "answer": "Preise können während der Buchung oder in den Leistungsinformationen angezeigt werden."
+    },
+    {
+      "id": 131,
+      "question": "Wie kann ich die E-Mail-Adresse für Abrechnungsbenachrichtigungen ändern?",
+      "answer": "Aktualisieren Sie Ihre Kontaktdaten in den Kontoeinstellungen oder kontaktieren Sie den Support."
+    },
+    {
+      "id": 132,
+      "question": "Wie kann ich meine Telefonnummer aktualisieren?",
+      "answer": "Nutzen Sie die Kontoeinstellungen, sofern verfügbar, oder kontaktieren Sie den Support."
+    },
+    {
+      "id": 133,
+      "question": "Welche Kontodaten sollte ich aktuell halten?",
+      "answer": "Halten Sie Kontakt-, Abrechnungs- und Versicherungsdaten aktuell."
+    },
+    {
+      "id": 134,
+      "question": "Kann meine Rechnungsadresse von meiner Wohnadresse abweichen?",
+      "answer": "Ja, wenn das Abrechnungssystem eine separate Rechnungsadresse unterstützt."
+    },
+    {
+      "id": 135,
+      "question": "Warum steht meine alte Adresse noch auf einer Rechnung?",
+      "answer": "Die Rechnung wurde möglicherweise vor der Aktualisierung erstellt. Kontaktieren Sie die Abrechnung, wenn eine Korrektur nötig ist."
+    },
+    {
+      "id": 136,
+      "question": "Kann ich die E-Mail-Adresse auf einer bestehenden Rechnung ändern?",
+      "answer": "Kontaktieren Sie die Abrechnung. Ob eine Änderung möglich ist, hängt von den Rechnungsrichtlinien ab."
+    },
+    {
+      "id": 137,
+      "question": "Wie kann ich auf Abrechnungsinformationen zugreifen, wenn ich mich nicht anmelden kann?",
+      "answer": "Nutzen Sie zuerst die Kontowiederherstellung und kontaktieren Sie bei Bedarf den Support."
+    },
+    {
+      "id": 138,
+      "question": "Können Abrechnungsverläufe aus zwei Konten zusammengeführt werden?",
+      "answer": "Das hängt von den System- und Datenschutzrichtlinien ab. Kontaktieren Sie den Support."
+    },
+    {
+      "id": 139,
+      "question": "Kann ich gespeicherte Abrechnungsinformationen löschen?",
+      "answer": "Einige Informationen können entfernt werden, gesetzlich vorgeschriebene Datensätze können jedoch aufbewahrt werden."
+    },
+    {
+      "id": 140,
+      "question": "Wer kann meine Abrechnungsinformationen sehen?",
+      "answer": "Der Zugriff wird gemäß den Datenschutz- und Sicherheitsrichtlinien der Organisation kontrolliert."
+    },
+    {
+      "id": 141,
+      "question": "Kann ein Familienmitglied auf meine Rechnungen zugreifen?",
+      "answer": "Der Zugriff hängt von Berechtigungen und Datenschutzregeln ab."
+    },
+    {
+      "id": 142,
+      "question": "Kann jemand in meinem Namen die Abrechnung kontaktieren?",
+      "answer": "Möglicherweise ist eine Vollmacht erforderlich. Kontaktieren Sie den Support zum entsprechenden Verfahren."
+    },
+    {
+      "id": 143,
+      "question": "Wie kann ich mein Geburtsdatum korrigieren?",
+      "answer": "Bei sensiblen Kontoänderungen kann eine Identitätsprüfung erforderlich sein."
+    },
+    {
+      "id": 144,
+      "question": "Kann ich den Namen des Kontoinhabers ändern?",
+      "answer": "Dafür können eine Identitätsprüfung und unterstützende Unterlagen erforderlich sein."
+    },
+    {
+      "id": 145,
+      "question": "Kann ich eine Übersicht aller Zahlungen dieses Jahres erhalten?",
+      "answer": "Nutzen Sie den Zahlungsverlauf oder kontaktieren Sie die Abrechnung für eine offizielle Jahresübersicht."
+    },
+    {
+      "id": 146,
+      "question": "Kann ich eine Übersicht für einen bestimmten Zeitraum anfordern?",
+      "answer": "Nutzen Sie verfügbare Datumsfilter oder kontaktieren Sie die Abrechnung für eine individuelle Übersicht."
+    },
+    {
+      "id": 147,
+      "question": "Warum fehlt eine Zahlung in meinem Verlauf?",
+      "answer": "Sie befindet sich möglicherweise noch in Bearbeitung oder ist einer anderen Rechnung zugeordnet."
+    },
+    {
+      "id": 148,
+      "question": "Kann ich Rechnungen nach Datum filtern?",
+      "answer": "Nutzen Sie die Datumsfilter im Abrechnungsportal, sofern verfügbar."
+    },
+    {
+      "id": 149,
+      "question": "Kann ich nach einer Rechnungsnummer suchen?",
+      "answer": "Nutzen Sie die Portalsuche oder kontaktieren Sie die Abrechnung mit der Rechnungsnummer."
+    },
+    {
+      "id": 150,
+      "question": "Kann ich sehen, welche Karte ich für eine alte Zahlung verwendet habe?",
+      "answer": "In den Zahlungsdetails können maskierte Karteninformationen zur Identifizierung angezeigt werden."
+    },
+    {
+      "id": 151,
+      "question": "Wie kontaktiere ich den Abrechnungssupport?",
+      "answer": "Nutzen Sie die offiziellen Supportkanäle in der Anwendung."
+    },
+    {
+      "id": 152,
+      "question": "Welche Angaben sollte ich dem Abrechnungssupport mitteilen?",
+      "answer": "Geben Sie Rechnungsnummer, Zahlungsreferenz, Termindatum und eine Beschreibung des Problems an."
+    },
+    {
+      "id": 153,
+      "question": "Wie lange braucht der Abrechnungssupport für eine Antwort?",
+      "answer": "Die Antwortzeit hängt vom Anfragevolumen und vom verwendeten Supportkanal ab."
+    },
+    {
+      "id": 154,
+      "question": "Kann ich einen Screenshot meines Abrechnungsproblems senden?",
+      "answer": "Ja, sofern Anhänge unterstützt werden. Blenden Sie sensible Zahlungsinformationen aus."
+    },
+    {
+      "id": 155,
+      "question": "Kann ich eine Rechnung an meine Supportanfrage anhängen?",
+      "answer": "Ja, sofern Anhänge unterstützt werden."
+    },
+    {
+      "id": 156,
+      "question": "Was kann ich tun, wenn der Abrechnungssupport nicht antwortet?",
+      "answer": "Fragen Sie über den offiziellen Kanal erneut nach und geben Sie Ihre bestehende Fallreferenz an."
+    },
+    {
+      "id": 157,
+      "question": "Wie kann ich eine Beschwerde zur Abrechnung eskalieren?",
+      "answer": "Bitten Sie um eine Eskalation und geben Sie den bisherigen Verlauf sowie frühere Fallreferenzen an."
+    },
+    {
+      "id": 158,
+      "question": "Kann ein geschlossener Abrechnungsfall wieder geöffnet werden?",
+      "answer": "Kontaktieren Sie den Support mit der früheren Fallreferenz."
+    },
+    {
+      "id": 159,
+      "question": "Erhalte ich eine Fallnummer für meine Anfrage?",
+      "answer": "Je nach Supportsystem kann eine Fall- oder Referenznummer vergeben werden."
+    },
+    {
+      "id": 160,
+      "question": "Wie prüfe ich den Status eines Supportfalls?",
+      "answer": "Nutzen Sie das Supportportal oder kontaktieren Sie die Abrechnung mit Ihrer Fallreferenz."
+    },
+    {
+      "id": 161,
+      "question": "Was soll ich tun, wenn meine Zahlungsdaten gestohlen wurden?",
+      "answer": "Kontaktieren Sie sofort Ihre Bank und melden Sie das Problem über den offiziellen Support."
+    },
+    {
+      "id": 162,
+      "question": "Soll ich dem Support meine vollständige Kartennummer geben?",
+      "answer": "Nein. Senden Sie niemals Ihre vollständige Kartennummer, PIN oder Sicherheitsnummer."
+    },
+    {
+      "id": 163,
+      "question": "Warum zeigt das Portal nur vier Ziffern meiner Karte?",
+      "answer": "Kartendaten werden maskiert, um sensible Zahlungsinformationen zu schützen."
+    },
+    {
+      "id": 164,
+      "question": "Werden meine Kartendaten in der App gespeichert?",
+      "answer": "Sensible Zahlungsdaten werden in der Regel über sichere Zahlungssysteme verarbeitet."
+    },
+    {
+      "id": 165,
+      "question": "Was soll ich bei einer verdächtigen Belastung tun?",
+      "answer": "Prüfen Sie Ihren Verlauf und kontaktieren Sie sofort Ihre Bank und die Abrechnung, wenn die Belastung weiterhin verdächtig erscheint."
+    },
+    {
+      "id": 166,
+      "question": "Darf der Support nach dem Sicherheitscode meiner Karte fragen?",
+      "answer": "Nein. Geben Sie niemals Sicherheitscode, PIN oder vollständige Kartennummer weiter."
+    },
+    {
+      "id": 167,
+      "question": "Wie melde ich einen vermuteten Abrechnungsbetrug?",
+      "answer": "Kontaktieren Sie Ihre Bank und melden Sie die Transaktion über den offiziellen Abrechnungskanal."
+    },
+    {
+      "id": 168,
+      "question": "Kann ich zukünftige Belastungen sperren?",
+      "answer": "Kontaktieren Sie Ihre Bank und den Support, um verfügbare Zahlungsbeschränkungen zu besprechen."
+    },
+    {
+      "id": 169,
+      "question": "Was ist, wenn jemand mein Konto ohne Erlaubnis verwendet hat?",
+      "answer": "Ändern Sie Ihr Passwort, kontaktieren Sie den Support und informieren Sie Ihre Bank über nicht autorisierte Zahlungen."
+    },
+    {
+      "id": 170,
+      "question": "Kann ich sehen, wo eine Zahlung durchgeführt wurde?",
+      "answer": "Grundlegende Transaktionsinformationen können verfügbar sein; für eine detaillierte Untersuchung kann Ihre Bank erforderlich sein."
+    },
+    {
+      "id": 171,
+      "question": "Warum habe ich eine Stornierungsgebühr bezahlt?",
+      "answer": "Die Gebühr kann anfallen, wenn die Absage nach Ablauf der erlaubten Frist erfolgt."
+    },
+    {
+      "id": 172,
+      "question": "Warum gibt es eine Verwaltungsgebühr?",
+      "answer": "Einige Abrechnungsprozesse enthalten Verwaltungsgebühren. Prüfen Sie die Rechnungsdetails."
+    },
+    {
+      "id": 173,
+      "question": "Warum gibt es mehrere Belastungen am selben Tag?",
+      "answer": "Verschiedene Leistungen können auch am selben Tag separat abgerechnet werden."
+    },
+    {
+      "id": 174,
+      "question": "Warum enthält meine Rechnung Steuern?",
+      "answer": "Je nach Leistung und lokalen Vorschriften können Steuern anfallen."
+    },
+    {
+      "id": 175,
+      "question": "Werden Steuern bei einer Rückerstattung ebenfalls erstattet?",
+      "answer": "Die steuerliche Behandlung richtet sich nach den geltenden Rückerstattungs- und Abrechnungsregeln."
+    },
+    {
+      "id": 176,
+      "question": "Kann ich vor der Zahlung eine Preisaufschlüsselung sehen?",
+      "answer": "Wenn verfügbar, zeigt der Bezahlvorgang oder die Rechnung eine Aufschlüsselung der Kosten."
+    },
+    {
+      "id": 177,
+      "question": "Was ist der Unterschied zwischen einer Rechnung und einem Beleg?",
+      "answer": "Eine Rechnung weist einen fälligen Betrag aus; ein Beleg bestätigt die Zahlung."
+    },
+    {
+      "id": 178,
+      "question": "Was ist der Unterschied zwischen einer ausstehenden und einer abgeschlossenen Zahlung?",
+      "answer": "Eine ausstehende Zahlung wird noch verarbeitet; eine abgeschlossene Zahlung wurde bestätigt."
+    },
+    {
+      "id": 179,
+      "question": "Was bedeutet offener Saldo?",
+      "answer": "Das ist ein Betrag, der noch nicht bezahlt wurde."
+    },
+    {
+      "id": 180,
+      "question": "Was bedeutet Guthabensaldo?",
+      "answer": "Er kann eine Überzahlung oder Korrektur darstellen, die mit zukünftigen Belastungen verrechnet oder erstattet werden kann."
+    },
+    {
+      "id": 181,
+      "question": "Kann ein Kontoguthaben erstattet werden?",
+      "answer": "Die Erstattungsmöglichkeiten hängen davon ab, wie das Guthaben entstanden ist und welche Richtlinien gelten."
+    },
+    {
+      "id": 182,
+      "question": "Kann ich Kontoguthaben für einen zukünftigen Termin verwenden?",
+      "answer": "Wenn unterstützt, kann Guthaben auf berechtigte zukünftige Belastungen angerechnet werden."
+    },
+    {
+      "id": 183,
+      "question": "Warum zeigt mein Konto einen negativen Saldo?",
+      "answer": "Das kann auf ein Guthaben, eine Korrektur oder eine Überzahlung hinweisen."
+    },
+    {
+      "id": 184,
+      "question": "Warum hat sich mein Saldo nach einer Korrektur geändert?",
+      "answer": "Eine Korrektur kann den fälligen Betrag verändern oder ein Guthaben erzeugen."
+    },
+    {
+      "id": 185,
+      "question": "Kann eine falsche Abrechnungskorrektur rückgängig gemacht werden?",
+      "answer": "Kontaktieren Sie die Abrechnung und bitten Sie um Prüfung der Korrektur."
+    },
+    {
+      "id": 186,
+      "question": "Kann ich nach einer Korrektur eine berichtigte Rechnung erhalten?",
+      "answer": "Bei Bedarf kann eine korrigierte oder aktualisierte Rechnung ausgestellt werden."
+    },
+    {
+      "id": 187,
+      "question": "Was ist, wenn dieselbe Rechnung zweimal erscheint?",
+      "answer": "Vergleichen Sie Rechnungsnummern und Beträge und kontaktieren Sie die Abrechnung, bevor Sie erneut bezahlen."
+    },
+    {
+      "id": 188,
+      "question": "Warum hat ein Termin zwei Rechnungen erzeugt?",
+      "answer": "Verschiedene Leistungen oder Abrechnungsbestandteile können separat in Rechnung gestellt werden."
+    },
+    {
+      "id": 189,
+      "question": "Kann eine Zahlung mehrere Rechnungen abdecken?",
+      "answer": "Das hängt vom Abrechnungssystem und den korrekten Rechnungsreferenzen ab."
+    },
+    {
+      "id": 190,
+      "question": "Wie erkenne ich, welche Rechnung zu einer Zahlung gehört?",
+      "answer": "Öffnen Sie die Zahlungsdetails und prüfen Sie die zugeordnete Rechnung oder Referenz."
+    },
+    {
+      "id": 191,
+      "question": "Kann der Support bei technischen Problemen mit dem Abrechnungsportal helfen?",
+      "answer": "Ja. Kontaktieren Sie den Support und beschreiben Sie das Problem mit dem Portal."
+    },
+    {
+      "id": 192,
+      "question": "Was soll ich tun, wenn das Abrechnungsportal nicht lädt?",
+      "answer": "Aktualisieren Sie die Seite, prüfen Sie Ihre Verbindung und kontaktieren Sie den Support, wenn das Problem bestehen bleibt."
+    },
+    {
+      "id": 193,
+      "question": "Warum funktioniert der Download-Button für die Rechnung nicht?",
+      "answer": "Aktualisieren Sie die Seite oder versuchen Sie einen anderen unterstützten Browser, bevor Sie den Support kontaktieren."
+    },
+    {
+      "id": 194,
+      "question": "Warum ist meine neueste Zahlung noch nicht sichtbar?",
+      "answer": "Es kann etwas dauern, bis neue Zahlungen erscheinen. Kontaktieren Sie die Abrechnung, wenn die Bearbeitung ungewöhnlich lange dauert."
+    },
+    {
+      "id": 195,
+      "question": "Warum kann ich eine Rechnung sehen, aber nicht öffnen?",
+      "answer": "Es kann sich um ein vorübergehendes technisches Problem oder ein Berechtigungsproblem handeln."
+    },
+    {
+      "id": 196,
+      "question": "Kann ich das Abrechnungsportal auf meinem Handy verwenden?",
+      "answer": "Ja, sofern das Portal mobile Browser unterstützt."
+    },
+    {
+      "id": 197,
+      "question": "Brauche ich ein Konto, um das Abrechnungsportal zu nutzen?",
+      "answer": "Einige Abrechnungsfunktionen erfordern eine Anmeldung, um persönliche Daten zu schützen."
+    },
+    {
+      "id": 198,
+      "question": "Warum wurde ich aus dem Abrechnungsportal ausgeloggt?",
+      "answer": "Sitzungen können nach Inaktivität oder aus Sicherheitsgründen ablaufen."
+    },
+    {
+      "id": 199,
+      "question": "Kann dieser Bot mir medizinischen Rat geben?",
+      "answer": "Nein. Dieser Bot ist auf Abrechnungsfragen und damit verbundene administrative Themen beschränkt."
+    },
+    {
+      "id": 200,
+      "question": "Kann dieser Bot direkt eine Rückerstattung ausstellen?",
+      "answer": "Nein. Er kann den Ablauf erklären, aber Rückerstattungen müssen über das Abrechnungsportal oder das Abrechnungsteam abgewickelt werden."
+    }
+  ]
+}
