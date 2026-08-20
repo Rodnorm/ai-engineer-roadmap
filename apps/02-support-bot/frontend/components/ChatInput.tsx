@@ -53,7 +53,10 @@ const ChatInput = forwardRef<ChatInputHandle>(function ChatInput(_, ref) {
 			const reply = await queryMessage(trimmed);
 			setMessages((prev) => [
 				...prev,
-				{ text: reply.response, type: MessageUserType.BOT },
+				{
+					text: reply.queryResponse,
+					type: MessageUserType.BOT,
+				},
 			]);
 		} catch (err) {
 			if ((err as DOMException)?.name !== "AbortError") {

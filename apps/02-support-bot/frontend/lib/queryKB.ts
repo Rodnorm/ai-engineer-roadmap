@@ -51,5 +51,5 @@ export async function queryMessage(message: string) {
 	}
 
 	const data = await res.json();
-	return data;
+	return data.response;
 }
