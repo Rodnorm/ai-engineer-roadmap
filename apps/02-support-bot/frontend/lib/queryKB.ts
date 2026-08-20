@@ -18,7 +18,10 @@ export class MessagingErrror extends Error {
 	}
 }
 
-export async function queryMessage(message: string) {
+export async function queryMessage(
+	message: string,
+	signal?: AbortSignal
+) {
 	let res: Response;
 	try {
 		res = await fetch("/api/backend/query", {
@@ -27,6 +30,7 @@ export async function queryMessage(message: string) {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ query: message }),
+			signal,
 		});
 	} catch (err) {
 		const reason = err instanceof Error ? err.message : "network error";
