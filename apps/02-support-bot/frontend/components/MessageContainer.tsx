@@ -1,15 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Message from "./Message";
-
-export type MessageType = {
-	text: string;
-	type: MessageUserType;
-};
+import { NLPAnalysis } from "./NLPAnalysisCard";
 
 export enum MessageUserType {
 	USER = "user",
 	BOT = "bot",
 }
+
+export type MessageType = {
+	id: string;
+	type: MessageUserType;
+	text: string;
+	nlpAnalysis?: NLPAnalysis;
+};
 
 type MessageContainerProps = {
 	messages: MessageType[];
@@ -21,6 +24,7 @@ export default function MessageContainer({
 	isLoading,
 }: MessageContainerProps) {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const [openId, setOpenId] = useState<string | null>(null);
 
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({
@@ -30,7 +34,7 @@ export default function MessageContainer({
 
 	return (
 		<div
-			className="chat-scroll p-2 space-y-3 overflow-y-auto min-h-[60px] max-h-[480px] rounded-2xl"
+			className="chat-scroll flex-1 min-h-0 p-2 space-y-3 overflow-y-auto rounded-2xl"
 			style={{
 				maskImage:
 					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
@@ -38,8 +42,15 @@ export default function MessageContainer({
 					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
 			}}
 		>
-			{messages.map((message, index) => (
-				<Message key={index} message={message} />
+			{messages.map((message) => (
+				<Message
+					key={message.id}
+					message={message}
+					showAnalysis={openId === message.id}
+					onToggleAnalysis={() =>
+						setOpenId((prev) => (prev === message.id ? null : message.id))
+					}
+				/>
 			))}
 
 			{isLoading && (
