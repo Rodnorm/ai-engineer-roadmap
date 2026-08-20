@@ -1,19 +1,15 @@
-export type NLPConfidence = {
-	source: string;
-	parsedValue: number;
-};
 
 export type NLPAnalysis = {
 	language: {
 		name: string;
 		isoCode: string;
-		confidence: NLPConfidence;
+		confidence: number;
 	};
 	sentiment: {
 		value: string;
-		positive: NLPConfidence;
-		neutral: NLPConfidence;
-		negative: NLPConfidence;
+		positive: number;
+		neutral: number;
+		negative: number;
 	};
 	keyPhrases: string[];
 	pii?: unknown[];
@@ -31,7 +27,7 @@ export function NLPAnalysisCard({
 	analysis?: NLPAnalysis;
 }) {
 	if (!analysis) return null;
-
+	debugger
 	return (
 		<div className="mt-2 w-full text-sm text-slate-700">
 			<div className="border border-slate-200 bg-white shadow-sm rounded-xl transition-all duration-200">
@@ -57,7 +53,7 @@ export function NLPAnalysisCard({
 								<p className="font-medium">{analysis.language.name}</p>
 
 								<span className="text-xs text-slate-400">
-									{Math.round(analysis.language.confidence.parsedValue * 100)}%
+									{Math.round(analysis.language.confidence * 100)}%
 								</span>
 							</div>
 						</div>
@@ -80,9 +76,9 @@ export function NLPAnalysisCard({
 
 						<div className="grid grid-cols-3 gap-2">
 							{[
-								["Positive", analysis.sentiment.positive.parsedValue],
-								["Neutral", analysis.sentiment.neutral.parsedValue],
-								["Negative", analysis.sentiment.negative.parsedValue],
+								["Positive", analysis.sentiment.positive],
+								["Neutral", analysis.sentiment.neutral],
+								["Negative", analysis.sentiment.negative],
 							].map(([label, value]) => (
 								<div
 									key={label as string}
