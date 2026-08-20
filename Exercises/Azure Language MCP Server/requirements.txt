@@ -1,4 +1,0 @@
-python-dotenv
-azure-identity
-azure-ai-textanalytics==5.3.0
-azure-ai-projects
