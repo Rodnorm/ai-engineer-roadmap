@@ -4,4 +4,5 @@ apps/01-smart-inspector/backend/__pycache__/
 Exercises/Azure Language MCP Server/.env
 apps/01-smart-inspector/backend/readme.md
 apps/02-support-bot/backend/.env
+apps/02-support-bot/.next
 apps/02-support-bot/backend/__pycache__/

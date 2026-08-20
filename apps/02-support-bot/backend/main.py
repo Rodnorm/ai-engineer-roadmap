@@ -2,28 +2,22 @@
 Support Bot — backend (Azure OpenAI, /openai/v1, AAD).
 
 Exposes:
-    POST /analyze   multipart/form-data, field "image"  -> { caption, tags, objects, ocr, averagePrice, lowestPriceLink }
+    POST /query  
     GET  /health
 
-Env vars (see .env.example):
-    AZURE_OPENAI_ENDPOINT   e.g. https://<resource>.services.ai.azure.com/openai/v1
-    AZURE_OPENAI_DEPLOYMENT e.g. gpt-4.1-mini
-    PORT                    optional, default: 8000
-
-Auth: DefaultAzureCredential. Run `az login` locally, or set
-AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_CLIENT_SECRET for a service principal.
 """
 
-import logging
 import os
+import logging
 
-from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
-from fastapi.middleware.cors import CORSMiddleware
-from azure.identity import DefaultAzureCredential
-from azure.ai.projects import AIProjectClient
 from openai import OpenAI
+from dotenv import load_dotenv
 from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from azure.ai.projects import AIProjectClient
+from fastapi.middleware.cors import CORSMiddleware
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -38,12 +32,28 @@ logging.basicConfig(
 )
 log = logging.getLogger("support-bot")
 
-ENDPOINT = os.getenv("AZURE_AGENT_ENDPOINT", "").rstrip("/")
 PORT = int(os.getenv("PORT", "8000"))
 AGENT_NAME = os.getenv("AZURE_AGENT_NAME", "")
 AGENT_VERSION = os.getenv("AZURE_AGENT_VERSION", "")
+ENDPOINT = os.getenv("AZURE_AGENT_ENDPOINT", "").rstrip("/")
+AZURE_LANGUAGE_ENDPOINT= os.getenv("AZURE_LANGUAGE_ENDPOINT", "")
+
+credential = ClientSecretCredential(
+    tenant_id=os.environ["AZURE_TENANT_ID"],
+    client_id=os.environ["AZURE_CLIENT_ID"],
+    client_secret=os.environ["AZURE_CLIENT_SECRET"],
+)
 
 
+def _build_language_client():
+    if not AZURE_LANGUAGE_ENDPOINT:
+        return None
+
+    return TextAnalyticsClient(
+        endpoint=AZURE_LANGUAGE_ENDPOINT,
+        credential=credential
+    )
+    
 
 def _build_client():
     if not ENDPOINT or not AGENT_NAME or not AGENT_VERSION:
@@ -57,6 +67,13 @@ def _build_client():
     return project_client.get_openai_client()
 
 client: OpenAI | None = _build_client()
+language_client: OpenAI | None = _build_language_client()
+
+if language_client is None:
+    log.warning(
+        "Azure Language Client not configured (Language Client=%r).", language_client
+    )
+    
 if client is None:
     log.warning(
         "Azure Agent not configured (ENDPOINT=%r, AGENT_NAME=%r; AGENT_VERSION=%r). "
@@ -115,19 +132,111 @@ def health() -> dict:
 
 @app.post("/query")
 async def query(request: QueryRequest):
-    print(query)
     if client is None:
         raise HTTPException(status_code=503, detail="Azure OpenAI not configured")
 
+    if request.query is None:
+        raise HTTPException(status_code=300, detail="Query must not be empty")
+
+    query: str = request.query
+    analysis = analyze_text(query)
+
     try:
-        response = client.responses.create(
-        input=[{"role": "user", "content": request.query}],
-        extra_body={"agent_reference": {"name": AGENT_NAME, "version": AGENT_VERSION, "type": "agent_reference"}},
-)
-        return {"response": response.output_text}
+        response = ask_llm(
+            question=query,
+            language=analysis["language"]["isoCode"],
+            sentiment=analysis["sentiment"]["value"],
+            key_phrases=analysis["keyPhrases"]
+        )
+
+        return {
+            "response": {
+                "queryResponse": response,
+                "nlpAnalysis": analysis
+            }
+        }
+
     except Exception as e:
         log.error("Error querying Azure OpenAI: %s", e)
         raise HTTPException(status_code=500, detail="Error querying Azure OpenAI")
+
+def ask_llm(
+    question: str,
+    language: str,
+    sentiment: str,
+    key_phrases: list[str]
+):
+     analysis_context = f"""
+        Additional analysis about the user's message:
+
+        Language: {language}
+        Sentiment: {sentiment}
+        Key phrases: {", ".join(key_phrases)}
+        Instructions:
+            - Answer in the same language as the user.
+            - Use the key phrases to better understand the topic.
+            - If the user is frustrated or the sentiment is negative,
+            respond empathetically but remain concise.
+            - Do not mention that sentiment analysis was performed.
+
+        User question:
+        {question}
+        """
+     response = client.responses.create(
+            input=analysis_context,
+            extra_body={
+                "agent_reference": {
+                    "name": AGENT_NAME,
+                    "version": AGENT_VERSION,
+                    "type": "agent_reference"
+                }
+            }
+    )
+     return response.output_text
+
+
+
+
+def analyze_text(text: str):
+    documents = [text]
+    language_result = language_client.detect_language(documents)[0]
+    pii_result = language_client.recognize_pii_entities(documents)[0]
+    entities_result = language_client.recognize_entities(documents)[0]
+    key_phrase_result = language_client.extract_key_phrases(documents)[0]
+    sentiment_result = language_client.analyze_sentiment(documents, show_opinion_mining=True)[0]
+
+    return {
+        "language": {
+            "name": language_result.primary_language.name,
+            "isoCode": language_result.primary_language.iso6391_name,
+            "confidence": language_result.primary_language.confidence_score
+        },
+        "sentiment": {
+            "value": sentiment_result.sentiment,
+            "positive": sentiment_result.confidence_scores.positive,
+            "neutral": sentiment_result.confidence_scores.neutral,
+            "negative": sentiment_result.confidence_scores.negative,
+        },
+        "keyPhrases": key_phrase_result.key_phrases,
+        "pii": [
+            {
+                "text": entity.text,
+                "category": entity.category,
+                "confidence": entity.confidence_score
+            }
+            for entity in pii_result.entities
+        ],
+        "entities": [
+            {
+                "text": entity.text,
+                "category": entity.category,
+                "subcategory": entity.subcategory,
+                "confidence": entity.confidence_score
+            }
+            for entity in entities_result.entities
+        ]
+    }
+
 
 
 # ---------------------------------------------------------------------------
