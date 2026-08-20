@@ -1,5 +1,5 @@
 import { ArrowRightIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type CardsProps = {
 	onSelect?: (question: string) => void;
@@ -18,15 +18,22 @@ const cards = [
 	"How can I check the status of a payment?",
 ];
 
-function getRandomCards() {
-	return [...cards]
-		.sort(() => Math.random() - 0.5)
-		.slice(0, 4);
-}
-
 export default function Cards({ onSelect }: CardsProps) {
-	const [randomCards] = useState(getRandomCards);
 	const scrollRef = useRef<HTMLDivElement>(null);
+
+	const [randomCards, setRandomCards] = useState<string[]>([]);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setRandomCards(
+				[...cards]
+					.sort(() => Math.random() - 0.5)
+					.slice(0, 4)
+			);
+		}, 0);
+
+		return () => clearTimeout(timer);
+	}, []);
 
 	const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
 		const el = scrollRef.current;
