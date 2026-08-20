@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Support Bot",
+    "description": "FAQ-Support-Bot für Ihre Website"
+  },
+  "faq": {
+    "title": "FAQ — Support Bot",
+    "description": "Häufig gestellte Fragen zur Gesundheitsabrechnung.",
+    "pageTitle": "FAQ",
+    "backToChat": "Zurück zum Chat",
+    "summary": "{count} häufig gestellte Fragen zur Gesundheitsabrechnung."
+  },
+  "home": {
+    "greeting": "Hallo,",
+    "question": "Wie kann ich Ihnen helfen?",
+    "faqLink": "FAQ",
+    "suggestionsToggle": "Vorschläge",
+    "intro": "Wählen Sie eine der häufigsten Fragen unten oder chatten Sie direkt mit uns, indem Sie Ihre Frage in das Eingabefeld unten eingeben."
+  },
+  "cards": {
+    "askAria": "Fragen: {question}",
+    "items": [
+      "Alles lief gut mit meiner Zahlung. Wo kann ich die Quittung herunterladen?",
+      "Meine Rückerstattung ist erfolgreich eingegangen. Wo kann ich die Details sehen?",
+      "Meine Versicherung hat den Termin übernommen. Kann ich eine Kopie der Rechnung erhalten?",
+      "Mir wurde zweimal etwas berechnet und ich möchte mein Geld zurück. Was kann ich tun?",
+      "Meine Rückerstattung wurde genehmigt, aber ich habe das Geld noch nicht erhalten.",
+      "Ich bin frustriert, weil meine Zahlung immer wieder fehlschlägt. Wie kann ich das beheben?",
+      "Wo finde ich meine aktuelle Rechnung?",
+      "Wie kann ich meine Rechnungsadresse aktualisieren?",
+      "Welche Zahlungsmethoden sind verfügbar?",
+      "Wie kann ich den Status einer Zahlung überprüfen?"
+    ]
+  },
+  "chat": {
+    "inputPlaceholder": "Geben Sie hier Ihre Frage ein ...",
+    "send": "Nachricht senden",
+    "stop": "Antwort abbrechen",
+    "thinking": "Denkt nach",
+    "errorMessage": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "showAnalysis": "NLP-Analyse anzeigen",
+    "hideAnalysis": "NLP-Analyse verbergen",
+    "nlpShort": "NLP"
+  },
+  "nlp": {
+    "title": "NLP-Analyse",
+    "provider": "Azure KI Language",
+    "language": "Sprache",
+    "sentiment": "Stimmung",
+    "sentimentConfidence": "Stimmungs-Konfidenz",
+    "positive": "Positiv",
+    "neutral": "Neutral",
+    "negative": "Negativ",
+    "keyPhrases": "Schlüsselbegriffe",
+    "entities": "Entitäten"
+  },
+  "language": {
+    "label": "Sprache",
+    "switchAria": "Sprache auswählen"
+  }
+}

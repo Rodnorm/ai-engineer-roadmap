@@ -1,24 +1,15 @@
 import { ArrowRightIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 
 type CardsProps = {
 	onSelect?: (question: string) => void;
 };
 
-const cards = [
-	"Everything went well with my payment. Where can I download the receipt?",
-	"My refund arrived successfully. Where can I see its details?",
-	"My insurance covered the appointment. Can I get a copy of the invoice?",
-	"I was charged twice and I want my money back. What should I do?",
-	"My refund was approved but I still haven't received the money.",
-	"I'm frustrated because my payment keeps failing. How can I fix it?",
-	"Where can I find my latest invoice?",
-	"How can I update my billing address?",
-	"What payment methods are available?",
-	"How can I check the status of a payment?",
-];
-
 export default function Cards({ onSelect }: CardsProps) {
+	const t = useT("cards");
+	const items = useI18n().dict.cards.items;
+
 	const scrollRef = useRef<HTMLDivElement>(null);
 
 	const [randomCards, setRandomCards] = useState<string[]>([]);
@@ -26,14 +17,15 @@ export default function Cards({ onSelect }: CardsProps) {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setRandomCards(
-				[...cards]
+				[...items]
 					.sort(() => Math.random() - 0.5)
-					.slice(0, 10)
+					.slice(0, 10),
 			);
 		}, 0);
 
 		return () => clearTimeout(timer);
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [items.join("|")]);
 
 	useEffect(() => {
 		const element = scrollRef.current;
@@ -92,7 +84,7 @@ export default function Cards({ onSelect }: CardsProps) {
 					<button
 						key={`${card}-${index}`}
 						type="button"
-						aria-label={`Ask: ${card}`}
+						aria-label={t("askAria", { question: card })}
 						onClick={() => onSelect?.(card)}
 						className="group relative shrink-0 snap-start w-64 text-left border border-slate-200 bg-white shadow-sm hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:bg-sky-50/40 rounded-xl p-3 pr-8 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
 					>

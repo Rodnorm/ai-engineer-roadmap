@@ -1,6 +1,7 @@
 import { Brain, ChevronDown } from "lucide-react";
 import { MessageUserType, MessageType } from "./MessageContainer";
 import { NLPAnalysisCard } from "./NLPAnalysisCard";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 type MessageProps = {
 	message: MessageType;
@@ -13,6 +14,8 @@ export default function Message({
 	showAnalysis,
 	onToggleAnalysis,
 }: MessageProps) {
+	const t = useT("chat");
+
 	if (message.type === MessageUserType.USER) {
 		return (
 			<div className="flex flex-col items-end gap-1.5">
@@ -30,14 +33,12 @@ export default function Message({
 								onClick={onToggleAnalysis}
 								aria-expanded={showAnalysis}
 								aria-label={
-									showAnalysis
-										? "Hide NLP analysis"
-										: "Show NLP analysis"
+									showAnalysis ? t("hideAnalysis") : t("showAnalysis")
 								}
 								className="group inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-sky-600 px-2 py-1 rounded-md hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
 							>
 								<Brain className="w-3.5 h-3.5" aria-hidden="true" />
-								<span>NLP</span>
+								<span>{t("nlpShort")}</span>
 								<ChevronDown
 									className={`w-3.5 h-3.5 transition-transform duration-200 ${
 										showAnalysis ? "rotate-180" : ""

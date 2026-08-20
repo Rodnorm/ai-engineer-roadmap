@@ -6,6 +6,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export type ChatInputHandle = {
 	focus: () => void;
@@ -23,6 +24,8 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput
 	{ isLoading, onSubmit, onStop },
 	ref
 ) {
+	const t = useT("chat");
+
 	const [value, setValue] = useState("");
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -58,7 +61,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput
 				ref={textAreaRef}
 				value={value}
 				onKeyDown={handleKeyDown}
-				placeholder="Type your question here ..."
+				placeholder={t("inputPlaceholder")}
 				onChange={(e) => setValue(e.target.value)}
 				disabled={isLoading}
 				rows={3}
@@ -67,7 +70,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput
 			{isLoading ? (
 				<button
 					type="button"
-					aria-label="Stop generating"
+					aria-label={t("stop")}
 					onClick={onStop}
 					className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
 				>
@@ -76,7 +79,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput
 			) : (
 				<button
 					type="button"
-					aria-label="Send message"
+					aria-label={t("send")}
 					onClick={submit}
 					disabled={!value.trim()}
 					className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Message from "./Message";
 import { NLPAnalysis } from "./NLPAnalysisCard";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export enum MessageUserType {
 	USER = "user",
@@ -23,6 +24,7 @@ export default function MessageContainer({
 	messages,
 	isLoading,
 }: MessageContainerProps) {
+	const t = useT("chat");
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const [openId, setOpenId] = useState<string | null>(null);
 
@@ -59,7 +61,7 @@ export default function MessageContainer({
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />
-						<span className="sr-only">Thinking</span>
+						<span className="sr-only">{t("thinking")}</span>
 					</div>
 				</div>
 			)}

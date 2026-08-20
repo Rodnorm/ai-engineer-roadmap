@@ -1,5 +1,7 @@
 import kb from "@/data/healthcare-billing-kb.json";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { getDictionary, resolveLocale } from "@/lib/i18n/getDictionary";
 
 type KbEntry = {
 	id: number;
@@ -9,29 +11,37 @@ type KbEntry = {
 
 const entries = (kb.entries as KbEntry[]).slice().sort((a, b) => a.id - b.id);
 
-export const metadata = {
-	title: "FAQ — Support Bot",
-	description: "Frequently asked questions about healthcare billing.",
-};
+export async function generateMetadata() {
+	const store = await cookies();
+	const locale = resolveLocale(store.get("locale")?.value);
+	const dict = getDictionary(locale);
+	return {
+		title: dict.faq.title,
+		description: dict.faq.description,
+	};
+}
 
-export default function FaqPage() {
+export default async function FaqPage() {
+	const store = await cookies();
+	const locale = resolveLocale(store.get("locale")?.value);
+	const dict = getDictionary(locale);
+
 	return (
 		<div className="w-full max-w-full min-w-0 min-h-dvh bg-white">
 			<header className="w-full max-w-2xl mx-auto px-4 pt-6 sm:pt-8 pb-4">
 				<div className="flex items-center justify-between gap-3">
 					<h1 className="text-slate-900 font-semibold text-3xl sm:text-4xl leading-tight tracking-tight">
-						FAQ
+						{dict.faq.pageTitle}
 					</h1>
 					<Link
 						href="/"
 						className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 px-3 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
 					>
-						Back to chat
+						{dict.faq.backToChat}
 					</Link>
 				</div>
 				<p className="text-slate-500 leading-relaxed tracking-tight mt-2 text-sm sm:text-base">
-					{entries.length} frequently asked questions about healthcare
-					billing.
+					{dict.faq.summary.replace("{count}", String(entries.length))}
 				</p>
 			</header>
 

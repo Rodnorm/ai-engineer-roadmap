@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Support Bot",
+    "description": "FAQ support bot for your website"
+  },
+  "faq": {
+    "title": "FAQ — Support Bot",
+    "description": "Frequently asked questions about healthcare billing.",
+    "pageTitle": "FAQ",
+    "backToChat": "Back to chat",
+    "summary": "{count} frequently asked questions about healthcare billing."
+  },
+  "home": {
+    "greeting": "Hello there,",
+    "question": "How can I help you?",
+    "faqLink": "FAQ",
+    "suggestionsToggle": "Suggestions",
+    "intro": "Use one of the most common prompts below or chat with us directly by typing your question in the input box below."
+  },
+  "cards": {
+    "askAria": "Ask: {question}",
+    "items": [
+      "Everything went well with my payment. Where can I download the receipt?",
+      "My refund arrived successfully. Where can I see its details?",
+      "My insurance covered the appointment. Can I get a copy of the invoice?",
+      "I was charged twice and I want my money back. What should I do?",
+      "My refund was approved but I still haven't received the money.",
+      "I'm frustrated because my payment keeps failing. How can I fix it?",
+      "Where can I find my latest invoice?",
+      "How can I update my billing address?",
+      "What payment methods are available?",
+      "How can I check the status of a payment?"
+    ]
+  },
+  "chat": {
+    "inputPlaceholder": "Type your question here ...",
+    "send": "Send message",
+    "stop": "Stop generating",
+    "thinking": "Thinking",
+    "errorMessage": "Something went wrong. Please try again.",
+    "showAnalysis": "Show NLP analysis",
+    "hideAnalysis": "Hide NLP analysis",
+    "nlpShort": "NLP"
+  },
+  "nlp": {
+    "title": "NLP Analysis",
+    "provider": "Azure AI Language",
+    "language": "Language",
+    "sentiment": "Sentiment",
+    "sentimentConfidence": "Sentiment confidence",
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative",
+    "keyPhrases": "Key phrases",
+    "entities": "Entities"
+  },
+  "language": {
+    "label": "Language",
+    "switchAria": "Select language"
+  }
+}

@@ -13,12 +13,15 @@ import MessageContainer, {
 } from "./MessageContainer";
 import { NLPAnalysis } from "./NLPAnalysisCard";
 import { queryMessage } from "@/lib/queryKB";
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export type ChatAreaHandle = {
 	submit: (text: string) => void;
 };
 
 const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
+	const t = useT("chat");
+
 	const [messages, setMessages] = useState<MessageType[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const abortRef = useRef<AbortController | null>(null);
@@ -65,7 +68,7 @@ const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
 					{
 						id: crypto.randomUUID(),
 						type: MessageUserType.BOT,
-						text: "Something went wrong. Please try again.",
+						text: t("errorMessage"),
 					},
 				]);
 			}

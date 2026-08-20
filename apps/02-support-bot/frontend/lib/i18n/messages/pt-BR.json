@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Support Bot",
+    "description": "Bot de suporte com perguntas frequentes para o seu site"
+  },
+  "faq": {
+    "title": "FAQ — Support Bot",
+    "description": "Perguntas frequentes sobre faturamento na área da saúde.",
+    "pageTitle": "FAQ",
+    "backToChat": "Voltar para o chat",
+    "summary": "{count} perguntas frequentes sobre faturamento na área da saúde."
+  },
+  "home": {
+    "greeting": "Olá,",
+    "question": "Como posso ajudar?",
+    "faqLink": "FAQ",
+    "suggestionsToggle": "Sugestões",
+    "intro": "Use um dos prompts mais comuns abaixo ou converse conosco diretamente digitando sua pergunta no campo de entrada abaixo."
+  },
+  "cards": {
+    "askAria": "Perguntar: {question}",
+    "items": [
+      "Tudo correu bem com meu pagamento. Onde posso baixar o recibo?",
+      "Meu reembolso chegou com sucesso. Onde posso ver os detalhes?",
+      "Meu convênio cobriu a consulta. Posso obter uma cópia da fatura?",
+      "Fui cobrado duas vezes e quero meu dinheiro de volta. O que devo fazer?",
+      "Meu reembolso foi aprovado, mas ainda não recebi o dinheiro.",
+      "Estou frustrado porque meu pagamento continua falhando. Como posso resolver?",
+      "Onde encontro minha fatura mais recente?",
+      "Como posso atualizar meu endereço de cobrança?",
+      "Quais formas de pagamento estão disponíveis?",
+      "Como posso consultar o status de um pagamento?"
+    ]
+  },
+  "chat": {
+    "inputPlaceholder": "Digite sua pergunta aqui ...",
+    "send": "Enviar mensagem",
+    "stop": "Parar geração",
+    "thinking": "Pensando",
+    "errorMessage": "Algo deu errado. Por favor, tente novamente.",
+    "showAnalysis": "Mostrar análise de NLP",
+    "hideAnalysis": "Ocultar análise de NLP",
+    "nlpShort": "NLP"
+  },
+  "nlp": {
+    "title": "Análise de NLP",
+    "provider": "Azure AI Language",
+    "language": "Idioma",
+    "sentiment": "Sentimento",
+    "sentimentConfidence": "Confiança do sentimento",
+    "positive": "Positivo",
+    "neutral": "Neutro",
+    "negative": "Negativo",
+    "keyPhrases": "Frases-chave",
+    "entities": "Entidades"
+  },
+  "language": {
+    "label": "Idioma",
+    "switchAria": "Selecionar idioma"
+  }
+}

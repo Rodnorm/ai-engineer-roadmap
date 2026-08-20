@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/lib/i18n/I18nProvider";
 
 export type NLPAnalysis = {
 	language: {
@@ -26,14 +29,16 @@ export function NLPAnalysisCard({
 }: {
 	analysis?: NLPAnalysis;
 }) {
+	const t = useT("nlp");
+
 	if (!analysis) return null;
 	return (
 		<div className="mt-2 w-full text-sm text-slate-700">
 			<div className="border border-slate-200 bg-white shadow-sm rounded-xl transition-all duration-200">
 				<div className="flex items-center justify-between p-3">
 					<div>
-						<p className="font-medium text-slate-800">NLP Analysis</p>
-						<p className="text-xs text-slate-400 mt-0.5">Azure AI Language</p>
+						<p className="font-medium text-slate-800">{t("title")}</p>
+						<p className="text-xs text-slate-400 mt-0.5">{t("provider")}</p>
 					</div>
 
 					<span className="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-600">
@@ -45,7 +50,7 @@ export function NLPAnalysisCard({
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
-								Language
+								{t("language")}
 							</p>
 
 							<div className="flex items-center justify-between">
@@ -59,7 +64,7 @@ export function NLPAnalysisCard({
 
 						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
-								Sentiment
+								{t("sentiment")}
 							</p>
 
 							<p className="font-medium capitalize">
@@ -70,20 +75,20 @@ export function NLPAnalysisCard({
 
 					<div className="mt-4">
 						<p className="text-xs uppercase tracking-wide text-slate-400 mb-2">
-							Sentiment confidence
+							{t("sentimentConfidence")}
 						</p>
 
 						<div className="grid grid-cols-3 gap-2">
 							{[
-								["Positive", analysis.sentiment.positive],
-								["Neutral", analysis.sentiment.neutral],
-								["Negative", analysis.sentiment.negative],
+								[t("positive"), analysis.sentiment.positive],
+								[t("neutral"), analysis.sentiment.neutral],
+								[t("negative"), analysis.sentiment.negative],
 							].map(([label, value]) => (
 								<div
-									key={label as string}
+									key={label}
 									className="rounded-lg border border-slate-100 bg-slate-50/50 p-2"
 								>
-									<p className="text-xs text-slate-400">{label as string}</p>
+									<p className="text-xs text-slate-400">{label}</p>
 
 									<p className="font-medium">
 										{Math.round((value as number) * 100)}%
@@ -96,7 +101,7 @@ export function NLPAnalysisCard({
 					{!!analysis.keyPhrases.length && (
 						<div className="mt-4">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-2">
-								Key phrases
+								{t("keyPhrases")}
 							</p>
 
 							<div className="flex flex-wrap gap-2">
@@ -115,7 +120,7 @@ export function NLPAnalysisCard({
 					{!!analysis.entities.length && (
 						<div className="mt-4">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-2">
-								Entities
+								{t("entities")}
 							</p>
 
 							<div className="flex flex-wrap gap-2">
