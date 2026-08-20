@@ -6,16 +6,16 @@ type CardsProps = {
 };
 
 const cards = [
+	"Everything went well with my payment. Where can I download the receipt?",
+	"My refund arrived successfully. Where can I see its details?",
+	"My insurance covered the appointment. Can I get a copy of the invoice?",
+	"I was charged twice and I want my money back. What should I do?",
+	"My refund was approved but I still haven't received the money.",
+	"I'm frustrated because my payment keeps failing. How can I fix it?",
+	"Where can I find my latest invoice?",
 	"How can I update my billing address?",
-	"I accidentally paid twice for the same appointment. What should I do?",
-	"Where can I download an invoice from last month?",
-	"My refund has not arrived yet. How long should I wait?",
-	"My insurance refused to cover my appointment. What can I do?",
-	"I paid my bill, but my account still shows it as unpaid.",
-	"Can I change the date of my appointment?",
-	"I don't recognize a charge on my account. Can you help?",
-	"I need to talk to a real person about my billing problem.",
-	"Can you help me book a flight?",
+	"What payment methods are available?",
+	"How can I check the status of a payment?",
 ];
 
 function getRandomCards() {
