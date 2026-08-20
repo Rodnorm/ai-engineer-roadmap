@@ -115,7 +115,6 @@ def health() -> dict:
 
 @app.post("/query")
 async def query(request: QueryRequest):
-    print("teste")
     print(query)
     if client is None:
         raise HTTPException(status_code=503, detail="Azure OpenAI not configured")
