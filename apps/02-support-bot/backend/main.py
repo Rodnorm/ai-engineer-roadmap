@@ -151,7 +151,7 @@ async def query(request: QueryRequest):
 
         return {
             "response": {
-                "queryResponse": response,
+                "queryResponse": response.strip(),
                 "nlpAnalysis": analysis
             }
         }
