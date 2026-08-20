@@ -28,38 +28,69 @@ export default function Cards({ onSelect }: CardsProps) {
 			setRandomCards(
 				[...cards]
 					.sort(() => Math.random() - 0.5)
-					.slice(0, 4)
+					.slice(0, 10)
 			);
 		}, 0);
 
 		return () => clearTimeout(timer);
 	}, []);
 
-	const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-		const el = scrollRef.current;
-		if (!el) return;
-		// Translate vertical wheel delta into horizontal scroll,
-		// but only when there's actual horizontal overflow to consume.
-		if (el.scrollWidth <= el.clientWidth) return;
-		if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-		el.scrollLeft += e.deltaY;
-		e.preventDefault();
-	};
+	useEffect(() => {
+		const element = scrollRef.current;
+
+		if (!element || randomCards.length === 0) return;
+
+		const sectionWidth = element.scrollWidth / 3;
+
+		element.scrollLeft = sectionWidth;
+
+		const handleWheel = (event: WheelEvent) => {
+			if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+				event.preventDefault();
+
+				element.scrollLeft += event.deltaY * 0.6;
+			}
+		};
+
+		const handleScroll = () => {
+			const sectionWidth = element.scrollWidth / 3;
+
+			if (element.scrollLeft >= sectionWidth * 2) {
+				element.scrollLeft -= sectionWidth;
+			}
+
+			if (element.scrollLeft <= 0) {
+				element.scrollLeft += sectionWidth;
+			}
+		};
+
+		element.addEventListener("wheel", handleWheel, {
+			passive: false,
+		});
+
+		element.addEventListener("scroll", handleScroll);
+
+		return () => {
+			element.removeEventListener("wheel", handleWheel);
+			element.removeEventListener("scroll", handleScroll);
+		};
+	}, [randomCards]);
+
+	const infiniteCards = [...randomCards, ...randomCards, ...randomCards];
 
 	return (
 		<div className="relative w-full overflow-hidden">
 			<div
 				ref={scrollRef}
-				onWheel={handleWheel}
-				className="flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden touch-pan-x"
+				className="p-4 flex flex-nowrap gap-3 w-full overflow-x-scroll overflow-y-hidden pb-2 scroll-smooth"
 				style={{
 					WebkitOverflowScrolling: "touch",
 					scrollbarWidth: "none",
 				}}
 			>
-				{randomCards.map((card, index) => (
+				{infiniteCards.map((card, index) => (
 					<button
-						key={index}
+						key={`${card}-${index}`}
 						type="button"
 						aria-label={`Ask: ${card}`}
 						onClick={() => onSelect?.(card)}
