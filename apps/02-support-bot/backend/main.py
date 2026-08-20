@@ -107,9 +107,9 @@ app.add_middleware(
 def health() -> dict:
     return {
         "status": "ok",
+        "endpoint": ENDPOINT is not None,
+        "agent_name": AGENT_NAME is not None,
         "azure_openai_configured": client is not None,
-        "endpoint": ENDPOINT or None,
-        "agent_name": AGENT_NAME or None,
     }
 
 

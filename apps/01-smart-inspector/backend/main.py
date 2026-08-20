@@ -179,9 +179,9 @@ async def remove_backend_prefix(request: Request, call_next):
 def health() -> dict:
     return {
         "status": "ok",
+        "endpoint": ENDPOINT is not None,
+        "deployment": DEPLOYMENT is not None,
         "azure_openai_configured": client is not None,
-        "endpoint": ENDPOINT or None,
-        "deployment": DEPLOYMENT or None,
     }
 
 
