@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-bg: #ffffff;
   --color-surface: #f8fafc;
@@ -50,6 +52,17 @@
 
 :root {
   color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --color-bg: #020617;
+  --color-surface: #0f172a;
+  --color-surface-hover: #1e293b;
+  --color-border: #334155;
+  --color-border-strong: #475569;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
 }
 
 body {

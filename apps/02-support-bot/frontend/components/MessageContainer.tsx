@@ -57,7 +57,7 @@ export default function MessageContainer({
 
 			{isLoading && (
 				<div className="flex">
-					<div className="bg-slate-100 border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm flex items-center gap-1.5">
+					<div className="bg-slate-100 border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm flex items-center gap-1.5 dark:border-slate-700 dark:bg-slate-800">
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
 						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />

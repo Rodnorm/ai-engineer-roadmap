@@ -41,22 +41,22 @@ export default async function FaqPage() {
 		.sort((a, b) => a.id - b.id);
 
 	return (
-		<div className="w-full max-w-full min-w-0 min-h-dvh bg-white">
+		<div className="w-full max-w-full min-w-0 min-h-dvh bg-white dark:bg-slate-950">
 			<header className="w-full max-w-2xl mx-auto px-4 pt-6 sm:pt-8 pb-4">
 				<div className="flex items-center justify-between gap-3">
-					<h1 className="text-slate-900 font-semibold text-3xl sm:text-4xl leading-tight tracking-tight">
+					<h1 className="text-slate-900 dark:text-slate-100 font-semibold text-3xl sm:text-4xl leading-tight tracking-tight">
 						{dict.faq.pageTitle}
 					</h1>
 
 					<Link
 						href="/"
-						className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 px-3 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
+						className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 px-3 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
 					>
 						{dict.faq.backToChat}
 					</Link>
 				</div>
 
-				<p className="text-slate-500 leading-relaxed tracking-tight mt-2 text-sm sm:text-base">
+			<p className="text-slate-500 dark:text-slate-400 leading-relaxed tracking-tight mt-2 text-sm sm:text-base">
 					{dict.faq.summary}
 				</p>
 			</header>
@@ -65,10 +65,10 @@ export default async function FaqPage() {
 				{entries.map((entry) => (
 					<details
 						key={entry.id}
-						className="group border border-slate-200 bg-white shadow-sm rounded-xl open:shadow-md transition-shadow duration-200"
+						className="group border border-slate-200 bg-white shadow-sm rounded-xl open:shadow-md transition-shadow duration-200 dark:border-slate-800 dark:bg-slate-900"
 					>
 						<summary className="flex items-center justify-between gap-3 cursor-pointer list-none p-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 rounded-xl">
-							<span className="text-sm sm:text-base font-medium text-slate-800 leading-snug">
+							<span className="text-sm sm:text-base font-medium text-slate-800 dark:text-slate-200 leading-snug">
 								{entry.question}
 							</span>
 
@@ -86,7 +86,7 @@ export default async function FaqPage() {
 							</svg>
 						</summary>
 
-						<div className="px-4 pb-4 -mt-1 text-sm text-slate-600 leading-relaxed">
+						<div className="px-4 pb-4 -mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
 							{entry.answer}
 						</div>
 					</details>
