@@ -61,7 +61,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 		};
 
 		return (
-			<div className="shrink-0 bg-white rounded-2xl shadow-sm border border-slate-200 relative focus-within:border-sky-300 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-200">
+			<div className="shrink-0 bg-white rounded-2xl shadow-sm border border-slate-200 relative focus-within:border-sky-300 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-200 dark:border-slate-700 dark:bg-slate-900 dark:focus-within:border-sky-700 dark:focus-within:ring-sky-950">
 				<textarea
 					ref={textAreaRef}
 					value={value}
@@ -70,7 +70,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 					onChange={(e) => setValue(e.target.value)}
 					disabled={isLoading}
 					rows={3}
-					className="resize-none text-slate-900 placeholder:text-slate-400 w-full m-4 outline-none border-0 bg-transparent disabled:opacity-60 leading-relaxed pr-14"
+					className="resize-none text-slate-900 placeholder:text-slate-400 w-full m-4 outline-none border-0 bg-transparent disabled:opacity-60 leading-relaxed pr-14 dark:text-slate-100 dark:placeholder:text-slate-500"
 				/>
 
 				{isLoading ? (
@@ -78,7 +78,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 						type="button"
 						aria-label={t("stop")}
 						onClick={onStop}
-						className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+						className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
 					>
 						<Square
 							className="w-4 h-4"

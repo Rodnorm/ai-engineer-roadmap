@@ -47,7 +47,7 @@ export default function LangSwitcher() {
 	return (
 		<div
 			ref={containerRef}
-			className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50"
+			className="fixed top-3 right-20 sm:top-4 sm:right-24 z-50"
 		>
 			<button
 				type="button"
@@ -55,7 +55,7 @@ export default function LangSwitcher() {
 				aria-haspopup="listbox"
 				aria-expanded={open}
 				aria-label={t.switchAria}
-				className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-white/80 backdrop-blur border border-slate-200 hover:border-sky-300 hover:text-sky-600 px-2.5 py-1.5 rounded-md shadow-sm hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
+				className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-white/80 backdrop-blur border border-slate-200 hover:border-sky-300 hover:text-sky-600 px-2.5 py-1.5 rounded-md shadow-sm hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-sky-600 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
 			>
 				<Languages className="w-3.5 h-3.5" aria-hidden="true" />
 				<span>{LOCALE_LABELS[locale]}</span>
@@ -71,7 +71,7 @@ export default function LangSwitcher() {
 				<ul
 					role="listbox"
 					aria-label={t.label}
-					className="absolute right-0 mt-1.5 min-w-[8rem] rounded-md border border-slate-200 bg-white shadow-lg py-1 overflow-hidden"
+					className="absolute right-0 mt-1.5 min-w-[8rem] rounded-md border border-slate-200 bg-white shadow-lg py-1 overflow-hidden dark:border-slate-700 dark:bg-slate-900"
 				>
 					{LOCALES.map((option) => {
 						const isActive = option === locale;
@@ -84,8 +84,8 @@ export default function LangSwitcher() {
 									onClick={() => handleSelect(option)}
 									className={`w-full text-left text-sm px-3 py-1.5 transition-colors duration-150 cursor-pointer focus:outline-none focus-visible:bg-sky-50 ${
 										isActive
-											? "bg-sky-50 text-sky-700 font-medium"
-											: "text-slate-700 hover:bg-slate-50"
+											? "bg-sky-50 text-sky-700 font-medium dark:bg-sky-950 dark:text-sky-300"
+											: "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
 									}`}
 								>
 									{LOCALE_LABELS[option]}

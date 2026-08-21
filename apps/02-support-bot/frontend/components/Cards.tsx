@@ -86,7 +86,7 @@ export default function Cards({ onSelect }: CardsProps) {
 						type="button"
 						aria-label={t("askAria", { question: card })}
 						onClick={() => onSelect?.(card)}
-						className="group relative shrink-0 snap-start w-64 text-left border border-slate-200 bg-white shadow-sm hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:bg-sky-50/40 rounded-xl p-3 pr-8 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
+						className="group relative shrink-0 snap-start w-64 text-left border border-slate-200 bg-white shadow-sm hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:bg-sky-50/40 rounded-xl p-3 pr-8 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
 					>
 						<p className="text-sm leading-snug">{card}</p>
 						<div className="absolute top-2.5 right-2.5 text-slate-300 group-hover:text-sky-500 transition-colors duration-200">
@@ -96,8 +96,8 @@ export default function Cards({ onSelect }: CardsProps) {
 				))}
 			</div>
 
-			<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent" />
-			<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent" />
+			<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent dark:from-slate-950" />
+			<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-slate-950" />
 		</div>
 	);
 }

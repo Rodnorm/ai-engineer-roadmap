@@ -33,11 +33,11 @@ export function NLPAnalysisCard({
 
 	if (!analysis) return null;
 	return (
-		<div className="mt-2 w-full text-sm text-slate-700">
-			<div className="border border-slate-200 bg-white shadow-sm rounded-xl transition-all duration-200">
+		<div className="mt-2 w-full text-sm text-slate-700 dark:text-slate-300">
+			<div className="border border-slate-200 bg-white shadow-sm rounded-xl transition-all duration-200 dark:border-slate-700 dark:bg-slate-900">
 				<div className="flex items-center justify-between p-3">
 					<div>
-						<p className="font-medium text-slate-800">{t("title")}</p>
+						<p className="font-medium text-slate-800 dark:text-slate-200">{t("title")}</p>
 						<p className="text-xs text-slate-400 mt-0.5">{t("provider")}</p>
 					</div>
 
@@ -46,9 +46,9 @@ export function NLPAnalysisCard({
 					</span>
 				</div>
 
-				<div className="border-t border-slate-100 p-4 pt-4">
+				<div className="border-t border-slate-100 p-4 pt-4 dark:border-slate-800">
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
+						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
 								{t("language")}
 							</p>
@@ -62,7 +62,7 @@ export function NLPAnalysisCard({
 							</div>
 						</div>
 
-						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
+						<div className="border border-slate-100 rounded-lg p-3 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
 							<p className="text-xs uppercase tracking-wide text-slate-400 mb-1">
 								{t("sentiment")}
 							</p>
@@ -86,7 +86,7 @@ export function NLPAnalysisCard({
 							].map(([label, value]) => (
 								<div
 									key={label}
-									className="rounded-lg border border-slate-100 bg-slate-50/50 p-2"
+									className="rounded-lg border border-slate-100 bg-slate-50/50 p-2 dark:border-slate-800 dark:bg-slate-800/50"
 								>
 									<p className="text-xs text-slate-400">{label}</p>
 
@@ -108,7 +108,7 @@ export function NLPAnalysisCard({
 								{analysis.keyPhrases.map((phrase) => (
 									<span
 										key={phrase}
-										className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 shadow-sm"
+										className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
 									>
 										{phrase}
 									</span>
@@ -127,7 +127,7 @@ export function NLPAnalysisCard({
 								{analysis.entities.map((entity, index) => (
 									<div
 										key={`${entity.text}-${index}`}
-										className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm"
+										className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800"
 									>
 										<p className="font-medium">{entity.text}</p>
 

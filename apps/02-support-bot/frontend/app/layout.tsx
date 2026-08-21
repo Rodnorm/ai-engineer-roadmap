@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 
 import LangSwitcher from "@/components/LangSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 import { getDictionary, resolveLocale } from "@/lib/i18n/getDictionary";
 import { LOCALES, type Locale } from "@/lib/i18n/locales";
@@ -39,11 +40,20 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html
 			lang={locale}
+			suppressHydrationWarning
 			className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
 		>
+			<head>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `(function(){try{var t=localStorage.getItem("support-bot-theme");var d=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
+					}}
+				/>
+			</head>
 			<body className="min-h-full flex flex-col">
 				<I18nProvider initialLocale={locale} dictionaries={dictionaries}>
 					<LangSwitcher />
+					<ThemeToggle />
 					{children}
 				</I18nProvider>
 			</body>
