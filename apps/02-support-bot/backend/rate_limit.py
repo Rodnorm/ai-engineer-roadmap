@@ -97,11 +97,6 @@ class InMemoryRateLimiter:
     @staticmethod
     def _seconds_until_next_utc_day(timestamp: float) -> int:
         now = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        tomorrow = datetime.combine(
-            now.date(),
-            datetime.min.time(),
-            tzinfo=timezone.utc,
-        ).replace(day=now.day)  # initialized below without local timezone
         tomorrow = datetime.fromordinal(
             now.date().toordinal() + 1
         ).replace(tzinfo=timezone.utc)
