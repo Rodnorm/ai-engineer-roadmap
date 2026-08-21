@@ -15,7 +15,7 @@ export default function HomePage() {
             <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-red-500 bg-clip-text text-transparent">
               Smart
             </span>{" "}
-            <span className="text-white">
+            <span className="text-text">
               Inspector
             </span>
           </h1>
