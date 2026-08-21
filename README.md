@@ -93,7 +93,7 @@ Support Bot answers questions using a knowledge base deployed through Azure AI F
 
 The UI presents the answer as a chat and can display the NLP analysis associated with each user message. It supports German, English, and Brazilian Portuguese.
 
-See the [Support Bot source](./apps/02-support-bot) for the current implementation.
+See the [Support Bot documentation](./apps/02-support-bot/README.md) for architecture, Azure configuration, local setup, API examples, deployment notes, and security considerations.
 
 ## Running a project locally
 
