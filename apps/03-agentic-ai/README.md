@@ -1,39 +1,31 @@
-# App 03 — Agentic AI Application
+# App 03 — AI Content Studio
 
-An agentic AI application with a Next.js frontend and a FastAPI backend.
+A Next.js content studio for marketers to turn a brief into three structured content variations using distinct personas.
+
+The frontend is complete and runs with local preview data. Azure OpenAI generation, Vercel AI SDK streaming, Content Safety, and persistent request logging are intentionally left for the API integration step.
+
+## Frontend features
+
+- Marketing brief, target audience, and content format inputs
+- Friendly SaaS Marketer, Technical Blogger, and Skeptical CFO personas
+- Temperature, Top P, and max-token controls
+- Progressive preview of three generated variations
+- Structured `title`, `body`, and `seoKeywords` output
+- Preview and JSON views, copy action, and JSON export
+- Local Content Safety blocked-state preview
+- Per-request token and estimated-cost log
+- Responsive light and dark themes
+- English, Portuguese, and German translations
 
 ## Structure
 
 ```text
 03-agentic-ai/
-├── backend/
-│   ├── .env.example
-│   ├── agent.py
-│   ├── main.py
-│   └── requirements.txt
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── .env.example
-│   └── package.json
+├── backend/      # API scaffold; integration pending
+├── frontend/     # Complete interactive frontend preview
 ├── README.md
 └── vercel.json
 ```
-
-## Backend setup
-
-From `apps/03-agentic-ai/backend`:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item .env.example .env
-uvicorn main:app --reload --port 8000
-```
-
-The health endpoint is available at `http://localhost:8000/health`.
 
 ## Frontend setup
 
@@ -41,12 +33,16 @@ From `apps/03-agentic-ai/frontend`:
 
 ```powershell
 npm install
-Copy-Item .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`. During local development, Next.js rewrites `/api/backend/*` to FastAPI on port 8000.
+Open `http://localhost:3000`.
 
-## Environment
+## Pending API integrations
 
-Backend settings use `PORT` and `LOG_LEVEL`. The frontend API base path defaults to `/api/backend`, and its local rewrite target defaults to `http://localhost:8000`.
+- Azure OpenAI structured generation
+- Vercel AI SDK streaming
+- Azure AI Content Safety
+- Persistent cost and token logging
+
+The current frontend makes no API requests. Its local generation flow exists to demonstrate and validate the final user experience before those integrations are added.
