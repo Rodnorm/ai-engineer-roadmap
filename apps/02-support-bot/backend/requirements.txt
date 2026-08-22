@@ -1,5 +1,5 @@
 openai>=1.40
-pydantic>=2.7
+pydantic>=2.13.4
 python-dotenv
 azure-identity
 fastapi>=0.111
