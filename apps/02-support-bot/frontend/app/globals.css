@@ -2,6 +2,18 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@property --animated-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes animated-gradient-border-flow {
+  to {
+    --animated-border-angle: 360deg;
+  }
+}
+
 @theme {
   --color-bg: #ffffff;
   --color-surface: #f8fafc;
@@ -52,6 +64,11 @@
 
 :root {
   color-scheme: light;
+  --animated-border-surface: #ffffff;
+  --animated-border-blue: rgb(14 165 233 / 54%);
+  --animated-border-violet: rgb(139 92 246 / 48%);
+  --animated-border-pink: rgb(236 72 153 / 42%);
+  --animated-border-cyan: rgb(34 211 238 / 50%);
 }
 
 :root.dark {
@@ -63,12 +80,73 @@
   --color-border-strong: #475569;
   --color-text: #e2e8f0;
   --color-muted: #94a3b8;
+  --animated-border-surface: #0f172a;
+  --animated-border-blue: rgb(56 189 248 / 64%);
+  --animated-border-violet: rgb(167 139 250 / 58%);
+  --animated-border-pink: rgb(244 114 182 / 50%);
+  --animated-border-cyan: rgb(34 211 238 / 60%);
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
+}
+
+.animated-gradient-border {
+  position: relative;
+  isolation: isolate;
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(
+      var(--animated-border-surface),
+      var(--animated-border-surface)
+    ) padding-box,
+    conic-gradient(
+      from var(--animated-border-angle),
+      var(--animated-border-blue) 0deg,
+      var(--animated-border-violet) 90deg,
+      var(--animated-border-pink) 180deg,
+      var(--animated-border-cyan) 270deg,
+      var(--animated-border-blue) 360deg
+    ) border-box;
+  animation: animated-gradient-border-flow 10s linear infinite;
+}
+
+.animated-gradient-border::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  padding: 4px;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.16;
+  filter: blur(7px);
+  background: conic-gradient(
+    from var(--animated-border-angle),
+    var(--animated-border-blue) 0deg,
+    var(--animated-border-violet) 90deg,
+    var(--animated-border-pink) 180deg,
+    var(--animated-border-cyan) 270deg,
+    var(--animated-border-blue) 360deg
+  );
+  animation: animated-gradient-border-flow 10s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-gradient-border,
+  .animated-gradient-border::after {
+    animation: none;
+  }
 }
 
 .chat-scroll {

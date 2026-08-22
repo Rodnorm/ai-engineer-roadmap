@@ -1,8 +1,19 @@
 /old_items
-apps/01-smart-inspector/backend/.env
-apps/01-smart-inspector/backend/__pycache__/
-Exercises/Azure Language MCP Server/.env
-apps/01-smart-inspector/backend/readme.md
-apps/02-support-bot/backend/.env
-apps/02-support-bot/.next
-apps/02-support-bot/backend/__pycache__/
+
+# Environment files
+apps/**/.env
+Exercises/**/.env
+
+# Python
+apps/**/__pycache__/
+apps/**/*.py[cod]
+
+# Next.js
+apps/**/.next/
+
+apps/**/node_modules/
+
+# Agents
+apps/**/**/claude.md
+apps/**/**/agents.md
+.claude/settings.local.json

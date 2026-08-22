@@ -1,11 +1,13 @@
 "use client";
 
 import ImageAnalyzer from "@/components/ImageAnalyzer";
+import AppInfo from "@/components/AppInfo";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/components/LanguageProvider";
+import { getAppInfo } from "@/lib/app-info";
 
 export default function HomePage() {
-  const { t } = useLanguage();
+  const { locale, t } = useLanguage();
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
@@ -23,7 +25,10 @@ export default function HomePage() {
             {t("page.subtitle")}
           </p>
         </div>
-        <LanguageSelector />
+        <div className="flex shrink-0 items-center gap-2">
+          <AppInfo config={getAppInfo(locale)} />
+          <LanguageSelector />
+        </div>
       </div>
 
       <ImageAnalyzer />
