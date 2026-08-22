@@ -1,17 +1,10 @@
-"""
-Smart Inspector — backend (Azure OpenAI, /openai/v1, AAD).
+"""Smart Inspector backend using Azure OpenAI's Responses API.
 
 Exposes:
-    POST /analyze   multipart/form-data, field "image"  -> { caption, tags, objects, ocr, averagePrice, lowestPriceLink }
+    POST /analyze  multipart/form-data, fields "image" and "language"
     GET  /health
 
-Env vars (see .env.example):
-    AZURE_OPENAI_ENDPOINT   e.g. https://<resource>.services.ai.azure.com/openai/v1
-    AZURE_OPENAI_DEPLOYMENT e.g. gpt-4.1-mini
-    PORT                    optional, default: 8000
-
-Auth: DefaultAzureCredential. Run `az login` locally, or set
-AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_CLIENT_SECRET for a service principal.
+Authentication uses AZURE_OPENAI_API_KEY. See .env.example for configuration.
 """
 
 from __future__ import annotations
@@ -22,16 +15,52 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel, Field
+
+from rate_limit import InMemoryRateLimiter
 
 # ---------------------------------------------------------------------------
 # Setup
 # ---------------------------------------------------------------------------
 
 load_dotenv()
+
+
+def _env_int(name: str, default: int, minimum: int = 1) -> int:
+    raw_value = os.getenv(name, str(default))
+    try:
+        value = int(raw_value)
+    except ValueError as exc:
+        raise RuntimeError(f"{name} must be an integer") from exc
+
+    if value < minimum:
+        raise RuntimeError(f"{name} must be at least {minimum}")
+    return value
+
+
+def _env_float(name: str, default: float, minimum: float = 0.1) -> float:
+    raw_value = os.getenv(name, str(default))
+    try:
+        value = float(raw_value)
+    except ValueError as exc:
+        raise RuntimeError(f"{name} must be a number") from exc
+
+    if value < minimum:
+        raise RuntimeError(f"{name} must be at least {minimum}")
+    return value
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name, str(default)).strip().lower()
+    if raw_value in {"1", "true", "yes", "on"}:
+        return True
+    if raw_value in {"0", "false", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} must be true or false")
+
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
@@ -43,28 +72,54 @@ log = logging.getLogger("smart-inspector")
 ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
 DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
 API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
-PORT = int(os.getenv("PORT", "8000"))
+PORT = _env_int("PORT", 8000)
+
+MAX_IMAGE_BYTES = _env_int("MAX_IMAGE_BYTES", 5 * 1024 * 1024, 1024)
+AZURE_MAX_OUTPUT_TOKENS = _env_int("AZURE_MAX_OUTPUT_TOKENS", 800)
+AZURE_REQUEST_TIMEOUT_SECONDS = _env_float(
+    "AZURE_REQUEST_TIMEOUT_SECONDS", 30.0
+)
+RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
+TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
+
+ALLOWED_IMAGE_TYPES = {
+    "image/gif",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+UPLOAD_CHUNK_BYTES = 1024 * 1024
+
+rate_limiter = InMemoryRateLimiter(
+    requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 5),
+    requests_per_day_per_ip=_env_int(
+        "RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 30
+    ),
+    global_requests_per_day=_env_int(
+        "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 300
+    ),
+)
 
 
 def _build_client() -> OpenAI | None:
-    if not ENDPOINT or not DEPLOYMENT:
+    if not ENDPOINT or not DEPLOYMENT or not API_KEY:
         return None
-    return OpenAI(
-        base_url=ENDPOINT,
-        api_key=API_KEY
-    )
+
+    return OpenAI(base_url=ENDPOINT, api_key=API_KEY)
 
 
 client: OpenAI | None = _build_client()
 if client is None:
     log.warning(
-        "Azure OpenAI not configured (ENDPOINT=%r, DEPLOYMENT=%r). "
-        "/analyze will return 503 until env vars are set.",
+        "Azure OpenAI is not fully configured. /analyze will return 503 "
+        "until endpoint, deployment, and API key are set."
+    )
+else:
+    log.info(
+        "Azure OpenAI client ready (endpoint=%s, deployment=%s).",
         ENDPOINT,
         DEPLOYMENT,
     )
-else:
-    log.info("Azure OpenAI client ready (endpoint=%s, deployment=%s).", ENDPOINT, DEPLOYMENT)
 
 
 # ---------------------------------------------------------------------------
@@ -74,28 +129,31 @@ else:
 class AnalysisResult(BaseModel):
     caption: str = Field(
         "",
-        description="One-line description of the image."
+        description="One-line description of the image.",
     )
     tags: List[str] = Field(
         default_factory=list,
-        description="Short keyword tags."
+        description="Short keyword tags.",
     )
     objects: List[str] = Field(
         default_factory=list,
-        description="Detected objects in the image."
+        description="Detected objects in the image.",
     )
     ocr: str = Field(
         "",
-        description="All visible text in the image."
+        description="All visible text in the image.",
     )
     averagePrice: str = Field(
         "",
-        description="The average price of the item in the image."
+        description="The average price of the item in the image.",
     )
     lowestPriceLink: str = Field(
         "",
-        description="The link to the lowest price of the item in the image to be bought online, if applicable."
+        description=(
+            "The link to the lowest price of the item online, if applicable."
+        ),
     )
+
 
 SYSTEM_PROMPT = (
     "You are a vision inspector. "
@@ -103,8 +161,6 @@ SYSTEM_PROMPT = (
     "Return the requested information using the provided response schema."
 )
 
-# Map of locale codes the frontend may send → human-readable language name
-# to inject into the prompt. Unknown codes fall back to English.
 LANGUAGE_NAMES: dict[str, str] = {
     "pt-br": "Brazilian Portuguese",
     "en": "English",
@@ -116,7 +172,7 @@ DEFAULT_LANGUAGE_CODE = "de"
 def _build_user_prompt(language: str) -> str:
     language_name = LANGUAGE_NAMES.get(
         language.lower(),
-        LANGUAGE_NAMES[DEFAULT_LANGUAGE_CODE]
+        LANGUAGE_NAMES[DEFAULT_LANGUAGE_CODE],
     )
 
     return f"""
@@ -139,15 +195,17 @@ Rules:
 - Only provide a price when a corresponding valid product can be identified.
 """
 
+
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="Smart Inspector", version="1.0.0", root_path="/api/backend")
+app = FastAPI(
+    title="Smart Inspector",
+    version="1.1.0",
+    root_path="/api/backend",
+)
 
-# CORS — the Next.js dev server runs on :3000. We allow any localhost/127.0.0.1
-# origin on any port to avoid Origin mismatches when the browser normalizes
-# `localhost` <-> `127.0.0.1`.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -158,8 +216,8 @@ app.add_middleware(
     ],
     allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -170,127 +228,168 @@ async def remove_backend_prefix(request: Request, call_next):
     if request.scope["path"].startswith(prefix):
         request.scope["path"] = request.scope["path"][len(prefix):]
 
-    response = await call_next(request)
-    return response
+    return await call_next(request)
 
+
+def _client_ip(request: Request) -> str:
+    if TRUST_PROXY_HEADERS:
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            return forwarded_for.split(",", maxsplit=1)[0].strip()
+
+    return request.client.host if request.client else "unknown"
+
+
+async def _read_upload_with_limit(image: UploadFile) -> bytes:
+    chunks: list[bytes] = []
+    total_bytes = 0
+
+    try:
+        while chunk := await image.read(UPLOAD_CHUNK_BYTES):
+            total_bytes += len(chunk)
+            if total_bytes > MAX_IMAGE_BYTES:
+                raise HTTPException(
+                    status_code=413,
+                    detail=(
+                        "Image is too large. Maximum allowed size is "
+                        f"{MAX_IMAGE_BYTES} bytes."
+                    ),
+                )
+            chunks.append(chunk)
+    finally:
+        await image.close()
+
+    return b"".join(chunks)
 
 
 @app.get("/health")
 def health() -> dict:
     return {
         "status": "ok",
-        "endpoint": ENDPOINT is not None,
-        "deployment": DEPLOYMENT is not None,
+        "endpoint": bool(ENDPOINT),
+        "deployment": bool(DEPLOYMENT),
         "azure_openai_configured": client is not None,
+        "rate_limit_enabled": RATE_LIMIT_ENABLED,
+        "max_image_bytes": MAX_IMAGE_BYTES,
     }
 
 
 @app.post("/analyze", response_model=AnalysisResult)
 async def analyze(
+    request: Request,
     image: UploadFile = File(...),
     language: str = Form(DEFAULT_LANGUAGE_CODE),
 ) -> AnalysisResult:
     if client is None:
         raise HTTPException(
             status_code=503,
-            detail="Azure OpenAI is not configured. Set AZURE_OPENAI_ENDPOINT and "
-                   "AZURE_OPENAI_DEPLOYMENT in backend/.env, and authenticate with `az login`.",
+            detail="Azure OpenAI is not configured.",
         )
-
-    raw = await image.read()
-    if not raw:
-        raise HTTPException(status_code=400, detail="Empty file.")
 
     mime = (image.content_type or "").lower()
-    if not mime.startswith("image/"):
+    if mime not in ALLOWED_IMAGE_TYPES:
+        await image.close()
         raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported content-type '{image.content_type}'. Expected an image/* mime.",
+            status_code=415,
+            detail=(
+                "Unsupported image type. Allowed types are GIF, JPEG, PNG, "
+                "and WebP."
+            ),
         )
+
+    if RATE_LIMIT_ENABLED:
+        decision = rate_limiter.check_and_record(_client_ip(request))
+        if not decision.allowed:
+            await image.close()
+            log.warning(
+                "Rate limit rejected request (scope=%s, retry_after=%s).",
+                decision.scope,
+                decision.retry_after,
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Request limit reached. Please try again later.",
+                headers={"Retry-After": str(decision.retry_after)},
+            )
+
+    raw = await _read_upload_with_limit(image)
+    if not raw:
+        raise HTTPException(status_code=400, detail="Empty file.")
 
     b64 = base64.b64encode(raw).decode("ascii")
     data_url = f"data:{mime};base64,{b64}"
 
-    # Validate the requested language. Unknown codes fall back to the default
-    # rather than failing the request — the prompt will still instruct the
-    # model, just in English.
-    requested_language = (language or DEFAULT_LANGUAGE_CODE).strip() or DEFAULT_LANGUAGE_CODE
-    language_name = LANGUAGE_NAMES.get(requested_language.lower())
-    if language_name is None:
+    requested_language = (
+        (language or DEFAULT_LANGUAGE_CODE).strip()
+        or DEFAULT_LANGUAGE_CODE
+    )
+    if requested_language.lower() not in LANGUAGE_NAMES:
         log.warning(
-            "Unknown language code %r from client, falling back to %s.",
+            "Unknown language code %r, falling back to %s.",
             language,
             DEFAULT_LANGUAGE_CODE,
         )
         requested_language = DEFAULT_LANGUAGE_CODE
 
     log.info(
-        "Analyzing image: name=%s size=%d mime=%s language=%s",
-        image.filename,
+        "Analyzing image: size=%d mime=%s language=%s",
         len(raw),
         mime,
         requested_language,
     )
 
-    user_prompt = _build_user_prompt(requested_language)
-
-    # Build multimodal input for the Responses API.
-    # Note: `responses.create` takes a flat `input` list for image+text content.
     input_payload = [
         {
             "role": "user",
             "content": [
-                {"type": "input_text", "text": user_prompt},
+                {
+                    "type": "input_text",
+                    "text": _build_user_prompt(requested_language),
+                },
                 {"type": "input_image", "image_url": data_url},
             ],
         }
     ]
 
     try:
-        response = client.responses.parse(
+        response = client.with_options(
+            timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+            max_retries=0,
+        ).responses.parse(
             model=DEPLOYMENT,
             instructions=SYSTEM_PROMPT,
             input=input_payload,
             text_format=AnalysisResult,
-            max_output_tokens=800,
+            max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
         )
-    except Exception as exc:
+    except Exception:
         log.exception("Azure OpenAI call failed.")
         raise HTTPException(
             status_code=502,
-            detail=f"Azure OpenAI error: {exc}"
-        ) from exc
+            detail="Azure OpenAI request failed.",
+        ) from None
 
     result = response.output_parsed
-
     if result is None:
         raise HTTPException(
             status_code=502,
-            detail="Model did not return a structured response."
+            detail="Model did not return a structured response.",
         )
 
     log.info(
-        "Result: caption=%r tags=%d objects=%d ocr_len=%d "
-        "averagePrice_len=%d lowestPriceLink_len=%d",
-        result.caption[:80],
+        "Analysis completed: tags=%d objects=%d ocr_len=%d.",
         len(result.tags),
         len(result.objects),
         len(result.ocr),
-        len(result.averagePrice),
-        len(result.lowestPriceLink),
     )
     return result
 
-
-# ---------------------------------------------------------------------------
-# Entrypoint
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        "smart-inspector:app",
+        "main:app",
         host="0.0.0.0",
         port=PORT,
         reload=False,
