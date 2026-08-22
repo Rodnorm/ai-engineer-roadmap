@@ -31,7 +31,7 @@ export default function HomePage() {
 
 	return (
 		<div className="w-full max-w-full min-w-0 h-dvh bg-white dark:bg-slate-950 flex flex-col overflow-hidden">
-			<header className="shrink-0 w-full max-w-2xl mx-auto px-4 pt-4 sm:pt-8">
+			<header className="shrink-0 w-full max-w-2xl mx-auto px-4 pt-14 sm:pt-8">
 				<div className="flex items-start justify-between gap-3">
 					<div className="min-w-0">
 						<h1 className="text-slate-900 dark:text-slate-100 font-semibold text-2xl sm:text-5xl leading-tight tracking-tight">
