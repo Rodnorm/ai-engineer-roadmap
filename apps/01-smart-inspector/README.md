@@ -53,6 +53,18 @@ AZURE_OPENAI_ENDPOINT=https://<your-resource>.services.ai.azure.com/openai/v1
 AZURE_OPENAI_DEPLOYMENT=<your-deployment-name>
 AZURE_OPENAI_API_KEY=<your-api-key>
 PORT=8000
+
+# Upload and Azure request guards
+MAX_IMAGE_BYTES=5242880
+AZURE_MAX_OUTPUT_TOKENS=800
+AZURE_REQUEST_TIMEOUT_SECONDS=30
+
+# Cost and abuse guards
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_REQUESTS_PER_MINUTE=5
+RATE_LIMIT_REQUESTS_PER_DAY_PER_IP=30
+RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY=300
+TRUST_PROXY_HEADERS=true
 ```
 
 ### 2. Install dependencies and start
@@ -79,6 +91,16 @@ The API will be available at `http://localhost:8000`. Quick sanity check:
 ```bash
 curl http://localhost:8000/health
 ```
+
+Run the dependency-free rate-limiter tests:
+
+```bash
+python -m unittest test_rate_limit.py
+```
+
+To test HTTP rate limiting without consuming many Azure calls, temporarily set
+`RATE_LIMIT_REQUESTS_PER_MINUTE=1`, restart the backend, and send two valid
+requests. The second request should return HTTP `429`.
 
 ---
 
@@ -129,9 +151,39 @@ frontend as `AnalysisResult`):
 }
 ```
 
+## Security, cost, and abuse guards
+
+The backend enables conservative limits by default:
+
+- 5 MB maximum image size, read in bounded chunks
+- GIF, JPEG, PNG, and WebP content types only
+- 800 maximum output tokens
+- 30-second Azure OpenAI timeout
+- No automatic Azure OpenAI retries
+- 5 requests per minute per IP
+- 30 requests per day per IP
+- 300 requests per day across the running process
+- Generic client-facing Azure errors, with internal details kept in server logs
+- Restricted CORS methods and headers
+
+Rejected rate-limited requests return HTTP `429` with a `Retry-After` header.
+Oversized uploads return HTTP `413`, and unsupported media types return HTTP
+`415`. These requests are rejected before an Azure OpenAI call is made.
+
+The included limiter stores counters inside the Python process. It provides
+useful local and basic abuse protection, but Vercel can create multiple isolated
+serverless instances and restart them. Therefore, the global daily setting is a
+per-instance safety limit, not a guaranteed deployment-wide spending cap. A
+strict production cap requires a shared counter such as Redis/KV, an edge or
+firewall limit, and conservative Azure deployment quotas.
+
+When deployed behind Vercel, `TRUST_PROXY_HEADERS=true` uses
+`X-Forwarded-For` to identify the original client. Set it to `false` when
+Uvicorn is exposed directly to untrusted clients.
+
 ## Notes / known limits
 
-- The app only accepts `image/*` content types and rejects empty uploads.
+- The app accepts GIF, JPEG, PNG, and WebP uploads and rejects empty files.
 - Unknown language codes from the client fall back to German (`de`).
 - `averagePrice` and `lowestPriceLink` are only returned when the model can
   confidently identify a real product — empty strings are expected for
