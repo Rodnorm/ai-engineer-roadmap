@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: Smart Inspector
+            directory: apps/01-smart-inspector/frontend
+          - app: Support Bot
+            directory: apps/02-support-bot/frontend
+          - app: Agentic AI
+            directory: apps/03-agentic-ai/frontend
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck --if-present
+
+      - name: Build
+        run: npm run build
+
+  backend:
+    name: Backend — ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: Smart Inspector
+            directory: apps/01-smart-inspector/backend
+          - app: Support Bot
+            directory: apps/02-support-bot/backend
+          - app: Agentic AI
+            directory: apps/03-agentic-ai/backend
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ${{ matrix.directory }}/requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Check dependency compatibility
+        run: python -m pip check
+
+      - name: Validate Python syntax
+        run: python -m compileall -q .
