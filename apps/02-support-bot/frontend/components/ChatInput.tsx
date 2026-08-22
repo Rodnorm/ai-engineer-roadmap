@@ -61,7 +61,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 		};
 
 		return (
-			<div className="shrink-0 bg-white rounded-2xl shadow-sm border border-slate-200 relative focus-within:border-sky-300 focus-within:ring-2 focus-within:ring-sky-100 transition-all duration-200 dark:border-slate-700 dark:bg-slate-900 dark:focus-within:border-sky-700 dark:focus-within:ring-sky-950">
+			<div className="animated-gradient-border shrink-0 rounded-2xl shadow-sm relative focus-within:ring-2 focus-within:ring-sky-100 transition-shadow duration-200 dark:focus-within:ring-sky-950">
 				<textarea
 					ref={textAreaRef}
 					value={value}
@@ -70,7 +70,7 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 					onChange={(e) => setValue(e.target.value)}
 					disabled={isLoading}
 					rows={3}
-					className="resize-none text-slate-900 placeholder:text-slate-400 w-full m-4 outline-none border-0 bg-transparent disabled:opacity-60 leading-relaxed pr-14 dark:text-slate-100 dark:placeholder:text-slate-500"
+					className="mx-5 my-4 w-[calc(100%_-_2.5rem)] resize-none border-0 bg-transparent pr-14 text-slate-900 placeholder:text-slate-400 outline-none disabled:opacity-60 leading-relaxed dark:text-slate-100 dark:placeholder:text-slate-500"
 				/>
 
 				{isLoading ? (
