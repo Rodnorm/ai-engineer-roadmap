@@ -16,3 +16,4 @@ apps/**/node_modules/
 # Agents
 apps/**/**/claude.md
 apps/**/**/agents.md
+.claude/settings.local.json
