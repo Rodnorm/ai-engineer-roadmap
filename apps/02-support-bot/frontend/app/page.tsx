@@ -1,14 +1,17 @@
 "use client";
 
 import Cards from "@/components/Cards";
+import AppInfo from "@/components/AppInfo";
 import ChatArea, { ChatAreaHandle } from "@/components/ChatArea";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useT } from "@/lib/i18n/I18nProvider";
+import { getAppInfo } from "@/lib/app-info";
+import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 
 export default function HomePage() {
 	const t = useT("home");
+	const { locale } = useI18n();
 
 	const chatRef = useRef<ChatAreaHandle>(null);
 	const [showCards, setShowCards] = useState(true);
@@ -41,6 +44,7 @@ export default function HomePage() {
 					</div>
 
 					<div className="flex items-center gap-1 mt-1">
+						<AppInfo config={getAppInfo(locale)} />
 						<Link
 							href="/faq"
 							className="shrink-0 inline-flex items-center text-xs font-medium text-slate-500 hover:text-sky-600 px-2.5 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
