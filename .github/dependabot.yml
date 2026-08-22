@@ -12,6 +12,13 @@ updates:
       frontend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: npm
@@ -25,6 +32,13 @@ updates:
       frontend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: npm
@@ -38,6 +52,13 @@ updates:
       frontend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: pip
@@ -51,6 +72,13 @@ updates:
       backend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: pip
@@ -64,6 +92,13 @@ updates:
       backend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: pip
@@ -77,6 +112,13 @@ updates:
       backend-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: github-actions
@@ -90,4 +132,11 @@ updates:
       github-actions:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
