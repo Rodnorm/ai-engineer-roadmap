@@ -128,11 +128,39 @@ AZURE_CLIENT_ID=<client-id>
 AZURE_CLIENT_SECRET=<client-secret>
 
 AZURE_LANGUAGE_ENDPOINT=<language-service-endpoint>
+
+# Cost and abuse guards
+MAX_QUERY_LENGTH=2000
+AZURE_MAX_OUTPUT_TOKENS=800
+AZURE_REQUEST_TIMEOUT_SECONDS=30
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_REQUESTS_PER_MINUTE=5
+RATE_LIMIT_REQUESTS_PER_DAY_PER_IP=30
+RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY=300
+TRUST_PROXY_HEADERS=true
 ```
 
 Do not commit the completed `.env` file.
 
 The identity must have permission to invoke the Azure AI Foundry agent and analyze text with the Azure AI Language resource.
+
+### Cost and abuse guards
+
+The backend enables conservative limits by default:
+
+- 2,000 characters per query
+- 800 maximum output tokens
+- 30-second Azure OpenAI timeout
+- No automatic OpenAI request retries
+- 5 requests per minute per IP
+- 30 requests per day per IP
+- 300 requests per day across the running process
+
+A rejected request returns HTTP `429` with a `Retry-After` header. Invalid or oversized input is rejected with HTTP `422` before any Azure service is called.
+
+The included limiter stores counters in the Python process. It is effective for local testing and basic abuse protection, but Vercel may run multiple isolated serverless instances and may restart them. Therefore, `RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY` is a per-instance safety limit, not a guaranteed deployment-wide spending cap. For a strict production-wide limit, add a shared counter such as Redis/KV or configure rate limiting at the Vercel Firewall, and keep the Azure deployment TPM quota and subscription spending limit low.
+
+When the backend runs behind Vercel, `TRUST_PROXY_HEADERS=true` allows it to identify the original client from `X-Forwarded-For`. Set it to `false` if Uvicorn is exposed directly to untrusted clients.
 
 ## Running locally
 
@@ -166,6 +194,14 @@ Check the service:
 ```bash
 curl http://localhost:8000/health
 ```
+
+Run the dependency-free rate-limiter tests:
+
+```bash
+python -m unittest test_rate_limit.py
+```
+
+To verify HTTP rate limiting locally without consuming many Azure calls, temporarily set `RATE_LIMIT_REQUESTS_PER_MINUTE=1`, restart the backend, and send two valid requests. The second request should return HTTP `429`.
 
 ### 2. Start the frontend
 
@@ -271,7 +307,7 @@ The application analyzes messages for personally identifiable information. Befor
 - Avoid returning detected PII to the browser unless it is required
 - Do not log complete user messages
 - Add authentication and authorization
-- Add rate limiting and request-size limits
+- Keep rate limits and request-size limits enabled
 - Define data-retention and deletion policies
 - Use least-privilege Azure roles
 - Prefer managed identities in production
@@ -286,7 +322,8 @@ This project is currently a learning application and should not be treated as a 
 - Authentication configuration should be standardized across Azure clients
 - Backend dependencies should be pinned for reproducible builds
 - PII should be redacted before the original message is forwarded to the agent
-- The API needs production rate limiting and observability
+- The in-memory limiter must be replaced by a shared-store or edge limiter for a strict deployment-wide quota
+- The API needs production authentication and observability
 
 ## Possible next steps
 

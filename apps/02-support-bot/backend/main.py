@@ -2,28 +2,63 @@
 Support Bot — backend (Azure OpenAI, /openai/v1, AAD).
 
 Exposes:
-    POST /query  
+    POST /query
     GET  /health
-
 """
 
-import os
 import logging
+import os
 
-from openai import OpenAI
-from dotenv import load_dotenv
-from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
 from azure.ai.projects import AIProjectClient
-from fastapi.middleware.cors import CORSMiddleware
 from azure.ai.textanalytics import TextAnalyticsClient
-from azure.identity import DefaultAzureCredential, ClientSecretCredential
+from azure.identity import ClientSecretCredential, DefaultAzureCredential
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
+from pydantic import BaseModel, Field, field_validator
+
+from rate_limit import InMemoryRateLimiter
 
 # ---------------------------------------------------------------------------
 # Setup
 # ---------------------------------------------------------------------------
-    
+
 load_dotenv()
+
+
+def _env_int(name: str, default: int, minimum: int = 1) -> int:
+    raw_value = os.getenv(name, str(default))
+    try:
+        value = int(raw_value)
+    except ValueError as exc:
+        raise RuntimeError(f"{name} must be an integer") from exc
+
+    if value < minimum:
+        raise RuntimeError(f"{name} must be at least {minimum}")
+    return value
+
+
+def _env_float(name: str, default: float, minimum: float = 0.1) -> float:
+    raw_value = os.getenv(name, str(default))
+    try:
+        value = float(raw_value)
+    except ValueError as exc:
+        raise RuntimeError(f"{name} must be a number") from exc
+
+    if value < minimum:
+        raise RuntimeError(f"{name} must be at least {minimum}")
+    return value
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name, str(default)).strip().lower()
+    if raw_value in {"1", "true", "yes", "on"}:
+        return True
+    if raw_value in {"0", "false", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} must be true or false")
+
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
@@ -32,11 +67,27 @@ logging.basicConfig(
 )
 log = logging.getLogger("support-bot")
 
-PORT = int(os.getenv("PORT", "8000"))
+PORT = _env_int("PORT", 8000)
 AGENT_NAME = os.getenv("AZURE_AGENT_NAME", "")
 AGENT_VERSION = os.getenv("AZURE_AGENT_VERSION", "")
 ENDPOINT = os.getenv("AZURE_AGENT_ENDPOINT", "").rstrip("/")
-AZURE_LANGUAGE_ENDPOINT= os.getenv("AZURE_LANGUAGE_ENDPOINT", "")
+AZURE_LANGUAGE_ENDPOINT = os.getenv("AZURE_LANGUAGE_ENDPOINT", "")
+
+MAX_QUERY_LENGTH = _env_int("MAX_QUERY_LENGTH", 2000)
+AZURE_MAX_OUTPUT_TOKENS = _env_int("AZURE_MAX_OUTPUT_TOKENS", 800)
+AZURE_REQUEST_TIMEOUT_SECONDS = _env_float(
+    "AZURE_REQUEST_TIMEOUT_SECONDS", 30.0
+)
+RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
+TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
+
+rate_limiter = InMemoryRateLimiter(
+    requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 5),
+    requests_per_day_per_ip=_env_int("RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 30),
+    global_requests_per_day=_env_int(
+        "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 300
+    ),
+)
 
 credential = ClientSecretCredential(
     tenant_id=os.environ["AZURE_TENANT_ID"],
@@ -51,9 +102,9 @@ def _build_language_client():
 
     return TextAnalyticsClient(
         endpoint=AZURE_LANGUAGE_ENDPOINT,
-        credential=credential
+        credential=credential,
     )
-    
+
 
 def _build_client():
     if not ENDPOINT or not AGENT_NAME or not AGENT_VERSION:
@@ -66,44 +117,46 @@ def _build_client():
 
     return project_client.get_openai_client()
 
+
 client: OpenAI | None = _build_client()
-language_client: OpenAI | None = _build_language_client()
+language_client: TextAnalyticsClient | None = _build_language_client()
 
 if language_client is None:
-    log.warning(
-        "Azure Language Client not configured (Language Client=%r).", language_client
-    )
-    
+    log.warning("Azure Language client not configured.")
+
 if client is None:
     log.warning(
-        "Azure Agent not configured (ENDPOINT=%r, AGENT_NAME=%r; AGENT_VERSION=%r). "
-        "/query will return 503 until env vars are set.",
-        ENDPOINT,
-        AGENT_NAME,
-        AGENT_VERSION
+        "Azure Agent not configured. /query will return 503 until the "
+        "required environment variables are set."
     )
 else:
-    log.info("Azure Agent client ready (ENDPOINT=%r, AGENT_NAME=%r; AGENT_VERSION=%r).",
-            ENDPOINT,
-            AGENT_NAME,
-            AGENT_VERSION
+    log.info(
+        "Azure Agent client ready (ENDPOINT=%r, AGENT_NAME=%r, "
+        "AGENT_VERSION=%r).",
+        ENDPOINT,
+        AGENT_NAME,
+        AGENT_VERSION,
     )
 
 
 class QueryRequest(BaseModel):
-    query: str
+    query: str = Field(min_length=1, max_length=MAX_QUERY_LENGTH)
 
-    
+    @field_validator("query")
+    @classmethod
+    def query_must_not_be_blank(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Query must not be blank")
+        return normalized
+
 
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="Support Bot", version="1.0.0", root_path="/api/backend")
+app = FastAPI(title="Support Bot", version="1.1.0", root_path="/api/backend")
 
-# CORS — the Next.js dev server runs on :3000. We allow any localhost/127.0.0.1
-# origin on any port to avoid Origin mismatches when the browser normalizes
-# `localhost` <-> `127.0.0.1`.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -114,102 +167,133 @@ app.add_middleware(
     ],
     allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
+
+def _client_ip(request: Request) -> str:
+    if TRUST_PROXY_HEADERS:
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            return forwarded_for.split(",", maxsplit=1)[0].strip()
+
+    return request.client.host if request.client else "unknown"
 
 
 @app.get("/health")
 def health() -> dict:
     return {
         "status": "ok",
-        "endpoint": ENDPOINT is not None,
-        "agent_name": AGENT_NAME is not None,
+        "endpoint": bool(ENDPOINT),
+        "agent_name": bool(AGENT_NAME),
         "azure_openai_configured": client is not None,
+        "azure_language_configured": language_client is not None,
+        "rate_limit_enabled": RATE_LIMIT_ENABLED,
     }
 
 
 @app.post("/query")
-async def query(request: QueryRequest):
-    if client is None:
-        raise HTTPException(status_code=503, detail="Azure OpenAI not configured")
+async def query(request_body: QueryRequest, request: Request):
+    if client is None or language_client is None:
+        raise HTTPException(status_code=503, detail="Azure AI not configured")
 
-    if request.query is None:
-        raise HTTPException(status_code=300, detail="Query must not be empty")
+    if RATE_LIMIT_ENABLED:
+        decision = rate_limiter.check_and_record(_client_ip(request))
+        if not decision.allowed:
+            log.warning(
+                "Rate limit rejected request (scope=%s, retry_after=%s).",
+                decision.scope,
+                decision.retry_after,
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Request limit reached. Please try again later.",
+                headers={"Retry-After": str(decision.retry_after)},
+            )
 
-    query: str = request.query
-    analysis = analyze_text(query)
+    query_text = request_body.query
 
     try:
+        analysis = analyze_text(query_text)
         response = ask_llm(
-            question=query,
+            question=query_text,
             language=analysis["language"]["isoCode"],
             sentiment=analysis["sentiment"]["value"],
-            key_phrases=analysis["keyPhrases"]
+            key_phrases=analysis["keyPhrases"],
         )
 
         return {
             "response": {
                 "queryResponse": response.strip(),
-                "nlpAnalysis": analysis
+                "nlpAnalysis": analysis,
             }
         }
+    except HTTPException:
+        raise
+    except Exception:
+        log.exception("Error querying Azure AI")
+        raise HTTPException(
+            status_code=502, detail="Error querying Azure AI"
+        ) from None
 
-    except Exception as e:
-        log.error("Error querying Azure OpenAI: %s", e)
-        raise HTTPException(status_code=500, detail="Error querying Azure OpenAI")
 
 def ask_llm(
     question: str,
     language: str,
     sentiment: str,
-    key_phrases: list[str]
-):
-     analysis_context = f"""
-        Additional analysis about the user's message:
+    key_phrases: list[str],
+) -> str:
+    analysis_context = f"""
+Additional analysis about the user's message:
 
-        Language: {language}
-        Sentiment: {sentiment}
-        Key phrases: {", ".join(key_phrases)}
-        Instructions:
-            - Answer in the same language as the user.
-            - Use the key phrases to better understand the topic.
-            - If the user is frustrated or the sentiment is negative,
-            respond empathetically but remain concise.
-            - Do not mention that sentiment analysis was performed.
+Language: {language}
+Sentiment: {sentiment}
+Key phrases: {", ".join(key_phrases)}
 
-        User question:
-        {question}
-        """
-     response = client.responses.create(
-            input=analysis_context,
-            extra_body={
-                "agent_reference": {
-                    "name": AGENT_NAME,
-                    "version": AGENT_VERSION,
-                    "type": "agent_reference"
-                }
+Instructions:
+- Answer in the same language as the user.
+- Use the key phrases to better understand the topic.
+- If the user is frustrated or the sentiment is negative, respond
+  empathetically but remain concise.
+- Do not mention that sentiment analysis was performed.
+
+User question:
+{question}
+"""
+
+    response = client.with_options(
+        timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+        max_retries=0,
+    ).responses.create(
+        input=analysis_context,
+        max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
+        extra_body={
+            "agent_reference": {
+                "name": AGENT_NAME,
+                "version": AGENT_VERSION,
+                "type": "agent_reference",
             }
+        },
     )
-     return response.output_text
+    return response.output_text
 
 
-
-
-def analyze_text(text: str):
+def analyze_text(text: str) -> dict:
     documents = [text]
     language_result = language_client.detect_language(documents)[0]
     pii_result = language_client.recognize_pii_entities(documents)[0]
     entities_result = language_client.recognize_entities(documents)[0]
     key_phrase_result = language_client.extract_key_phrases(documents)[0]
-    sentiment_result = language_client.analyze_sentiment(documents, show_opinion_mining=True)[0]
+    sentiment_result = language_client.analyze_sentiment(
+        documents, show_opinion_mining=True
+    )[0]
 
     return {
         "language": {
             "name": language_result.primary_language.name,
             "isoCode": language_result.primary_language.iso6391_name,
-            "confidence": language_result.primary_language.confidence_score
+            "confidence": language_result.primary_language.confidence_score,
         },
         "sentiment": {
             "value": sentiment_result.sentiment,
@@ -222,7 +306,7 @@ def analyze_text(text: str):
             {
                 "text": entity.text,
                 "category": entity.category,
-                "confidence": entity.confidence_score
+                "confidence": entity.confidence_score,
             }
             for entity in pii_result.entities
         ],
@@ -231,12 +315,11 @@ def analyze_text(text: str):
                 "text": entity.text,
                 "category": entity.category,
                 "subcategory": entity.subcategory,
-                "confidence": entity.confidence_score
+                "confidence": entity.confidence_score,
             }
             for entity in entities_result.entities
-        ]
+        ],
     }
-
 
 
 # ---------------------------------------------------------------------------
