@@ -1,7 +1,7 @@
 python-dotenv
 azure-identity
 openai>=1.40
-fastapi>=0.111
+fastapi>=0.141.1
 pydantic>=2.7
 uvicorn[standard]>=0.30
 python-multipart>=0.0.9
