@@ -1,4 +1,4 @@
-# App 03 — AI Content Studio
+# App 03 — promptForge
 
 A Next.js content studio for marketers to turn a brief into three structured content variations using distinct personas.
 
@@ -20,7 +20,7 @@ The frontend is complete and runs with local preview data. Azure OpenAI generati
 ## Structure
 
 ```text
-03-agentic-ai/
+03-prompt-forge/
 ├── backend/      # API scaffold; integration pending
 ├── frontend/     # Complete interactive frontend preview
 ├── README.md
@@ -29,7 +29,7 @@ The frontend is complete and runs with local preview data. Azure OpenAI generati
 
 ## Frontend setup
 
-From `apps/03-agentic-ai/frontend`:
+From `apps/03-prompt-forge/frontend`:
 
 ```powershell
 npm install

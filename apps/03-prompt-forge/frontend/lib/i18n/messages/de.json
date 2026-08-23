@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "AI Content Studio",
+    "title": "promptForge",
     "description": "Erstellen Sie strukturierte Marketinginhalte in drei Varianten."
   },
   "controls": {
@@ -11,7 +11,7 @@
     "close": "Schließen"
   },
   "studio": {
-    "eyebrow": "AI Content Studio",
+    "eyebrow": "promptForge",
     "title": "Vom einfachen Briefing zu",
     "titleAccent": "Inhalten, die überzeugen.",
     "intro": "Wählen Sie eine Persona, konfigurieren Sie die Generierung und vergleichen Sie drei strukturierte Varianten nebeneinander.",

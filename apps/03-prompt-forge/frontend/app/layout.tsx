@@ -24,7 +24,7 @@ const dictionaries = Object.fromEntries(
 
 export async function generateMetadata(): Promise<Metadata> {
   const store = await cookies();
-  const locale = resolveLocale(store.get("content-studio-locale")?.value);
+  const locale = resolveLocale(store.get("prompt-forge-locale")?.value);
   return {
     title: dictionaries[locale].app.title,
     description: dictionaries[locale].app.description,
@@ -33,14 +33,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const store = await cookies();
-  const locale = resolveLocale(store.get("content-studio-locale")?.value);
+  const locale = resolveLocale(store.get("prompt-forge-locale")?.value);
 
   return (
     <html lang={locale} suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("content-studio-theme");var d=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("prompt-forge-theme");var d=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
           }}
         />
       </head>

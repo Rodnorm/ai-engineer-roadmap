@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "AI Content Studio",
+    "title": "promptForge",
     "description": "Crie conteúdo de marketing estruturado em três variações distintas."
   },
   "controls": {
@@ -11,7 +11,7 @@
     "close": "Fechar"
   },
   "studio": {
-    "eyebrow": "AI Content Studio",
+    "eyebrow": "promptForge",
     "title": "Transforme um briefing simples em",
     "titleAccent": "conteúdo pronto para publicar.",
     "intro": "Escolha uma persona, ajuste os parâmetros de geração e compare três variações estruturadas lado a lado.",
