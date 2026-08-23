@@ -1,0 +1,198 @@
+{
+  "name": "promptForge Prompt Test Harness",
+  "version": "1.0.0",
+  "purpose": "Compare four prompt-engineering strategies on the same classification task.",
+  "classificationTask": {
+    "description": "Classify a marketing/content brief into exactly one content type.",
+    "labels": [
+      "product_launch",
+      "thought_leadership",
+      "tutorial",
+      "case_study",
+      "announcement"
+    ],
+    "labelDefinitions": {
+      "product_launch": "Introduces or promotes a new product, feature, or service.",
+      "thought_leadership": "Expresses an expert opinion, trend analysis, or strategic point of view.",
+      "tutorial": "Teaches the audience how to do something step by step.",
+      "case_study": "Describes a real or hypothetical customer problem, solution, and result.",
+      "announcement": "Communicates company, event, partnership, hiring, award, or organizational news."
+    },
+    "inputPlaceholder": "{{brief}}"
+  },
+  "prompts": [
+    {
+      "id": "zero-shot-01",
+      "strategy": "zero_shot",
+      "title": "Minimal zero-shot classification",
+      "systemPrompt": "You are a content brief classifier.",
+      "userPrompt": "Classify the following content brief into exactly one category:\nproduct_launch, thought_leadership, tutorial, case_study, announcement.\n\nBrief:\n{{brief}}\n\nReturn only the category name."
+    },
+    {
+      "id": "zero-shot-02",
+      "strategy": "zero_shot",
+      "title": "Zero-shot with label definitions",
+      "systemPrompt": "You classify marketing and editorial briefs accurately and consistently.",
+      "userPrompt": "Choose exactly one label for the brief.\n\nLabels:\n- product_launch: introduces or promotes a new product, feature, or service\n- thought_leadership: expert opinion, trend analysis, or strategic point of view\n- tutorial: teaches how to do something step by step\n- case_study: describes a customer problem, solution, and result\n- announcement: communicates company, event, partnership, hiring, award, or organizational news\n\nBrief:\n{{brief}}\n\nAnswer with only the label."
+    },
+    {
+      "id": "zero-shot-03",
+      "strategy": "zero_shot",
+      "title": "Zero-shot with decision rule",
+      "systemPrompt": "You are a strict single-label classifier.",
+      "userPrompt": "Classify the brief into one of these labels:\nproduct_launch | thought_leadership | tutorial | case_study | announcement\n\nDecision rule: choose the label that best represents the PRIMARY purpose of the content, even if the brief contains elements of other categories.\n\nBrief:\n{{brief}}\n\nReturn only one label."
+    },
+    {
+      "id": "few-shot-01",
+      "strategy": "few_shot",
+      "title": "Few-shot with one example per label",
+      "systemPrompt": "You classify content briefs using the examples as guidance.",
+      "userPrompt": "Classify the final brief into exactly one label.\n\nExamples:\nBrief: \"Introduce our new AI-powered support dashboard and explain its main benefits.\"\nLabel: product_launch\n\nBrief: \"Explain why companies should treat AI governance as a product discipline, not only compliance.\"\nLabel: thought_leadership\n\nBrief: \"Show developers how to configure streaming responses in a Next.js application.\"\nLabel: tutorial\n\nBrief: \"Describe how a retailer reduced support response time by 40% after adopting our assistant.\"\nLabel: case_study\n\nBrief: \"Tell customers that our company will speak at the Azure AI conference next month.\"\nLabel: announcement\n\nNow classify this brief:\n{{brief}}\n\nReturn only the label."
+    },
+    {
+      "id": "few-shot-02",
+      "strategy": "few_shot",
+      "title": "Few-shot with ambiguous examples",
+      "systemPrompt": "You are a careful classifier. Focus on the brief's main communication objective.",
+      "userPrompt": "Use the examples below to infer the correct class.\n\nExample 1:\nBrief: \"We added document upload to our AI assistant. Write a post introducing the feature and why users should try it.\"\nLabel: product_launch\n\nExample 2:\nBrief: \"Our CTO believes agentic AI will change how internal enterprise tools are designed. Explain the argument.\"\nLabel: thought_leadership\n\nExample 3:\nBrief: \"Create a practical guide showing how to connect an Azure model to a TypeScript backend.\"\nLabel: tutorial\n\nExample 4:\nBrief: \"Show how a healthcare client used our bot to reduce repetitive billing questions.\"\nLabel: case_study\n\nExample 5:\nBrief: \"Announce our partnership with Contoso and the date of the joint webinar.\"\nLabel: announcement\n\nTarget brief:\n{{brief}}\n\nReturn exactly one label."
+    },
+    {
+      "id": "few-shot-03",
+      "strategy": "few_shot",
+      "title": "Few-shot with contrastive examples",
+      "systemPrompt": "You distinguish between similar content categories.",
+      "userPrompt": "Classify the target brief. Pay attention to these contrasts:\n\nA post centered on a NEW FEATURE -> product_launch\nA post centered on an EXPERT VIEWPOINT -> thought_leadership\nA post centered on HOW-TO STEPS -> tutorial\nA post centered on CUSTOMER RESULTS -> case_study\nA post centered on COMPANY NEWS -> announcement\n\nExamples:\n\"Launch our new analytics dashboard.\" -> product_launch\n\"Argue that AI evaluation should be part of CI/CD.\" -> thought_leadership\n\"Teach users how to build a RAG index.\" -> tutorial\n\"Explain how a client cut costs after adopting the product.\" -> case_study\n\"Share that we opened a new office in Berlin.\" -> announcement\n\nTarget brief:\n{{brief}}\n\nReturn only the label."
+    },
+    {
+      "id": "chain-of-thought-01",
+      "strategy": "chain_of_thought",
+      "title": "Criteria-based reasoning",
+      "systemPrompt": "You are a content classifier. Analyze the brief using its primary objective, audience intent, and evidence pattern. Do the detailed reasoning internally.",
+      "userPrompt": "Classify the brief into exactly one label:\nproduct_launch, thought_leadership, tutorial, case_study, announcement.\n\nThink through these questions internally:\n1. Is the brief mainly introducing something new?\n2. Is it mainly presenting an opinion or strategic viewpoint?\n3. Is it mainly teaching a process?\n4. Is it mainly presenting a customer's problem and measurable result?\n5. Is it mainly communicating organizational news?\n\nBrief:\n{{brief}}\n\nReturn the final label plus one short sentence explaining the deciding criterion."
+    },
+    {
+      "id": "chain-of-thought-02",
+      "strategy": "chain_of_thought",
+      "title": "Elimination-based reasoning",
+      "systemPrompt": "You classify briefs by comparing candidate labels. Perform the detailed comparison internally and expose only a concise rationale.",
+      "userPrompt": "Classify this brief into one category:\nproduct_launch | thought_leadership | tutorial | case_study | announcement\n\nInternally eliminate labels that do not fit, then choose the label that best matches the PRIMARY purpose.\n\nBrief:\n{{brief}}\n\nOutput format:\nLabel: <label>\nReason: <one concise sentence>"
+    },
+    {
+      "id": "structured-output-01",
+      "strategy": "structured_output",
+      "title": "JSON classification",
+      "systemPrompt": "You are a strict content classifier. Return valid JSON only.",
+      "userPrompt": "Classify the brief into exactly one of these labels:\nproduct_launch, thought_leadership, tutorial, case_study, announcement.\n\nBrief:\n{{brief}}\n\nReturn JSON with this exact shape:\n{\n  \"label\": \"product_launch | thought_leadership | tutorial | case_study | announcement\",\n  \"confidence\": 0.0,\n  \"reason\": \"one concise sentence\"\n}\n\nconfidence must be a number between 0 and 1.",
+      "expectedSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "confidence",
+          "reason"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "enum": [
+              "product_launch",
+              "thought_leadership",
+              "tutorial",
+              "case_study",
+              "announcement"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "structured-output-02",
+      "strategy": "structured_output",
+      "title": "JSON classification with secondary candidate",
+      "systemPrompt": "You are a strict classifier that produces machine-readable output only.",
+      "userPrompt": "Classify the following content brief.\n\nAllowed labels:\nproduct_launch, thought_leadership, tutorial, case_study, announcement.\n\nBrief:\n{{brief}}\n\nReturn only a JSON object matching the requested schema. The primaryLabel is the best classification. secondaryLabel may be null if there is no meaningful ambiguity.",
+      "expectedSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "primaryLabel",
+          "secondaryLabel",
+          "confidence",
+          "reason"
+        ],
+        "properties": {
+          "primaryLabel": {
+            "type": "string",
+            "enum": [
+              "product_launch",
+              "thought_leadership",
+              "tutorial",
+              "case_study",
+              "announcement"
+            ]
+          },
+          "secondaryLabel": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "product_launch",
+                  "thought_leadership",
+                  "tutorial",
+                  "case_study",
+                  "announcement"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "suggestedTestCases": [
+    {
+      "id": "case-01",
+      "brief": "Write a LinkedIn post introducing promptForge, focusing on streaming generation and structured outputs.",
+      "expectedLabel": "product_launch"
+    },
+    {
+      "id": "case-02",
+      "brief": "Write an article arguing that companies should evaluate prompts with the same discipline they apply to automated tests.",
+      "expectedLabel": "thought_leadership"
+    },
+    {
+      "id": "case-03",
+      "brief": "Create a step-by-step guide showing how to use Structured Outputs with Pydantic and the Azure Responses API.",
+      "expectedLabel": "tutorial"
+    },
+    {
+      "id": "case-04",
+      "brief": "Explain how a support team used an AI assistant to reduce average response time from 12 minutes to 7 minutes.",
+      "expectedLabel": "case_study"
+    },
+    {
+      "id": "case-05",
+      "brief": "Announce that our company will present promptForge at a developer meetup in Düsseldorf next month.",
+      "expectedLabel": "announcement"
+    }
+  ]
+}
