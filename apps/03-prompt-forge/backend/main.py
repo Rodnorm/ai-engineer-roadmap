@@ -1,4 +1,4 @@
-"""App 03 FastAPI backend.
+"""promptForge FastAPI backend.
 
 Exposes:
     GET /health
@@ -22,7 +22,7 @@ logging.basicConfig(
     level=LOG_LEVEL,
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
-log = logging.getLogger("agentic-ai")
+log = logging.getLogger("prompt-forge")
 
 PORT = int(os.getenv("PORT", "8000"))
 
@@ -31,7 +31,7 @@ PORT = int(os.getenv("PORT", "8000"))
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
-    title="Agentic AI Application",
+    title="promptForge",
     version="0.1.0",
     root_path="/api/backend",
 )
@@ -53,7 +53,7 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "app": "app-03"}
+    return {"status": "ok", "app": "prompt-forge"}
 
 
 # ---------------------------------------------------------------------------

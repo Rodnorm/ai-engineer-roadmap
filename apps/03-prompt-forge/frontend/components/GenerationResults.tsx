@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { Variation } from "@/components/ContentStudio";
+import type { Variation } from "@/components/PromptForge";
 import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function GenerationResults({ results, isGenerating, personaName }: { results: Variation[]; isGenerating: boolean; personaName: string }) {

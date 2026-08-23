@@ -39,7 +39,7 @@ const PERSONAS: Array<{ id: PersonaId; icon: string }> = [
 
 const BLOCKED_TERMS = /build a bomb|make a weapon|explosive device|construir uma bomba|arma explosiva|sprengstoff bauen/i;
 
-export default function ContentStudio() {
+export default function PromptForge() {
   const t = useT("studio");
   const personasT = useT("personas");
   const demoT = useT("demo");

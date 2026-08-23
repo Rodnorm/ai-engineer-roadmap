@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useT } from "@/lib/i18n/I18nProvider";
 
-const THEME_KEY = "content-studio-theme";
+const THEME_KEY = "prompt-forge-theme";
 
 export default function ThemeToggle() {
   const t = useT("controls");

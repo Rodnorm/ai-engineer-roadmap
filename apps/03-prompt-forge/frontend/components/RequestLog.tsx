@@ -1,6 +1,6 @@
 "use client";
 
-import type { PersonaId, RequestEntry } from "@/components/ContentStudio";
+import type { PersonaId, RequestEntry } from "@/components/PromptForge";
 import { useT } from "@/lib/i18n/I18nProvider";
 
 export default function RequestLog({ requests, onClear, personaName }: { requests: RequestEntry[]; onClear: () => void; personaName: (persona: PersonaId) => string }) {

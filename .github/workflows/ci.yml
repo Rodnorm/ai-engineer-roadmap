@@ -27,8 +27,8 @@ jobs:
             directory: apps/01-smart-inspector/frontend
           - app: Support Bot
             directory: apps/02-support-bot/frontend
-          - app: Agentic AI
-            directory: apps/03-agentic-ai/frontend
+          - app: promptForge
+            directory: apps/03-prompt-forge/frontend
 
     defaults:
       run:
@@ -68,8 +68,8 @@ jobs:
             directory: apps/01-smart-inspector/backend
           - app: Support Bot
             directory: apps/02-support-bot/backend
-          - app: Agentic AI
-            directory: apps/03-agentic-ai/backend
+          - app: promptForge
+            directory: apps/03-prompt-forge/backend
 
     defaults:
       run:

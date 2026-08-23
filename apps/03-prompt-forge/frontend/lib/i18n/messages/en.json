@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "AI Content Studio",
+    "title": "promptForge",
     "description": "Create structured marketing content in three distinct variations."
   },
   "controls": {
@@ -11,7 +11,7 @@
     "close": "Close"
   },
   "studio": {
-    "eyebrow": "AI Content Studio",
+    "eyebrow": "promptForge",
     "title": "Turn a simple brief into",
     "titleAccent": "content worth publishing.",
     "intro": "Choose a persona, tune the generation settings, and compare three structured variations side by side.",
