@@ -123,6 +123,9 @@ export default function PromptForge() {
   const [error, setError] = useState<"brief" | "safety" | "api" | null>(null);
   const [safetyCategories, setSafetyCategories] = useState<Record<string, number>>({});
   const abortRef = useRef<AbortController | null>(null);
+  const detectedSafetyCategories = Object.entries(safetyCategories).filter(([, severity]) => severity > 0);
+  const hasSafetyAnalysis = Object.keys(safetyCategories).length > 0;
+  const hasDetectedContent = detectedSafetyCategories.length > 0;
 
   const loadRequests = useCallback(async () => {
     try {
@@ -357,37 +360,28 @@ export default function PromptForge() {
                 }}
                 rows={6}
                 aria-invalid={error !== null}
-                aria-describedby={error || Object.keys(safetyCategories).length > 0 ? "brief-error" : undefined}
+                aria-describedby={error || hasSafetyAnalysis ? "brief-error" : undefined}
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
-              {error === "safety" || Object.keys(safetyCategories).length > 0 ? (
+              {error === "safety" || hasSafetyAnalysis ? (
                 <div
                   id="brief-error"
                   role={error === "safety" ? "alert" : "status"}
-                  className={`mt-3 rounded-xl border p-4 text-sm ${error === "safety" ? "border-red-300 bg-red-50 text-error dark:border-red-900 dark:bg-red-950/40" : "border-emerald-300 bg-emerald-50 text-success dark:border-emerald-900 dark:bg-emerald-950/40"}`}
+                  className={`mt-3 rounded-xl border p-4 text-sm ${error === "safety" ? "border-red-300 bg-red-50 text-error dark:border-red-900 dark:bg-red-950/40" : hasDetectedContent ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300" : "border-emerald-300 bg-emerald-50 text-success dark:border-emerald-900 dark:bg-emerald-950/40"}`}
                 >
-                  <p className="font-semibold">{error === "safety" ? t("safetyBlocked") : t("safetyPassed")}</p>
-                  <p className="mt-1 text-xs">{error === "safety" ? t("safetyBlockedDescription") : t("safetyPassedDescription")}</p>
-                  <p className="mt-3 text-xs font-medium">{t("safetyCategories")}</p>
-                  <div className="mt-2 overflow-hidden rounded-lg border border-current/20">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-current/5">
-                        <tr>
-                          <th className="px-3 py-2 font-medium">{t("safetyCategory")}</th>
-                          <th className="px-3 py-2 text-right font-medium">{t("safetySeverityLabel")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(safetyCategories).map(([category, severity]) => (
-                          <tr key={category} className="border-t border-current/15">
-                            <td className="px-3 py-2">{safetyCategoryName(category)}</td>
-                            <td className="px-3 py-2 text-right">{t("safetySeverity", { value: severity })}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <p className="flex items-center gap-2 font-semibold"><ShieldIcon />{error === "safety" ? t("safetyBlocked") : hasDetectedContent ? t("safetyAnalysis") : t("safetyPassed")}</p>
+                  <p className="mt-1 text-xs">{error === "safety" ? t("safetyBlockedDescription") : hasDetectedContent ? t("safetyDetectedDescription") : t("safetyPassedDescription")}</p>
+                  {hasDetectedContent && (
+                    <div className="mt-3 space-y-2">
+                      {detectedSafetyCategories.map(([category, severity]) => (
+                        <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-current/20 px-3 py-2 text-xs">
+                          <span className="font-medium">{safetyCategoryName(category)}</span>
+                          <span className="rounded-full bg-current/10 px-2 py-1 font-medium">{t("safetySeverity", { value: severity })}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : error ? (
                 <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "api" ? t("apiError") : t("briefError")}</p>
