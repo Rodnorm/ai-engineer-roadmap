@@ -17,6 +17,8 @@ Fill these values in `.env`:
 AZURE_OPENAI_ENDPOINT=https://<resource-name>.services.ai.azure.com/openai/v1
 AZURE_OPENAI_DEPLOYMENT=<deployment-name>
 AZURE_OPENAI_API_KEY=<api-key>
+AZURE_CONTENT_SAFETY_ENDPOINT=https://<resource-name>.cognitiveservices.azure.com
+AZURE_CONTENT_SAFETY_API_KEY=<api-key>
 ```
 
 Do not commit `.env`. The server still starts without Azure credentials, but
@@ -36,7 +38,7 @@ documentation is available at `/api/backend/docs`.
 - `GET /health` reports service and Azure configuration status.
 - `POST /generate` generates exactly three structured variations.
 - `GET /log?limit=20` returns recent process-local generation entries.
-- `POST /safety/check` runs the current lightweight blocked-term check.
+- `POST /safety/check` analyzes text with Azure Content Safety when configured.
 - `GET /prompts` returns the bundled prompt test harness.
 
 ### Generate content
@@ -76,5 +78,6 @@ Invoke-RestMethod `
 ## Notes
 
 - Request logs are intentionally kept in memory and reset with the process.
-- Safety is currently a small heuristic, not Azure AI Content Safety.
+- `/generate` checks the brief with Content Safety before calling the model.
+- Without Content Safety credentials, the API falls back to a small local blocked-term heuristic.
 - Application logs are JSON and every response includes an `x-request-id` header.

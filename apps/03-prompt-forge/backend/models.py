@@ -50,6 +50,7 @@ class SafetyRequest(BaseModel):
 
 class SafetyResponse(BaseModel):
     safe: bool
+    severity: list[str] = Field(default_factory=list)
     categories: dict[str, int] = Field(default_factory=dict)
 
 

@@ -20,6 +20,10 @@ import uuid
 from pathlib import Path
 
 from dotenv import load_dotenv
+from azure.ai.contentsafety import ContentSafetyClient
+from azure.ai.contentsafety.models import AnalyzeTextOptions, TextCategory
+from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import AzureError
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
@@ -105,6 +109,9 @@ PORT = _env_int("PORT", 8000)
 AZURE_MAX_OUTPUT_TOKENS = _env_int("AZURE_MAX_OUTPUT_TOKENS", 700, 1)
 AZURE_REQUEST_TIMEOUT_SECONDS = _env_float("AZURE_REQUEST_TIMEOUT_SECONDS", 30.0, 1.0)
 
+CONTENT_SAFETY_ENDPOINT = os.getenv("AZURE_CONTENT_SAFETY_ENDPOINT", "").rstrip("/")
+CONTENT_SAFETY_API_KEY = os.getenv("AZURE_CONTENT_SAFETY_API_KEY", "")
+
 COST_PROMPT_PER_1K = _env_float("COST_PROMPT_PER_1K", 0.00015, 0.0)
 COST_COMPLETION_PER_1K = _env_float("COST_COMPLETION_PER_1K", 0.0006, 0.0)
 
@@ -123,6 +130,22 @@ if client is None:
     )
 else:
     log.info("Azure OpenAI client ready (endpoint=%s, deployment=%s).", ENDPOINT, DEPLOYMENT)
+
+
+def _build_content_safety_client() -> ContentSafetyClient | None:
+    if not CONTENT_SAFETY_ENDPOINT or not CONTENT_SAFETY_API_KEY:
+        return None
+    return ContentSafetyClient(
+        CONTENT_SAFETY_ENDPOINT,
+        AzureKeyCredential(CONTENT_SAFETY_API_KEY),
+    )
+
+
+content_safety_client = _build_content_safety_client()
+if content_safety_client is None:
+    log.warning("Azure Content Safety is not configured. Using the local heuristic.")
+else:
+    log.info("Azure Content Safety client ready (endpoint=%s).", CONTENT_SAFETY_ENDPOINT)
 
 
 # ---------------------------------------------------------------------------
@@ -196,13 +219,45 @@ BLOCKED_TERMS = (
 )
 
 
-def _safety_check(text: str) -> SafetyResponse:
+def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
     lowered = text.lower()
     for term in BLOCKED_TERMS:
         if term in lowered:
-            return SafetyResponse(safe=False, categories={"blocked_term": 4})
-    return SafetyResponse(safe=True)
+            return SafetyResponse(
+                safe=False,
+                severity=["blocked_term: 4"],
+                categories={"blocked_term": 4},
+            )
 
+    if content_safety_client is None:
+        return SafetyResponse(safe=True)
+
+    try:
+        response = content_safety_client.analyze_text(AnalyzeTextOptions(text=text))
+    except AzureError:
+        log.exception("content_safety_request_failed", extra={"request_id": request_id})
+        raise HTTPException(
+            status_code=502,
+            detail="Azure Content Safety request failed.",
+        ) from None
+
+    category_names = {
+        TextCategory.HATE: "hate",
+        TextCategory.SELF_HARM: "self_harm",
+        TextCategory.SEXUAL: "sexual",
+        TextCategory.VIOLENCE: "violence",
+    }
+    categories = {
+        category_names[item.category]: item.severity or 0
+        for item in response.categories_analysis
+        if item.category in category_names
+    }
+    severity = [f"{name}: {value}" for name, value in categories.items() if value > 0]
+    return SafetyResponse(
+        safe=all(value < 2 for value in categories.values()),
+        severity=severity,
+        categories=categories,
+    )
 
 # ---------------------------------------------------------------------------
 # Prompts test harness loader
@@ -268,11 +323,23 @@ def health() -> dict:
         "app": "prompt-forge",
         "azure_openai_configured": client is not None,
         "deployment": DEPLOYMENT or None,
+        "safety_configured": content_safety_client is not None,
     }
 
 
 @app.post("/generate", response_model=GenerateResponse)
 async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
+    safety = _safety_check(req.brief, request.state.request_id)
+    if not safety.safe:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "unsafe_content",
+                "message": "The brief was blocked by Content Safety.",
+                "categories": safety.categories,
+            },
+        )
+
     if client is None:
         raise HTTPException(
             status_code=503,
@@ -371,8 +438,8 @@ def get_log(limit: int = 20) -> dict:
 
 
 @app.post("/safety/check", response_model=SafetyResponse)
-def safety_check(req: SafetyRequest) -> SafetyResponse:
-    return _safety_check(req.text)
+def safety_check(req: SafetyRequest, request: Request) -> SafetyResponse:
+    return _safety_check(req.text, request.state.request_id)
 
 
 @app.get("/prompts")
