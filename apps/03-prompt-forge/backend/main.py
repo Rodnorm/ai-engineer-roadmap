@@ -559,6 +559,10 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
         started = time.perf_counter()
         streamed_text = ""
         emitted_variations = 0
+        yield _sse_event(
+            "safety",
+            {"safe": safety.safe, "categories": safety.categories},
+        )
         yield _sse_event("start", {"request_id": request_id})
         try:
             with client.with_options(
