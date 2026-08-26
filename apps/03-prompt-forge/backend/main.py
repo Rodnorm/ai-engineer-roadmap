@@ -15,7 +15,9 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import time
+import unicodedata
 import uuid
 from pathlib import Path
 
@@ -218,16 +220,41 @@ BLOCKED_TERMS = (
     "sprengstoff bauen",
 )
 
+BLOCKED_PATTERNS = (
+    re.compile(
+        r"\b(?:fazer|montar|construir|fabricar|criar|produzir)\b.{0,40}"
+        r"\b(?:bomba|explosivo|arma)\b"
+    ),
+    re.compile(
+        r"\b(?:build|make|construct|assemble|create)\b.{0,40}"
+        r"\b(?:bomb|weapon|explosive)\b"
+    ),
+    re.compile(
+        r"\b(?:bauen|herstellen|montieren)\b.{0,40}"
+        r"\b(?:bombe|sprengstoff|waffe)\b"
+    ),
+)
+
+
+def _normalize_safety_text(text: str) -> str:
+    normalized = unicodedata.normalize("NFKD", text.lower())
+    return "".join(char for char in normalized if not unicodedata.combining(char))
+
+
+def _is_locally_blocked(text: str) -> bool:
+    normalized = _normalize_safety_text(text)
+    return any(term in normalized for term in BLOCKED_TERMS) or any(
+        pattern.search(normalized) for pattern in BLOCKED_PATTERNS
+    )
+
 
 def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
-    lowered = text.lower()
-    for term in BLOCKED_TERMS:
-        if term in lowered:
-            return SafetyResponse(
-                safe=False,
-                severity=["blocked_term: 4"],
-                categories={"blocked_term": 4},
-            )
+    if _is_locally_blocked(text):
+        return SafetyResponse(
+            safe=False,
+            severity=["blocked_term: 4"],
+            categories={"blocked_term": 4},
+        )
 
     if content_safety_client is None:
         return SafetyResponse(safe=True)
