@@ -12,9 +12,9 @@ O **App 03 — promptForge** é um estúdio de conteúdo marketing que transform
 
 | Camada | Estado | Observações |
 |---|---|---|
-| Frontend (UI/UX) | ✅ Pronto | `PromptForge.tsx` hoje roda com `buildVariations()` mockado localmente; nenhuma chamada HTTP é feita. |
-| Backend FastAPI | 🟡 Esqueleto | `main.py` tem apenas `/health`, CORS para `localhost:3000/3001`, `root_path="/api/backend"`, logger e leitura de envs Azure (ainda não usadas). |
-| `backend/agent.py` | ⛔ Stub | Apenas um docstring. Aqui morará a lógica de orquestração. |
+| Frontend (UI/UX) | ✅ Integrado | `PromptForge.tsx` usa os endpoints de geração, safety e log, com cancelamento via `AbortController`. |
+| Backend FastAPI | ✅ Fase 1+2 pronta | Geração estruturada, personas, custos, log, safety, prompts e health implementados. |
+| Integração Azure OpenAI | ✅ Pronta | Integração direta em `main.py`, seguindo o padrão simples dos Apps 01 e 02. |
 | `backend/prompts/app3_prompt_test_harness.json` | ✅ Pronto | 10 prompts de classificação + casos de teste — útil para reuso do "test harness" como classificador prévio do brief. |
 | Azure OpenAI | ❌ Não configurado | Variáveis `AZURE_OPENAI_ENDPOINT/DEPLOYMENT/API_KEY` ainda sem valor real. |
 | Content Safety | ❌ Não integrado | Hoje só existe um regex client-side em `PromptForge.tsx` (linha 40). |
@@ -195,15 +195,15 @@ COST_COMPLETION_PER_1K=0.0006
 
 ## 10. Critérios de pronto (Definition of Done) — Fase 1+2
 
-- [ ] `uvicorn main:app` sobe sem warning crítico.
-- [ ] `curl /api/backend/health` retorna `{status, app, model_configured}`.
-- [ ] `curl -X POST /api/backend/generate` com payload válido retorna 3 variações estruturadas (com Azure configurado) ou 503 (sem Azure) — nunca 500.
-- [ ] `curl -X POST /api/backend/generate` com brief <20 chars retorna 422 com mensagem clara.
-- [ ] `curl /api/backend/log` lista a requisição anterior com tokens e custo.
-- [ ] `curl /api/backend/prompts` retorna o test harness.
-- [ ] `curl -X POST /api/backend/safety/check` retorna `{safe: true}`.
-- [ ] README do backend atualizado com setup, envs e exemplos.
-- [ ] Sem `print()` no código de produção (só `logging`).
+- [x] `uvicorn main:app` sobe sem warning crítico.
+- [x] `curl /api/backend/health` retorna o status e a configuração do modelo.
+- [x] `curl -X POST /api/backend/generate` com payload válido retorna 3 variações estruturadas (com Azure configurado) ou 503 (sem Azure) — nunca 500.
+- [x] `curl -X POST /api/backend/generate` com brief <20 chars retorna 422 com mensagem clara.
+- [x] `curl /api/backend/log` lista a requisição anterior com tokens e custo.
+- [x] `curl /api/backend/prompts` retorna o test harness.
+- [x] `curl -X POST /api/backend/safety/check` retorna `{safe: true}`.
+- [x] README do backend atualizado com setup, envs e exemplos.
+- [x] Sem `print()` no código de produção (só `logging`).
 
 ## 11. Próximos passos Imediatos (próxima 1h)
 
