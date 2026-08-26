@@ -1,0 +1,82 @@
+[
+  {
+    "id": "saas-launch",
+    "translations": {
+      "en": { "label": "SaaS launch", "prompt": "Create a launch campaign for an AI project management tool aimed at small software teams." },
+      "pt-BR": { "label": "Lançamento SaaS", "prompt": "Crie uma campanha de lançamento para uma ferramenta de gestão de projetos com IA voltada a pequenas equipes de software." },
+      "de": { "label": "SaaS-Einführung", "prompt": "Erstellen Sie eine Einführungskampagne für ein KI-Projektmanagement-Tool für kleine Softwareteams." }
+    }
+  },
+  {
+    "id": "ecommerce-sale",
+    "translations": {
+      "en": { "label": "E-commerce sale", "prompt": "Promote a weekend sale for an online store specializing in minimalist home office furniture." },
+      "pt-BR": { "label": "Promoção de e-commerce", "prompt": "Promova uma liquidação de fim de semana para uma loja online especializada em móveis minimalistas para home office." },
+      "de": { "label": "E-Commerce-Aktion", "prompt": "Bewerben Sie eine Wochenendaktion für einen Onlineshop mit minimalistischen Homeoffice-Möbeln." }
+    }
+  },
+  {
+    "id": "restaurant-menu",
+    "translations": {
+      "en": { "label": "Restaurant menu", "prompt": "Announce a neighborhood restaurant's new seasonal dinner menu featuring locally sourced ingredients." },
+      "pt-BR": { "label": "Cardápio de restaurante", "prompt": "Anuncie o novo cardápio sazonal de jantar de um restaurante local, com ingredientes de produtores da região." },
+      "de": { "label": "Restaurantkarte", "prompt": "Kündigen Sie die neue saisonale Abendkarte eines Restaurants mit Zutaten aus der Region an." }
+    }
+  },
+  {
+    "id": "mobile-app",
+    "translations": {
+      "en": { "label": "Mobile app", "prompt": "Introduce a mobile budgeting app that helps young professionals build better saving habits." },
+      "pt-BR": { "label": "Aplicativo móvel", "prompt": "Apresente um aplicativo de orçamento que ajuda jovens profissionais a desenvolver melhores hábitos de economia." },
+      "de": { "label": "Mobile App", "prompt": "Stellen Sie eine Budget-App vor, die jungen Berufstätigen hilft, bessere Spargewohnheiten zu entwickeln." }
+    }
+  },
+  {
+    "id": "cybersecurity-report",
+    "translations": {
+      "en": { "label": "Cybersecurity", "prompt": "Promote a cybersecurity report that helps mid-sized companies prepare for emerging ransomware threats." },
+      "pt-BR": { "label": "Cibersegurança", "prompt": "Promova um relatório de cibersegurança que ajuda empresas de médio porte a se preparar para novas ameaças de ransomware." },
+      "de": { "label": "Cybersicherheit", "prompt": "Bewerben Sie einen Cybersicherheitsbericht, der mittelständische Unternehmen auf neue Ransomware-Bedrohungen vorbereitet." }
+    }
+  },
+  {
+    "id": "online-course",
+    "translations": {
+      "en": { "label": "Online course", "prompt": "Launch an online data analytics course for marketing professionals with no coding experience." },
+      "pt-BR": { "label": "Curso online", "prompt": "Lance um curso online de análise de dados para profissionais de marketing sem experiência em programação." },
+      "de": { "label": "Onlinekurs", "prompt": "Starten Sie einen Onlinekurs zur Datenanalyse für Marketingfachleute ohne Programmiererfahrung." }
+    }
+  },
+  {
+    "id": "sustainable-product",
+    "translations": {
+      "en": { "label": "Sustainable product", "prompt": "Introduce a reusable water bottle made from recycled materials for environmentally conscious commuters." },
+      "pt-BR": { "label": "Produto sustentável", "prompt": "Apresente uma garrafa reutilizável feita com materiais reciclados para pessoas que se deslocam de forma consciente." },
+      "de": { "label": "Nachhaltiges Produkt", "prompt": "Stellen Sie eine wiederverwendbare Wasserflasche aus recycelten Materialien für umweltbewusste Pendler vor." }
+    }
+  },
+  {
+    "id": "tech-conference",
+    "translations": {
+      "en": { "label": "Tech conference", "prompt": "Drive registrations for a one-day conference about practical generative AI applications in business." },
+      "pt-BR": { "label": "Conferência de tecnologia", "prompt": "Incentive inscrições para uma conferência de um dia sobre aplicações práticas de IA generativa nos negócios." },
+      "de": { "label": "Tech-Konferenz", "prompt": "Steigern Sie die Anmeldungen für eine eintägige Konferenz über praktische generative KI-Anwendungen in Unternehmen." }
+    }
+  },
+  {
+    "id": "fintech-service",
+    "translations": {
+      "en": { "label": "Fintech service", "prompt": "Present a fintech service that simplifies international payments for freelancers and small businesses." },
+      "pt-BR": { "label": "Serviço fintech", "prompt": "Apresente um serviço fintech que simplifica pagamentos internacionais para freelancers e pequenas empresas." },
+      "de": { "label": "Fintech-Service", "prompt": "Stellen Sie einen Fintech-Service vor, der internationale Zahlungen für Freelancer und kleine Unternehmen vereinfacht." }
+    }
+  },
+  {
+    "id": "developer-api",
+    "translations": {
+      "en": { "label": "Developer API", "prompt": "Launch an API that lets developers add real-time document translation to their applications." },
+      "pt-BR": { "label": "API para desenvolvedores", "prompt": "Lance uma API que permite adicionar tradução de documentos em tempo real a aplicações." },
+      "de": { "label": "Entwickler-API", "prompt": "Führen Sie eine API ein, mit der Entwickler Echtzeit-Dokumentübersetzungen in ihre Anwendungen integrieren können." }
+    }
+  }
+]

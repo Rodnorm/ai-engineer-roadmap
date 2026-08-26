@@ -7,6 +7,7 @@ import GenerationResults from "@/components/GenerationResults";
 import LangSwitcher from "@/components/LangSwitcher";
 import RequestLog from "@/components/RequestLog";
 import ThemeToggle from "@/components/ThemeToggle";
+import promptSuggestions from "@/data/prompt-suggestions.json";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 
 export type PersonaId = "friendly" | "technical" | "cfo";
@@ -46,6 +47,7 @@ type LogResponse = { data: RequestEntry[] };
 
 const TYPEWRITER_INTERVAL_MS = 12;
 const TYPEWRITER_CHARACTERS_PER_TICK = 1;
+const INITIAL_SUGGESTION_COUNT = 4;
 
 async function readGenerationStream(
   response: Response,
@@ -116,6 +118,7 @@ export default function PromptForge() {
   const [temperature, setTemperature] = useState(0.7);
   const [topP, setTopP] = useState(0.9);
   const [maxTokens, setMaxTokens] = useState(700);
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const [results, setResults] = useState<Variation[]>([]);
   const [requests, setRequests] = useState<RequestEntry[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -126,6 +129,10 @@ export default function PromptForge() {
   const detectedSafetyCategories = Object.entries(safetyCategories).filter(([, severity]) => severity > 0);
   const hasSafetyAnalysis = Object.keys(safetyCategories).length > 0;
   const hasDetectedContent = detectedSafetyCategories.length > 0;
+  const localizedSuggestions = promptSuggestions.map((suggestion) => ({
+    id: suggestion.id,
+    ...suggestion.translations[locale],
+  }));
 
   const loadRequests = useCallback(async () => {
     try {
@@ -363,6 +370,35 @@ export default function PromptForge() {
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
+              <div className="mt-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-medium text-muted">{t("suggestionsLabel")}</p>
+                  <button
+                    type="button"
+                    aria-expanded={showAllSuggestions}
+                    onClick={() => setShowAllSuggestions((current) => !current)}
+                    className="text-xs font-medium text-sky-500 transition hover:text-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/60"
+                  >
+                    {showAllSuggestions ? t("fewerExamples") : t("moreExamples")}
+                  </button>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(showAllSuggestions ? localizedSuggestions : localizedSuggestions.slice(0, INITIAL_SUGGESTION_COUNT)).map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      type="button"
+                      onClick={() => {
+                        setBrief(suggestion.prompt);
+                        setSafetyCategories({});
+                        if (error) setError(null);
+                      }}
+                      className="rounded-full border border-border bg-panel px-3 py-1.5 text-xs font-medium text-muted transition hover:border-sky-500/60 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/60"
+                    >
+                      {suggestion.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {error === "safety" || hasSafetyAnalysis ? (
                 <div
                   id="brief-error"
