@@ -1,16 +1,16 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import AppInfo from "@/components/AppInfo";
 import GenerationResults from "@/components/GenerationResults";
 import LangSwitcher from "@/components/LangSwitcher";
 import RequestLog from "@/components/RequestLog";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useT } from "@/lib/i18n/I18nProvider";
+import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 
 export type PersonaId = "friendly" | "technical" | "cfo";
-export type RequestStatus = "complete" | "cancelled";
+export type RequestStatus = "complete" | "cancelled" | "error";
 
 export type Variation = {
   id: number;
@@ -37,12 +37,77 @@ const PERSONAS: Array<{ id: PersonaId; icon: string }> = [
   { id: "cfo", icon: "%" },
 ];
 
-const BLOCKED_TERMS = /build a bomb|make a weapon|explosive device|construir uma bomba|arma explosiva|sprengstoff bauen/i;
+type GenerateResponse = {
+  data: { variations: Array<Omit<Variation, "tokens" | "cost">> };
+  meta: { tokens: { total: number }; cost: number };
+};
+
+type LogResponse = { data: RequestEntry[] };
+
+const TYPEWRITER_INTERVAL_MS = 12;
+const TYPEWRITER_CHARACTERS_PER_TICK = 1;
+
+async function readGenerationStream(
+  response: Response,
+  onDelta: (receivedCharacters: number) => void,
+  onVariation: (variation: Omit<Variation, "tokens" | "cost">) => void,
+  onSafety: (categories: Record<string, number>) => void,
+): Promise<GenerateResponse> {
+  if (!response.body) throw new Error("Streaming is not supported by this response.");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let receivedCharacters = 0;
+  let result: GenerateResponse | null = null;
+
+  const processFrame = (frame: string) => {
+    const event = frame.split("\n").find((line) => line.startsWith("event: "))?.slice(7);
+    const data = frame.split("\n").filter((line) => line.startsWith("data: ")).map((line) => line.slice(6)).join("\n");
+    if (!event || !data) return;
+
+    const payload = JSON.parse(data) as GenerateResponse | {
+      text?: string;
+      message?: string;
+      variation?: Omit<Variation, "tokens" | "cost">;
+      categories?: Record<string, number>;
+    };
+    if (event === "safety" && "categories" in payload) {
+      onSafety(payload.categories ?? {});
+    } else if (event === "delta") {
+      receivedCharacters += "text" in payload ? payload.text?.length ?? 0 : 0;
+      onDelta(receivedCharacters);
+    } else if (event === "variation" && "variation" in payload && payload.variation) {
+      onVariation(payload.variation);
+    } else if (event === "result") {
+      result = payload as GenerateResponse;
+    } else if (event === "error") {
+      throw new Error("message" in payload ? payload.message : "Generation stream failed.");
+    }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const frames = buffer.split("\n\n");
+    buffer = frames.pop() ?? "";
+    frames.forEach(processFrame);
+    if (done) break;
+  }
+  if (buffer.trim()) processFrame(buffer);
+  if (!result) throw new Error("Generation stream ended without a result.");
+  return result;
+}
+
+const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
+  ...entry,
+  createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(entry.createdAt)),
+}));
 
 export default function PromptForge() {
+  const { locale } = useI18n();
   const t = useT("studio");
   const personasT = useT("personas");
-  const demoT = useT("demo");
 
   const [brief, setBrief] = useState("");
   const [audience, setAudience] = useState("");
@@ -55,11 +120,37 @@ export default function PromptForge() {
   const [requests, setRequests] = useState<RequestEntry[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<"brief" | "safety" | null>(null);
-  const timersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const [error, setError] = useState<"brief" | "safety" | "api" | null>(null);
+  const [safetyCategories, setSafetyCategories] = useState<Record<string, number>>({});
+  const abortRef = useRef<AbortController | null>(null);
+  const detectedSafetyCategories = Object.entries(safetyCategories).filter(([, severity]) => severity > 0);
+  const hasSafetyAnalysis = Object.keys(safetyCategories).length > 0;
+  const hasDetectedContent = detectedSafetyCategories.length > 0;
+
+  const loadRequests = useCallback(async () => {
+    try {
+      const response = await fetch("/api/backend/log?limit=20");
+      if (!response.ok) return;
+      const payload = (await response.json()) as LogResponse;
+      setRequests(formatLogEntries(payload.data));
+    } catch {
+      // The studio remains usable when the process-local log is unavailable.
+    }
+  }, []);
 
   useEffect(() => {
-    return () => timersRef.current.forEach(clearTimeout);
+    let active = true;
+    fetch("/api/backend/log?limit=20")
+      .then((response) => response.ok ? response.json() as Promise<LogResponse> : null)
+      .then((payload) => {
+        if (active && payload) setRequests(formatLogEntries(payload.data));
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+      abortRef.current?.abort();
+    };
   }, []);
 
   const personaName = (id: PersonaId) => {
@@ -74,33 +165,15 @@ export default function PromptForge() {
     return personasT("cfoDescription");
   };
 
-  const buildVariations = (): Variation[] => {
-    const targetAudience = audience.trim() || "your target audience";
-    const titles = [demoT("title1"), demoT("title2"), demoT("title3")];
-    const bodies = [demoT("body1"), demoT("body2"), demoT("body3")];
-    const keywords = [demoT("keyword1"), demoT("keyword2"), demoT("keyword3")];
-
-    return titles.map((title, index) => {
-      const body = bodies[index].replace("{brief}", brief.trim()).replace("{audience}", targetAudience);
-      const tokens = Math.min(maxTokens, 260 + index * 74 + Math.round(temperature * 40));
-
-      return {
-        id: index + 1,
-        title,
-        body,
-        seoKeywords: [keywords[index], keywords[(index + 1) % keywords.length], keywords[(index + 2) % keywords.length]],
-        tokens,
-        cost: tokens * 0.0000006,
-      };
-    });
+  const safetyCategoryName = (category: string) => {
+    if (category === "hate") return t("safetyCategoryHate");
+    if (category === "self_harm") return t("safetyCategorySelfHarm");
+    if (category === "sexual") return t("safetyCategorySexual");
+    if (category === "violence") return t("safetyCategoryViolence");
+    return category.replaceAll("_", " ");
   };
 
-  const clearTimers = () => {
-    timersRef.current.forEach(clearTimeout);
-    timersRef.current = [];
-  };
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedBrief = brief.trim();
 
@@ -109,51 +182,109 @@ export default function PromptForge() {
       return;
     }
 
-    if (BLOCKED_TERMS.test(trimmedBrief)) {
-      setError("safety");
-      return;
-    }
-
-    clearTimers();
     setError(null);
+    setSafetyCategories({});
     setResults([]);
     setProgress(0);
     setIsGenerating(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const typingTasks: Promise<void>[] = [];
 
-    const generated = buildVariations();
+    const typeVariation = (variation: Omit<Variation, "tokens" | "cost">) => {
+      const completeText = `${variation.title}\n${variation.body}`;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setResults((current) => [
+          ...current.filter((item) => item.id !== variation.id),
+          { ...variation, tokens: 0, cost: 0 },
+        ].sort((left, right) => left.id - right.id));
+        return Promise.resolve();
+      }
 
-    generated.forEach((_, index) => {
-      const timer = setTimeout(() => {
-        setResults(generated.slice(0, index + 1));
-        setProgress(index + 1);
-      }, 550 * (index + 1));
-      timersRef.current.push(timer);
-    });
+      return new Promise<void>((resolve) => {
+        let visibleCharacters = 0;
+        const finish = () => {
+          window.clearInterval(timer);
+          controller.signal.removeEventListener("abort", cancel);
+          resolve();
+        };
+        const cancel = () => finish();
+        const timer = window.setInterval(() => {
+          visibleCharacters = Math.min(
+            visibleCharacters + TYPEWRITER_CHARACTERS_PER_TICK,
+            completeText.length,
+          );
+          const visibleText = completeText.slice(0, visibleCharacters);
+          const titleComplete = visibleCharacters > variation.title.length;
+          const partialVariation: Variation = {
+            ...variation,
+            title: visibleText.slice(0, Math.min(visibleCharacters, variation.title.length)),
+            body: titleComplete ? visibleText.slice(variation.title.length + 1) : "",
+            seoKeywords: visibleCharacters === completeText.length ? variation.seoKeywords : [],
+            tokens: 0,
+            cost: 0,
+          };
+          setResults((current) => [
+            ...current.filter((item) => item.id !== variation.id),
+            partialVariation,
+          ].sort((left, right) => left.id - right.id));
+          if (visibleCharacters === completeText.length) finish();
+        }, TYPEWRITER_INTERVAL_MS);
+        controller.signal.addEventListener("abort", cancel, { once: true });
+      });
+    };
 
-    const finishTimer = setTimeout(() => {
-      const tokens = generated.reduce((total, item) => total + item.tokens, 0);
-      const cost = generated.reduce((total, item) => total + item.cost, 0);
+    try {
+      const response = await fetch("/api/backend/generate/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null) as {
+          detail?: { code?: string; categories?: Record<string, number> };
+        } | null;
+        if (response.status === 400 && errorPayload?.detail?.code === "unsafe_content") {
+          setSafetyCategories(errorPayload.detail.categories ?? {});
+          setError("safety");
+          return;
+        }
+        throw new Error("Generation failed");
+      }
 
-      setRequests((current) => [
-        {
-          id: crypto.randomUUID(),
-          brief: trimmedBrief,
-          persona,
-          tokens,
-          cost,
-          status: "complete",
-          createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date()),
+      const payload = await readGenerationStream(
+        response,
+        () => setProgress((current) => Math.max(current, 1)),
+        (variation) => {
+          typingTasks.push(typeVariation(variation));
+          setProgress(variation.id);
         },
-        ...current,
-      ]);
+        setSafetyCategories,
+      );
+      await Promise.all(typingTasks);
+      if (controller.signal.aborted) return;
+      const variationCount = payload.data.variations.length || 1;
+      setResults(payload.data.variations.map((variation) => ({
+        ...variation,
+        tokens: Math.round(payload.meta.tokens.total / variationCount),
+        cost: payload.meta.cost / variationCount,
+      })));
+      setProgress(3);
+      await loadRequests();
+    } catch (requestError) {
+      if (!(requestError instanceof DOMException && requestError.name === "AbortError")) {
+        setError("api");
+        await loadRequests();
+      }
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
       setIsGenerating(false);
-      timersRef.current = [];
-    }, 1850);
-    timersRef.current.push(finishTimer);
+    }
   };
 
   const stopGeneration = () => {
-    clearTimers();
+    abortRef.current?.abort();
     const tokens = results.reduce((total, item) => total + item.tokens, 0);
     const cost = results.reduce((total, item) => total + item.cost, 0);
 
@@ -180,7 +311,6 @@ export default function PromptForge() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-pink-500 text-sm font-bold text-white shadow-sm">AI</span>
             <span>
               <span className="block text-sm font-semibold tracking-tight">{t("eyebrow")}</span>
-              <span className="hidden text-[0.65rem] text-muted sm:block">AI Engineer Roadmap · App 03</span>
             </span>
           </a>
 
@@ -224,15 +354,37 @@ export default function PromptForge() {
                 value={brief}
                 onChange={(event) => {
                   setBrief(event.target.value);
+                  setSafetyCategories({});
                   if (error) setError(null);
                 }}
                 rows={6}
                 aria-invalid={error !== null}
-                aria-describedby={error ? "brief-error" : undefined}
+                aria-describedby={error || hasSafetyAnalysis ? "brief-error" : undefined}
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
-              {error && <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "safety" ? t("safetyBlocked") : t("briefError")}</p>}
+              {error === "safety" || hasSafetyAnalysis ? (
+                <div
+                  id="brief-error"
+                  role={error === "safety" ? "alert" : "status"}
+                  className={`mt-3 rounded-xl border p-4 text-sm ${error === "safety" ? "border-red-300 bg-red-50 text-error dark:border-red-900 dark:bg-red-950/40" : hasDetectedContent ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300" : "border-emerald-300 bg-emerald-50 text-success dark:border-emerald-900 dark:bg-emerald-950/40"}`}
+                >
+                  <p className="flex items-center gap-2 font-semibold"><ShieldIcon />{error === "safety" ? t("safetyBlocked") : hasDetectedContent ? t("safetyAnalysis") : t("safetyPassed")}</p>
+                  <p className="mt-1 text-xs">{error === "safety" ? t("safetyBlockedDescription") : hasDetectedContent ? t("safetyDetectedDescription") : t("safetyPassedDescription")}</p>
+                  {hasDetectedContent && (
+                    <div className="mt-3 space-y-2">
+                      {detectedSafetyCategories.map(([category, severity]) => (
+                        <div key={category} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-current/20 px-3 py-2 text-xs">
+                          <span className="font-medium">{safetyCategoryName(category)}</span>
+                          <span className="rounded-full bg-current/10 px-2 py-1 font-medium">{t("safetySeverity", { value: severity })}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : error ? (
+                <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "api" ? t("apiError") : t("briefError")}</p>
+              ) : null}
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <div>

@@ -34,7 +34,6 @@ export default function AppInfo() {
         <div className="flex h-full flex-col overflow-y-auto border-l border-border bg-panel p-6 text-text shadow-2xl sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="label">AI Engineer Roadmap · App 03</p>
               <h2 id={titleId} className="mt-2 text-2xl font-semibold tracking-tight">{appT("title")}</h2>
             </div>
             <button type="button" onClick={close} aria-label={controlsT("close")} className="icon-button size-9"><CloseIcon /></button>

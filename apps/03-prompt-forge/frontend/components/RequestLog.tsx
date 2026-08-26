@@ -31,7 +31,7 @@ export default function RequestLog({ requests, onClear, personaName }: { request
             {requests.map((request, index) => (
               <li key={request.id} className="rounded-xl border border-border bg-panel p-3 shadow-sm">
                 <div className="flex items-center justify-between gap-3">
-                  <span className={`inline-flex items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide ${request.status === "complete" ? "text-success" : "text-amber-600 dark:text-amber-400"}`}>
+                  <span className={`inline-flex items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide ${request.status === "complete" ? "text-success" : request.status === "error" ? "text-error" : "text-amber-600 dark:text-amber-400"}`}>
                     <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
                     {t(request.status)}
                   </span>
