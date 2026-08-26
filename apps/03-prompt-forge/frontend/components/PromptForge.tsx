@@ -44,6 +44,9 @@ type GenerateResponse = {
 
 type LogResponse = { data: RequestEntry[] };
 
+const TYPEWRITER_INTERVAL_MS = 12;
+const TYPEWRITER_CHARACTERS_PER_TICK = 1;
+
 async function readGenerationStream(
   response: Response,
   onDelta: (receivedCharacters: number) => void,
@@ -169,6 +172,50 @@ export default function PromptForge() {
     setIsGenerating(true);
     const controller = new AbortController();
     abortRef.current = controller;
+    const typingTasks: Promise<void>[] = [];
+
+    const typeVariation = (variation: Omit<Variation, "tokens" | "cost">) => {
+      const completeText = `${variation.title}\n${variation.body}`;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setResults((current) => [
+          ...current.filter((item) => item.id !== variation.id),
+          { ...variation, tokens: 0, cost: 0 },
+        ].sort((left, right) => left.id - right.id));
+        return Promise.resolve();
+      }
+
+      return new Promise<void>((resolve) => {
+        let visibleCharacters = 0;
+        const finish = () => {
+          window.clearInterval(timer);
+          controller.signal.removeEventListener("abort", cancel);
+          resolve();
+        };
+        const cancel = () => finish();
+        const timer = window.setInterval(() => {
+          visibleCharacters = Math.min(
+            visibleCharacters + TYPEWRITER_CHARACTERS_PER_TICK,
+            completeText.length,
+          );
+          const visibleText = completeText.slice(0, visibleCharacters);
+          const titleComplete = visibleCharacters > variation.title.length;
+          const partialVariation: Variation = {
+            ...variation,
+            title: visibleText.slice(0, Math.min(visibleCharacters, variation.title.length)),
+            body: titleComplete ? visibleText.slice(variation.title.length + 1) : "",
+            seoKeywords: visibleCharacters === completeText.length ? variation.seoKeywords : [],
+            tokens: 0,
+            cost: 0,
+          };
+          setResults((current) => [
+            ...current.filter((item) => item.id !== variation.id),
+            partialVariation,
+          ].sort((left, right) => left.id - right.id));
+          if (visibleCharacters === completeText.length) finish();
+        }, TYPEWRITER_INTERVAL_MS);
+        controller.signal.addEventListener("abort", cancel, { once: true });
+      });
+    };
 
     try {
       const response = await fetch("/api/backend/generate/stream", {
@@ -190,13 +237,12 @@ export default function PromptForge() {
         response,
         () => setProgress((current) => Math.max(current, 1)),
         (variation) => {
-          setResults((current) => [
-            ...current.filter((item) => item.id !== variation.id),
-            { ...variation, tokens: 0, cost: 0 },
-          ].sort((left, right) => left.id - right.id));
+          typingTasks.push(typeVariation(variation));
           setProgress(variation.id);
         },
       );
+      await Promise.all(typingTasks);
+      if (controller.signal.aborted) return;
       const variationCount = payload.data.variations.length || 1;
       setResults(payload.data.variations.map((variation) => ({
         ...variation,
