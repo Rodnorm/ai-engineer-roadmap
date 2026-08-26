@@ -1,0 +1,52 @@
+[
+  {
+    "id": "saas-launch",
+    "label": "SaaS launch",
+    "prompt": "Create a launch campaign for an AI project management tool aimed at small software teams."
+  },
+  {
+    "id": "ecommerce-sale",
+    "label": "E-commerce sale",
+    "prompt": "Promote a weekend sale for an online store specializing in minimalist home office furniture."
+  },
+  {
+    "id": "restaurant-menu",
+    "label": "Restaurant menu",
+    "prompt": "Announce a neighborhood restaurant's new seasonal dinner menu featuring locally sourced ingredients."
+  },
+  {
+    "id": "mobile-app",
+    "label": "Mobile app",
+    "prompt": "Introduce a mobile budgeting app that helps young professionals build better saving habits."
+  },
+  {
+    "id": "cybersecurity-report",
+    "label": "Cybersecurity",
+    "prompt": "Promote a cybersecurity report that helps mid-sized companies prepare for emerging ransomware threats."
+  },
+  {
+    "id": "online-course",
+    "label": "Online course",
+    "prompt": "Launch an online data analytics course for marketing professionals with no coding experience."
+  },
+  {
+    "id": "sustainable-product",
+    "label": "Sustainable product",
+    "prompt": "Introduce a reusable water bottle made from recycled materials for environmentally conscious commuters."
+  },
+  {
+    "id": "tech-conference",
+    "label": "Tech conference",
+    "prompt": "Drive registrations for a one-day conference about practical generative AI applications in business."
+  },
+  {
+    "id": "fintech-service",
+    "label": "Fintech service",
+    "prompt": "Present a fintech service that simplifies international payments for freelancers and small businesses."
+  },
+  {
+    "id": "developer-api",
+    "label": "Developer API",
+    "prompt": "Launch an API that lets developers add real-time document translation to their applications."
+  }
+]
