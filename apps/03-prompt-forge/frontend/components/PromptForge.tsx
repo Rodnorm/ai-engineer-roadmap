@@ -44,6 +44,47 @@ type GenerateResponse = {
 
 type LogResponse = { data: RequestEntry[] };
 
+async function readGenerationStream(
+  response: Response,
+  onDelta: (receivedCharacters: number) => void,
+): Promise<GenerateResponse> {
+  if (!response.body) throw new Error("Streaming is not supported by this response.");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let receivedCharacters = 0;
+  let result: GenerateResponse | null = null;
+
+  const processFrame = (frame: string) => {
+    const event = frame.split("\n").find((line) => line.startsWith("event: "))?.slice(7);
+    const data = frame.split("\n").filter((line) => line.startsWith("data: ")).map((line) => line.slice(6)).join("\n");
+    if (!event || !data) return;
+
+    const payload = JSON.parse(data) as GenerateResponse | { text?: string; message?: string };
+    if (event === "delta") {
+      receivedCharacters += "text" in payload ? payload.text?.length ?? 0 : 0;
+      onDelta(receivedCharacters);
+    } else if (event === "result") {
+      result = payload as GenerateResponse;
+    } else if (event === "error") {
+      throw new Error("message" in payload ? payload.message : "Generation stream failed.");
+    }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const frames = buffer.split("\n\n");
+    buffer = frames.pop() ?? "";
+    frames.forEach(processFrame);
+    if (done) break;
+  }
+  if (buffer.trim()) processFrame(buffer);
+  if (!result) throw new Error("Generation stream ended without a result.");
+  return result;
+}
+
 const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
   ...entry,
   createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(entry.createdAt)),
@@ -123,7 +164,7 @@ export default function PromptForge() {
     abortRef.current = controller;
 
     try {
-      const response = await fetch("/api/backend/generate", {
+      const response = await fetch("/api/backend/generate/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
@@ -138,7 +179,9 @@ export default function PromptForge() {
         throw new Error("Generation failed");
       }
 
-      const payload = (await response.json()) as GenerateResponse;
+      const payload = await readGenerationStream(response, (receivedCharacters) => {
+        setProgress(receivedCharacters < 300 ? 1 : 2);
+      });
       const variationCount = payload.data.variations.length || 1;
       setResults(payload.data.variations.map((variation) => ({
         ...variation,
