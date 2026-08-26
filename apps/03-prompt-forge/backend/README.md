@@ -47,6 +47,7 @@ $body = @{
   audience = "small software teams"
   format = "linkedin"
   persona = "friendly"
+  language = "en"
   temperature = 0.7
   topP = 0.9
   maxTokens = 700

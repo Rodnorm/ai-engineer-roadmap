@@ -7,7 +7,7 @@ import GenerationResults from "@/components/GenerationResults";
 import LangSwitcher from "@/components/LangSwitcher";
 import RequestLog from "@/components/RequestLog";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useT } from "@/lib/i18n/I18nProvider";
+import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 
 export type PersonaId = "friendly" | "technical" | "cfo";
 export type RequestStatus = "complete" | "cancelled" | "error";
@@ -50,6 +50,7 @@ const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
 }));
 
 export default function PromptForge() {
+  const { locale } = useI18n();
   const t = useT("studio");
   const personasT = useT("personas");
 
@@ -138,7 +139,7 @@ export default function PromptForge() {
       const response = await fetch("/api/backend/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, temperature, topP, maxTokens }),
+        body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
         signal: controller.signal,
       });
       if (!response.ok) throw new Error("Generation failed");

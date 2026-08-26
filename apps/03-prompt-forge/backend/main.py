@@ -147,10 +147,17 @@ FORMAT_NAMES: dict[str, str] = {
     "landing": "Landing page copy",
 }
 DEFAULT_FORMAT = "linkedin"
+LANGUAGE_NAMES = {
+    "en": "English",
+    "pt-br": "Brazilian Portuguese",
+    "de": "German",
+}
+DEFAULT_LANGUAGE = "en"
 
 
-def _build_user_prompt(brief: str, audience: str | None, format_id: str) -> str:
+def _build_user_prompt(brief: str, audience: str | None, format_id: str, language: str) -> str:
     fmt_label = FORMAT_NAMES.get(format_id, FORMAT_NAMES[DEFAULT_FORMAT])
+    language_name = LANGUAGE_NAMES.get(language.lower(), LANGUAGE_NAMES[DEFAULT_LANGUAGE])
     audience_line = (
         f"Target audience: {audience.strip()}" if audience else "Target audience: your ideal reader"
     )
@@ -161,6 +168,7 @@ def _build_user_prompt(brief: str, audience: str | None, format_id: str) -> str:
         f"{audience_line}\n\n"
         "Each variation must include a strong title, a body, and 3 SEO keywords. "
         "Vary tone and structure between variations; do not repeat the same opening line. "
+        f"Write every title, body, and SEO keyword in {language_name}. "
         "Return JSON with shape: "
         '{"variations":[{"id":1,"title":"...","body":"...","seoKeywords":["..."]}, ...]}.'
     )
@@ -273,7 +281,7 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
 
     request_id = request.state.request_id
     system = system_prompt_for(req.persona)
-    user_prompt = _build_user_prompt(req.brief, req.audience, req.format)
+    user_prompt = _build_user_prompt(req.brief, req.audience, req.format, req.language)
 
     started = time.perf_counter()
     try:

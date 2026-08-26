@@ -12,6 +12,7 @@ class GenerateRequest(BaseModel):
     audience: str | None = Field(default=None, max_length=200)
     format: Literal["linkedin", "email", "landing"] = "linkedin"
     persona: Literal["friendly", "technical", "cfo"] = "friendly"
+    language: Literal["en", "pt-BR", "de"] = "en"
     temperature: float = Field(default=0.7, ge=0.0, le=1.5)
     topP: float = Field(default=0.9, ge=0.1, le=1.0)
     maxTokens: int = Field(default=700, ge=200, le=1600)
