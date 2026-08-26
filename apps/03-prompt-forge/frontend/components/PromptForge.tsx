@@ -47,6 +47,7 @@ type LogResponse = { data: RequestEntry[] };
 async function readGenerationStream(
   response: Response,
   onDelta: (receivedCharacters: number) => void,
+  onVariation: (variation: Omit<Variation, "tokens" | "cost">) => void,
 ): Promise<GenerateResponse> {
   if (!response.body) throw new Error("Streaming is not supported by this response.");
 
@@ -61,10 +62,16 @@ async function readGenerationStream(
     const data = frame.split("\n").filter((line) => line.startsWith("data: ")).map((line) => line.slice(6)).join("\n");
     if (!event || !data) return;
 
-    const payload = JSON.parse(data) as GenerateResponse | { text?: string; message?: string };
+    const payload = JSON.parse(data) as GenerateResponse | {
+      text?: string;
+      message?: string;
+      variation?: Omit<Variation, "tokens" | "cost">;
+    };
     if (event === "delta") {
       receivedCharacters += "text" in payload ? payload.text?.length ?? 0 : 0;
       onDelta(receivedCharacters);
+    } else if (event === "variation" && "variation" in payload && payload.variation) {
+      onVariation(payload.variation);
     } else if (event === "result") {
       result = payload as GenerateResponse;
     } else if (event === "error") {
@@ -179,9 +186,17 @@ export default function PromptForge() {
         throw new Error("Generation failed");
       }
 
-      const payload = await readGenerationStream(response, (receivedCharacters) => {
-        setProgress(receivedCharacters < 300 ? 1 : 2);
-      });
+      const payload = await readGenerationStream(
+        response,
+        () => setProgress((current) => Math.max(current, 1)),
+        (variation) => {
+          setResults((current) => [
+            ...current.filter((item) => item.id !== variation.id),
+            { ...variation, tokens: 0, cost: 0 },
+          ].sort((left, right) => left.id - right.id));
+          setProgress(variation.id);
+        },
+      );
       const variationCount = payload.data.variations.length || 1;
       setResults(payload.data.variations.map((variation) => ({
         ...variation,
