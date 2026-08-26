@@ -67,8 +67,9 @@ The response contains `data.variations` plus request ID, latency, token usage,
 and estimated cost under `meta`.
 
 The streaming endpoint accepts the same payload and emits `start`, `delta`,
-`result`, or `error` SSE events. The final `result` contains the same response
-shape as `/generate`.
+`variation`, `result`, or `error` SSE events. Each `variation` contains one
+complete card as soon as its JSON object closes; the final `result` contains
+the same validated response shape as `/generate`.
 
 ### Check safety
 

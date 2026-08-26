@@ -227,6 +227,54 @@ def _sse_event(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+def _complete_variations_from_json(text: str) -> list[Variation]:
+    marker_index = text.find('"variations"')
+    array_index = text.find("[", marker_index)
+    if marker_index < 0 or array_index < 0:
+        return []
+
+    variations: list[Variation] = []
+    object_start: int | None = None
+    depth = 0
+    in_string = False
+    escaped = False
+
+    for index in range(array_index + 1, len(text)):
+        char = text[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            if depth == 0:
+                object_start = index
+            depth += 1
+        elif char == "}" and depth > 0:
+            depth -= 1
+            if depth == 0 and object_start is not None:
+                candidate = _VariationSchema.model_validate_json(text[object_start : index + 1])
+                variations.append(
+                    Variation(
+                        id=len(variations) + 1,
+                        title=candidate.title.strip(),
+                        body=candidate.body.strip(),
+                        seoKeywords=[
+                            keyword.strip()
+                            for keyword in candidate.seoKeywords
+                            if keyword.strip()
+                        ][:3],
+                    )
+                )
+                object_start = None
+    return variations
+
+
 # ---------------------------------------------------------------------------
 # Safety (heuristic — mirrors the frontend preview blocked-terms list)
 # ---------------------------------------------------------------------------
@@ -491,6 +539,8 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
 
     def events():
         started = time.perf_counter()
+        streamed_text = ""
+        emitted_variations = 0
         yield _sse_event("start", {"request_id": request_id})
         try:
             with client.with_options(
@@ -507,7 +557,15 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
             ) as stream:
                 for event in stream:
                     if event.type == "response.output_text.delta":
+                        streamed_text += event.delta
                         yield _sse_event("delta", {"text": event.delta})
+                        complete_variations = _complete_variations_from_json(streamed_text)
+                        for variation in complete_variations[emitted_variations:]:
+                            yield _sse_event(
+                                "variation",
+                                {"variation": variation.model_dump(mode="json")},
+                            )
+                            emitted_variations += 1
                 response = stream.get_final_response()
         except Exception:
             log.exception("azure_openai_stream_failed", extra={"request_id": request_id})
