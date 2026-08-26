@@ -65,7 +65,36 @@ def _env_float(name: str, default: float, minimum: float = 0.0) -> float:
 
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-logging.basicConfig(level=LOG_LEVEL, format="%(asctime)s [%(levelname)s] %(message)s")
+
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        payload = {
+            "timestamp": self.formatTime(record, "%Y-%m-%dT%H:%M:%SZ"),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        for field in (
+            "request_id",
+            "method",
+            "path",
+            "status_code",
+            "latency_ms",
+            "tokens",
+            "cost",
+            "variation_count",
+        ):
+            if hasattr(record, field):
+                payload[field] = getattr(record, field)
+        if record.exc_info:
+            payload["exception"] = self.formatException(record.exc_info)
+        return json.dumps(payload, ensure_ascii=False)
+
+
+handler = logging.StreamHandler()
+handler.setFormatter(JsonFormatter())
+logging.basicConfig(level=LOG_LEVEL, handlers=[handler], force=True)
 log = logging.getLogger("prompt-forge")
 
 ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
@@ -201,11 +230,27 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def remove_backend_prefix(request: Request, call_next):
+async def request_context(request: Request, call_next):
+    request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+    request.state.request_id = request_id
     prefix = "/api/backend"
     if request.scope["path"].startswith(prefix):
         request.scope["path"] = request.scope["path"][len(prefix):]
-    return await call_next(request)
+    started = time.perf_counter()
+    response = await call_next(request)
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    response.headers["x-request-id"] = request_id
+    log.info(
+        "request_completed",
+        extra={
+            "request_id": request_id,
+            "method": request.method,
+            "path": request.scope["path"],
+            "status_code": response.status_code,
+            "latency_ms": latency_ms,
+        },
+    )
+    return response
 
 
 @app.get("/health")
@@ -219,14 +264,14 @@ def health() -> dict:
 
 
 @app.post("/generate", response_model=GenerateResponse)
-async def generate(req: GenerateRequest) -> GenerateResponse:
+async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
     if client is None:
         raise HTTPException(
             status_code=503,
             detail="Azure OpenAI is not configured.",
         )
 
-    request_id = str(uuid.uuid4())
+    request_id = request.state.request_id
     system = system_prompt_for(req.persona)
     user_prompt = _build_user_prompt(req.brief, req.audience, req.format)
 
@@ -245,7 +290,7 @@ async def generate(req: GenerateRequest) -> GenerateResponse:
             max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
         )
     except Exception:
-        log.exception("Azure OpenAI call failed.")
+        log.exception("azure_openai_request_failed", extra={"request_id": request_id})
         log_append(brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
         raise HTTPException(
             status_code=502,
@@ -286,11 +331,14 @@ async def generate(req: GenerateRequest) -> GenerateResponse:
         status="complete",
     )
     log.info(
-        "Generated %d variations (tokens=%d, cost=$%s, latency=%dms).",
-        len(variations),
-        total_tokens,
-        cost,
-        latency_ms,
+        "generation_completed",
+        extra={
+            "request_id": request_id,
+            "latency_ms": latency_ms,
+            "tokens": total_tokens,
+            "cost": cost,
+            "variation_count": len(variations),
+        },
     )
 
     return GenerateResponse(
