@@ -311,7 +311,6 @@ export default function PromptForge() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-pink-500 text-sm font-bold text-white shadow-sm">AI</span>
             <span>
               <span className="block text-sm font-semibold tracking-tight">{t("eyebrow")}</span>
-              <span className="hidden text-[0.65rem] text-muted sm:block">AI Engineer Roadmap · App 03</span>
             </span>
           </a>
 
