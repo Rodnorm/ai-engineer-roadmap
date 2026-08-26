@@ -117,6 +117,7 @@ export default function PromptForge() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<"brief" | "safety" | "api" | null>(null);
+  const [safetyCategories, setSafetyCategories] = useState<Record<string, number>>({});
   const abortRef = useRef<AbortController | null>(null);
 
   const loadRequests = useCallback(async () => {
@@ -157,6 +158,14 @@ export default function PromptForge() {
     return personasT("cfoDescription");
   };
 
+  const safetyCategoryName = (category: string) => {
+    if (category === "hate") return t("safetyCategoryHate");
+    if (category === "self_harm") return t("safetyCategorySelfHarm");
+    if (category === "sexual") return t("safetyCategorySexual");
+    if (category === "violence") return t("safetyCategoryViolence");
+    return category.replaceAll("_", " ");
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedBrief = brief.trim();
@@ -167,6 +176,7 @@ export default function PromptForge() {
     }
 
     setError(null);
+    setSafetyCategories({});
     setResults([]);
     setProgress(0);
     setIsGenerating(true);
@@ -225,8 +235,11 @@ export default function PromptForge() {
         signal: controller.signal,
       });
       if (!response.ok) {
-        const errorPayload = await response.json().catch(() => null) as { detail?: { code?: string } } | null;
+        const errorPayload = await response.json().catch(() => null) as {
+          detail?: { code?: string; categories?: Record<string, number> };
+        } | null;
         if (response.status === 400 && errorPayload?.detail?.code === "unsafe_content") {
+          setSafetyCategories(errorPayload.detail.categories ?? {});
           setError("safety");
           return;
         }
@@ -334,7 +347,10 @@ export default function PromptForge() {
                 value={brief}
                 onChange={(event) => {
                   setBrief(event.target.value);
-                  if (error) setError(null);
+                  if (error) {
+                    setError(null);
+                    setSafetyCategories({});
+                  }
                 }}
                 rows={6}
                 aria-invalid={error !== null}
@@ -342,7 +358,23 @@ export default function PromptForge() {
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
-              {error && <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "safety" ? t("safetyBlocked") : error === "api" ? t("apiError") : t("briefError")}</p>}
+              {error === "safety" ? (
+                <div id="brief-error" role="alert" className="mt-3 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-error dark:border-red-900 dark:bg-red-950/40">
+                  <p className="font-semibold">{t("safetyBlocked")}</p>
+                  {Object.keys(safetyCategories).length > 0 && (
+                    <>
+                      <p className="mt-2 text-xs font-medium">{t("safetyCategories")}</p>
+                      <ul className="mt-1 space-y-1 text-xs">
+                        {Object.entries(safetyCategories).map(([category, severity]) => (
+                          <li key={category}>{safetyCategoryName(category)}: {t("safetySeverity", { value: severity })}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              ) : error ? (
+                <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "api" ? t("apiError") : t("briefError")}</p>
+              ) : null}
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <div>
