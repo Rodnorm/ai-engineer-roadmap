@@ -129,6 +129,10 @@ export default function PromptForge() {
   const detectedSafetyCategories = Object.entries(safetyCategories).filter(([, severity]) => severity > 0);
   const hasSafetyAnalysis = Object.keys(safetyCategories).length > 0;
   const hasDetectedContent = detectedSafetyCategories.length > 0;
+  const localizedSuggestions = promptSuggestions.map((suggestion) => ({
+    id: suggestion.id,
+    ...suggestion.translations[locale],
+  }));
 
   const loadRequests = useCallback(async () => {
     try {
@@ -379,7 +383,7 @@ export default function PromptForge() {
                   </button>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(showAllSuggestions ? promptSuggestions : promptSuggestions.slice(0, INITIAL_SUGGESTION_COUNT)).map((suggestion) => (
+                  {(showAllSuggestions ? localizedSuggestions : localizedSuggestions.slice(0, INITIAL_SUGGESTION_COUNT)).map((suggestion) => (
                     <button
                       key={suggestion.id}
                       type="button"
