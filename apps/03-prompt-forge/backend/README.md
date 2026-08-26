@@ -37,6 +37,7 @@ documentation is available at `/api/backend/docs`.
 
 - `GET /health` reports service and Azure configuration status.
 - `POST /generate` generates exactly three structured variations.
+- `POST /generate/stream` streams generation progress using server-sent events.
 - `GET /log?limit=20` returns recent process-local generation entries.
 - `POST /safety/check` analyzes text with Azure Content Safety when configured.
 - `GET /prompts` returns the bundled prompt test harness.
@@ -64,6 +65,10 @@ Invoke-RestMethod `
 
 The response contains `data.variations` plus request ID, latency, token usage,
 and estimated cost under `meta`.
+
+The streaming endpoint accepts the same payload and emits `start`, `delta`,
+`result`, or `error` SSE events. The final `result` contains the same response
+shape as `/generate`.
 
 ### Check safety
 

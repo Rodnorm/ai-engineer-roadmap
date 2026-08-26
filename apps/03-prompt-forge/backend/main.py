@@ -3,6 +3,7 @@
 Endpoints (base path: /api/backend):
     GET  /health
     POST /generate        generate 3 structured content variations
+    POST /generate/stream stream structured generation using SSE
     GET  /log             list recent requests
     POST /safety/check    simple safety check (heuristic)
     GET  /prompts         list prompts bundled with the app
@@ -28,6 +29,7 @@ from azure.core.credentials import AzureKeyCredential
 from azure.core.exceptions import AzureError
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
@@ -205,6 +207,24 @@ def _compute_cost(prompt_tokens: int, completion_tokens: int) -> float:
         + (completion_tokens / 1000) * COST_COMPLETION_PER_1K,
         6,
     )
+
+
+def _variations_from_result(parsed: _ResultSchema) -> list[Variation]:
+    return [
+        Variation(
+            id=index,
+            title=variation.title.strip(),
+            body=variation.body.strip(),
+            seoKeywords=[keyword.strip() for keyword in variation.seoKeywords if keyword.strip()][
+                :3
+            ],
+        )
+        for index, variation in enumerate(parsed.variations[:3], start=1)
+    ]
+
+
+def _sse_event(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
 # ---------------------------------------------------------------------------
@@ -407,16 +427,7 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
             detail="Model did not return a structured response.",
         )
 
-    variations: list[Variation] = []
-    for index, v in enumerate(parsed.variations[:3], start=1):
-        variations.append(
-            Variation(
-                id=index,
-                title=v.title.strip(),
-                body=v.body.strip(),
-                seoKeywords=[k.strip() for k in v.seoKeywords if k.strip()][:3],
-            )
-        )
+    variations = _variations_from_result(parsed)
 
     usage = response.usage
     prompt_tokens = getattr(usage, "input_tokens", 0) or 0
@@ -456,6 +467,117 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
             "cost": cost,
             "persona": persona_name(req.persona),
         },
+    )
+
+
+@app.post("/generate/stream")
+def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse:
+    request_id = request.state.request_id
+    safety = _safety_check(req.brief, request_id)
+    if not safety.safe:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "unsafe_content",
+                "message": "The brief was blocked by Content Safety.",
+                "categories": safety.categories,
+            },
+        )
+    if client is None:
+        raise HTTPException(status_code=503, detail="Azure OpenAI is not configured.")
+
+    system = system_prompt_for(req.persona)
+    user_prompt = _build_user_prompt(req.brief, req.audience, req.format, req.language)
+
+    def events():
+        started = time.perf_counter()
+        yield _sse_event("start", {"request_id": request_id})
+        try:
+            with client.with_options(
+                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+                max_retries=0,
+            ).responses.stream(
+                model=DEPLOYMENT,
+                instructions=system,
+                input=user_prompt,
+                text_format=_ResultSchema,
+                temperature=req.temperature,
+                top_p=req.topP,
+                max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
+            ) as stream:
+                for event in stream:
+                    if event.type == "response.output_text.delta":
+                        yield _sse_event("delta", {"text": event.delta})
+                response = stream.get_final_response()
+        except Exception:
+            log.exception("azure_openai_stream_failed", extra={"request_id": request_id})
+            log_append(
+                brief=req.brief,
+                persona=req.persona,
+                tokens=0,
+                cost=0.0,
+                status="error",
+            )
+            yield _sse_event("error", {"message": "Azure OpenAI stream failed."})
+            return
+
+        parsed: _ResultSchema | None = response.output_parsed
+        if parsed is None or len(parsed.variations) != 3:
+            log_append(
+                brief=req.brief,
+                persona=req.persona,
+                tokens=0,
+                cost=0.0,
+                status="error",
+            )
+            yield _sse_event("error", {"message": "Invalid structured response."})
+            return
+
+        variations = _variations_from_result(parsed)
+        usage = response.usage
+        prompt_tokens = getattr(usage, "input_tokens", 0) or 0
+        completion_tokens = getattr(usage, "output_tokens", 0) or 0
+        total_tokens = prompt_tokens + completion_tokens
+        cost = _compute_cost(prompt_tokens, completion_tokens)
+        latency_ms = int((time.perf_counter() - started) * 1000)
+
+        log_append(
+            brief=req.brief,
+            persona=req.persona,
+            tokens=total_tokens,
+            cost=cost,
+            status="complete",
+        )
+        log.info(
+            "generation_stream_completed",
+            extra={
+                "request_id": request_id,
+                "latency_ms": latency_ms,
+                "tokens": total_tokens,
+                "cost": cost,
+                "variation_count": len(variations),
+            },
+        )
+        result = GenerateResponse(
+            data={"variations": variations},
+            meta={
+                "request_id": request_id,
+                "latency_ms": latency_ms,
+                "tokens": {
+                    "prompt": prompt_tokens,
+                    "completion": completion_tokens,
+                    "total": total_tokens,
+                },
+                "cost": cost,
+                "persona": persona_name(req.persona),
+            },
+        )
+        yield _sse_event("result", result.model_dump(mode="json"))
+
+    return StreamingResponse(
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
