@@ -15,7 +15,7 @@
     "title": "Vom einfachen Briefing zu",
     "titleAccent": "Inhalten, die überzeugen.",
     "intro": "Wählen Sie eine Persona, konfigurieren Sie die Generierung und vergleichen Sie drei strukturierte Varianten nebeneinander.",
-    "previewBadge": "Frontend-Vorschau",
+    "previewBadge": "API verbunden",
     "briefLabel": "Marketing-Briefing",
     "briefHint": "Beschreiben Sie Ziel, Produkt, Kernbotschaft und gewünschte Aktion.",
     "briefPlaceholder": "Beispiel: Kündigen Sie unser neues Analytics-Dashboard für kleine SaaS-Teams an. Betonen Sie die Zeitersparnis und laden Sie zu einem kostenlosen Test ein.",
@@ -37,10 +37,11 @@
     "safetyReady": "Content Safety bereit",
     "safetyBlocked": "Dieses Briefing wurde von der lokalen Sicherheitsvorschau blockiert. Bitte überarbeiten Sie es.",
     "briefError": "Das Briefing muss mindestens 20 Zeichen enthalten.",
+    "apiError": "Die API konnte keinen Inhalt generieren. Prüfe das Backend und versuche es erneut.",
     "generate": "3 Varianten generieren",
     "generating": "Variante {current} von 3 wird generiert",
     "stop": "Generierung stoppen",
-    "sampleNotice": "Nur Vorschau — es wurde keine API-Anfrage gesendet."
+    "sampleNotice": "Mit der promptForge-API generiert."
   },
   "personas": {
     "friendlyName": "Freundlicher SaaS-Marketer",
@@ -74,13 +75,14 @@
     "cost": "Geschätzte Kosten",
     "request": "Anfrage {number}",
     "complete": "Abgeschlossen",
-    "cancelled": "Abgebrochen"
+    "cancelled": "Abgebrochen",
+    "error": "Fehler"
   },
   "info": {
     "categoryLabel": "Kategorie",
     "category": "Generative KI",
     "statusLabel": "Status",
-    "status": "Frontend fertig",
+    "status": "API verbunden",
     "description": "Ein Marketing-Content-Studio für strukturierte Azure-OpenAI-Generierung, Streaming, Sicherheitsprüfungen und Kostenprotokollierung.",
     "whatItDoes": "Funktionsumfang",
     "what1": "Erstellt aus einem Briefing drei Persona-basierte Content-Varianten.",

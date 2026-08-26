@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import AppInfo from "@/components/AppInfo";
 import GenerationResults from "@/components/GenerationResults";
@@ -10,7 +10,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useT } from "@/lib/i18n/I18nProvider";
 
 export type PersonaId = "friendly" | "technical" | "cfo";
-export type RequestStatus = "complete" | "cancelled";
+export type RequestStatus = "complete" | "cancelled" | "error";
 
 export type Variation = {
   id: number;
@@ -37,12 +37,21 @@ const PERSONAS: Array<{ id: PersonaId; icon: string }> = [
   { id: "cfo", icon: "%" },
 ];
 
-const BLOCKED_TERMS = /build a bomb|make a weapon|explosive device|construir uma bomba|arma explosiva|sprengstoff bauen/i;
+type GenerateResponse = {
+  data: { variations: Array<Omit<Variation, "tokens" | "cost">> };
+  meta: { tokens: { total: number }; cost: number };
+};
+
+type LogResponse = { data: RequestEntry[] };
+
+const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
+  ...entry,
+  createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(entry.createdAt)),
+}));
 
 export default function PromptForge() {
   const t = useT("studio");
   const personasT = useT("personas");
-  const demoT = useT("demo");
 
   const [brief, setBrief] = useState("");
   const [audience, setAudience] = useState("");
@@ -55,11 +64,33 @@ export default function PromptForge() {
   const [requests, setRequests] = useState<RequestEntry[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<"brief" | "safety" | null>(null);
-  const timersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const [error, setError] = useState<"brief" | "safety" | "api" | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const loadRequests = useCallback(async () => {
+    try {
+      const response = await fetch("/api/backend/log?limit=20");
+      if (!response.ok) return;
+      const payload = (await response.json()) as LogResponse;
+      setRequests(formatLogEntries(payload.data));
+    } catch {
+      // The studio remains usable when the process-local log is unavailable.
+    }
+  }, []);
 
   useEffect(() => {
-    return () => timersRef.current.forEach(clearTimeout);
+    let active = true;
+    fetch("/api/backend/log?limit=20")
+      .then((response) => response.ok ? response.json() as Promise<LogResponse> : null)
+      .then((payload) => {
+        if (active && payload) setRequests(formatLogEntries(payload.data));
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+      abortRef.current?.abort();
+    };
   }, []);
 
   const personaName = (id: PersonaId) => {
@@ -74,33 +105,7 @@ export default function PromptForge() {
     return personasT("cfoDescription");
   };
 
-  const buildVariations = (): Variation[] => {
-    const targetAudience = audience.trim() || "your target audience";
-    const titles = [demoT("title1"), demoT("title2"), demoT("title3")];
-    const bodies = [demoT("body1"), demoT("body2"), demoT("body3")];
-    const keywords = [demoT("keyword1"), demoT("keyword2"), demoT("keyword3")];
-
-    return titles.map((title, index) => {
-      const body = bodies[index].replace("{brief}", brief.trim()).replace("{audience}", targetAudience);
-      const tokens = Math.min(maxTokens, 260 + index * 74 + Math.round(temperature * 40));
-
-      return {
-        id: index + 1,
-        title,
-        body,
-        seoKeywords: [keywords[index], keywords[(index + 1) % keywords.length], keywords[(index + 2) % keywords.length]],
-        tokens,
-        cost: tokens * 0.0000006,
-      };
-    });
-  };
-
-  const clearTimers = () => {
-    timersRef.current.forEach(clearTimeout);
-    timersRef.current = [];
-  };
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedBrief = brief.trim();
 
@@ -109,51 +114,57 @@ export default function PromptForge() {
       return;
     }
 
-    if (BLOCKED_TERMS.test(trimmedBrief)) {
-      setError("safety");
-      return;
-    }
-
-    clearTimers();
     setError(null);
     setResults([]);
     setProgress(0);
     setIsGenerating(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-    const generated = buildVariations();
+    try {
+      const safetyResponse = await fetch("/api/backend/safety/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmedBrief }),
+        signal: controller.signal,
+      });
+      if (!safetyResponse.ok) throw new Error("Safety check failed");
+      const safety = (await safetyResponse.json()) as { safe: boolean };
+      if (!safety.safe) {
+        setError("safety");
+        return;
+      }
 
-    generated.forEach((_, index) => {
-      const timer = setTimeout(() => {
-        setResults(generated.slice(0, index + 1));
-        setProgress(index + 1);
-      }, 550 * (index + 1));
-      timersRef.current.push(timer);
-    });
+      const response = await fetch("/api/backend/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, temperature, topP, maxTokens }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("Generation failed");
 
-    const finishTimer = setTimeout(() => {
-      const tokens = generated.reduce((total, item) => total + item.tokens, 0);
-      const cost = generated.reduce((total, item) => total + item.cost, 0);
-
-      setRequests((current) => [
-        {
-          id: crypto.randomUUID(),
-          brief: trimmedBrief,
-          persona,
-          tokens,
-          cost,
-          status: "complete",
-          createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date()),
-        },
-        ...current,
-      ]);
+      const payload = (await response.json()) as GenerateResponse;
+      const variationCount = payload.data.variations.length || 1;
+      setResults(payload.data.variations.map((variation) => ({
+        ...variation,
+        tokens: Math.round(payload.meta.tokens.total / variationCount),
+        cost: payload.meta.cost / variationCount,
+      })));
+      setProgress(3);
+      await loadRequests();
+    } catch (requestError) {
+      if (!(requestError instanceof DOMException && requestError.name === "AbortError")) {
+        setError("api");
+        await loadRequests();
+      }
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
       setIsGenerating(false);
-      timersRef.current = [];
-    }, 1850);
-    timersRef.current.push(finishTimer);
+    }
   };
 
   const stopGeneration = () => {
-    clearTimers();
+    abortRef.current?.abort();
     const tokens = results.reduce((total, item) => total + item.tokens, 0);
     const cost = results.reduce((total, item) => total + item.cost, 0);
 
@@ -232,7 +243,7 @@ export default function PromptForge() {
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
-              {error && <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "safety" ? t("safetyBlocked") : t("briefError")}</p>}
+              {error && <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "safety" ? t("safetyBlocked") : error === "api" ? t("apiError") : t("briefError")}</p>}
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <div>

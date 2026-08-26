@@ -15,7 +15,7 @@
     "title": "Transforme um briefing simples em",
     "titleAccent": "conteúdo pronto para publicar.",
     "intro": "Escolha uma persona, ajuste os parâmetros de geração e compare três variações estruturadas lado a lado.",
-    "previewBadge": "Prévia do frontend",
+    "previewBadge": "API conectada",
     "briefLabel": "Briefing de marketing",
     "briefHint": "Inclua o objetivo, produto, mensagem principal e ação desejada.",
     "briefPlaceholder": "Exemplo: Anuncie nosso novo painel de analytics para pequenas equipes SaaS. Destaque a economia de tempo e convide para um teste grátis.",
@@ -37,10 +37,11 @@
     "safetyReady": "Content Safety pronto",
     "safetyBlocked": "Este briefing foi bloqueado pela prévia local de segurança. Revise-o antes de gerar.",
     "briefError": "Adicione um briefing com pelo menos 20 caracteres.",
+    "apiError": "A API não conseguiu gerar o conteúdo. Verifique o backend e tente novamente.",
     "generate": "Gerar 3 variações",
     "generating": "Gerando variação {current} de 3",
     "stop": "Interromper geração",
-    "sampleNotice": "Apenas uma prévia — nenhuma requisição de API foi enviada."
+    "sampleNotice": "Gerado com a API do promptForge."
   },
   "personas": {
     "friendlyName": "Marketer SaaS Amigável",
@@ -74,13 +75,14 @@
     "cost": "Custo estimado",
     "request": "Requisição {number}",
     "complete": "Concluída",
-    "cancelled": "Interrompida"
+    "cancelled": "Interrompida",
+    "error": "Erro"
   },
   "info": {
     "categoryLabel": "Categoria",
     "category": "IA Generativa",
     "statusLabel": "Status",
-    "status": "Frontend completo",
+    "status": "API conectada",
     "description": "Um estúdio de conteúdo para geração estruturada com Azure OpenAI, streaming, verificações de segurança e controle de custo por requisição.",
     "whatItDoes": "O que faz",
     "what1": "Transforma um briefing em três variações orientadas por personas.",
