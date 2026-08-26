@@ -51,6 +51,7 @@ async function readGenerationStream(
   response: Response,
   onDelta: (receivedCharacters: number) => void,
   onVariation: (variation: Omit<Variation, "tokens" | "cost">) => void,
+  onSafety: (categories: Record<string, number>) => void,
 ): Promise<GenerateResponse> {
   if (!response.body) throw new Error("Streaming is not supported by this response.");
 
@@ -69,8 +70,11 @@ async function readGenerationStream(
       text?: string;
       message?: string;
       variation?: Omit<Variation, "tokens" | "cost">;
+      categories?: Record<string, number>;
     };
-    if (event === "delta") {
+    if (event === "safety" && "categories" in payload) {
+      onSafety(payload.categories ?? {});
+    } else if (event === "delta") {
       receivedCharacters += "text" in payload ? payload.text?.length ?? 0 : 0;
       onDelta(receivedCharacters);
     } else if (event === "variation" && "variation" in payload && payload.variation) {
@@ -253,6 +257,7 @@ export default function PromptForge() {
           typingTasks.push(typeVariation(variation));
           setProgress(variation.id);
         },
+        setSafetyCategories,
       );
       await Promise.all(typingTasks);
       if (controller.signal.aborted) return;
@@ -347,30 +352,42 @@ export default function PromptForge() {
                 value={brief}
                 onChange={(event) => {
                   setBrief(event.target.value);
-                  if (error) {
-                    setError(null);
-                    setSafetyCategories({});
-                  }
+                  setSafetyCategories({});
+                  if (error) setError(null);
                 }}
                 rows={6}
                 aria-invalid={error !== null}
-                aria-describedby={error ? "brief-error" : undefined}
+                aria-describedby={error || Object.keys(safetyCategories).length > 0 ? "brief-error" : undefined}
                 placeholder={t("briefPlaceholder")}
                 className="field-control mt-4 min-h-36 resize-y"
               />
-              {error === "safety" ? (
-                <div id="brief-error" role="alert" className="mt-3 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-error dark:border-red-900 dark:bg-red-950/40">
-                  <p className="font-semibold">{t("safetyBlocked")}</p>
-                  {Object.keys(safetyCategories).length > 0 && (
-                    <>
-                      <p className="mt-2 text-xs font-medium">{t("safetyCategories")}</p>
-                      <ul className="mt-1 space-y-1 text-xs">
+              {error === "safety" || Object.keys(safetyCategories).length > 0 ? (
+                <div
+                  id="brief-error"
+                  role={error === "safety" ? "alert" : "status"}
+                  className={`mt-3 rounded-xl border p-4 text-sm ${error === "safety" ? "border-red-300 bg-red-50 text-error dark:border-red-900 dark:bg-red-950/40" : "border-emerald-300 bg-emerald-50 text-success dark:border-emerald-900 dark:bg-emerald-950/40"}`}
+                >
+                  <p className="font-semibold">{error === "safety" ? t("safetyBlocked") : t("safetyPassed")}</p>
+                  <p className="mt-1 text-xs">{error === "safety" ? t("safetyBlockedDescription") : t("safetyPassedDescription")}</p>
+                  <p className="mt-3 text-xs font-medium">{t("safetyCategories")}</p>
+                  <div className="mt-2 overflow-hidden rounded-lg border border-current/20">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-current/5">
+                        <tr>
+                          <th className="px-3 py-2 font-medium">{t("safetyCategory")}</th>
+                          <th className="px-3 py-2 text-right font-medium">{t("safetySeverityLabel")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
                         {Object.entries(safetyCategories).map(([category, severity]) => (
-                          <li key={category}>{safetyCategoryName(category)}: {t("safetySeverity", { value: severity })}</li>
+                          <tr key={category} className="border-t border-current/15">
+                            <td className="px-3 py-2">{safetyCategoryName(category)}</td>
+                            <td className="px-3 py-2 text-right">{t("safetySeverity", { value: severity })}</td>
+                          </tr>
                         ))}
-                      </ul>
-                    </>
-                  )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ) : error ? (
                 <p id="brief-error" role="alert" className="mt-2 text-sm text-error">{error === "api" ? t("apiError") : t("briefError")}</p>
