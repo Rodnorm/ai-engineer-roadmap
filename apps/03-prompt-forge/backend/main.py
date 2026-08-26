@@ -303,6 +303,14 @@ BLOCKED_PATTERNS = (
     ),
 )
 
+SELF_HARM_PATTERNS = (
+    re.compile(r"\bauto\s*-?\s*mutila\w*\b"),
+    re.compile(r"\bauto\s*-?\s*agress\w*\b"),
+    re.compile(r"\b(?:suicid\w*|se matar|tirar a propria vida)\b"),
+    re.compile(r"\b(?:self\s*-?\s*harm\w*|self\s*-?\s*mutilat\w*|suicid\w*)\b"),
+    re.compile(r"\b(?:selbstverletz\w*|selbstmord\w*|suizid\w*)\b"),
+)
+
 
 def _normalize_safety_text(text: str) -> str:
     normalized = unicodedata.normalize("NFKD", text.lower())
@@ -310,18 +318,28 @@ def _normalize_safety_text(text: str) -> str:
 
 
 def _is_locally_blocked(text: str) -> bool:
+    return bool(_local_safety_categories(text))
+
+
+def _local_safety_categories(text: str) -> dict[str, int]:
     normalized = _normalize_safety_text(text)
-    return any(term in normalized for term in BLOCKED_TERMS) or any(
+    categories: dict[str, int] = {}
+    if any(term in normalized for term in BLOCKED_TERMS) or any(
         pattern.search(normalized) for pattern in BLOCKED_PATTERNS
-    )
+    ):
+        categories["violence"] = 4
+    if any(pattern.search(normalized) for pattern in SELF_HARM_PATTERNS):
+        categories["self_harm"] = 4
+    return categories
 
 
 def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
-    if _is_locally_blocked(text):
+    local_categories = _local_safety_categories(text)
+    if local_categories:
         return SafetyResponse(
             safe=False,
-            severity=["blocked_term: 4"],
-            categories={"blocked_term": 4},
+            severity=[f"{name}: {value}" for name, value in local_categories.items()],
+            categories=local_categories,
         )
 
     if content_safety_client is None:
