@@ -2,7 +2,7 @@
 
 A Next.js content studio for marketers to turn a brief into three structured content variations using distinct personas.
 
-The frontend is complete and runs with local preview data. Azure OpenAI generation, Vercel AI SDK streaming, Content Safety, and persistent request logging are intentionally left for the API integration step.
+The frontend is complete and runs with local preview data. The FastAPI backend now exposes Azure OpenAI structured generation, an in-memory request log, prompt-harness access, and a lightweight safety check. Connecting the frontend to these endpoints remains a later step.
 
 ## Frontend features
 
@@ -38,11 +38,33 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Pending API integrations
+## Backend setup
 
-- Azure OpenAI structured generation
+From `apps/03-prompt-forge/backend`:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+python main.py
+```
+
+Fill the three `AZURE_OPENAI_*` values in `.env`. The API is available at `http://localhost:8000/api/backend`; without Azure configuration, `/generate` returns `503` while the other endpoints remain available.
+
+Main endpoints:
+
+- `GET /health`
+- `POST /generate`
+- `GET /log?limit=20`
+- `POST /safety/check`
+- `GET /prompts`
+
+## Pending integrations
+
 - Vercel AI SDK streaming
 - Azure AI Content Safety
-- Persistent cost and token logging
+- Frontend API calls
+- Persistent request logging beyond process memory
 
 The current frontend makes no API requests. Its local generation flow exists to demonstrate and validate the final user experience before those integrations are added.
