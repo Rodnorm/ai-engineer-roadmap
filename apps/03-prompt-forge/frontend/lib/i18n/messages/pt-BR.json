@@ -35,7 +35,7 @@
     "maxTokens": "Máximo de tokens",
     "maxTokensHint": "Tamanho máximo de cada variação.",
     "safetyReady": "Content Safety pronto",
-    "safetyBlocked": "Este briefing foi bloqueado pela prévia local de segurança. Revise-o antes de gerar.",
+    "safetyBlocked": "Este briefing foi bloqueado pelo Content Safety. Revise-o antes de gerar.",
     "briefError": "Adicione um briefing com pelo menos 20 caracteres.",
     "apiError": "A API não conseguiu gerar o conteúdo. Verifique o backend e tente novamente.",
     "generate": "Gerar 3 variações",

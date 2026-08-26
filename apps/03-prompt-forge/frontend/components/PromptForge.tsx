@@ -123,26 +123,20 @@ export default function PromptForge() {
     abortRef.current = controller;
 
     try {
-      const safetyResponse = await fetch("/api/backend/safety/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: trimmedBrief }),
-        signal: controller.signal,
-      });
-      if (!safetyResponse.ok) throw new Error("Safety check failed");
-      const safety = (await safetyResponse.json()) as { safe: boolean };
-      if (!safety.safe) {
-        setError("safety");
-        return;
-      }
-
       const response = await fetch("/api/backend/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
         signal: controller.signal,
       });
-      if (!response.ok) throw new Error("Generation failed");
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null) as { detail?: { code?: string } } | null;
+        if (response.status === 400 && errorPayload?.detail?.code === "unsafe_content") {
+          setError("safety");
+          return;
+        }
+        throw new Error("Generation failed");
+      }
 
       const payload = (await response.json()) as GenerateResponse;
       const variationCount = payload.data.variations.length || 1;

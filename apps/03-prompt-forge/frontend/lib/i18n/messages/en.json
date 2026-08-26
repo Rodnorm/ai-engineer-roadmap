@@ -35,7 +35,7 @@
     "maxTokens": "Max tokens",
     "maxTokensHint": "Maximum output length for each variation.",
     "safetyReady": "Content Safety ready",
-    "safetyBlocked": "This brief was blocked by the local safety preview. Revise it before generating.",
+    "safetyBlocked": "This brief was blocked by Content Safety. Revise it before generating.",
     "briefError": "Add a brief with at least 20 characters.",
     "apiError": "The API could not generate content. Check the backend and try again.",
     "generate": "Generate 3 variations",
