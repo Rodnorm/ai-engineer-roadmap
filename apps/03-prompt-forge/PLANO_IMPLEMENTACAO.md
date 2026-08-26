@@ -19,7 +19,7 @@ O **App 03 — promptForge** é um estúdio de conteúdo marketing que transform
 | Azure OpenAI | ❌ Não configurado | Variáveis `AZURE_OPENAI_ENDPOINT/DEPLOYMENT/API_KEY` ainda sem valor real. |
 | Content Safety | ❌ Não integrado | Hoje só existe um regex client-side em `PromptForge.tsx` (linha 40). |
 | Persistência de log | ❌ Não integrada | `RequestLog` hoje é state local em memória. |
-| Streaming (Vercel AI SDK) | ❌ Não integrado | Frontend só lê o array de variações de uma vez. |
+| Streaming | ✅ Integrado | Backend envia SSE nativo e o frontend consome os deltas sem dependência adicional. |
 | `vercel.json` | ✅ Pronto | Rewrite `/api/backend(/.*)? → backend`, resto vai para o frontend. |
 
 ## 3. Visão de produto (features)
@@ -49,7 +49,7 @@ Numeração = prioridade. **F1–F4** são o backend mínimo das próximas 5h. *
 ### 3.4 Frontend — integração (Fase 4, depois das 5h)
 
 - **F12. Substituir mock por `fetch('/api/backend/generate')`** em `PromptForge.tsx`, removendo `buildVariations`.
-- **F13. Streaming opcional** com Vercel AI SDK (`useCompletion` ou `streamObject`) — voltar para fetch se demorar.
+- **F13. Streaming** via SSE nativo no endpoint `/generate/stream`, preservando `/generate` como fallback.
 - **F14. Botão "stop"** cancela via `AbortController`.
 - **F15. Erro de safety** agora é renderizado a partir da resposta 422/400 do backend, removendo a heurística client-side.
 - **F16. Request log** lê de `GET /log` em vez de state local (manter cache local para UX imediata).
