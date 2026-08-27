@@ -3,7 +3,17 @@
 import type { PersonaId, RequestEntry } from "@/components/PromptForge";
 import { useT } from "@/lib/i18n/I18nProvider";
 
-export default function RequestLog({ requests, onClear, personaName }: { requests: RequestEntry[]; onClear: () => void; personaName: (persona: PersonaId) => string }) {
+export default function RequestLog({
+  requests,
+  onClear,
+  onDelete,
+  personaName,
+}: {
+  requests: RequestEntry[];
+  onClear: () => void;
+  onDelete?: (id: string) => void;
+  personaName: (persona: PersonaId) => string;
+}) {
   const t = useT("activity");
   const totalTokens = requests.reduce((total, request) => total + request.tokens, 0);
   const totalCost = requests.reduce((total, request) => total + request.cost, 0);
@@ -29,13 +39,26 @@ export default function RequestLog({ requests, onClear, personaName }: { request
         ) : (
           <ol className="mt-5 space-y-3">
             {requests.map((request, index) => (
-              <li key={request.id} className="rounded-xl border border-border bg-panel p-3 shadow-sm">
+              <li key={request.id} className="group rounded-xl border border-border bg-panel p-3 shadow-sm transition hover:border-border/80">
                 <div className="flex items-center justify-between gap-3">
                   <span className={`inline-flex items-center gap-1.5 text-[0.65rem] font-semibold uppercase tracking-wide ${request.status === "complete" ? "text-success" : request.status === "error" ? "text-error" : "text-amber-600 dark:text-amber-400"}`}>
                     <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
                     {t(request.status)}
                   </span>
-                  <time className="text-[0.65rem] text-muted">{request.createdAt}</time>
+                  <div className="flex items-center gap-2">
+                    <time className="text-[0.65rem] text-muted">{request.createdAt}</time>
+                    {onDelete && (
+                      <button
+                        type="button"
+                        onClick={() => onDelete(request.id)}
+                        className="rounded p-1 text-muted transition hover:bg-surface hover:text-error focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                        title={t("delete")}
+                        aria-label={`${t("delete")} - ${request.brief}`}
+                      >
+                        <TrashIcon />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="mt-2 truncate text-xs font-medium" title={request.brief}>{t("request", { number: requests.length - index })}: {request.brief}</p>
                 <p className="mt-1 truncate text-[0.65rem] text-muted">{personaName(request.persona)}</p>
@@ -54,4 +77,12 @@ export default function RequestLog({ requests, onClear, personaName }: { request
 
 function Metric({ label, value }: { label: string; value: string }) {
   return <div className="rounded-xl border border-border bg-panel p-3"><dt className="text-[0.6rem] uppercase tracking-wide text-muted">{label}</dt><dd className="mt-1 font-mono text-sm font-semibold text-text">{value}</dd></div>;
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-3.5" aria-hidden="true">
+      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+    </svg>
+  );
 }

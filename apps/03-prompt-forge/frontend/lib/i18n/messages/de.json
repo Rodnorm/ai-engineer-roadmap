@@ -89,7 +89,8 @@
     "request": "Anfrage {number}",
     "complete": "Abgeschlossen",
     "cancelled": "Abgebrochen",
-    "error": "Fehler"
+    "error": "Fehler",
+    "delete": "Anfrage löschen"
   },
   "info": {
     "categoryLabel": "Kategorie",

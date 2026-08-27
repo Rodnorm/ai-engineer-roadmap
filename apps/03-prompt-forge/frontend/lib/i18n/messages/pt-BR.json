@@ -89,7 +89,8 @@
     "request": "Requisição {number}",
     "complete": "Concluída",
     "cancelled": "Interrompida",
-    "error": "Erro"
+    "error": "Erro",
+    "delete": "Excluir requisição"
   },
   "info": {
     "categoryLabel": "Categoria",
