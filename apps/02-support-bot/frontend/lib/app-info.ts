@@ -27,7 +27,7 @@ const appInfoByLocale: Record<Locale, AppInfoConfig> = {
 		description:
 			"A conversational assistant for common healthcare billing questions.",
 		whatItDoes: [
-			"Answers billing questions using an Azure AI Foundry agent connected to a knowledge base.",
+			"Answers billing questions with an Azure AI Foundry agent grounded by locally retrieved FAQs.",
 			"Shows language, sentiment, key phrases, and entities detected by Azure AI Language.",
 		],
 		howToUse: [
@@ -61,7 +61,7 @@ const appInfoByLocale: Record<Locale, AppInfoConfig> = {
 		description:
 			"Ein dialogorientierter Assistent für häufige Fragen zur medizinischen Abrechnung.",
 		whatItDoes: [
-			"Beantwortet Abrechnungsfragen mit einem Azure AI Foundry Agent, der mit einer Wissensdatenbank verbunden ist.",
+			"Beantwortet Abrechnungsfragen mit einem Azure AI Foundry Agent auf Basis lokal abgerufener FAQs.",
 			"Zeigt die von Azure AI Language erkannten Sprachen, Stimmungen, Schlüsselbegriffe und Entitäten.",
 		],
 		howToUse: [
@@ -95,7 +95,7 @@ const appInfoByLocale: Record<Locale, AppInfoConfig> = {
 		description:
 			"Um assistente conversacional para dúvidas comuns sobre faturamento de saúde.",
 		whatItDoes: [
-			"Responde a dúvidas de faturamento usando um agente do Azure AI Foundry conectado a uma base de conhecimento.",
+			"Responde a dúvidas de faturamento com um agente do Azure AI Foundry baseado em FAQs recuperadas localmente.",
 			"Exibe idioma, sentimento, frases-chave e entidades detectados pelo Azure AI Language.",
 		],
 		howToUse: [

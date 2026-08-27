@@ -1,12 +1,12 @@
 # Support Bot
 
-A multilingual knowledge-base support assistant built with Next.js, FastAPI, Azure AI Foundry, and Azure AI Language.
+A multilingual FAQ support assistant built with Next.js, FastAPI, Azure AI Foundry, and Azure AI Language.
 
-The application combines retrieval-based question answering with natural-language analysis. A user sends a question through the chat interface, the backend analyzes the message, and an Azure AI Foundry agent answers using a deployed knowledge base.
+The application combines local FAQ retrieval with natural-language analysis. A user sends a question through the chat interface, the backend analyzes the message, selects up to three relevant FAQ entries, and sends them to an Azure AI Foundry agent as grounding context.
 
 ## Features
 
-- Knowledge-base question answering with an Azure AI Foundry agent
+- Locally grounded FAQ answers with an Azure AI Foundry agent
 - Language detection
 - Sentiment analysis with confidence scores
 - Key-phrase extraction
@@ -35,8 +35,8 @@ FastAPI backend
    │   ├── entities
    │   └── PII detection
    │
-   └── Azure AI Foundry agent
-       └── deployed knowledge base
+   ├── Local FAQ keyword retrieval
+   └── Azure AI Foundry agent (no attached knowledge base required)
 ```
 
 The NLP analysis provides additional context to the agent, including the detected language, sentiment, and key phrases. The agent is instructed to answer in the user's language and to respond empathetically when negative sentiment is detected.
@@ -46,7 +46,7 @@ The NLP analysis provides additional context to the agent, including the detecte
 ```text
 02-support-bot/
 ├── backend/
-│   ├── data/                   # Knowledge-base source files
+│   ├── data/                   # Local FAQ source files
 │   ├── .env.example
 │   ├── main.py                 # FastAPI application
 │   └── requirements.txt
@@ -94,7 +94,7 @@ The NLP analysis provides additional context to the agent, including the detecte
 - Node.js 20 or newer
 - Python 3.10 or newer
 - An Azure AI Foundry project
-- A deployed agent with an attached knowledge base
+- A deployed Azure AI Foundry agent without an attached knowledge base
 - An Azure AI Language resource
 - A Microsoft Entra ID application or another supported Azure credential
 - The required Azure role assignments for both services
@@ -195,10 +195,10 @@ Check the service:
 curl http://localhost:8000/health
 ```
 
-Run the dependency-free rate-limiter tests:
+Run the dependency-free backend tests:
 
 ```bash
-python -m unittest test_rate_limit.py
+python -m unittest test_rate_limit.py test_local_retrieval.py
 ```
 
 To verify HTTP rate limiting locally without consuming many Azure calls, temporarily set `RATE_LIMIT_REQUESTS_PER_MINUTE=1`, restart the backend, and send two valid requests. The second request should return HTTP `429`.
@@ -276,9 +276,11 @@ Response shape:
 }
 ```
 
-## Knowledge base and FAQ data
+## Local FAQ retrieval
 
-The backend's `data` directory contains source material used to build the healthcare billing knowledge base.
+The demo loads `backend/data/healthcare-billing-kb.json` when the backend starts. For each request, a dependency-free keyword search scores FAQ questions and answers, selects up to three related entries, and sends only those entries to the Foundry agent. The prompt tells the agent to answer exclusively from that context and to state when the FAQ does not contain the requested information.
+
+Local retrieval is a deliberate fit for this demo because the FAQ is small and static. It keeps the implementation easy to inspect and avoids the fixed running cost of a dedicated Azure AI Search service. The Foundry agent used by the demo therefore does not need an attached knowledge base.
 
 The frontend contains localized FAQ datasets for:
 
@@ -286,7 +288,18 @@ The frontend contains localized FAQ datasets for:
 - English
 - Brazilian Portuguese
 
-The deployed Azure AI Foundry knowledge base is the source used by the agent at runtime. Updating a local file does not automatically update the deployed knowledge base.
+Azure AI Search becomes appropriate when the corpus grows, includes varied document formats, or needs vector search, semantic search, managed indexing, or more advanced ranking.
+
+### Optional alternative: hosted retrieval with Azure AI Search
+
+This integration is an alternative only and is **not used by the current demo**. A short migration path is:
+
+1. In the Azure portal, create an Azure AI Search service in a supported region. Choose the pricing model and tier for the expected storage, query volume, scaling, and required features; review the current tier documentation before provisioning because the choice affects cost and capacity.
+2. Create a searchable index with retrievable question and answer fields, then import the FAQ documents through the portal's import-data flow or another supported indexer. Configure semantic or vector fields only if the intended search mode requires them.
+3. In Microsoft Foundry, add the Search service as a project connection. Add the existing index as an Azure AI Search tool or knowledge source, then connect it to the agent or a Foundry IQ knowledge base and grant the required managed-identity data access.
+4. Replace the call to `faq_retriever.search(...)` in `backend/main.py` with retrieval from the hosted index or knowledge base, pass those results as grounding context, and add the corresponding Azure Search client configuration and dependency.
+
+For current setup details, see Microsoft's documentation for [choosing an Azure AI Search tier](https://learn.microsoft.com/azure/search/search-sku-tier), [creating a search index knowledge source](https://learn.microsoft.com/azure/search/agentic-knowledge-source-how-to-search-index), and [connecting an Azure AI Search index to Foundry agents](https://learn.microsoft.com/azure/ai-foundry/agents/how-to/tools/ai-search).
 
 ## Deployment
 
