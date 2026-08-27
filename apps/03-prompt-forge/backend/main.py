@@ -27,13 +27,19 @@ from azure.ai.contentsafety import ContentSafetyClient
 from azure.ai.contentsafety.models import AnalyzeTextOptions, TextCategory
 from azure.core.credentials import AzureKeyCredential
 from azure.core.exceptions import AzureError
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
-from log_store import append as log_append, recent as log_recent
+from log_store import (
+    append as log_append,
+    recent as log_recent,
+    delete_entry as log_delete,
+    clear_all as log_clear,
+)
+
 from models import (
     GenerateRequest,
     GenerateResponse,
@@ -274,6 +280,10 @@ def _complete_variations_from_json(text: str) -> list[Variation]:
                 object_start = None
     return variations
 
+def _extract_client_id(x_client_id: str | None = None, client_id: str | None = None) -> str:
+    cid = x_client_id or client_id or "anonymous"
+    return cid.strip() or "anonymous"
+
 
 # ---------------------------------------------------------------------------
 # Safety (heuristic — mirrors the frontend preview blocked-terms list)
@@ -441,8 +451,10 @@ def health() -> dict:
 
 
 @app.post("/generate", response_model=GenerateResponse)
-async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
+async def generate(req: GenerateRequest, request: Request, x_client_id: str | None = Header(default=None, alias="X-Client-ID")) -> GenerateResponse:
     safety = _safety_check(req.brief, request.state.request_id)
+    cid = _extract_client_id(x_client_id)
+
     if not safety.safe:
         raise HTTPException(
             status_code=400,
@@ -479,7 +491,7 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
         )
     except Exception:
         log.exception("azure_openai_request_failed", extra={"request_id": request_id})
-        log_append(brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
+        log_append(client_id=cid, brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
         raise HTTPException(
             status_code=502,
             detail="Azure OpenAI request failed.",
@@ -487,7 +499,7 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
 
     parsed: _ResultSchema | None = response.output_parsed
     if parsed is None or len(parsed.variations) != 3:
-        log_append(brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
+        log_append(client_id=cid, brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
         raise HTTPException(
             status_code=502,
             detail="Model did not return a structured response.",
@@ -503,6 +515,7 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
     latency_ms = int((time.perf_counter() - started) * 1000)
 
     log_append(
+        client_id=cid,
         brief=req.brief,
         persona=req.persona,
         tokens=total_tokens,
@@ -537,8 +550,9 @@ async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
 
 
 @app.post("/generate/stream")
-def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse:
+def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | None = Header(default="demo-user", alias="X-Client-ID")) -> StreamingResponse:
     request_id = request.state.request_id
+    cid = _extract_client_id(x_client_id)
     safety = _safety_check(req.brief, request_id)
     if not safety.safe:
         raise HTTPException(
@@ -592,6 +606,7 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
         except Exception:
             log.exception("azure_openai_stream_failed", extra={"request_id": request_id})
             log_append(
+                client_id=cid,
                 brief=req.brief,
                 persona=req.persona,
                 tokens=0,
@@ -604,6 +619,7 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
         parsed: _ResultSchema | None = response.output_parsed
         if parsed is None or len(parsed.variations) != 3:
             log_append(
+                client_id=cid,
                 brief=req.brief,
                 persona=req.persona,
                 tokens=0,
@@ -622,6 +638,7 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
         latency_ms = int((time.perf_counter() - started) * 1000)
 
         log_append(
+            client_id=cid,
             brief=req.brief,
             persona=req.persona,
             tokens=total_tokens,
@@ -662,8 +679,36 @@ def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse
 
 
 @app.get("/log")
-def get_log(limit: int = 20) -> dict:
-    return {"data": [e.model_dump(mode="json") for e in log_recent(limit)]}
+def get_log(
+    limit: int = 20,
+    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
+    client_id: str | None = None
+    ) -> dict:
+    cid = _extract_client_id(x_client_id, client_id)
+    return {"data": [e.model_dump(mode="json") for e in log_recent(cid, limit)]}
+
+
+@app.delete("/log/{entry_id}")
+def delete_log_entry(
+    entry_id: str,
+    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
+    client_id: str | None = None,
+) -> dict:
+    cid = _extract_client_id(x_client_id, client_id)
+    deleted = log_delete(cid, entry_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Log entry not found.")
+    return {"success": True, "deleted_id": entry_id}
+
+
+@app.delete("/log")
+def clear_all_logs(
+    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
+    client_id: str | None = None,
+) -> dict:
+    cid = _extract_client_id(x_client_id, client_id)
+    count = log_clear(cid)
+    return {"success": True, "deleted_count": count}
 
 
 @app.post("/safety/check", response_model=SafetyResponse)

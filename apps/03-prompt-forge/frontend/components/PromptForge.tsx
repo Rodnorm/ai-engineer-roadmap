@@ -101,6 +101,24 @@ async function readGenerationStream(
   return result;
 }
 
+const CLIENT_ID_STORAGE_KEY = "promptforge_client_id";
+
+function getClientId(): string {
+  if (typeof window === "undefined") return "anonymous";
+  try {
+    let clientId = window.localStorage.getItem(CLIENT_ID_STORAGE_KEY);
+    if (!clientId) {
+      clientId = typeof window.crypto?.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : `client-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, clientId);
+    }
+    return clientId;
+  } catch {
+    return "anonymous";
+  }
+}
+
 const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
   ...entry,
   createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(entry.createdAt)),
@@ -136,7 +154,9 @@ export default function PromptForge() {
 
   const loadRequests = useCallback(async () => {
     try {
-      const response = await fetch("/api/backend/log?limit=20");
+      const response = await fetch("/api/backend/log?limit=20", {
+        headers: { "X-Client-ID": getClientId() },
+      });
       if (!response.ok) return;
       const payload = (await response.json()) as LogResponse;
       setRequests(formatLogEntries(payload.data));
@@ -145,10 +165,36 @@ export default function PromptForge() {
     }
   }, []);
 
+  const handleDeleteRequest = async (id: string) => {
+    setRequests((current) => current.filter((item) => item.id !== id));
+    try {
+      await fetch(`/api/backend/log/${id}`, {
+        method: "DELETE",
+        headers: { "X-Client-ID": getClientId() },
+      });
+    } catch {
+      await loadRequests();
+    }
+  };
+
+  const handleClearRequests = async () => {
+    setRequests([]);
+    try {
+      await fetch("/api/backend/log", {
+        method: "DELETE",
+        headers: { "X-Client-ID": getClientId() },
+      });
+    } catch {
+      await loadRequests();
+    }
+  };
+
   useEffect(() => {
     let active = true;
-    fetch("/api/backend/log?limit=20")
-      .then((response) => response.ok ? response.json() as Promise<LogResponse> : null)
+    fetch("/api/backend/log?limit=20", {
+      headers: { "X-Client-ID": getClientId() },
+    })
+      .then((response) => (response.ok ? (response.json() as Promise<LogResponse>) : null))
       .then((payload) => {
         if (active && payload) setRequests(formatLogEntries(payload.data));
       })
@@ -244,7 +290,10 @@ export default function PromptForge() {
     try {
       const response = await fetch("/api/backend/generate/stream", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-ID": getClientId(),
+        },
         body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
         signal: controller.signal,
       });
@@ -491,7 +540,12 @@ export default function PromptForge() {
           </div>
         </div>
 
-        <RequestLog requests={requests} onClear={() => setRequests([])} personaName={personaName} />
+        <RequestLog
+          requests={requests}
+          onClear={handleClearRequests}
+          onDelete={handleDeleteRequest}
+          personaName={personaName}
+        />
       </main>
     </div>
   );

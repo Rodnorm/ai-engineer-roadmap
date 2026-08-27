@@ -89,7 +89,8 @@
     "request": "Request {number}",
     "complete": "Complete",
     "cancelled": "Cancelled",
-    "error": "Error"
+    "error": "Error",
+    "delete": "Delete request"
   },
   "info": {
     "categoryLabel": "Category",
