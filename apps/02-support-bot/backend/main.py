@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel, Field, field_validator
 
+from local_retrieval import faq_retriever
 from rate_limit import InMemoryRateLimiter
 
 # ---------------------------------------------------------------------------
@@ -244,6 +245,14 @@ def ask_llm(
     sentiment: str,
     key_phrases: list[str],
 ) -> str:
+    faq_entries = faq_retriever.search(question, key_phrases)
+    faq_context = "\n\n".join(
+        f"FAQ {index}\nQuestion: {entry['question']}\nAnswer: {entry['answer']}"
+        for index, entry in enumerate(faq_entries, start=1)
+    )
+    if not faq_context:
+        faq_context = "No relevant FAQ entries were found."
+
     analysis_context = f"""
 Additional analysis about the user's message:
 
@@ -252,11 +261,17 @@ Sentiment: {sentiment}
 Key phrases: {", ".join(key_phrases)}
 
 Instructions:
+- Answer only with information explicitly present in the FAQ context below.
+- If the context does not contain the answer, say that the information is not
+  available in the FAQ. Do not use outside knowledge or make assumptions.
 - Answer in the same language as the user.
 - Use the key phrases to better understand the topic.
 - If the user is frustrated or the sentiment is negative, respond
   empathetically but remain concise.
 - Do not mention that sentiment analysis was performed.
+
+FAQ context:
+{faq_context}
 
 User question:
 {question}
