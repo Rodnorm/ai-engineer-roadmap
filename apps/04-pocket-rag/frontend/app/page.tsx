@@ -6,6 +6,7 @@ import { DocumentManager } from '../components/DocumentManager';
 import { ChatInterface, ChatMessage } from '../components/ChatInterface';
 import { CitationsDrawer } from '../components/CitationsDrawer';
 import { TelemetryPanel } from '../components/TelemetryPanel';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 import {
   fetchDocuments,
   uploadDocument,
@@ -16,10 +17,11 @@ import {
   Citation,
   SystemStats,
 } from '../lib/api';
-import translations from '../data/translations.json';
 
 export default function Home() {
-  const [lang, setLang] = useState<'en' | 'pt-BR' | 'de'>('en');
+  const { locale, dict } = useI18n();
+  const labels = dict.labels;
+
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -29,8 +31,6 @@ export default function Home() {
   const [lastCost, setLastCost] = useState(0);
   const [lastTokens, setLastTokens] = useState(0);
   const [lastLatency, setLastLatency] = useState(0);
-
-  const t = translations[lang] || translations.en;
 
   const loadData = async () => {
     try {
@@ -74,7 +74,7 @@ export default function Home() {
     setIsQuerying(true);
 
     try {
-      const res = await queryRAG(question, 4, 0.3, lang);
+      const res = await queryRAG(question, 4, 0.3, locale);
 
       const botMsg: ChatMessage = {
         id: String(Date.now() + 1),
@@ -103,24 +103,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-bg text-text flex flex-col font-sans">
       <Header
-        lang={lang}
-        onLangChange={(newLang) => setLang(newLang)}
         monthlySavings={stats?.monthly_cloud_savings_usd || 75.0}
       />
 
       <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 space-y-5">
-        {/* Telemetry Header Strip */}
         <TelemetryPanel
           stats={stats}
           lastCost={lastCost}
           lastTokens={lastTokens}
           lastLatency={lastLatency}
-          labels={t}
+          labels={labels}
         />
 
-        {/* Main Grid: Left Panel (Doc Manager) & Right Panel (Chat) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           <div className="lg:col-span-4">
             <DocumentManager
@@ -128,7 +124,7 @@ export default function Home() {
               isUploading={isUploading}
               onUpload={handleUpload}
               onClearAll={handleClearAll}
-              labels={t}
+              labels={labels}
             />
           </div>
 
@@ -138,7 +134,7 @@ export default function Home() {
               isLoading={isQuerying}
               onSend={handleSendQuestion}
               onSelectCitation={(cit) => setSelectedCitation(cit)}
-              labels={t}
+              labels={labels}
             />
           </div>
         </div>
