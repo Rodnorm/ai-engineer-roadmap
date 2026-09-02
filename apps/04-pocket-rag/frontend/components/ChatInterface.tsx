@@ -40,18 +40,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-[620px] rounded-2xl border border-slate-800 bg-slate-900/70 backdrop-blur-sm shadow-xl">
+    <div className="flex flex-col h-[620px] rounded-2xl border border-border bg-panel backdrop-blur-sm shadow-sm overflow-hidden">
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400 mb-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-500 dark:text-sky-400 mb-3">
               <Sparkles className="h-6 w-6" />
             </div>
-            <h3 className="text-sm font-bold text-slate-200">
+            <h3 className="text-sm font-bold text-text">
               pocketRag Assistant
             </h3>
-            <p className="mt-1 max-w-sm text-xs text-slate-400">
+            <p className="mt-1 max-w-sm text-xs text-muted">
               Upload PDF or text documents on the left panel, then ask any question to retrieve grounded answers with vector citations!
             </p>
           </div>
@@ -64,7 +64,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               }`}
             >
               {msg.sender === 'assistant' && (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/20 text-sky-500 dark:text-sky-400 border border-sky-500/30">
                   <Bot className="h-4 w-4" />
                 </div>
               )}
@@ -74,7 +74,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   className={`rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm ${
                     msg.sender === 'user'
                       ? 'bg-sky-600 text-white rounded-br-none'
-                      : 'bg-slate-950/80 border border-slate-800 text-slate-200 rounded-bl-none'
+                      : 'bg-surface/50 border border-border text-text rounded-bl-none'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
@@ -83,14 +83,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 {/* Citations Badges */}
                 {msg.sender === 'assistant' && msg.citations && msg.citations.length > 0 && (
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] font-semibold text-slate-400 flex items-center gap-1">
-                      <BookOpen className="h-3 w-3 text-sky-400" /> Citations:
+                    <span className="text-[10px] font-semibold text-muted flex items-center gap-1">
+                      <BookOpen className="h-3 w-3 text-sky-500 dark:text-sky-400" /> Citations:
                     </span>
                     {msg.citations.map((c) => (
                       <button
                         key={c.citation_id}
                         onClick={() => onSelectCitation(c)}
-                        className="inline-flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-950/40 px-2 py-0.5 text-[10px] font-medium text-sky-300 hover:bg-sky-900/50 transition cursor-pointer"
+                        className="inline-flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-600 dark:text-sky-300 hover:bg-sky-500/20 transition cursor-pointer"
                       >
                         [{c.citation_id}] {c.filename}
                       </button>
@@ -100,7 +100,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               </div>
 
               {msg.sender === 'user' && (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-slate-300">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface text-muted">
                   <User className="h-4 w-4" />
                 </div>
               )}
@@ -109,8 +109,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
 
         {isLoading && (
-          <div className="flex gap-3 justify-start items-center text-xs text-sky-400 animate-pulse">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+          <div className="flex gap-3 justify-start items-center text-xs text-sky-500 dark:text-sky-400 animate-pulse">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/20 text-sky-500 dark:text-sky-400 border border-sky-500/30">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
             <span>{labels.thinking || 'Retrieving context & generating answer...'}</span>
@@ -119,19 +119,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSubmit} className="border-t border-slate-800 p-3 bg-slate-950/40 flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="border-t border-border p-3 bg-surface/20 flex items-center gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={labels.queryPlaceholder || 'Ask a question about your documents...'}
-          className="flex-1 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+          className="flex-1 rounded-xl border border-border bg-panel px-4 py-2.5 text-xs text-text placeholder:text-muted focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
           disabled={isLoading}
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20 cursor-pointer"
         >
           <Send className="h-4 w-4" />
         </button>

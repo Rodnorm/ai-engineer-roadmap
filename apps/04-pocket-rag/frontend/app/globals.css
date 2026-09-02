@@ -22,7 +22,8 @@
   color-scheme: light;
 }
 
-:root.dark {
+:root.dark,
+.dark {
   color-scheme: dark;
   --color-bg: #020617;
   --color-panel: #0f172a;
@@ -76,4 +77,14 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.25s ease-out forwards;
+}
+
+@layer components {
+  .control-button {
+    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel text-sm font-medium text-muted shadow-sm transition hover:border-sky-300 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950;
+  }
+
+  .icon-button {
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+  }
 }
