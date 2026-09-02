@@ -1,0 +1,9 @@
+python-dotenv>=1.0.1
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+openai>=1.40.0
+chromadb>=0.5.0
+pypdf>=4.2.0
+sentence-transformers>=3.0.0
+python-multipart>=0.0.9
