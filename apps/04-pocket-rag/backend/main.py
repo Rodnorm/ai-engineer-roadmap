@@ -200,12 +200,26 @@ def clear_documents():
 def query_rag(request: QueryRequest):
     start_time = time.time()
     
+    lang = request.language or "de"
+
     if not CHUNKS_DB:
-        return QueryResponse(
-            answer=(
+        if lang == "de":
+            no_docs_msg = (
+                "Noch keine Dokumente in Ihre pocketRag-Wissensdatenbank hochgeladen. "
+                "Bitte laden Sie ein Dokument (PDF, TXT oder MD) hoch, um Fragen zu stellen!"
+            )
+        elif lang == "pt-BR":
+            no_docs_msg = (
+                "Nenhum documento foi enviado para a sua base pocketRag ainda. "
+                "Faça upload de um documento (PDF, TXT ou MD) para começar a perguntar!"
+            )
+        else:
+            no_docs_msg = (
                 "No documents have been uploaded to your pocketRag knowledge base yet. "
                 "Please upload a document (PDF, TXT, or MD) using the Document Panel to start querying!"
-            ),
+            )
+        return QueryResponse(
+            answer=no_docs_msg,
             citations=[],
             retrieved_chunks=[],
             tokens_used={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
@@ -255,11 +269,17 @@ def query_rag(request: QueryRequest):
     answer_text = ""
     prompt_tokens = 150 + (len(retrieved_chunks) * 80)
     completion_tokens = 90
-    
+
+    lang_name = {
+        "de": "German (Deutsch)",
+        "pt-BR": "Portuguese (Português)",
+        "en": "English",
+    }.get(lang, "German (Deutsch)")
+
     if client is not None:
         try:
             context_str = "\n\n".join([f"[Source {i+1}: {c.filename} Page {c.page_number}] {c.content}" for i, c in enumerate(retrieved_chunks)])
-            
+
             completion = client.chat.completions.create(
                 model=AZURE_OPENAI_DEPLOYMENT,
                 temperature=request.temperature,
@@ -267,8 +287,8 @@ def query_rag(request: QueryRequest):
                     {
                         "role": "system",
                         "content": (
-                            "You are pocketRag, a helpful AI Knowledge Assistant. Answer the user question strictly using "
-                            "the provided document context. Include inline citations like [1], [2] corresponding to sources."
+                            f"You are pocketRag, a helpful AI Knowledge Assistant. Always answer the user question strictly in {lang_name}, "
+                            f"using the provided document context. Include inline citations like [1], [2] corresponding to sources."
                         ),
                     },
                     {
@@ -282,19 +302,47 @@ def query_rag(request: QueryRequest):
                 prompt_tokens = completion.usage.prompt_tokens
                 completion_tokens = completion.usage.completion_tokens
         except Exception as err:
-            answer_text = (
-                f"Based on the indexed document '{top_matched[0][1]['filename']}', "
-                f"here is the relevant information regarding '{request.question}':\n\n"
-                f"{top_matched[0][1]['content'][:350]}... [1]\n\n"
-                f"(Note: Azure OpenAI API call returned error: {str(err)}. Displaying local context match)."
-            )
+            if lang == "de":
+                answer_text = (
+                    f"Basierend auf dem indizierten Dokument '{top_matched[0][1]['filename']}', "
+                    f"hier sind die relevanten Informationen zu '{request.question}':\n\n"
+                    f"{top_matched[0][1]['content'][:350]}... [1]\n\n"
+                    f"(Hinweis: Azure OpenAI Fehler: {str(err)}. Lokaler Treffer wird angezeigt)."
+                )
+            elif lang == "pt-BR":
+                answer_text = (
+                    f"Com base no documento '{top_matched[0][1]['filename']}', "
+                    f"aqui estão as informações relevantes sobre '{request.question}':\n\n"
+                    f"{top_matched[0][1]['content'][:350]}... [1]\n\n"
+                    f"(Nota: Erro na chamada Azure OpenAI: {str(err)}. Exibindo correspondência local)."
+                )
+            else:
+                answer_text = (
+                    f"Based on the indexed document '{top_matched[0][1]['filename']}', "
+                    f"here is the relevant information regarding '{request.question}':\n\n"
+                    f"{top_matched[0][1]['content'][:350]}... [1]\n\n"
+                    f"(Note: Azure OpenAI API call returned error: {str(err)}. Displaying local context match)."
+                )
     else:
         first_doc = top_matched[0][1]
-        answer_text = (
-            f"Based on **{first_doc['filename']}** [1], regarding your query *\"{request.question}\"*:\n\n"
-            f"> \"{first_doc['content'][:300]}...\"\n\n"
-            f"This information was retrieved from local ChromaDB vector index with match confidence of {round(top_matched[0][0]*100)}%."
-        )
+        if lang == "de":
+            answer_text = (
+                f"Basierend auf **{first_doc['filename']}** [1], bezüglich Ihrer Anfrage *\"{request.question}\"*:\n\n"
+                f"> \"{first_doc['content'][:300]}...\"\n\n"
+                f"Diese Information wurde aus dem lokalen ChromaDB-Vektorindex abgerufen (Übereinstimmung: {round(top_matched[0][0]*100)}%)."
+            )
+        elif lang == "pt-BR":
+            answer_text = (
+                f"Com base em **{first_doc['filename']}** [1], sobre sua pergunta *\"{request.question}\"*:\n\n"
+                f"> \"{first_doc['content'][:300]}...\"\n\n"
+                f"Esta informação foi recuperada do índice vetorial ChromaDB local com confiança de {round(top_matched[0][0]*100)}%."
+            )
+        else:
+            answer_text = (
+                f"Based on **{first_doc['filename']}** [1], regarding your query *\"{request.question}\"*:\n\n"
+                f"> \"{first_doc['content'][:300]}...\"\n\n"
+                f"This information was retrieved from local ChromaDB vector index with match confidence of {round(top_matched[0][0]*100)}%."
+            )
 
     total_tokens = prompt_tokens + completion_tokens
     cost_usd = ((prompt_tokens / 1_000_000) * 0.15) + ((completion_tokens / 1_000_000) * 0.60)

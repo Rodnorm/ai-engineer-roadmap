@@ -27,7 +27,7 @@ class QueryRequest(BaseModel):
     question: str = Field(..., min_length=2, description="Question for RAG pipeline")
     top_k: int = Field(default=4, ge=1, le=10, description="Number of context chunks to retrieve")
     temperature: float = Field(default=0.3, ge=0.0, le=1.0)
-    language: str = Field(default="en", description="Response language: en, pt-BR, or de")
+    language: str = Field(default="de", description="Response language: de, en, or pt-BR")
 
 class Citation(BaseModel):
     citation_id: int
