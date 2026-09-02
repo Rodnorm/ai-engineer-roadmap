@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "pocketRag"
+  },
+  "controls": {
+    "language": "Language",
+    "about": "About",
+    "close": "Close",
+    "lightTheme": "Light Theme",
+    "darkTheme": "Dark Theme"
+  },
+  "info": {
+    "description": "pocketRag is a cost-optimized personal knowledge base that combines local vector stores with LLMs.",
+    "categoryLabel": "Category",
+    "category": "AI Knowledge Base",
+    "statusLabel": "Status",
+    "status": "Production Ready",
+    "whatItDoes": "What it does",
+    "what1": "Indexes local documents into a ChromaDB vector database.",
+    "what2": "Enables semantic search across your own data.",
+    "what3": "Uses Azure OpenAI for precise answers with citations.",
+    "howToUse": "How to use it",
+    "step1": "Upload your documents.",
+    "step2": "Wait for indexing to complete.",
+    "step3": "Ask questions about your content.",
+    "technologies": "Technologies"
+  },
+  "labels": {
+    "appTitle": "pocketRag",
+    "appSubtitle": "Cost-optimized Personal AI Knowledge Base with Local ChromaDB RAG",
+    "docManagerTitle": "Document Knowledge Base",
+    "uploadButton": "Upload Document",
+    "uploading": "Uploading & Vectorizing...",
+    "dragDropHint": "Drag & drop PDF, TXT, or MD files here",
+    "noDocs": "No documents indexed yet. Upload a document to build your knowledge base.",
+    "clearAll": "Clear All Documents",
+    "queryPlaceholder": "Ask a question about your uploaded documents...",
+    "send": "Send Question",
+    "thinking": "Retrieving context & generating answer...",
+    "citationsTitle": "Retrieved Citations",
+    "viewCitations": "View Source Citations",
+    "tokens": "Tokens",
+    "latency": "Latency",
+    "cost": "Est. Cost",
+    "monthlySaved": "Cloud Savings",
+    "vectorDb": "Vector Store"
+  }
+}

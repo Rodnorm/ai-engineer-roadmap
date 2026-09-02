@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "pocketRag"
+  },
+  "controls": {
+    "language": "Idioma",
+    "about": "Sobre",
+    "close": "Fechar",
+    "lightTheme": "Tema Claro",
+    "darkTheme": "Tema Escuro"
+  },
+  "info": {
+    "description": "pocketRag é uma base de conhecimento pessoal otimizada para custo que combina armazenamento vetorial local com LLMs.",
+    "categoryLabel": "Categoria",
+    "category": "Base de Conhecimento AI",
+    "statusLabel": "Status",
+    "status": "Pronto para Produção",
+    "whatItDoes": "O que ele faz",
+    "what1": "Indexa documentos locais em um banco de dados vetorial ChromaDB.",
+    "what2": "Permite a busca semântica em seus próprios dados.",
+    "what3": "Utiliza Azure OpenAI para respostas precisas com citações.",
+    "howToUse": "Como usar",
+    "step1": "Faça upload de seus documentos.",
+    "step2": "Aguarde a conclusão da indexação.",
+    "step3": "Faça perguntas sobre seu conteúdo.",
+    "technologies": "Tecnologias"
+  },
+  "labels": {
+    "appTitle": "pocketRag",
+    "appSubtitle": "Base de Conhecimento IA Pessoal de Custo Zero com RAG Local em ChromaDB",
+    "docManagerTitle": "Base de Conhecimento de Documentos",
+    "uploadButton": "Enviar Documento",
+    "uploading": "Enviando e Vetorizando...",
+    "dragDropHint": "Arraste e solte arquivos PDF, TXT ou MD aqui",
+    "noDocs": "Nenhum documento indexado ainda. Faça upload para criar sua base.",
+    "clearAll": "Limpar Todos os Documentos",
+    "queryPlaceholder": "Faça uma pergunta sobre seus documentos...",
+    "send": "Enviar Pergunta",
+    "thinking": "Buscando contexto e gerando resposta...",
+    "citationsTitle": "Citações Recuperadas",
+    "viewCitations": "Ver Citações Fonte",
+    "tokens": "Tokens",
+    "latency": "Latência",
+    "cost": "Custo Est.",
+    "monthlySaved": "Economia Nuvem",
+    "vectorDb": "Banco Vetorial"
+  }
+}

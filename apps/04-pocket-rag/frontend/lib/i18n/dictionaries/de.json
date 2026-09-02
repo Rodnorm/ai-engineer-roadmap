@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "pocketRag"
+  },
+  "controls": {
+    "language": "Sprache",
+    "about": "Über",
+    "close": "Schließen",
+    "lightTheme": "Helles Thema",
+    "darkTheme": "Dunkles Thema"
+  },
+  "info": {
+    "description": "pocketRag ist eine kostenoptimierte persönliche Wissensdatenbank, die lokale Vektorspeicher mit LLMs kombiniert.",
+    "categoryLabel": "Kategorie",
+    "category": "AI Knowledge Base",
+    "statusLabel": "Status",
+    "status": "Produktionsbereit",
+    "whatItDoes": "Was es tut",
+    "what1": "Indiziert lokale Dokumente in einer ChromaDB-Vektordatenbank.",
+    "what2": "Ermöglicht semantische Suche über Ihre eigenen Daten.",
+    "what3": "Nutzt Azure OpenAI für präzise Antworten mit Quellenangaben.",
+    "howToUse": "So wird es verwendet",
+    "step1": "Laden Sie Ihre Dokumente hoch.",
+    "step2": "Warten Sie, bis die Indizierung abgeschlossen ist.",
+    "step3": "Stellen Sie Fragen zu Ihren Inhalten.",
+    "technologies": "Technologien"
+  },
+  "labels": {
+    "appTitle": "pocketRag",
+    "appSubtitle": "Kostengünstige persönliche KI-Wissensdatenbank mit lokalam ChromaDB-RAG",
+    "docManagerTitle": "Dokumenten-Wissensdatenbank",
+    "uploadButton": "Dokument hochladen",
+    "uploading": "Wird hochgeladen & vektorisiert...",
+    "dragDropHint": "PDF-, TXT- oder MD-Dateien hierhin ziehen",
+    "noDocs": "Noch keine Dokumente indiziert. Laden Sie ein Dokument hoch.",
+    "clearAll": "Alle Dokumente löschen",
+    "queryPlaceholder": "Stellen Sie eine Frage zu Ihren Dokumenten...",
+    "send": "Frage senden",
+    "thinking": "Kontext wird abgerufen & Antwort generiert...",
+    "citationsTitle": "Abgerufene Zitate",
+    "viewCitations": "Quellenzitate anzeigen",
+    "tokens": "Tokens",
+    "latency": "Latenz",
+    "cost": "Geschätzte Kosten",
+    "monthlySaved": "Cloud-Ersparnis",
+    "vectorDb": "Vektorspeicher"
+  }
+}
