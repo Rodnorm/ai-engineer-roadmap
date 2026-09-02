@@ -10,6 +10,8 @@ The goal of this repository is to document the transition from senior frontend d
 | --- | --- | --- | --- |
 | [01 — Smart Inspector](./apps/01-smart-inspector) | Multimodal image analysis, OCR, structured outputs, and product identification | Next.js, TypeScript, FastAPI, Azure OpenAI | Completed |
 | [02 — Support Bot](./apps/02-support-bot) | Knowledge-base question answering, language detection, sentiment analysis, key phrases, and entities | Next.js, TypeScript, FastAPI, Azure AI Foundry, Azure AI Language | Completed |
+| [03 — Prompt Forge](./apps/03-prompt-forge) | Marketing content studio with prompt personas, streaming, structured outputs, content safety | Next.js, TypeScript, FastAPI, Azure OpenAI | Completed |
+| [04 — pocketRag](./apps/04-pocket-rag) | Cost-optimized local RAG knowledge base with ChromaDB, document chunking, citations, and telemetry | Next.js, TypeScript, FastAPI, ChromaDB, OpenAI | In Progress |
 
 More applications will be added as the roadmap progresses.
 
