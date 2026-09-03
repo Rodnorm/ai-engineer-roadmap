@@ -101,4 +101,15 @@ jobs:
         run: python -m compileall -q .
 
       - name: Run unit tests
-        run: python -m unittest discover -s . -p "test_*.py"
+        env:
+          # Dummy values let Smart Inspector validate malformed uploads without real credentials.
+          # Invalid-upload tests return before any external API request is made.
+          AZURE_OPENAI_ENDPOINT: ${{ matrix.app == 'Smart Inspector' && 'https://example.invalid/openai/v1' || '' }}
+          AZURE_OPENAI_DEPLOYMENT: ${{ matrix.app == 'Smart Inspector' && 'ci-test' || '' }}
+          AZURE_OPENAI_API_KEY: ${{ matrix.app == 'Smart Inspector' && 'ci-placeholder-not-a-secret' || '' }}
+        run: |
+          if find . -type f -name "test_*.py" -print -quit | grep -q .; then
+            python -m unittest discover -s . -p "test_*.py"
+          else
+            echo "No Python unit tests found; dependency and syntax checks passed."
+          fi
