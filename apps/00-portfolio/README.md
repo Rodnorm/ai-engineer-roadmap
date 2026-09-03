@@ -19,3 +19,28 @@ cd apps/00-portfolio/frontend
 npm ci
 npm run dev
 ```
+
+---
+
+## Vercel Deployment
+
+Create a dedicated Vercel project for App 00 with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | `apps/00-portfolio/frontend` |
+| Framework Preset | Next.js |
+| Install Command | `npm ci` |
+| Build Command | `npm run build` |
+| Output Directory | Leave empty (Next.js default) |
+| Production Branch | `main` |
+| Include source files outside Root Directory | Enabled |
+
+The external-source option is required because the portfolio reads:
+
+- `catalog/apps.json`
+- `apps/00-portfolio/content/`
+
+The local `frontend/vercel.json` keeps this configuration reproducible and disables automatic deployments for every branch except `main`. Preview branches are validated by GitHub Actions without consuming Vercel deployment quota.
+
+If the Hobby deployment limit has already been reached, wait for the rolling 24-hour quota to reset before redeploying the latest commit from `main`.
