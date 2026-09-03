@@ -19,6 +19,7 @@ jobs:
   frontend:
     name: Frontend — ${{ matrix.app }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -36,17 +37,17 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci
 
       - name: Lint
         run: npm run lint
@@ -54,12 +55,16 @@ jobs:
       - name: Type-check
         run: npm run typecheck --if-present
 
+      - name: Test
+        run: npm test --if-present
+
       - name: Build
         run: npm run build
 
   backend:
     name: Backend — ${{ matrix.app }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -77,10 +82,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: "3.12"
           cache: pip
@@ -94,3 +99,6 @@ jobs:
 
       - name: Validate Python syntax
         run: python -m compileall -q .
+
+      - name: Run unit tests
+        run: python -m unittest discover -s . -p "test_*.py"
