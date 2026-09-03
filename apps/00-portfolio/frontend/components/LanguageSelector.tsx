@@ -44,7 +44,7 @@ export function LanguageSelector() {
               aria-pressed={isActive}
               className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary ${
                 isActive
-                  ? "bg-primary text-slate-950 shadow-sm"
+                  ? "bg-primary text-white font-bold shadow-sm"
                   : "text-text-muted hover:text-foreground hover:bg-surface-muted"
               }`}
               title={LOCALE_LABELS[locale]}

@@ -27,7 +27,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
           <Link
             href={getLocalizedPath("/apps", locale)}
-            className="px-5 py-2.5 rounded-xl bg-primary text-slate-950 font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-sm"
+            className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-sm"
           >
             <span>{dict.home.ctaExploreCatalog}</span>
             <ArrowRight className="w-4 h-4" />

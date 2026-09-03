@@ -39,7 +39,7 @@ export function CaseStudyPageView({ slug, locale = "en" }: { slug: string; local
             href={app.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-xl bg-primary text-slate-950 font-bold hover:bg-primary/90 transition-all flex items-center gap-2 text-sm shadow-md"
+            className="px-4 py-2 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all flex items-center gap-2 text-sm shadow-md"
           >
             <span>{dict.caseStudy.launchLiveDemo}</span>
             <ExternalLink className="w-4 h-4" />
