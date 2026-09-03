@@ -28,10 +28,12 @@ const translations = {
 		"left.remove": "Remover",
 		"left.previewAlt": "Pré-visualização",
 		"left.dropzonePrompt": "Clique para selecionar uma imagem ou tire uma foto",
-		"left.dropzoneHint": "PNG, JPG ou WEBP",
+		"left.dropzoneHint": "PNG, JPG ou WEBP (máx. 5MB)",
 		"left.noFile": "Nenhuma imagem selecionada",
 		"left.submit": "Enviar",
 		"left.submitting": "Enviando...",
+		"left.privacyNotice":
+			"Aviso de Privacidade: Esta demonstração processa sua imagem via Azure OpenAI. Não envie documentos confidenciais, fotos íntimas ou dados pessoais sensíveis.",
 
 		// right card
 		"right.heading": "Resultado da análise",
@@ -74,10 +76,12 @@ const translations = {
 		"left.remove": "Remove",
 		"left.previewAlt": "Preview",
 		"left.dropzonePrompt": "Click to select an image or take a photo",
-		"left.dropzoneHint": "PNG, JPG or WEBP",
+		"left.dropzoneHint": "PNG, JPG or WEBP (max. 5MB)",
 		"left.noFile": "No image selected",
 		"left.submit": "Submit",
 		"left.submitting": "Submitting...",
+		"left.privacyNotice":
+			"Privacy Notice: This demo processes your image via Azure OpenAI. Please do not upload confidential documents, intimate photos, or sensitive personal data.",
 
 		"right.heading": "Analysis result",
 		"right.success": "Success",
@@ -88,7 +92,6 @@ const translations = {
 			"Attach an image on the left and click **Submit** to see the tags, caption, detected objects, and OCR text here.",
 		"right.readyToSubmit":
 			"Ready to submit. Click **Submit** whenever you want.",
-			
 
 		"result.caption": "Caption",
 		"result.tags": "Tags",
@@ -119,10 +122,12 @@ const translations = {
 		"left.previewAlt": "Vorschau",
 		"left.dropzonePrompt":
 			"Klicken Sie, um ein Bild auszuwählen oder machen Sie ein Foto",
-		"left.dropzoneHint": "PNG, JPG oder WEBP",
+		"left.dropzoneHint": "PNG, JPG oder WEBP (max. 5MB)",
 		"left.noFile": "Kein Bild ausgewählt",
 		"left.submit": "Senden",
 		"left.submitting": "Wird gesendet...",
+		"left.privacyNotice":
+			"Datenschutzhinweis: Diese Demo verarbeitet Ihr Bild über Azure OpenAI. Bitte laden Sie keine vertraulichen Dokumente, intimen Fotos oder sensiblen persönlichen Daten hoch.",
 
 		"right.heading": "Analyseergebnis",
 		"right.copy": "Text kopieren",
