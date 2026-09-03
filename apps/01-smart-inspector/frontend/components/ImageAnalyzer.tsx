@@ -171,6 +171,10 @@ export default function ImageAnalyzer() {
 						{error}
 					</p>
 				)}
+
+				<p className="mt-1 text-balance text-center text-[11px] leading-relaxed text-muted/80">
+					{t("left.privacyNotice")}
+				</p>
 			</section>
 
 			<ImageAnalyzerResults
