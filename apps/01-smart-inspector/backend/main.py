@@ -9,15 +9,20 @@ Authentication uses AZURE_OPENAI_API_KEY. See .env.example for configuration.
 
 from __future__ import annotations
 
+import asyncio
 import base64
+import io
 import logging
 import os
+import time
+import uuid
 from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
+from PIL import Image
 from pydantic import BaseModel, Field
 
 from rate_limit import InMemoryRateLimiter
@@ -62,6 +67,9 @@ def _env_bool(name: str, default: bool) -> bool:
     raise RuntimeError(f"{name} must be true or false")
 
 
+APP_ENV = os.getenv("APP_ENV", "development").lower()
+IS_PRODUCTION = APP_ENV == "production"
+
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(
     level=LOG_LEVEL,
@@ -74,11 +82,21 @@ DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
 API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 PORT = _env_int("PORT", 8000)
 
+GENERATION_ENABLED = _env_bool("GENERATION_ENABLED", True)
+
 MAX_IMAGE_BYTES = _env_int("MAX_IMAGE_BYTES", 5 * 1024 * 1024, 1024)
+MAX_IMAGE_WIDTH = _env_int("MAX_IMAGE_WIDTH", 8000, 100)
+MAX_IMAGE_HEIGHT = _env_int("MAX_IMAGE_HEIGHT", 8000, 100)
+MAX_IMAGE_PIXELS = _env_int("MAX_IMAGE_PIXELS", 24_000_000, 10_000)
+
 AZURE_MAX_OUTPUT_TOKENS = _env_int("AZURE_MAX_OUTPUT_TOKENS", 800)
 AZURE_REQUEST_TIMEOUT_SECONDS = _env_float(
     "AZURE_REQUEST_TIMEOUT_SECONDS", 30.0
 )
+
+MAX_CONCURRENT_REQUESTS = _env_int("MAX_CONCURRENT_REQUESTS", 2, 1)
+concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
 RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
 TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
 
@@ -91,12 +109,12 @@ ALLOWED_IMAGE_TYPES = {
 UPLOAD_CHUNK_BYTES = 1024 * 1024
 
 rate_limiter = InMemoryRateLimiter(
-    requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 5),
+    requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 3),
     requests_per_day_per_ip=_env_int(
-        "RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 30
+        "RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 20
     ),
     global_requests_per_day=_env_int(
-        "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 300
+        "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100
     ),
 )
 
@@ -116,8 +134,7 @@ if client is None:
     )
 else:
     log.info(
-        "Azure OpenAI client ready (endpoint=%s, deployment=%s).",
-        ENDPOINT,
+        "Azure OpenAI client ready (endpoint configured, deployment=%s).",
         DEPLOYMENT,
     )
 
@@ -197,39 +214,8 @@ Rules:
 
 
 # ---------------------------------------------------------------------------
-# App
+# Helpers & Image Validation
 # ---------------------------------------------------------------------------
-
-app = FastAPI(
-    title="Smart Inspector",
-    version="1.1.0",
-    root_path="/api/backend",
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3001",
-    ],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
-
-
-@app.middleware("http")
-async def remove_backend_prefix(request: Request, call_next):
-    prefix = "/api/backend"
-
-    if request.scope["path"].startswith(prefix):
-        request.scope["path"] = request.scope["path"][len(prefix):]
-
-    return await call_next(request)
-
 
 def _client_ip(request: Request) -> str:
     if TRUST_PROXY_HEADERS:
@@ -262,12 +248,109 @@ async def _read_upload_with_limit(image: UploadFile) -> bytes:
     return b"".join(chunks)
 
 
+def _process_and_sanitize_image(raw_bytes: bytes) -> tuple[bytes, str]:
+    """Validates real magic bytes, dimensions, integrity, and strips EXIF metadata."""
+    if not raw_bytes:
+        raise HTTPException(status_code=400, detail="Empty file.")
+
+    try:
+        img = Image.open(io.BytesIO(raw_bytes))
+        fmt = (img.format or "").upper()
+        if fmt not in {"JPEG", "PNG", "GIF", "WEBP"}:
+            raise HTTPException(
+                status_code=415,
+                detail=f"Unsupported image format '{fmt}'. Allowed formats are JPEG, PNG, GIF, and WebP.",
+            )
+        img.verify()
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="Corrupted or invalid image file.",
+        ) from exc
+
+    try:
+        img = Image.open(io.BytesIO(raw_bytes))
+        width, height = img.size
+        pixels = width * height
+
+        if width > MAX_IMAGE_WIDTH or height > MAX_IMAGE_HEIGHT or pixels > MAX_IMAGE_PIXELS:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Image dimensions ({width}x{height}, {pixels} px) exceed "
+                    f"maximum allowed limits ({MAX_IMAGE_WIDTH}x{MAX_IMAGE_HEIGHT}, {MAX_IMAGE_PIXELS} px)."
+                ),
+            )
+
+        mime_map = {
+            "JPEG": "image/jpeg",
+            "PNG": "image/png",
+            "GIF": "image/gif",
+            "WEBP": "image/webp",
+        }
+        mime = mime_map[fmt]
+
+        out_buf = io.BytesIO()
+        if img.mode in ("RGBA", "P") and fmt == "JPEG":
+            img = img.convert("RGB")
+
+        img.save(out_buf, format=fmt)
+        clean_bytes = out_buf.getvalue()
+        return clean_bytes, mime
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to process image.",
+        ) from exc
+
+
+# ---------------------------------------------------------------------------
+# App
+# ---------------------------------------------------------------------------
+
+app = FastAPI(
+    title="Smart Inspector",
+    version="1.2.0",
+    root_path="/api/backend",
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
+
+
+@app.middleware("http")
+async def remove_backend_prefix(request: Request, call_next):
+    prefix = "/api/backend"
+
+    if request.scope["path"].startswith(prefix):
+        request.scope["path"] = request.scope["path"][len(prefix):]
+
+    return await call_next(request)
+
+
 @app.get("/health")
 def health() -> dict:
     return {
         "status": "ok",
-        "endpoint": bool(ENDPOINT),
-        "deployment": bool(DEPLOYMENT),
+        "generation_enabled": GENERATION_ENABLED,
         "azure_openai_configured": client is not None,
         "rate_limit_enabled": RATE_LIMIT_ENABLED,
         "max_image_bytes": MAX_IMAGE_BYTES,
@@ -280,21 +363,22 @@ async def analyze(
     image: UploadFile = File(...),
     language: str = Form(DEFAULT_LANGUAGE_CODE),
 ) -> AnalysisResult:
+    request_id = uuid.uuid4().hex[:12]
+    start_time = time.monotonic()
+
+    if not GENERATION_ENABLED:
+        await image.close()
+        log.warning("[%s] Rejected: Generation disabled via kill switch.", request_id)
+        raise HTTPException(
+            status_code=503,
+            detail="Service is temporarily disabled for maintenance.",
+        )
+
     if client is None:
+        await image.close()
         raise HTTPException(
             status_code=503,
             detail="Azure OpenAI is not configured.",
-        )
-
-    mime = (image.content_type or "").lower()
-    if mime not in ALLOWED_IMAGE_TYPES:
-        await image.close()
-        raise HTTPException(
-            status_code=415,
-            detail=(
-                "Unsupported image type. Allowed types are GIF, JPEG, PNG, "
-                "and WebP."
-            ),
         )
 
     if RATE_LIMIT_ENABLED:
@@ -302,7 +386,8 @@ async def analyze(
         if not decision.allowed:
             await image.close()
             log.warning(
-                "Rate limit rejected request (scope=%s, retry_after=%s).",
+                "[%s] Rate limit rejected request (scope=%s, retry_after=%s).",
+                request_id,
                 decision.scope,
                 decision.retry_after,
             )
@@ -312,11 +397,19 @@ async def analyze(
                 headers={"Retry-After": str(decision.retry_after)},
             )
 
-    raw = await _read_upload_with_limit(image)
-    if not raw:
-        raise HTTPException(status_code=400, detail="Empty file.")
+    # Concurrency Guard
+    if concurrency_semaphore.locked():
+        await image.close()
+        log.warning("[%s] Concurrency limit reached.", request_id)
+        raise HTTPException(
+            status_code=429,
+            detail="Server is currently busy processing requests. Please retry in a moment.",
+        )
 
-    b64 = base64.b64encode(raw).decode("ascii")
+    raw = await _read_upload_with_limit(image)
+    clean_bytes, mime = _process_and_sanitize_image(raw)
+
+    b64 = base64.b64encode(clean_bytes).decode("ascii")
     data_url = f"data:{mime};base64,{b64}"
 
     requested_language = (
@@ -324,16 +417,12 @@ async def analyze(
         or DEFAULT_LANGUAGE_CODE
     )
     if requested_language.lower() not in LANGUAGE_NAMES:
-        log.warning(
-            "Unknown language code %r, falling back to %s.",
-            language,
-            DEFAULT_LANGUAGE_CODE,
-        )
         requested_language = DEFAULT_LANGUAGE_CODE
 
     log.info(
-        "Analyzing image: size=%d mime=%s language=%s",
-        len(raw),
+        "[%s] Processing image: size=%d bytes mime=%s language=%s",
+        request_id,
+        len(clean_bytes),
         mime,
         requested_language,
     )
@@ -351,36 +440,39 @@ async def analyze(
         }
     ]
 
-    try:
-        response = client.with_options(
-            timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
-            max_retries=0,
-        ).responses.parse(
-            model=DEPLOYMENT,
-            instructions=SYSTEM_PROMPT,
-            input=input_payload,
-            text_format=AnalysisResult,
-            max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
-        )
-    except Exception:
-        log.exception("Azure OpenAI call failed.")
-        raise HTTPException(
-            status_code=502,
-            detail="Azure OpenAI request failed.",
-        ) from None
+    async with concurrency_semaphore:
+        try:
+            response = client.with_options(
+                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+                max_retries=0,
+            ).responses.parse(
+                model=DEPLOYMENT,
+                instructions=SYSTEM_PROMPT,
+                input=input_payload,
+                text_format=AnalysisResult,
+                max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
+            )
+        except Exception:
+            log.exception("[%s] Azure OpenAI request failed.", request_id)
+            raise HTTPException(
+                status_code=502,
+                detail=f"Azure OpenAI request failed. (Request ID: {request_id})",
+            ) from None
 
     result = response.output_parsed
     if result is None:
         raise HTTPException(
             status_code=502,
-            detail="Model did not return a structured response.",
+            detail=f"Model did not return a structured response. (Request ID: {request_id})",
         )
 
+    elapsed_ms = int((time.monotonic() - start_time) * 1000)
     log.info(
-        "Analysis completed: tags=%d objects=%d ocr_len=%d.",
+        "[%s] Analysis completed successfully in %d ms (tags=%d, objects=%d).",
+        request_id,
+        elapsed_ms,
         len(result.tags),
         len(result.objects),
-        len(result.ocr),
     )
     return result
 
