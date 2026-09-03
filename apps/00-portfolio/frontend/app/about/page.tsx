@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, Linkedin, Github, Cpu, ShieldCheck, Code2, Sparkles, Terminal, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Linkedin, Github, Sparkles, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
   title: "About Rodrigo Normando — AI Engineer",
@@ -51,16 +52,27 @@ export default function AboutPage() {
       {/* Profile Header */}
       <section className="p-8 rounded-3xl bg-surface border border-border space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Engineer & Software Architect</span>
+          <div className="flex items-center gap-5">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-primary/40 bg-slate-900 flex-shrink-0 shadow-lg shadow-primary/10">
+              <Image
+                src="/profile.jpg"
+                alt="Rodrigo Normando"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Rodrigo Normando</h1>
-            <p className="text-slate-400 text-sm font-medium">Senior Software Engineer • Transitioning to AI Engineering</p>
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI Engineer & Software Architect</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Rodrigo Normando</h1>
+              <p className="text-slate-400 text-sm font-medium">Senior Software Engineer • Transitioning to AI Engineering</p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 self-start sm:self-center">
             <a
               href="https://www.linkedin.com/in/rodnorm/"
               target="_blank"
