@@ -3,11 +3,21 @@
   "apps": [
     {
       "id": "01",
-      "slug": "01-smart-inspector",
+      "slug": "smart-inspector",
       "title": "Smart Inspector",
-      "description": "Multi-modal vision analysis, image tags, captioning, object detection, and OCR transcription via Azure OpenAI.",
+      "summary": "Multi-modal vision inspection service providing automatic image tagging, captions, object detection, and OCR transcription.",
+      "description": "Smart Inspector leverages Azure OpenAI Responses API to inspect uploaded images. Built with Pillow-based image validation, EXIF metadata stripping, dimension bounds, and server-enforced rate limits.",
       "category": "Vision & Multi-modal",
       "status": "live",
+      "technologies": ["Next.js 14", "FastAPI", "Azure OpenAI", "Pillow"],
+      "liveUrl": "https://ai-roadmap-01-smart-inspector.vercel.app",
+      "repositoryPath": "apps/01-smart-inspector",
+      "caseStudyPath": "smart-inspector.md",
+      "security": {
+        "publicDemo": true,
+        "rateLimited": true,
+        "storesUserContent": false
+      },
       "frontend": {
         "path": "apps/01-smart-inspector/frontend",
         "framework": "Next.js"
@@ -19,11 +29,21 @@
     },
     {
       "id": "02",
-      "slug": "02-support-bot",
+      "slug": "support-bot",
       "title": "Support Bot",
-      "description": "Healthcare billing support assistant with Azure AI Language NLP analysis, PII masking, and FAQ grounding.",
+      "summary": "Healthcare billing support assistant featuring Azure AI Language NLP analysis, PII data masking, and grounded FAQ retrieval.",
+      "description": "Support Bot connects Azure AI Language (PII detection, sentiment, key phrase extraction) with Azure AI Agents. Includes strict grounding against prompt injection using untrusted input isolation tags.",
       "category": "Conversational AI & RAG",
       "status": "live",
+      "technologies": ["Next.js 16", "FastAPI", "Azure AI Language", "Azure AI Agents"],
+      "liveUrl": "https://ai-roadmap-02-support-bot.vercel.app",
+      "repositoryPath": "apps/02-support-bot",
+      "caseStudyPath": "support-bot.md",
+      "security": {
+        "publicDemo": true,
+        "rateLimited": true,
+        "storesUserContent": false
+      },
       "frontend": {
         "path": "apps/02-support-bot/frontend",
         "framework": "Next.js"
@@ -35,11 +55,21 @@
     },
     {
       "id": "03",
-      "slug": "03-prompt-forge",
+      "slug": "prompt-forge",
       "title": "Prompt Forge",
-      "description": "Structured content generation workbench with Content Safety filtering, multi-persona prompt tuning, and real-time streaming.",
+      "summary": "Structured content generation workbench with Azure Content Safety filtering, persona tuning, and SSE real-time streaming.",
+      "description": "Prompt Forge enables marketing teams to generate structured content variations. Integrates Azure Content Safety for pre-generation inspection, streaming SSE responses, and client-side history storage.",
       "category": "Prompt Engineering & Content Gen",
       "status": "live",
+      "technologies": ["Next.js 16", "FastAPI", "Azure OpenAI", "Azure Content Safety"],
+      "liveUrl": "https://ai-roadmap-03-prompt-forge.vercel.app",
+      "repositoryPath": "apps/03-prompt-forge",
+      "caseStudyPath": "prompt-forge.md",
+      "security": {
+        "publicDemo": true,
+        "rateLimited": true,
+        "storesUserContent": false
+      },
       "frontend": {
         "path": "apps/03-prompt-forge/frontend",
         "framework": "Next.js"
