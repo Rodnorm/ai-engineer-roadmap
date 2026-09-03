@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getAppCatalog } from "@/lib/catalog";
 import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
-import { ArrowRight, ShieldCheck, Cpu, Zap, Lock, ExternalLink, BookOpen } from "lucide-react";
+import { ArrowRight, Cpu, Zap, Lock, ExternalLink, BookOpen } from "lucide-react";
+import { RotatingSkillBadge } from "@/components/RotatingSkillBadge";
 
 export function HomePageView({ locale = "en" }: { locale?: Locale }) {
   const dict = getDictionary(locale);
@@ -11,10 +12,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
     <div className="space-y-16 py-4">
       {/* Hero Section */}
       <section className="text-center space-y-6 max-w-3xl mx-auto pt-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>{dict.home.badge}</span>
-        </div>
+        <RotatingSkillBadge locale={locale} />
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
           {dict.home.heroTitlePrefix}{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
