@@ -2,8 +2,8 @@ import Link from "next/link";
 import { ArrowLeft, Linkedin, Github, Cpu, ShieldCheck, Code2, Sparkles, Terminal, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
-  title: "About Rodrigo Norman — AI Engineer",
-  description: "Learn more about Rodrigo Norman's professional background, skills, and AI engineering roadmap transition.",
+  title: "About Rodrigo Normando — AI Engineer",
+  description: "Learn more about Rodrigo Normando's professional background, skills, and AI engineering roadmap transition.",
 };
 
 export default function AboutPage() {
@@ -56,7 +56,7 @@ export default function AboutPage() {
               <Sparkles className="w-3.5 h-3.5" />
               <span>AI Engineer & Software Architect</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Rodrigo Norman</h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white">Rodrigo Normando</h1>
             <p className="text-slate-400 text-sm font-medium">Senior Software Engineer • Transitioning to AI Engineering</p>
           </div>
 
