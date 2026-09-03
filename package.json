@@ -9,6 +9,7 @@
     "dev:00": "node scripts/dev/run.mjs --app 00",
     "dev:01": "node scripts/dev/run.mjs --app 01",
     "dev:02": "node scripts/dev/run.mjs --app 02",
-    "dev:03": "node scripts/dev/run.mjs --app 03"
+    "dev:03": "node scripts/dev/run.mjs --app 03",
+    "test": "node --test scripts/dev/*.test.mjs"
   }
 }
