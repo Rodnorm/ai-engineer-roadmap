@@ -12,11 +12,12 @@ permissions:
 jobs:
   dependency-review:
     name: Dependency Review
+    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Check out repository
-        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@5a2ee3f32b363d5ed24f346655c16c80c011ad34 # v4.5.0
+        uses: actions/dependency-review-action@v4.5.0

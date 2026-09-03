@@ -17,6 +17,9 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
+    # Code scanning is unavailable for private repositories without GitHub Advanced Security.
+    # This check activates automatically after the repository becomes public.
+    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -31,12 +34,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@df409f7d9260372bd5f19e5b04e83cb3c43714ae # v3.27.9
+        uses: github/codeql-action/init@v3.27.9
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@df409f7d9260372bd5f19e5b04e83cb3c43714ae # v3.27.9
+        uses: github/codeql-action/analyze@v3.27.9
