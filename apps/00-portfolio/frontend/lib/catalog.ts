@@ -24,7 +24,7 @@ export interface AppItem {
 
 export function getAppCatalog(): AppItem[] {
   try {
-    const catalogPath = path.join(process.cwd(), "../../catalog/apps.json");
+    const catalogPath = path.join(process.cwd(), "../../../catalog/apps.json");
     if (fs.existsSync(catalogPath)) {
       const content = fs.readFileSync(catalogPath, "utf-8");
       const parsed = jsonParse(content);
