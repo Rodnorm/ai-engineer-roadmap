@@ -17,6 +17,9 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
+    # Code scanning is unavailable for private repositories without GitHub Advanced Security.
+    # This check activates automatically after the repository becomes public.
+    if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
