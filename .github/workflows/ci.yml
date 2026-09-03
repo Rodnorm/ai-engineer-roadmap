@@ -7,6 +7,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      run_all:
+        description: "Force run all jobs regardless of changed paths"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -16,24 +23,88 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect Changed Paths
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app00: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app01: ${{ steps.filter.outputs.app01 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        with:
+          filters: |
+            app00:
+              - 'apps/00-portfolio/**'
+            app01:
+              - 'apps/01-smart-inspector/**'
+            app02:
+              - 'apps/02-support-bot/**'
+            app03:
+              - 'apps/03-prompt-forge/**'
+            catalog:
+              - 'catalog/**'
+            global:
+              - '.github/**'
+              - 'templates/**'
+              - 'docs/standards/**'
+              - 'package.json'
+              - '.gitignore'
+
+  catalog_validation:
+    name: Catalog Schema Validation
+    needs: changes
+    if: ${{ needs.changes.outputs.catalog == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 20
+
+      - name: Validate catalog schema
+        run: npx --yes ajv-cli validate -s catalog/schema.json -d catalog/apps.json
+
   frontend:
     name: Frontend — ${{ matrix.app }}
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         include:
+          - app: Portfolio
+            id: app00
+            directory: apps/00-portfolio/frontend
           - app: Smart Inspector
+            id: app01
             directory: apps/01-smart-inspector/frontend
           - app: Support Bot
+            id: app02
             directory: apps/02-support-bot/frontend
           - app: promptForge
+            id: app03
             directory: apps/03-prompt-forge/frontend
 
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
+
+    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
 
     steps:
       - name: Check out repository
@@ -63,6 +134,7 @@ jobs:
 
   backend:
     name: Backend — ${{ matrix.app }}
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -70,15 +142,20 @@ jobs:
       matrix:
         include:
           - app: Smart Inspector
+            id: app01
             directory: apps/01-smart-inspector/backend
           - app: Support Bot
+            id: app02
             directory: apps/02-support-bot/backend
           - app: promptForge
+            id: app03
             directory: apps/03-prompt-forge/backend
 
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
+
+    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
 
     steps:
       - name: Check out repository
