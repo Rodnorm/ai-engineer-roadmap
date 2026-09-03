@@ -40,7 +40,8 @@
     "errorMessage": "Algo deu errado. Por favor, tente novamente.",
     "showAnalysis": "Mostrar análise de NLP",
     "hideAnalysis": "Ocultar análise de NLP",
-    "nlpShort": "NLP"
+    "nlpShort": "NLP",
+    "privacyNotice": "Aviso de Privacidade: Não envie dados médicos, financeiros ou de identificação reais. As perguntas são processadas via Azure AI e não são armazenadas no servidor."
   },
   "nlp": {
     "title": "Análise de NLP",

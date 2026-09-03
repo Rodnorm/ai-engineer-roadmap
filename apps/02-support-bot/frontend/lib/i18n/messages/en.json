@@ -40,7 +40,8 @@
     "errorMessage": "Something went wrong. Please try again.",
     "showAnalysis": "Show NLP analysis",
     "hideAnalysis": "Hide NLP analysis",
-    "nlpShort": "NLP"
+    "nlpShort": "NLP",
+    "privacyNotice": "Privacy Disclaimer: Do not submit real medical, financial, or personal identification data. Questions are processed via Azure AI and are not stored on the server."
   },
   "nlp": {
     "title": "NLP Analysis",
