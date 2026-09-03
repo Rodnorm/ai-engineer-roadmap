@@ -60,34 +60,65 @@ Every public demo backend enforces a 4-layer defense model to guarantee data pri
 
 ---
 
-## 🚀 Running Applications Locally
+## 🚀 Local Development & Orchestration
 
-All applications are self-contained and run without real Azure credentials by default using local fallback modes or fixtures.
+The monorepo includes a cross-platform Node.js development orchestrator (`scripts/dev/run.mjs`) that can run all applications simultaneously or individually with unified logging, port conflict detection, and clean process lifecycle management.
 
-### 1. Backend Setup
+### 📋 Prerequisites
+
+- **Node.js:** >= 20.x recommended (supports native test runner)
+- **Python:** >= 3.11 or 3.12 (for FastAPI backends)
+
+### 🔌 Port Assignment Table
+
+| Application | Service | Local Port | Directory | Dev Command |
+| :--- | :--- | :---: | :--- | :--- |
+| **App 00** (Portfolio & Catalog) | Frontend | `3000` | `apps/00-portfolio/frontend` | `npm run dev:00` |
+| **App 01** (Smart Inspector) | Frontend | `3001` | `apps/01-smart-inspector/frontend` | `npm run dev:01` |
+| | Backend | `8001` | `apps/01-smart-inspector/backend` | |
+| **App 02** (Support Bot) | Frontend | `3002` | `apps/02-support-bot/frontend` | `npm run dev:02` |
+| | Backend | `8002` | `apps/02-support-bot/backend` | |
+| **App 03** (Prompt Forge) | Frontend | `3003` | `apps/03-prompt-forge/frontend` | `npm run dev:03` |
+| | Backend | `8003` | `apps/03-prompt-forge/backend` | |
+
+### 🛠️ One-Command Local Startup
+
+From the monorepo root:
 
 ```bash
-cd apps/<app-folder>/backend
-python -m venv .venv
-
-# Activate environment
-# Windows: .venv\Scripts\activate
-# Linux/macOS: source .venv/bin/activate
-
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn main:app --reload --port 8000
-```
-
-### 2. Frontend Setup
-
-```bash
-cd apps/<app-folder>/frontend
-npm install
+# 1. Start all applications simultaneously (frontends + backends)
 npm run dev
+
+# 2. Or start a single application (frontend and backend together)
+npm run dev:01    # Smart Inspector (3001 & 8001)
+npm run dev:02    # Support Bot (3002 & 8002)
+npm run dev:03    # Prompt Forge (3003 & 8003)
+npm run dev:00    # Portfolio Catalog (3000)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Press `Ctrl+C` to gracefully terminate all child processes at once without orphaned processes.
+
+### ⚙️ Environment Variables & Overrides
+
+App 00's catalog automatically overrides production demo URLs when local URLs are provided in environment variables:
+
+```dotenv
+# apps/00-portfolio/frontend/.env.local
+NEXT_PUBLIC_APP_01_URL=http://localhost:3001
+NEXT_PUBLIC_APP_02_URL=http://localhost:3002
+NEXT_PUBLIC_APP_03_URL=http://localhost:3003
+```
+
+- When unset (such as on Vercel production builds), App 00 safely falls back to published live deployment URLs.
+- Never commit `.env` or `.env.local` files containing secrets. Use `.env.example` as reference.
+
+### ➕ Registering New Applications (App 04+)
+
+To add subsequent roadmap apps (e.g. App 04 Pocket RAG, App 05 Agents) to the local orchestrator:
+
+1. Open `scripts/dev/apps.json`.
+2. Add a new application entry with `id`, `name`, `frontend`, and optional `backend` configuration.
+3. Add corresponding script `"dev:04": "node scripts/dev/run.mjs --app 04"` in root `package.json`.
 
 ---
 

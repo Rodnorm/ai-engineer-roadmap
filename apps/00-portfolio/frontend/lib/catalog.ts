@@ -23,6 +23,15 @@ export interface AppItem {
   security: AppSecurityMeta;
 }
 
+export function resolveAppUrl(id: string, defaultUrl: string): string {
+  const envKey = `NEXT_PUBLIC_APP_${id}_URL`;
+  const envUrl = process.env[envKey];
+  if (envUrl && envUrl.trim() !== "") {
+    return envUrl.trim();
+  }
+  return defaultUrl;
+}
+
 export function getAppCatalog(locale?: Locale): AppItem[] {
   const dict = getDictionary(locale);
   let baseApps: AppItem[] = [];
@@ -88,15 +97,21 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
   // If locale dictionary has localized texts for apps, apply them
   return baseApps.map((app) => {
     const localizedData = dict.appsData?.[app.slug as keyof typeof dict.appsData];
+    const liveUrl = resolveAppUrl(app.id, app.liveUrl);
+
     if (localizedData) {
       return {
         ...app,
+        liveUrl,
         summary: localizedData.summary || app.summary,
         description: localizedData.description || app.description,
         category: localizedData.category || app.category,
       };
     }
-    return app;
+    return {
+      ...app,
+      liveUrl,
+    };
   });
 }
 

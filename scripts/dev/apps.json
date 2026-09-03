@@ -1,0 +1,78 @@
+{
+  "apps": [
+    {
+      "id": "00",
+      "name": "AI Engineer Portfolio & Catalog",
+      "frontend": {
+        "dir": "apps/00-portfolio/frontend",
+        "port": 3000,
+        "command": "npm run dev",
+        "env": {
+          "NEXT_PUBLIC_APP_01_URL": "http://localhost:3001",
+          "NEXT_PUBLIC_APP_02_URL": "http://localhost:3002",
+          "NEXT_PUBLIC_APP_03_URL": "http://localhost:3003"
+        }
+      }
+    },
+    {
+      "id": "01",
+      "name": "Smart Inspector",
+      "frontend": {
+        "dir": "apps/01-smart-inspector/frontend",
+        "port": 3001,
+        "command": "npm run dev",
+        "env": {
+          "ANALYZE_SERVICE_URL": "http://localhost:8001/analyze"
+        }
+      },
+      "backend": {
+        "dir": "apps/01-smart-inspector/backend",
+        "port": 8001,
+        "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8001",
+        "env": {
+          "PORT": "8001"
+        }
+      }
+    },
+    {
+      "id": "02",
+      "name": "Support Bot",
+      "frontend": {
+        "dir": "apps/02-support-bot/frontend",
+        "port": 3002,
+        "command": "npm run dev",
+        "env": {
+          "BACKEND_INTERNAL_URL": "http://localhost:8002"
+        }
+      },
+      "backend": {
+        "dir": "apps/02-support-bot/backend",
+        "port": 8002,
+        "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8002",
+        "env": {
+          "PORT": "8002"
+        }
+      }
+    },
+    {
+      "id": "03",
+      "name": "Prompt Forge",
+      "frontend": {
+        "dir": "apps/03-prompt-forge/frontend",
+        "port": 3003,
+        "command": "npm run dev",
+        "env": {
+          "BACKEND_URL": "http://localhost:8003"
+        }
+      },
+      "backend": {
+        "dir": "apps/03-prompt-forge/backend",
+        "port": 8003,
+        "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8003",
+        "env": {
+          "PORT": "8003"
+        }
+      }
+    }
+  ]
+}

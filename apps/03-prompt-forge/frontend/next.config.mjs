@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
+const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8003";
 
 const nextConfig = {
   poweredByHeader: false,
