@@ -1,19 +1,42 @@
 /old_items
 
 # Environment files
-apps/**/.env
-Exercises/**/.env
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Certificates & keys
+*.pem
+*.key
+*.pfx
+credentials.json
+service-account*.json
+
+# Databases & logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
 
 # Python
-apps/**/__pycache__/
-apps/**/*.py[cod]
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+*.py[cod]
 
-# Next.js
-apps/**/.next/
+# Node / Next.js / Build
+**/.next/
+**/node_modules/
+**/coverage/
+**/dist/
 
-apps/**/node_modules/
-
-# Agents
+# Agents local settings
 apps/**/**/claude.md
 apps/**/**/agents.md
 .claude/settings.local.json
+
