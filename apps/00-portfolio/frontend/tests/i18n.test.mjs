@@ -12,7 +12,7 @@ import {
 } from "../lib/i18n/locales.ts";
 
 import { getDictionary } from "../lib/i18n/index.ts";
-import { getAppCatalog, getCaseStudyContent } from "../lib/catalog.ts";
+import { getAppCatalog, getCaseStudyContent, resolveAppUrl } from "../lib/catalog.ts";
 
 test("supported locales definition", () => {
   assert.deepEqual([...LOCALES], ["en", "pt", "de"]);
@@ -99,3 +99,16 @@ test("getCaseStudyContent returns localized markdown and handles fallback", () =
   const missingLocaleResult = getCaseStudyContent("smart-inspector.md", "nonexistent-locale");
   assert.match(missingLocaleResult.content, /Case Study/);
 });
+
+test("resolveAppUrl resolves from environment variable with fallback to production URL", () => {
+  const defaultUrl = "https://ai-engineer-roadmap-lyart.vercel.app";
+
+  delete process.env.NEXT_PUBLIC_APP_01_URL;
+  assert.equal(resolveAppUrl("01", defaultUrl), defaultUrl);
+
+  process.env.NEXT_PUBLIC_APP_01_URL = "http://localhost:3001";
+  assert.equal(resolveAppUrl("01", defaultUrl), "http://localhost:3001");
+
+  delete process.env.NEXT_PUBLIC_APP_01_URL;
+});
+
