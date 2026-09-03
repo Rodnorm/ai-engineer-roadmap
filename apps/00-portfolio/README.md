@@ -12,6 +12,18 @@ App 00 serves as the central showcase and global catalog for the `ai-engineer-ro
 
 ---
 
+## 🌓 Light & Dark Themes
+
+App 00 supports accessible light and dark themes using semantic design tokens:
+
+- **Initial Load:** Respects the user's operating system preference (`prefers-color-scheme: dark`) on first visit.
+- **Zero Flash (Anti-FOUC):** An inline script in `<head>` applies the `.dark` class before the first paint.
+- **Persistence:** Manual selections are persisted in `localStorage` under `portfolio_theme`.
+- **Accessible Switcher:** Dedicated `ThemeToggle` in the header with `Sun` and `Moon` icons, `role="switch"`, `aria-checked`, and full keyboard navigation.
+- **Semantic Color Tokens:** Configured via CSS variables in `globals.css` and mapped to Tailwind (`bg-background`, `bg-surface`, `border-border`, `text-foreground`, `text-text-muted`, `text-text-secondary`, `bg-primary`, `bg-accent`).
+
+---
+
 ## 🌐 Internationalization (i18n)
 
 App 00 supports multi-language navigation with static page generation:
@@ -48,7 +60,7 @@ npm run dev
 # Run ESLint validation
 npm run lint
 
-# Run Unit Tests (locale resolution & fallback coverage)
+# Run Unit Tests (locale resolution, theme preference & fallback coverage)
 npm test
 
 # Build production bundle with full static export

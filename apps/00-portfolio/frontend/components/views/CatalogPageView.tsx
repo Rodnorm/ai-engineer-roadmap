@@ -9,36 +9,36 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
 
   return (
     <div className="space-y-8 py-4">
-      <div className="border-b border-border/80 pb-6 space-y-2">
-        <h1 className="text-3xl font-extrabold text-white">{dict.catalog.title}</h1>
-        <p className="text-slate-400 text-sm">{dict.catalog.subtitle}</p>
+      <div className="border-b border-border pb-6 space-y-2">
+        <h1 className="text-3xl font-extrabold text-foreground">{dict.catalog.title}</h1>
+        <p className="text-text-muted text-sm">{dict.catalog.subtitle}</p>
       </div>
 
       {apps.length === 0 ? (
-        <div className="p-8 text-center text-slate-400 text-sm rounded-2xl bg-surface border border-border">
+        <div className="p-8 text-center text-text-muted text-sm rounded-2xl bg-surface border border-border">
           {dict.catalog.emptyNotice}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {apps.map((app) => (
-            <div key={app.id} className="rounded-2xl bg-surface border border-border hover:border-primary/50 transition-all p-6 flex flex-col justify-between space-y-4">
+            <div key={app.id} className="rounded-2xl bg-surface border border-border hover:border-primary/50 transition-all p-6 flex flex-col justify-between space-y-4 shadow-sm">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-mono font-medium">
+                  <span className="px-2.5 py-0.5 rounded-full bg-surface-muted text-text-secondary text-xs font-mono font-medium">
                     {dict.home.appBadge} {app.id} — {app.category}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold capitalize">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold capitalize">
                     {app.status}
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold text-white">{app.title}</h2>
-                <p className="text-slate-400 text-sm leading-relaxed">{app.summary}</p>
+                <h2 className="text-2xl font-bold text-foreground">{app.title}</h2>
+                <p className="text-text-muted text-sm leading-relaxed">{app.summary}</p>
 
                 <div className="space-y-2 pt-2">
-                  <div className="text-xs text-slate-400 font-semibold">{dict.catalog.techStack}</div>
+                  <div className="text-xs text-text-muted font-semibold">{dict.catalog.techStack}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {app.technologies.map((tech) => (
-                      <span key={tech} className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono">
+                      <span key={tech} className="px-2.5 py-1 rounded bg-surface-muted border border-border text-text-secondary text-xs font-mono">
                         {tech}
                       </span>
                     ))}
@@ -46,17 +46,17 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
                 </div>
 
                 {app.security && (
-                  <div className="flex items-center gap-3 pt-2 text-xs text-emerald-400/90 font-medium">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center gap-3 pt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span>{dict.catalog.securityBadge}</span>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-border/50 text-xs font-semibold">
+              <div className="flex items-center gap-3 pt-4 border-t border-border text-xs font-semibold">
                 <Link
                   href={getLocalizedPath(`/apps/${app.slug}`, locale)}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-surface border border-border hover:border-primary text-center text-slate-200 hover:text-white transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-surface border border-border hover:border-primary text-center text-text-secondary hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>{dict.catalog.readCaseStudyBtn}</span>

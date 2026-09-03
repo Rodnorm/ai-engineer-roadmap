@@ -31,9 +31,9 @@ export function LanguageSelector() {
   };
 
   return (
-    <div className="relative inline-flex items-center gap-1.5 p-1 rounded-xl bg-slate-900/80 border border-border text-xs">
-      <Globe className="w-3.5 h-3.5 text-slate-400 ml-1.5 flex-shrink-0" aria-hidden="true" />
-      <div className="flex items-center gap-1" role="group" aria-label="Language selector">
+    <div className="relative inline-flex items-center gap-1.5 p-1 rounded-xl bg-surface border border-border text-xs transition-colors duration-200">
+      <Globe className="w-3.5 h-3.5 text-text-muted ml-1 flex-shrink-0" aria-hidden="true" />
+      <div className="flex items-center gap-0.5" role="group" aria-label="Language selector">
         {LOCALES.map((locale) => {
           const isActive = locale === currentLocale;
           return (
@@ -44,8 +44,8 @@ export function LanguageSelector() {
               aria-pressed={isActive}
               className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary ${
                 isActive
-                  ? "bg-primary text-slate-950 shadow-sm"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  ? "bg-primary text-white font-bold shadow-sm"
+                  : "text-text-muted hover:text-foreground hover:bg-surface-muted"
               }`}
               title={LOCALE_LABELS[locale]}
             >

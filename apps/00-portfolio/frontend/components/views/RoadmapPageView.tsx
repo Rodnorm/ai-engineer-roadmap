@@ -86,12 +86,12 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
 
   return (
     <div className="space-y-8 py-4 max-w-4xl mx-auto">
-      <div className="border-b border-border/80 pb-6 space-y-2">
-        <h1 className="text-3xl font-extrabold text-white">{dict.roadmap.title}</h1>
-        <p className="text-slate-400 text-sm">{dict.roadmap.subtitle}</p>
+      <div className="border-b border-border pb-6 space-y-2">
+        <h1 className="text-3xl font-extrabold text-foreground">{dict.roadmap.title}</h1>
+        <p className="text-text-muted text-sm">{dict.roadmap.subtitle}</p>
       </div>
 
-      <div className="relative border-l-2 border-border/80 ml-4 pl-6 space-y-8">
+      <div className="relative border-l-2 border-border ml-4 pl-6 space-y-8">
         {roadmapSteps.map((step) => {
           const isCompleted = step.status === "completed";
           const isInProgress = step.status === "in_progress";
@@ -101,37 +101,37 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
               {/* Dot Icon */}
               <div className="absolute -left-[35px] top-1 bg-background">
                 {isCompleted ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 ) : isInProgress ? (
                   <Clock className="w-5 h-5 text-primary animate-pulse" />
                 ) : (
-                  <Circle className="w-5 h-5 text-slate-600" />
+                  <Circle className="w-5 h-5 text-text-muted" />
                 )}
               </div>
 
-              <div className="p-6 rounded-2xl bg-surface border border-border space-y-3 group-hover:border-primary/50 transition-all">
+              <div className="p-6 rounded-2xl bg-surface border border-border space-y-3 group-hover:border-primary/50 transition-all shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-mono font-medium">
+                    <span className="px-2.5 py-0.5 rounded-full bg-surface-muted text-text-secondary text-xs font-mono font-medium">
                       {step.id}
                     </span>
-                    <span className="text-xs text-slate-400 font-semibold">{step.badge}</span>
+                    <span className="text-xs text-text-muted font-semibold">{step.badge}</span>
                   </div>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider ${
                       isCompleted
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
                         : isInProgress
                         ? "bg-primary/10 text-primary border border-primary/30"
-                        : "bg-slate-800 text-slate-400"
+                        : "bg-surface-muted text-text-muted"
                     }`}
                   >
                     {getStatusLabel(step.status)}
                   </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white">{step.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{step.description}</p>
+                <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
+                <p className="text-text-muted text-sm leading-relaxed">{step.description}</p>
 
                 {step.link && (
                   <div className="pt-2">
