@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Code2, Map } from "lucide-react";
+import { Sparkles, Code2, Map, User } from "lucide-react";
 
 export function Header() {
   return (
@@ -9,7 +9,7 @@ export function Header() {
           <Sparkles className="w-5 h-5 text-primary" />
           <span>AI Engineer Roadmap</span>
         </Link>
-        <nav className="flex items-center gap-6 text-sm font-medium text-slate-300">
+        <nav className="flex items-center gap-5 text-sm font-medium text-slate-300">
           <Link href="/apps" className="flex items-center gap-1.5 hover:text-primary transition-colors">
             <Code2 className="w-4 h-4" />
             <span>Catalog</span>
@@ -17,6 +17,10 @@ export function Header() {
           <Link href="/roadmap" className="flex items-center gap-1.5 hover:text-primary transition-colors">
             <Map className="w-4 h-4" />
             <span>Roadmap</span>
+          </Link>
+          <Link href="/about" className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <User className="w-4 h-4" />
+            <span>About</span>
           </Link>
           <a
             href="https://github.com/Rodnorm/ai-engineer-roadmap"
