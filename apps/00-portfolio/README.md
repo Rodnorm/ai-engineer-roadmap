@@ -12,35 +12,57 @@ App 00 serves as the central showcase and global catalog for the `ai-engineer-ro
 
 ---
 
-## 🚀 Running Locally
+## 🌓 Light & Dark Themes
 
-```bash
-cd apps/00-portfolio/frontend
-npm ci
-npm run dev
-```
+App 00 supports accessible light and dark themes using semantic design tokens:
+
+- **Initial Load:** Respects the user's operating system preference (`prefers-color-scheme: dark`) on first visit.
+- **Zero Flash (Anti-FOUC):** An inline script in `<head>` applies the `.dark` class before the first paint.
+- **Persistence:** Manual selections are persisted in `localStorage` under `portfolio_theme`.
+- **Accessible Switcher:** Dedicated `ThemeToggle` in the header with `Sun` and `Moon` icons, `role="switch"`, `aria-checked`, and full keyboard navigation.
+- **Semantic Color Tokens:** Configured via CSS variables in `globals.css` and mapped to Tailwind (`bg-background`, `bg-surface`, `border-border`, `text-foreground`, `text-text-muted`, `text-text-secondary`, `bg-primary`, `bg-accent`).
 
 ---
 
-## Vercel Deployment
+## 🌐 Internationalization (i18n)
 
-Create a dedicated Vercel project for App 00 with these settings:
+App 00 supports multi-language navigation with static page generation:
 
-| Setting | Value |
-| --- | --- |
-| Root Directory | `apps/00-portfolio/frontend` |
-| Framework Preset | Next.js |
-| Install Command | `npm ci` |
-| Build Command | `npm run build` |
-| Output Directory | Leave empty (Next.js default) |
-| Production Branch | `main` |
-| Include source files outside Root Directory | Enabled |
+| Locale Code | Language | HTML `lang` | Route Prefix | Default |
+| :--- | :--- | :--- | :--- | :--- |
+| `en` | English | `en` | `/` (root) | ✅ Yes |
+| `pt` | Português (Brasil) | `pt-BR` | `/pt` | No |
+| `de` | Deutsch | `de` | `/de` | No |
 
-The external-source option is required because the portfolio reads:
+### Routing & Static Pre-rendering
+- English is served at the root routes (`/`, `/apps`, `/roadmap`, `/about`, `/apps/[slug]`).
+- Localized versions are pre-rendered at `/[locale]` (`/pt`, `/de`, `/pt/apps`, `/de/apps`, etc.) using `generateStaticParams`.
+- User language preference is persisted in `localStorage` and a cookie named `portfolio_locale`.
+- The HTML `lang` attribute dynamically synchronizes via `<HtmlLangSync />`.
 
-- `catalog/apps.json`
-- `apps/00-portfolio/content/`
+### Case Study Fallback Strategy
+- Localized case studies are stored in `apps/00-portfolio/content/<slug>.<locale>.md` (e.g., `smart-inspector.pt.md`).
+- If a localized markdown file is absent, the system falls back explicitly to the base English version (`<slug>.md`) and renders an informative fallback notice.
 
-The local `frontend/vercel.json` keeps this configuration reproducible and disables automatic deployments for every branch except `main`. Preview branches are validated by GitHub Actions without consuming Vercel deployment quota.
+---
 
-If the Hobby deployment limit has already been reached, wait for the rolling 24-hour quota to reset before redeploying the latest commit from `main`.
+## 🚀 Running Locally & Testing
+
+```bash
+cd apps/00-portfolio/frontend
+npm install
+npm run dev
+```
+
+### Validation & Test Commands
+
+```bash
+# Run ESLint validation
+npm run lint
+
+# Run Unit Tests (locale resolution, theme preference & fallback coverage)
+npm test
+
+# Build production bundle with full static export
+npm run build
+```
