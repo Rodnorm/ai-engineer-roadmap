@@ -2,7 +2,7 @@ python-dotenv
 azure-identity
 openai>=3.5.0
 fastapi>=0.111
-pydantic>=2.7
+pydantic>=2.13.5
 uvicorn[standard]>=0.30
 python-multipart>=0.0.9
 Pillow>=10.0.0
