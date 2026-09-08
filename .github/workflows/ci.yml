@@ -29,6 +29,8 @@ jobs:
             directory: apps/02-support-bot/frontend
           - app: promptForge
             directory: apps/03-prompt-forge/frontend
+          - app: pocketRag
+            directory: apps/04-pocket-rag/frontend
 
     defaults:
       run:
@@ -46,7 +48,7 @@ jobs:
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Lint
         run: npm run lint
@@ -66,10 +68,20 @@ jobs:
         include:
           - app: Smart Inspector
             directory: apps/01-smart-inspector/backend
+            requirements: requirements.txt
+            validation: python -m compileall -q .
           - app: Support Bot
             directory: apps/02-support-bot/backend
+            requirements: requirements.txt
+            validation: python -m compileall -q .
           - app: promptForge
             directory: apps/03-prompt-forge/backend
+            requirements: requirements.txt
+            validation: python -m compileall -q .
+          - app: pocketRag
+            directory: apps/04-pocket-rag/backend
+            requirements: requirements-test.txt
+            validation: python -m unittest -v test_app04
 
     defaults:
       run:
@@ -84,13 +96,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: ${{ matrix.directory }}/requirements.txt
+          cache-dependency-path: ${{ matrix.directory }}/${{ matrix.requirements }}
 
       - name: Install dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements.txt
+        run: python -m pip install --disable-pip-version-check -r ${{ matrix.requirements }}
 
       - name: Check dependency compatibility
         run: python -m pip check
 
-      - name: Validate Python syntax
-        run: python -m compileall -q .
+      - name: Validate backend
+        run: ${{ matrix.validation }}
