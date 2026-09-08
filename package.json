@@ -7,7 +7,8 @@
     "apps/00-portfolio/frontend",
     "apps/01-smart-inspector/frontend",
     "apps/02-support-bot/frontend",
-    "apps/03-prompt-forge/frontend"
+    "apps/03-prompt-forge/frontend",
+    "apps/04-pocket-rag/frontend"
   ],
   "scripts": {
     "dev": "node scripts/dev/run.mjs --all",
@@ -16,6 +17,7 @@
     "dev:01": "node scripts/dev/run.mjs --app 01",
     "dev:02": "node scripts/dev/run.mjs --app 02",
     "dev:03": "node scripts/dev/run.mjs --app 03",
+    "dev:04": "node scripts/dev/run.mjs --app 04",
     "test": "node --test scripts/dev/*.test.mjs"
   }
 }

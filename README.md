@@ -82,6 +82,8 @@ The monorepo includes a cross-platform Node.js development orchestrator (`script
 | | Backend | `8002` | `apps/02-support-bot/backend` | |
 | **App 03** (Prompt Forge) | Frontend | `3003` | `apps/03-prompt-forge/frontend` | `npm run dev:03` |
 | | Backend | `8003` | `apps/03-prompt-forge/backend` | |
+| **App 04** (pocketRag) | Frontend | `3004` | `apps/04-pocket-rag/frontend` | `npm run dev:04` |
+| | Backend | `8004` | `apps/04-pocket-rag/backend` | |
 
 ### 🛠️ One-Command Local Startup
 
@@ -95,6 +97,7 @@ npm run dev
 npm run dev:01    # Smart Inspector (3001 & 8001)
 npm run dev:02    # Support Bot (3002 & 8002)
 npm run dev:03    # Prompt Forge (3003 & 8003)
+npm run dev:04    # pocketRag (3004 & 8004)
 npm run dev:00    # Portfolio Catalog (3000)
 ```
 
