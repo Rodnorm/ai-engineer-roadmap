@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel, Field
 
 class DocumentItem(BaseModel):
@@ -8,6 +8,7 @@ class DocumentItem(BaseModel):
     file_size_bytes: int
     chunks_count: int
     created_at: str
+    source: Literal["upload", "example"] = "upload"
 
 class DocumentUploadResponse(BaseModel):
     document_id: str
@@ -28,6 +29,10 @@ class QueryRequest(BaseModel):
     top_k: int = Field(default=4, ge=1, le=10, description="Number of context chunks to retrieve")
     temperature: float = Field(default=0.3, ge=0.0, le=1.0)
     language: str = Field(default="de", description="Response language: de, en, or pt-BR")
+    scope: Literal["uploads", "examples", "all"] = Field(
+        default="uploads",
+        description="Document collection to search",
+    )
 
 class Citation(BaseModel):
     citation_id: int
@@ -37,6 +42,7 @@ class Citation(BaseModel):
     chunk_index: int
     snippet: str
     similarity_score: float
+    source: Literal["upload", "example"] = "upload"
 
 class QueryResponse(BaseModel):
     answer: str

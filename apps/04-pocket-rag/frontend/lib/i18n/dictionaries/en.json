@@ -43,6 +43,19 @@
     "latency": "Latency",
     "cost": "Est. Cost",
     "monthlySaved": "Cloud Savings",
-    "vectorDb": "Vector Store"
+    "vectorDb": "Vector Store",
+    "documentModeLabel": "Document source",
+    "myDocuments": "My documents",
+    "tryExamples": "Try example documents",
+    "loadingExamples": "Loading examples...",
+    "exampleDisclaimer": "Fictional documents for demonstration. They contain no real personal data and must not be used as contracts.",
+    "downloadExample": "Download example document",
+    "openSourcePdf": "Open source PDF",
+    "chatEmptyState": "Upload a document or use the examples, then ask a question to get a grounded answer with citations.",
+    "exampleQuestion1": "What is the apartment security deposit?",
+    "exampleQuestion2": "How many vacation days does Lara have?",
+    "exampleQuestion3": "What is the home insurance deductible?",
+    "exampleQuestion4": "How much does the internet cost after the promotional period, including the router?",
+    "exampleQuestion5": "What is the additional service charge payment and why was it incurred?"
   }
 }

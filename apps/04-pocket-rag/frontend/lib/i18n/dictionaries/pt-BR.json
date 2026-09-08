@@ -43,6 +43,19 @@
     "latency": "Latência",
     "cost": "Custo Est.",
     "monthlySaved": "Economia Nuvem",
-    "vectorDb": "Banco Vetorial"
+    "vectorDb": "Banco Vetorial",
+    "documentModeLabel": "Origem dos documentos",
+    "myDocuments": "Meus documentos",
+    "tryExamples": "Testar documentos de exemplo",
+    "loadingExamples": "Carregando exemplos...",
+    "exampleDisclaimer": "Documentos fictícios para demonstração. Eles não contêm dados pessoais reais e não devem ser usados como contratos.",
+    "downloadExample": "Baixar documento de exemplo",
+    "openSourcePdf": "Abrir PDF de origem",
+    "chatEmptyState": "Envie um documento ou use os exemplos e depois faça uma pergunta para receber uma resposta com citações.",
+    "exampleQuestion1": "Qual é o valor da caução do apartamento?",
+    "exampleQuestion2": "Quantos dias de férias Lara possui?",
+    "exampleQuestion3": "Qual é a franquia do seguro residencial?",
+    "exampleQuestion4": "Quanto custa a internet depois do período promocional, incluindo o roteador?",
+    "exampleQuestion5": "Qual é o valor adicional das despesas do imóvel e por que ele foi cobrado?"
   }
 }

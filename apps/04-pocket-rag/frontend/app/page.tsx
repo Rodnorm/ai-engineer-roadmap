@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { DocumentManager } from '../components/DocumentManager';
 import { ChatInterface, ChatMessage } from '../components/ChatInterface';
@@ -9,6 +9,8 @@ import { TelemetryPanel } from '../components/TelemetryPanel';
 import { useI18n } from '@/lib/i18n/I18nProvider';
 import {
   fetchDocuments,
+  fetchExampleDocuments,
+  loadExampleDocuments,
   uploadDocument,
   clearAllDocuments,
   queryRAG,
@@ -16,13 +18,19 @@ import {
   DocumentItem,
   Citation,
   SystemStats,
+  ExampleDocument,
 } from '../lib/api';
+
+type DocumentMode = 'uploads' | 'examples';
 
 export default function Home() {
   const { locale, dict } = useI18n();
   const labels = dict.labels;
 
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [examples, setExamples] = useState<ExampleDocument[]>([]);
+  const [documentMode, setDocumentMode] = useState<DocumentMode>('uploads');
+  const [isLoadingExamples, setIsLoadingExamples] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isQuerying, setIsQuerying] = useState(false);
@@ -32,26 +40,31 @@ export default function Home() {
   const [lastTokens, setLastTokens] = useState(0);
   const [lastLatency, setLastLatency] = useState(0);
 
-  const loadData = async () => {
+  const loadData = useCallback(async (scope: DocumentMode) => {
     try {
-      const docs = await fetchDocuments();
+      const [docs, st] = await Promise.all([
+        fetchDocuments(scope),
+        fetchStats(),
+      ]);
       setDocuments(docs);
-      const st = await fetchStats();
       setStats(st);
     } catch (e) {
       console.warn('Backend connection pending or offline:', e);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData('uploads');
+    fetchExampleDocuments().then(setExamples).catch((e) => {
+      console.warn('Example documents unavailable:', e);
+    });
+  }, [loadData]);
 
   const handleUpload = async (file: File) => {
     setIsUploading(true);
     try {
       await uploadDocument(file);
-      await loadData();
+      await loadData('uploads');
     } finally {
       setIsUploading(false);
     }
@@ -59,8 +72,27 @@ export default function Home() {
 
   const handleClearAll = async () => {
     await clearAllDocuments();
-    await loadData();
+    await loadData('uploads');
     setMessages([]);
+  };
+
+  const handleModeChange = async (mode: DocumentMode) => {
+    setDocumentMode(mode);
+    setMessages([]);
+    await loadData(mode);
+  };
+
+  const handleLoadExamples = async () => {
+    setIsLoadingExamples(true);
+    try {
+      await loadExampleDocuments();
+      setDocumentMode('examples');
+      setMessages([]);
+      await loadData('examples');
+      setExamples(await fetchExampleDocuments());
+    } finally {
+      setIsLoadingExamples(false);
+    }
   };
 
   const handleSendQuestion = async (question: string) => {
@@ -74,7 +106,7 @@ export default function Home() {
     setIsQuerying(true);
 
     try {
-      const res = await queryRAG(question, 4, 0.3, locale);
+      const res = await queryRAG(question, 4, 0.3, locale, documentMode);
 
       const botMsg: ChatMessage = {
         id: String(Date.now() + 1),
@@ -124,6 +156,11 @@ export default function Home() {
               isUploading={isUploading}
               onUpload={handleUpload}
               onClearAll={handleClearAll}
+              mode={documentMode}
+              examples={examples}
+              isLoadingExamples={isLoadingExamples}
+              onModeChange={handleModeChange}
+              onLoadExamples={handleLoadExamples}
               labels={labels}
             />
           </div>
@@ -134,6 +171,13 @@ export default function Home() {
               isLoading={isQuerying}
               onSend={handleSendQuestion}
               onSelectCitation={(cit) => setSelectedCitation(cit)}
+              suggestedQuestions={documentMode === 'examples' ? [
+                labels.exampleQuestion1,
+                labels.exampleQuestion2,
+                labels.exampleQuestion3,
+                labels.exampleQuestion4,
+                labels.exampleQuestion5,
+              ].filter(Boolean) : []}
               labels={labels}
             />
           </div>
@@ -143,6 +187,7 @@ export default function Home() {
       <CitationsDrawer
         citation={selectedCitation}
         onClose={() => setSelectedCitation(null)}
+        labels={labels}
       />
     </div>
   );

@@ -10,14 +10,20 @@ import {
   Loader2,
   FolderOpen,
   Layers,
+  Download,
 } from 'lucide-react';
-import { DocumentItem } from '../lib/api';
+import { DocumentItem, ExampleDocument, getExampleDownloadUrl } from '../lib/api';
 
 interface DocumentManagerProps {
   documents: DocumentItem[];
   isUploading: boolean;
   onUpload: (file: File) => Promise<void>;
   onClearAll: () => Promise<void>;
+  mode: 'uploads' | 'examples';
+  examples: ExampleDocument[];
+  isLoadingExamples: boolean;
+  onModeChange: (mode: 'uploads' | 'examples') => Promise<void>;
+  onLoadExamples: () => Promise<void>;
   labels: Record<string, string>;
 }
 
@@ -26,6 +32,11 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   isUploading,
   onUpload,
   onClearAll,
+  mode,
+  examples,
+  isLoadingExamples,
+  onModeChange,
+  onLoadExamples,
   labels,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,6 +66,15 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     }
   };
 
+  const handleLoadExamples = async () => {
+    setErrorMsg(null);
+    try {
+      await onLoadExamples();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Error loading example documents');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-panel p-4 sm:p-5 backdrop-blur-sm shadow-sm">
       <div className="flex items-center justify-between">
@@ -69,8 +89,32 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         </span>
       </div>
 
+      <div className="grid grid-cols-2 gap-2" role="group" aria-label={labels.documentModeLabel}>
+        <button
+          type="button"
+          onClick={() => onModeChange('uploads')}
+          className={`rounded-lg border px-3 py-2 text-xs font-medium transition cursor-pointer ${mode === 'uploads' ? 'border-sky-500 bg-sky-500/10 text-sky-600 dark:text-sky-300' : 'border-border text-muted hover:bg-surface/50'}`}
+        >
+          {labels.myDocuments}
+        </button>
+        <button
+          type="button"
+          onClick={handleLoadExamples}
+          disabled={isLoadingExamples}
+          className={`rounded-lg border px-3 py-2 text-xs font-medium transition cursor-pointer disabled:opacity-60 ${mode === 'examples' ? 'border-sky-500 bg-sky-500/10 text-sky-600 dark:text-sky-300' : 'border-border text-muted hover:bg-surface/50'}`}
+        >
+          {isLoadingExamples ? labels.loadingExamples : labels.tryExamples}
+        </button>
+      </div>
+
+      {mode === 'examples' && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-200">
+          {labels.exampleDisclaimer}
+        </div>
+      )}
+
       {/* Upload Zone */}
-      <div
+      {mode === 'uploads' && <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
@@ -102,7 +146,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             </p>
           </>
         )}
-      </div>
+      </div>}
 
       {errorMsg && (
         <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-600 dark:text-red-300">
@@ -118,7 +162,9 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             {labels.noDocs}
           </div>
         ) : (
-          documents.map((doc) => (
+          documents.map((doc) => {
+            const example = examples.find((item) => item.id === doc.id);
+            return (
             <div
               key={doc.id}
               className="flex items-center justify-between rounded-lg border border-border bg-surface/40 p-2.5 transition hover:border-border/80"
@@ -127,20 +173,33 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                 <FileText className="h-4 w-4 shrink-0 text-sky-500 dark:text-sky-400" />
                 <div className="truncate">
                   <p className="truncate text-xs font-medium text-text">
-                    {doc.filename}
+                    {example?.title || doc.filename}
                   </p>
                   <p className="text-[10px] text-muted">
                     {doc.file_type} • {doc.chunks_count} chunks • {(doc.file_size_bytes / 1024).toFixed(1)} KB
                   </p>
+                  {example && <p className="mt-1 text-[10px] text-muted">{example.description}</p>}
                 </div>
               </div>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+              {doc.source === 'example' ? (
+                <a
+                  href={getExampleDownloadUrl(doc.filename)}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${labels.downloadExample}: ${example?.title || doc.filename}`}
+                  className="icon-button shrink-0"
+                >
+                  <Download className="h-4 w-4" />
+                </a>
+              ) : (
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+              )}
             </div>
-          ))
+          )})
         )}
       </div>
 
-      {documents.length > 0 && (
+      {mode === 'uploads' && documents.length > 0 && (
         <button
           onClick={onClearAll}
           className="flex items-center justify-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/20 transition cursor-pointer"
