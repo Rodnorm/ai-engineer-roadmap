@@ -111,7 +111,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Node.js
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -167,7 +167,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.12"
           cache: pip
