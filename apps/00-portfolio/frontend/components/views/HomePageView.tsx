@@ -116,7 +116,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>{dict.home.caseStudyBtn}</span>
                 </Link>
-                <a
+                {app.liveUrl && <a
                   href={app.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -124,7 +124,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
                 >
                   <span>{dict.home.demoBtn}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+                </a>}
               </div>
             </div>
           ))}

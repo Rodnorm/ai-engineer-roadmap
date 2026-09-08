@@ -61,7 +61,7 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
                   <BookOpen className="w-4 h-4" />
                   <span>{dict.catalog.readCaseStudyBtn}</span>
                 </Link>
-                <a
+                {app.liveUrl && <a
                   href={app.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -69,7 +69,7 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
                 >
                   <span>{dict.catalog.liveDemoBtn}</span>
                   <ExternalLink className="w-4 h-4" />
-                </a>
+                </a>}
               </div>
             </div>
           ))}

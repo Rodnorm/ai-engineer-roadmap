@@ -14,6 +14,7 @@ This repository documents the transition from senior frontend engineering toward
 | [01 — Smart Inspector](./apps/01-smart-inspector) | Multi-modal vision analysis, image tags, captions, object detection, and OCR transcription | Next.js 14, FastAPI, Azure OpenAI, Pillow | Live |
 | [02 — Support Bot](./apps/02-support-bot) | Healthcare billing assistant with Azure AI Language NLP, PII data masking, and grounded retrieval | Next.js 16, FastAPI, Azure AI Language, Azure AI Agents | Live |
 | [03 — Prompt Forge](./apps/03-prompt-forge) | Structured content generation workbench with Azure Content Safety filtering and SSE streaming | Next.js 16, FastAPI, Azure OpenAI, Azure Content Safety | Live |
+| [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and RAGAS evaluation tooling | Next.js 15, FastAPI, ChromaDB, Azure OpenAI | In development |
 
 ---
 
@@ -25,7 +26,8 @@ This repository documents the transition from senior frontend engineering toward
 │   ├── 00-portfolio/          # Central showcase and case studies UI
 │   ├── 01-smart-inspector/    # Vision & OCR multi-modal service
 │   ├── 02-support-bot/        # Healthcare NLP & grounded RAG assistant
-│   └── 03-prompt-forge/       # Structured content & Content Safety studio
+│   ├── 03-prompt-forge/       # Structured content & Content Safety studio
+│   └── 04-pocket-rag/          # Local-first personal RAG knowledge base
 ├── catalog/                   # Monorepo catalog registry (apps.json, schema.json)
 ├── templates/                 # Reusable starter application template (templates/ai-app)
 ├── docs/                      # Architectural, security, testing, and deployment standards
@@ -80,6 +82,8 @@ The monorepo includes a cross-platform Node.js development orchestrator (`script
 | | Backend | `8002` | `apps/02-support-bot/backend` | |
 | **App 03** (Prompt Forge) | Frontend | `3003` | `apps/03-prompt-forge/frontend` | `npm run dev:03` |
 | | Backend | `8003` | `apps/03-prompt-forge/backend` | |
+| **App 04** (pocketRag) | Frontend | `3004` | `apps/04-pocket-rag/frontend` | `npm run dev:04` |
+| | Backend | `8004` | `apps/04-pocket-rag/backend` | |
 
 ### 🛠️ One-Command Local Startup
 
@@ -93,6 +97,7 @@ npm run dev
 npm run dev:01    # Smart Inspector (3001 & 8001)
 npm run dev:02    # Support Bot (3002 & 8002)
 npm run dev:03    # Prompt Forge (3003 & 8003)
+npm run dev:04    # pocketRag (3004 & 8004)
 npm run dev:00    # Portfolio Catalog (3000)
 ```
 

@@ -10,7 +10,8 @@
         "env": {
           "NEXT_PUBLIC_APP_01_URL": "http://localhost:3001",
           "NEXT_PUBLIC_APP_02_URL": "http://localhost:3002",
-          "NEXT_PUBLIC_APP_03_URL": "http://localhost:3003"
+          "NEXT_PUBLIC_APP_03_URL": "http://localhost:3003",
+          "NEXT_PUBLIC_APP_04_URL": "http://localhost:3004"
         }
       }
     },
@@ -71,6 +72,26 @@
         "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8003",
         "env": {
           "PORT": "8003"
+        }
+      }
+    },
+    {
+      "id": "04",
+      "name": "pocketRag",
+      "frontend": {
+        "dir": "apps/04-pocket-rag/frontend",
+        "port": 3004,
+        "command": "npm run dev",
+        "env": {
+          "NEXT_PUBLIC_API_BASE_URL": "http://localhost:8004"
+        }
+      },
+      "backend": {
+        "dir": "apps/04-pocket-rag/backend",
+        "port": 8004,
+        "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8004",
+        "env": {
+          "PORT": "8004"
         }
       }
     }

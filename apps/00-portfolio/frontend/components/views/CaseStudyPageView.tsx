@@ -35,7 +35,7 @@ export function CaseStudyPageView({ slug, locale = "en" }: { slug: string; local
             </div>
             <h1 className="text-3xl font-extrabold text-foreground">{app.title}</h1>
           </div>
-          <a
+          {app.liveUrl && <a
             href={app.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -43,7 +43,7 @@ export function CaseStudyPageView({ slug, locale = "en" }: { slug: string; local
           >
             <span>{dict.caseStudy.launchLiveDemo}</span>
             <ExternalLink className="w-4 h-4" />
-          </a>
+          </a>}
         </div>
 
         <p className="text-text-secondary text-base leading-relaxed">{app.summary}</p>

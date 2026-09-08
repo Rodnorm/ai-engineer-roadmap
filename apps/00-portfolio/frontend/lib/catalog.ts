@@ -91,6 +91,20 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
         caseStudyPath: "prompt-forge.md",
         security: { publicDemo: true, rateLimited: true, storesUserContent: false },
       },
+      {
+        id: "04",
+        slug: "pocket-rag",
+        title: "pocketRag",
+        summary: "Local-first personal RAG knowledge base with persistent documents, multilingual retrieval, and inspectable citations.",
+        description: "Indexes PDF, Markdown, TXT, and DOCX files locally and optionally generates grounded Azure OpenAI answers.",
+        category: "Knowledge Base & RAG",
+        status: "development",
+        technologies: ["Next.js 15", "FastAPI", "ChromaDB", "Azure OpenAI"],
+        liveUrl: "",
+        repositoryPath: "apps/04-pocket-rag",
+        caseStudyPath: "pocket-rag.md",
+        security: { publicDemo: false, rateLimited: true, storesUserContent: true },
+      },
     ];
   }
 

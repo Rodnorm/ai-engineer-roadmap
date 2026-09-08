@@ -42,6 +42,26 @@ updates:
     open-pull-requests-limit: 5
 
   - package-ecosystem: npm
+    directory: /apps/04-pocket-rag/frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      frontend-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
     directory: /apps/03-prompt-forge/frontend
     schedule:
       interval: weekly
@@ -83,6 +103,26 @@ updates:
 
   - package-ecosystem: pip
     directory: /apps/02-support-bot/backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      backend-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pip
+    directory: /apps/04-pocket-rag/backend
     schedule:
       interval: weekly
       day: monday
