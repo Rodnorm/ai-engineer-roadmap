@@ -4,8 +4,7 @@ Endpoints (base path: /api/backend):
     GET  /health
     POST /generate        generate 3 structured content variations
     POST /generate/stream stream structured generation using SSE
-    GET  /log             list recent requests
-    POST /safety/check    simple safety check (heuristic)
+    POST /safety/check    content safety check
     GET  /prompts         list prompts bundled with the app
 
 Authentication uses AZURE_OPENAI_API_KEY. See .env.example.
@@ -13,6 +12,7 @@ Authentication uses AZURE_OPENAI_API_KEY. See .env.example.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -27,18 +27,11 @@ from azure.ai.contentsafety import ContentSafetyClient
 from azure.ai.contentsafety.models import AnalyzeTextOptions, TextCategory
 from azure.core.credentials import AzureKeyCredential
 from azure.core.exceptions import AzureError
-from fastapi import FastAPI, HTTPException, Request, Header
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel, Field
-
-from log_store import (
-    append as log_append,
-    recent as log_recent,
-    delete_entry as log_delete,
-    clear_all as log_clear,
-)
 
 from models import (
     GenerateRequest,
@@ -48,6 +41,7 @@ from models import (
     Variation,
 )
 from personas import persona_name, system_prompt_for
+from rate_limit import InMemoryRateLimiter
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -77,6 +71,18 @@ def _env_float(name: str, default: float, minimum: float = 0.0) -> float:
         raise RuntimeError(f"{name} must be at least {minimum}")
     return value
 
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name, str(default)).strip().lower()
+    if raw_value in {"1", "true", "yes", "on"}:
+        return True
+    if raw_value in {"0", "false", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} must be true or false")
+
+
+APP_ENV = os.getenv("APP_ENV", "development").lower()
+IS_PRODUCTION = APP_ENV == "production"
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
@@ -116,6 +122,8 @@ DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
 API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 PORT = _env_int("PORT", 8000)
 
+GENERATION_ENABLED = _env_bool("GENERATION_ENABLED", True)
+
 AZURE_MAX_OUTPUT_TOKENS = _env_int("AZURE_MAX_OUTPUT_TOKENS", 700, 1)
 AZURE_REQUEST_TIMEOUT_SECONDS = _env_float("AZURE_REQUEST_TIMEOUT_SECONDS", 30.0, 1.0)
 
@@ -124,6 +132,18 @@ CONTENT_SAFETY_API_KEY = os.getenv("AZURE_CONTENT_SAFETY_API_KEY", "")
 
 COST_PROMPT_PER_1K = _env_float("COST_PROMPT_PER_1K", 0.00015, 0.0)
 COST_COMPLETION_PER_1K = _env_float("COST_COMPLETION_PER_1K", 0.0006, 0.0)
+
+MAX_CONCURRENT_REQUESTS = _env_int("MAX_CONCURRENT_REQUESTS", 2, 1)
+concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
+TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
+
+rate_limiter = InMemoryRateLimiter(
+    requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 3),
+    requests_per_day_per_ip=_env_int("RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 20),
+    global_requests_per_day=_env_int("RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100),
+)
 
 
 def _build_client() -> OpenAI | None:
@@ -139,7 +159,7 @@ if client is None:
         "until endpoint, deployment, and API key are set."
     )
 else:
-    log.info("Azure OpenAI client ready (endpoint=%s, deployment=%s).", ENDPOINT, DEPLOYMENT)
+    log.info("Azure OpenAI client ready (endpoint configured, deployment=%s).", DEPLOYMENT)
 
 
 def _build_content_safety_client() -> ContentSafetyClient | None:
@@ -153,9 +173,9 @@ def _build_content_safety_client() -> ContentSafetyClient | None:
 
 content_safety_client = _build_content_safety_client()
 if content_safety_client is None:
-    log.warning("Azure Content Safety is not configured. Using the local heuristic.")
+    log.warning("Azure Content Safety is not configured. Using local heuristic.")
 else:
-    log.info("Azure Content Safety client ready (endpoint=%s).", CONTENT_SAFETY_ENDPOINT)
+    log.info("Azure Content Safety client ready (endpoint configured).")
 
 
 # ---------------------------------------------------------------------------
@@ -280,13 +300,17 @@ def _complete_variations_from_json(text: str) -> list[Variation]:
                 object_start = None
     return variations
 
-def _extract_client_id(x_client_id: str | None = None, client_id: str | None = None) -> str:
-    cid = x_client_id or client_id or "anonymous"
-    return cid.strip() or "anonymous"
+
+def _client_ip(request: Request) -> str:
+    if TRUST_PROXY_HEADERS:
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            return forwarded_for.split(",", maxsplit=1)[0].strip()
+    return request.client.host if request.client else "unknown"
 
 
 # ---------------------------------------------------------------------------
-# Safety (heuristic — mirrors the frontend preview blocked-terms list)
+# Safety Heuristic & Service Checks
 # ---------------------------------------------------------------------------
 
 BLOCKED_TERMS = (
@@ -327,10 +351,6 @@ def _normalize_safety_text(text: str) -> str:
     return "".join(char for char in normalized if not unicodedata.combining(char))
 
 
-def _is_locally_blocked(text: str) -> bool:
-    return bool(_local_safety_categories(text))
-
-
 def _local_safety_categories(text: str) -> dict[str, int]:
     normalized = _normalize_safety_text(text)
     categories: dict[str, int] = {}
@@ -353,6 +373,12 @@ def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
         )
 
     if content_safety_client is None:
+        if IS_PRODUCTION:
+            log.warning("Content Safety is required in production but not configured.", extra={"request_id": request_id})
+            raise HTTPException(
+                status_code=503,
+                detail="Content Safety service is unavailable.",
+            )
         return SafetyResponse(safe=True)
 
     try:
@@ -361,7 +387,7 @@ def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
         log.exception("content_safety_request_failed", extra={"request_id": request_id})
         raise HTTPException(
             status_code=502,
-            detail="Azure Content Safety request failed.",
+            detail="Content Safety inspection failed.",
         ) from None
 
     category_names = {
@@ -382,6 +408,7 @@ def _safety_check(text: str, request_id: str | None = None) -> SafetyResponse:
         categories=categories,
     )
 
+
 # ---------------------------------------------------------------------------
 # Prompts test harness loader
 # ---------------------------------------------------------------------------
@@ -398,7 +425,14 @@ def _load_prompts() -> dict:
 # App
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="promptForge", version="0.2.0", root_path="/api/backend")
+app = FastAPI(
+    title="promptForge",
+    version="0.3.0",
+    root_path="/api/backend",
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -407,9 +441,11 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
+        "http://localhost:3003",
+        "http://127.0.0.1:3003",
     ],
     allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
@@ -444,17 +480,55 @@ def health() -> dict:
     return {
         "status": "ok",
         "app": "prompt-forge",
+        "generation_enabled": GENERATION_ENABLED,
         "azure_openai_configured": client is not None,
-        "deployment": DEPLOYMENT or None,
         "safety_configured": content_safety_client is not None,
+        "rate_limit_enabled": RATE_LIMIT_ENABLED,
     }
 
 
 @app.post("/generate", response_model=GenerateResponse)
-async def generate(req: GenerateRequest, request: Request, x_client_id: str | None = Header(default=None, alias="X-Client-ID")) -> GenerateResponse:
-    safety = _safety_check(req.brief, request.state.request_id)
-    cid = _extract_client_id(x_client_id)
+async def generate(req: GenerateRequest, request: Request) -> GenerateResponse:
+    request_id = request.state.request_id
 
+    if not GENERATION_ENABLED:
+        log.warning("generation_disabled_by_kill_switch", extra={"request_id": request_id})
+        raise HTTPException(
+            status_code=503,
+            detail="Service is temporarily disabled for maintenance.",
+        )
+
+    if client is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Azure OpenAI is not configured.",
+        )
+
+    if RATE_LIMIT_ENABLED:
+        decision = rate_limiter.check_and_record(_client_ip(request))
+        if not decision.allowed:
+            log.warning(
+                "rate_limit_exceeded",
+                extra={
+                    "request_id": request_id,
+                    "scope": decision.scope,
+                    "retry_after": decision.retry_after,
+                },
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Request limit reached. Please try again later.",
+                headers={"Retry-After": str(decision.retry_after)},
+            )
+
+    if concurrency_semaphore.locked():
+        log.warning("concurrency_limit_reached", extra={"request_id": request_id})
+        raise HTTPException(
+            status_code=429,
+            detail="Server is currently busy processing requests. Please retry in a moment.",
+        )
+
+    safety = _safety_check(req.brief, request_id)
     if not safety.safe:
         raise HTTPException(
             status_code=400,
@@ -465,44 +539,36 @@ async def generate(req: GenerateRequest, request: Request, x_client_id: str | No
             },
         )
 
-    if client is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Azure OpenAI is not configured.",
-        )
-
-    request_id = request.state.request_id
     system = system_prompt_for(req.persona)
     user_prompt = _build_user_prompt(req.brief, req.audience, req.format, req.language)
 
     started = time.perf_counter()
-    try:
-        response = client.with_options(
-            timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
-            max_retries=0,
-        ).responses.parse(
-            model=DEPLOYMENT,
-            instructions=system,
-            input=user_prompt,
-            text_format=_ResultSchema,
-            temperature=req.temperature,
-            top_p=req.topP,
-            max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
-        )
-    except Exception:
-        log.exception("azure_openai_request_failed", extra={"request_id": request_id})
-        log_append(client_id=cid, brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
-        raise HTTPException(
-            status_code=502,
-            detail="Azure OpenAI request failed.",
-        ) from None
+    async with concurrency_semaphore:
+        try:
+            response = client.with_options(
+                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+                max_retries=0,
+            ).responses.parse(
+                model=DEPLOYMENT,
+                instructions=system,
+                input=user_prompt,
+                text_format=_ResultSchema,
+                temperature=req.temperature,
+                top_p=req.topP,
+                max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
+            )
+        except Exception:
+            log.exception("azure_openai_request_failed", extra={"request_id": request_id})
+            raise HTTPException(
+                status_code=502,
+                detail=f"Azure OpenAI request failed. (Request ID: {request_id})",
+            ) from None
 
     parsed: _ResultSchema | None = response.output_parsed
     if parsed is None or len(parsed.variations) != 3:
-        log_append(client_id=cid, brief=req.brief, persona=req.persona, tokens=0, cost=0.0, status="error")
         raise HTTPException(
             status_code=502,
-            detail="Model did not return a structured response.",
+            detail=f"Model did not return a structured response. (Request ID: {request_id})",
         )
 
     variations = _variations_from_result(parsed)
@@ -514,14 +580,6 @@ async def generate(req: GenerateRequest, request: Request, x_client_id: str | No
     cost = _compute_cost(prompt_tokens, completion_tokens)
     latency_ms = int((time.perf_counter() - started) * 1000)
 
-    log_append(
-        client_id=cid,
-        brief=req.brief,
-        persona=req.persona,
-        tokens=total_tokens,
-        cost=cost,
-        status="complete",
-    )
     log.info(
         "generation_completed",
         extra={
@@ -550,9 +608,43 @@ async def generate(req: GenerateRequest, request: Request, x_client_id: str | No
 
 
 @app.post("/generate/stream")
-def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | None = Header(default="demo-user", alias="X-Client-ID")) -> StreamingResponse:
+async def generate_stream(req: GenerateRequest, request: Request) -> StreamingResponse:
     request_id = request.state.request_id
-    cid = _extract_client_id(x_client_id)
+
+    if not GENERATION_ENABLED:
+        log.warning("generation_disabled_by_kill_switch", extra={"request_id": request_id})
+        raise HTTPException(
+            status_code=503,
+            detail="Service is temporarily disabled for maintenance.",
+        )
+
+    if client is None:
+        raise HTTPException(status_code=503, detail="Azure OpenAI is not configured.")
+
+    if RATE_LIMIT_ENABLED:
+        decision = rate_limiter.check_and_record(_client_ip(request))
+        if not decision.allowed:
+            log.warning(
+                "rate_limit_exceeded",
+                extra={
+                    "request_id": request_id,
+                    "scope": decision.scope,
+                    "retry_after": decision.retry_after,
+                },
+            )
+            raise HTTPException(
+                status_code=429,
+                detail="Request limit reached. Please try again later.",
+                headers={"Retry-After": str(decision.retry_after)},
+            )
+
+    if concurrency_semaphore.locked():
+        log.warning("concurrency_limit_reached", extra={"request_id": request_id})
+        raise HTTPException(
+            status_code=429,
+            detail="Server is currently busy processing requests. Please retry in a moment.",
+        )
+
     safety = _safety_check(req.brief, request_id)
     if not safety.safe:
         raise HTTPException(
@@ -563,13 +655,11 @@ def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | N
                 "categories": safety.categories,
             },
         )
-    if client is None:
-        raise HTTPException(status_code=503, detail="Azure OpenAI is not configured.")
 
     system = system_prompt_for(req.persona)
     user_prompt = _build_user_prompt(req.brief, req.audience, req.format, req.language)
 
-    def events():
+    async def events():
         started = time.perf_counter()
         streamed_text = ""
         emitted_variations = 0
@@ -578,54 +668,40 @@ def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | N
             {"safe": safety.safe, "categories": safety.categories},
         )
         yield _sse_event("start", {"request_id": request_id})
-        try:
-            with client.with_options(
-                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
-                max_retries=0,
-            ).responses.stream(
-                model=DEPLOYMENT,
-                instructions=system,
-                input=user_prompt,
-                text_format=_ResultSchema,
-                temperature=req.temperature,
-                top_p=req.topP,
-                max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
-            ) as stream:
-                for event in stream:
-                    if event.type == "response.output_text.delta":
-                        streamed_text += event.delta
-                        yield _sse_event("delta", {"text": event.delta})
-                        complete_variations = _complete_variations_from_json(streamed_text)
-                        for variation in complete_variations[emitted_variations:]:
-                            yield _sse_event(
-                                "variation",
-                                {"variation": variation.model_dump(mode="json")},
-                            )
-                            emitted_variations += 1
-                response = stream.get_final_response()
-        except Exception:
-            log.exception("azure_openai_stream_failed", extra={"request_id": request_id})
-            log_append(
-                client_id=cid,
-                brief=req.brief,
-                persona=req.persona,
-                tokens=0,
-                cost=0.0,
-                status="error",
-            )
-            yield _sse_event("error", {"message": "Azure OpenAI stream failed."})
-            return
+
+        async with concurrency_semaphore:
+            try:
+                with client.with_options(
+                    timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+                    max_retries=0,
+                ).responses.stream(
+                    model=DEPLOYMENT,
+                    instructions=system,
+                    input=user_prompt,
+                    text_format=_ResultSchema,
+                    temperature=req.temperature,
+                    top_p=req.topP,
+                    max_output_tokens=min(req.maxTokens, AZURE_MAX_OUTPUT_TOKENS),
+                ) as stream:
+                    for event in stream:
+                        if event.type == "response.output_text.delta":
+                            streamed_text += event.delta
+                            yield _sse_event("delta", {"text": event.delta})
+                            complete_variations = _complete_variations_from_json(streamed_text)
+                            for variation in complete_variations[emitted_variations:]:
+                                yield _sse_event(
+                                    "variation",
+                                    {"variation": variation.model_dump(mode="json")},
+                                )
+                                emitted_variations += 1
+                    response = stream.get_final_response()
+            except Exception:
+                log.exception("azure_openai_stream_failed", extra={"request_id": request_id})
+                yield _sse_event("error", {"message": "Azure OpenAI stream failed."})
+                return
 
         parsed: _ResultSchema | None = response.output_parsed
         if parsed is None or len(parsed.variations) != 3:
-            log_append(
-                client_id=cid,
-                brief=req.brief,
-                persona=req.persona,
-                tokens=0,
-                cost=0.0,
-                status="error",
-            )
             yield _sse_event("error", {"message": "Invalid structured response."})
             return
 
@@ -637,14 +713,6 @@ def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | N
         cost = _compute_cost(prompt_tokens, completion_tokens)
         latency_ms = int((time.perf_counter() - started) * 1000)
 
-        log_append(
-            client_id=cid,
-            brief=req.brief,
-            persona=req.persona,
-            tokens=total_tokens,
-            cost=cost,
-            status="complete",
-        )
         log.info(
             "generation_stream_completed",
             extra={
@@ -674,41 +742,11 @@ def generate_stream(req: GenerateRequest, request: Request, x_client_id: str | N
     return StreamingResponse(
         events(),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            "X-Accel-Buffering": "no",
+        },
     )
-
-
-@app.get("/log")
-def get_log(
-    limit: int = 20,
-    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
-    client_id: str | None = None
-    ) -> dict:
-    cid = _extract_client_id(x_client_id, client_id)
-    return {"data": [e.model_dump(mode="json") for e in log_recent(cid, limit)]}
-
-
-@app.delete("/log/{entry_id}")
-def delete_log_entry(
-    entry_id: str,
-    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
-    client_id: str | None = None,
-) -> dict:
-    cid = _extract_client_id(x_client_id, client_id)
-    deleted = log_delete(cid, entry_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Log entry not found.")
-    return {"success": True, "deleted_id": entry_id}
-
-
-@app.delete("/log")
-def clear_all_logs(
-    x_client_id: str | None = Header(default=None, alias="X-Client-ID"),
-    client_id: str | None = None,
-) -> dict:
-    cid = _extract_client_id(x_client_id, client_id)
-    count = log_clear(cid)
-    return {"success": True, "deleted_count": count}
 
 
 @app.post("/safety/check", response_model=SafetyResponse)

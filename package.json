@@ -1,0 +1,21 @@
+{
+  "name": "ai-engineer-roadmap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Engineering Roadmap & Production Portfolio Monorepo",
+  "workspaces": [
+    "apps/00-portfolio/frontend",
+    "apps/01-smart-inspector/frontend",
+    "apps/02-support-bot/frontend",
+    "apps/03-prompt-forge/frontend"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev/run.mjs --all",
+    "dev:all": "node scripts/dev/run.mjs --all",
+    "dev:00": "node scripts/dev/run.mjs --app 00",
+    "dev:01": "node scripts/dev/run.mjs --app 01",
+    "dev:02": "node scripts/dev/run.mjs --app 02",
+    "dev:03": "node scripts/dev/run.mjs --app 03",
+    "test": "node --test scripts/dev/*.test.mjs"
+  }
+}

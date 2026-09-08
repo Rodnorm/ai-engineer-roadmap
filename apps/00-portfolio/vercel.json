@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then git diff HEAD^ HEAD --quiet -- . ../../catalog; else git diff $(git merge-base HEAD origin/main 2>/dev/null || echo HEAD^) HEAD --quiet -- . ../../catalog; fi",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "*": false
+    }
+  },
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "nextjs"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "frontend"
+      }
+    }
+  ]
+}

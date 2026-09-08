@@ -40,7 +40,8 @@
     "errorMessage": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "showAnalysis": "NLP-Analyse anzeigen",
     "hideAnalysis": "NLP-Analyse verbergen",
-    "nlpShort": "NLP"
+    "nlpShort": "NLP",
+    "privacyNotice": "Datenschutzhinweis: Bitte geben Sie keine echten medizinischen, finanziellen oder persönlichen Identifikationsdaten ein. Anfragen werden über Azure AI verarbeitet und nicht auf dem Server gespeichert."
   },
   "nlp": {
     "title": "NLP-Analyse",

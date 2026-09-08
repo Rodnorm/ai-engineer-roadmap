@@ -61,7 +61,8 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 		};
 
 		return (
-			<div className="animated-gradient-border shrink-0 rounded-2xl shadow-sm relative focus-within:ring-2 focus-within:ring-sky-100 transition-shadow duration-200 dark:focus-within:ring-sky-950">
+			<>
+				<div className="animated-gradient-border shrink-0 rounded-2xl shadow-sm relative focus-within:ring-2 focus-within:ring-sky-100 transition-shadow duration-200 dark:focus-within:ring-sky-950">
 				<textarea
 					ref={textAreaRef}
 					value={value}
@@ -100,6 +101,10 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 					</button>
 				)}
 			</div>
+			<p className="mt-2 text-center text-[11px] leading-relaxed text-slate-500/80 dark:text-slate-400/80">
+				{t("privacyNotice")}
+			</p>
+		</>
 		);
 	}
 );
