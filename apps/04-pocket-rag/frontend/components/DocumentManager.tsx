@@ -9,7 +9,6 @@ import {
   AlertCircle,
   Loader2,
   FolderOpen,
-  Layers,
 } from 'lucide-react';
 import { DocumentItem } from '../lib/api';
 
@@ -32,6 +31,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,20 +40,47 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     try {
       await onUpload(file);
       if (fileInputRef.current) fileInputRef.current.value = '';
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error uploading file');
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
     }
   };
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
+    if (isUploading) return;
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
     setErrorMsg(null);
     try {
       await onUpload(file);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error uploading file');
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
+    }
+  };
+
+  const handleDelete = async (documentId: string) => {
+    if (!onDeleteDoc || deletingId) return;
+    setDeletingId(documentId);
+    setErrorMsg(null);
+    try {
+      await onDeleteDoc(documentId);
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleClear = async () => {
+    if (!window.confirm(labels.clearConfirm || 'Delete all documents?')) return;
+    setDeletingId('all');
+    setErrorMsg(null);
+    try {
+      await onClearAll();
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -71,18 +98,21 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         </span>
       </div>
 
+      <p className="rounded-lg border border-border bg-surface/30 p-3 text-[11px] leading-relaxed text-muted">
+        {labels.privacyNotice}
+      </p>
+
       {/* Upload Zone */}
-      <div
+      <label
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface/30 p-6 text-center transition hover:border-sky-500 hover:bg-surface/60"
+        className="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface/30 p-6 text-center transition hover:border-sky-500 hover:bg-surface/60 focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500"
       >
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,.txt,.md"
-          className="hidden"
+          accept=".pdf,.txt,.md,.docx"
+          className="sr-only"
           onChange={handleFileChange}
           disabled={isUploading}
         />
@@ -104,10 +134,10 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             </p>
           </>
         )}
-      </div>
+      </label>
 
       {errorMsg && (
-        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-600 dark:text-red-300">
+        <div role="alert" className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-600 dark:text-red-300">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -141,12 +171,14 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDeleteDoc(doc.id);
+                      void handleDelete(doc.id);
                     }}
+                    disabled={Boolean(deletingId)}
                     className="p-1 rounded text-muted hover:text-red-500 hover:bg-surface transition cursor-pointer"
-                    title="Delete document"
+                    title={labels.deleteDocument || 'Delete document'}
+                    aria-label={`${labels.deleteDocument || 'Delete document'}: ${doc.filename}`}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    {deletingId === doc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                   </button>
                 )}
                 <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
@@ -158,7 +190,8 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 
       {documents.length > 0 && (
         <button
-          onClick={onClearAll}
+          onClick={handleClear}
+          disabled={Boolean(deletingId) || isUploading}
           className="flex items-center justify-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/20 transition cursor-pointer"
         >
           <Trash2 className="h-3.5 w-3.5" />

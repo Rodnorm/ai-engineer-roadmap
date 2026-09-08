@@ -1,19 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Database, Sparkles, DollarSign } from 'lucide-react';
+import { Database, Sparkles } from 'lucide-react';
 
 import ThemeToggle from './ThemeToggle';
 import LangSwitcher from './LangSwitcher';
 import AppInfo from './AppInfo';
 
-interface HeaderProps {
-  monthlySavings: number;
-}
-
-export const Header: React.FC<HeaderProps> = ({
-  monthlySavings,
-}) => {
+export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-panel/80 backdrop-blur-md px-4 py-3 sm:px-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -39,12 +33,6 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-600 dark:text-emerald-400">
-            <DollarSign className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="font-semibold">${monthlySavings.toFixed(0)}/mo</span>
-            <span className="text-muted">Cloud Saved</span>
-          </div>
-
           <LangSwitcher />
           <ThemeToggle />
           <AppInfo />

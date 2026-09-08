@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Cpu, DollarSign, Clock, Hash, Database, ShieldCheck } from 'lucide-react';
+import { DollarSign, Clock, Hash, Database } from 'lucide-react';
 import { SystemStats } from '../lib/api';
 
 interface TelemetryPanelProps {

@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Send, Bot, User, Sparkles, BookOpen, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, BookOpen, Loader2, Square } from 'lucide-react';
 import { Citation, DocumentChunk } from '../lib/api';
+
+const CITATION_SPLIT = /(\[\d+\])/g;
+const CITATION_ONLY = /^\[(\d+)]$/;
 
 export interface ChatMessage {
   id: string;
@@ -18,6 +21,7 @@ interface ChatInterfaceProps {
   messages: ChatMessage[];
   isLoading: boolean;
   onSend: (question: string) => Promise<void>;
+  onCancel: () => void;
   onSelectCitation: (citation: Citation) => void;
   labels: Record<string, string>;
 }
@@ -26,6 +30,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   isLoading,
   onSend,
+  onCancel,
   onSelectCitation,
   labels,
 }) => {
@@ -39,6 +44,25 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     await onSend(q);
   };
 
+  const renderAnswer = (message: ChatMessage) => {
+    const citations = new Map(message.citations?.map((citation) => [citation.citation_id, citation]));
+    return message.text.split(CITATION_SPLIT).map((part, index) => {
+      const match = CITATION_ONLY.exec(part);
+      const citation = match ? citations.get(Number(match[1])) : undefined;
+      return citation ? (
+        <button
+          type="button"
+          key={`${part}-${index}`}
+          onClick={() => onSelectCitation(citation)}
+          className="rounded px-0.5 font-semibold text-sky-600 underline hover:bg-sky-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:text-sky-300"
+          aria-label={`${labels.openCitation || 'Open citation'} ${citation.citation_id}: ${citation.filename}`}
+        >
+          {part}
+        </button>
+      ) : <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>;
+    });
+  };
+
   return (
     <div className="flex flex-col h-[620px] rounded-2xl border border-border bg-panel backdrop-blur-sm shadow-sm overflow-hidden">
       {/* Messages Scroll Area */}
@@ -46,13 +70,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center p-6">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-500 dark:text-sky-400 mb-3">
-              <Sparkles className="h-6 w-6" />
+              <Sparkles className="h-6 w-6" aria-hidden="true" />
             </div>
             <h3 className="text-sm font-bold text-text">
-              pocketRag Assistant
+              {labels.assistantTitle || 'pocketRag Assistant'}
             </h3>
             <p className="mt-1 max-w-sm text-xs text-muted">
-              Upload PDF or text documents on the left panel, then ask any question to retrieve grounded answers with vector citations!
+              {labels.emptyChat || 'Upload a document, then ask a grounded question.'}
             </p>
           </div>
         ) : (
@@ -77,19 +101,20 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       : 'bg-surface/50 border border-border text-text rounded-bl-none'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{msg.text}</p>
+                  <p className="whitespace-pre-wrap">{msg.sender === 'assistant' ? renderAnswer(msg) : msg.text}</p>
                 </div>
 
                 {/* Citations Badges */}
                 {msg.sender === 'assistant' && msg.citations && msg.citations.length > 0 && (
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     <span className="text-[10px] font-semibold text-muted flex items-center gap-1">
-                      <BookOpen className="h-3 w-3 text-sky-500 dark:text-sky-400" /> Citations:
+                      <BookOpen className="h-3 w-3 text-sky-500 dark:text-sky-400" aria-hidden="true" /> {labels.citationsLabel || 'Citations'}:
                     </span>
                     {msg.citations.map((c) => (
                       <button
                         key={c.citation_id}
                         onClick={() => onSelectCitation(c)}
+                        type="button"
                         className="inline-flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-600 dark:text-sky-300 hover:bg-sky-500/20 transition cursor-pointer"
                       >
                         [{c.citation_id}] {c.filename}
@@ -109,7 +134,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
 
         {isLoading && (
-          <div className="flex gap-3 justify-start items-center text-xs text-sky-500 dark:text-sky-400 animate-pulse">
+          <div role="status" aria-live="polite" className="flex gap-3 justify-start items-center text-xs text-sky-500 dark:text-sky-400 animate-pulse">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/20 text-sky-500 dark:text-sky-400 border border-sky-500/30">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
@@ -127,14 +152,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           placeholder={labels.queryPlaceholder || 'Ask a question about your documents...'}
           className="flex-1 rounded-xl border border-border bg-panel px-4 py-2.5 text-xs text-text placeholder:text-muted focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
           disabled={isLoading}
+          aria-label={labels.queryLabel || 'Question'}
+          maxLength={2000}
         />
-        <button
-          type="submit"
-          disabled={isLoading || !input.trim()}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20 cursor-pointer"
-        >
-          <Send className="h-4 w-4" />
-        </button>
+        {isLoading ? (
+          <button type="button" onClick={onCancel} aria-label={labels.cancel || 'Cancel'} className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500 text-white hover:bg-red-400">
+            <Square className="h-4 w-4" aria-hidden="true" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!input.trim()}
+            aria-label={labels.send || 'Send question'}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20 cursor-pointer"
+          >
+            <Send className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
       </form>
     </div>
   );

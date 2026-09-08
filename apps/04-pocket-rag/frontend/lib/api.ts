@@ -44,27 +44,47 @@ export interface QueryResponse {
   };
   estimated_cost_usd: number;
   latency_ms: number;
+  generation_status: 'generated' | 'disabled' | 'not_needed';
 }
 
 export interface SystemStats {
   total_documents: number;
   total_chunks: number;
   vector_store_type: string;
-  monthly_cloud_savings_usd: number;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/backend';
+let accessToken = '';
+
+export function setAccessToken(token: string) {
+  accessToken = token;
+}
+
+function authHeaders(): Record<string, string> {
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+}
+
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number, public readonly requestId?: string) {
+    super(message);
+  }
+}
+
+async function checked(response: Response) {
+  if (response.ok) return response;
+  const body = await response.json().catch(() => null);
+  const error = body?.error;
+  throw new ApiError(error?.message || 'Request failed', response.status, error?.request_id);
+}
 
 export async function fetchHealth() {
   const res = await fetch(`${API_BASE_URL}/health`);
-  if (!res.ok) throw new Error('Backend health check failed');
-  return res.json();
+  return (await checked(res)).json();
 }
 
 export async function fetchDocuments(): Promise<DocumentItem[]> {
-  const res = await fetch(`${API_BASE_URL}/api/documents`);
-  if (!res.ok) throw new Error('Failed to fetch documents');
-  return res.json();
+  const res = await fetch(`${API_BASE_URL}/api/documents`, { headers: authHeaders() });
+  return (await checked(res)).json();
 }
 
 export async function uploadDocument(file: File): Promise<DocumentUploadResponse> {
@@ -73,60 +93,51 @@ export async function uploadDocument(file: File): Promise<DocumentUploadResponse
 
   const res = await fetch(`${API_BASE_URL}/api/documents/upload`, {
     method: 'POST',
+    headers: authHeaders(),
     body: formData,
   });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ detail: 'Upload failed' }));
-    throw new Error(errorData.detail || 'Failed to upload document');
-  }
-
-  return res.json();
+  return (await checked(res)).json();
 }
 
 export async function deleteDocument(docId: string) {
   const res = await fetch(`${API_BASE_URL}/api/documents/${docId}`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('Failed to delete document');
-  return res.json();
+  return (await checked(res)).json();
 }
 
 export async function clearAllDocuments() {
   const res = await fetch(`${API_BASE_URL}/api/documents`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('Failed to clear documents');
-  return res.json();
+  return (await checked(res)).json();
 }
 
 export async function queryRAG(
   question: string,
   topK: number = 4,
   temperature: number = 0.3,
-  language: string = 'en'
+  language: string = 'en',
+  signal?: AbortSignal,
 ): Promise<QueryResponse> {
   const res = await fetch(`${API_BASE_URL}/api/query`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify({
       question,
       top_k: topK,
       temperature,
       language,
     }),
+    signal,
   });
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ detail: 'Query failed' }));
-    throw new Error(errorData.detail || 'Failed to process RAG query');
-  }
-
-  return res.json();
+  return (await checked(res)).json();
 }
 
 export async function fetchStats(): Promise<SystemStats> {
-  const res = await fetch(`${API_BASE_URL}/api/stats`);
-  if (!res.ok) throw new Error('Failed to fetch stats');
-  return res.json();
+  const res = await fetch(`${API_BASE_URL}/api/stats`, { headers: authHeaders() });
+  return (await checked(res)).json();
 }
