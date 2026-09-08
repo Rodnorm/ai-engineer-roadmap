@@ -20,6 +20,11 @@ removing vectors and metadata, restoring it when vector deletion fails. Tests us
 temporary storage and deterministic doubles, so local personal data and paid APIs are
 never touched.
 
+User uploads have a 30-minute server-side TTL. Cleanup runs at startup and every
+minute, removing originals, ChromaDB vectors, and SQLite metadata without relying on
+the browser remaining open. Bundled examples are excluded, and failed cleanup is
+logged for retry on the next sweep.
+
 Grounding is explicit: low-relevance and empty results abstain, sources are delimited
 as untrusted data, context/output are bounded, and only citations actually referenced
 by the answer are presented. The UI turns `[n]` into keyboard-operable controls that
@@ -42,8 +47,8 @@ open the complete retrieved chunk in a native modal dialog.
 
 The isolated backend suite covers persistence visibility after store recreation,
 DOCX/Markdown ingestion, invalid inputs, duplicate rejection, rollback, failed
-deletion, query citations, and collection-scoped cleanup. CI and dependency monitoring
-include the app.
+deletion, expired-upload cleanup, query citations, and collection-scoped cleanup. CI
+and dependency monitoring include the app.
 
 RAGAS targets and the reproducible corpus/runner are versioned, but paid evaluation is
 not yet executed. Screenshots, a short demo, real-host restart/durability evidence,

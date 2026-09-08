@@ -92,15 +92,25 @@ Rate-limited responses include `Retry-After`.
 
 ## Privacy and retention
 
-The upload panel states what is stored and what leaves the server. Files, metadata,
-chunks, and vectors remain until the user deletes one document or confirms deletion
-of all documents. When generation is enabled, the question and retrieved excerpts
-are sent to Azure OpenAI. Visible chat history is browser-only and is not sent, so
-questions are independent rather than persistent multi-turn conversations.
+The upload panel states what is stored and what leaves the server. Uploaded originals,
+metadata, chunks, and vectors expire 30 minutes after `created_at`. A backend task runs
+on startup and every 60 seconds, so an active service normally removes an upload
+between 30 and 31 minutes after ingestion. Closing the browser is not the deletion
+trigger and does not need to keep a request alive. Bundled example documents do not
+expire.
 
-Back up the three data stores together. Before decommissioning a host, use the clear
-action and verify the mounted volume is empty. Automatic time-based retention is not
-implemented; operators must define and perform retention appropriate to their data.
+`UPLOAD_RETENTION_MINUTES` and `CLEANUP_INTERVAL_SECONDS` configure this policy. If
+the service is stopped at the expiration time, stale uploads are removed on its next
+startup. Failed storage deletions are logged and retried by the next sweep; operators
+must monitor these events because no application can guarantee deletion when its
+storage is unavailable. Stale orphan files left by interrupted operations are also
+removed after the retention window.
+
+When generation is enabled, document excerpts are sent to Azure OpenAI to create
+question suggestions and answer questions. Visible chat history is browser-only and
+is not sent, so questions are independent rather than persistent multi-turn
+conversations. Before decommissioning a host, use the clear action and verify the
+mounted volume is empty.
 
 ## API
 
@@ -114,6 +124,7 @@ configured.
 | `POST` | `/api/documents/upload` | Validate, preserve, chunk, and index one file |
 | `DELETE` | `/api/documents/{id}` | Delete one document consistently |
 | `DELETE` | `/api/documents` | Delete the complete personal knowledge base |
+| `POST` | `/api/suggestions` | Generate contextual questions from recent uploads |
 | `POST` | `/api/query` | Retrieve evidence and optionally generate an answer |
 | `GET` | `/api/stats` | Document/chunk counts and vector-store state |
 

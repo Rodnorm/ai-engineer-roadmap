@@ -65,7 +65,7 @@
     "errorInvalid": "The request or file is invalid.",
     "errorUnavailable": "The service is temporarily unavailable. Please retry.",
     "errorOffline": "Could not reach pocketRag. Check your connection.",
-    "privacyNotice": "Files and extracted chunks are stored on this private server until you delete them. Questions and retrieved excerpts are sent to Azure OpenAI only when generation is enabled.",
+    "privacyNotice": "Uploaded files, metadata, and vectors are automatically deleted about 30 minutes after upload, even if you close this tab. When generation is enabled, excerpts are sent to Azure OpenAI to create suggestions and answer questions.",
     "accessTitle": "Private knowledge base",
     "accessDescription": "Enter the server access key. It is kept only in this browser tab.",
     "accessKey": "Access key",

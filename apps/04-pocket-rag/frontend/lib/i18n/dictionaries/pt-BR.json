@@ -65,7 +65,7 @@
     "errorInvalid": "A solicitação ou o arquivo é inválido.",
     "errorUnavailable": "O serviço está temporariamente indisponível. Tente novamente.",
     "errorOffline": "Não foi possível acessar o pocketRag. Verifique sua conexão.",
-    "privacyNotice": "Arquivos e trechos extraídos ficam neste servidor privado até você excluí-los. Perguntas e trechos recuperados são enviados ao Azure OpenAI somente quando a geração está habilitada.",
+    "privacyNotice": "Arquivos enviados, metadados e vetores são apagados automaticamente cerca de 30 minutos após o envio, mesmo que você feche esta aba. Quando a geração está habilitada, trechos são enviados ao Azure OpenAI para criar sugestões e responder perguntas.",
     "accessTitle": "Base de conhecimento privada",
     "accessDescription": "Digite a chave de acesso do servidor. Ela fica somente nesta aba do navegador.",
     "accessKey": "Chave de acesso",

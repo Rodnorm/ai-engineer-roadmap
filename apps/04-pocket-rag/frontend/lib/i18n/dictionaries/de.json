@@ -65,7 +65,7 @@
     "errorInvalid": "Die Anfrage oder Datei ist ungültig.",
     "errorUnavailable": "Der Dienst ist vorübergehend nicht verfügbar.",
     "errorOffline": "pocketRag ist nicht erreichbar. Prüfen Sie die Verbindung.",
-    "privacyNotice": "Dateien und extrahierte Abschnitte bleiben auf diesem privaten Server, bis Sie sie löschen. Fragen und relevante Auszüge werden nur bei aktivierter Generierung an Azure OpenAI gesendet.",
+    "privacyNotice": "Hochgeladene Dateien, Metadaten und Vektoren werden etwa 30 Minuten nach dem Upload automatisch gelöscht, auch wenn Sie diesen Tab schließen. Bei aktivierter Generierung werden Auszüge für Vorschläge und Antworten an Azure OpenAI gesendet.",
     "accessTitle": "Private Wissensdatenbank",
     "accessDescription": "Geben Sie den Server-Zugangsschlüssel ein. Er bleibt nur in diesem Browser-Tab.",
     "accessKey": "Zugangsschlüssel",
