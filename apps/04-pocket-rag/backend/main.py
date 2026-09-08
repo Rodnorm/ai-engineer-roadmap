@@ -2,11 +2,13 @@ import io
 import os
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 # Safe top-level imports for PDF parsing and Azure OpenAI API (via openai package)
 try:
@@ -53,6 +55,41 @@ app.add_middleware(
 DOCUMENTS_DB: Dict[str, DocumentItem] = {}
 CHUNKS_DB: List[Dict[str, Any]] = []
 
+EXAMPLE_DOCUMENTS_DIR = Path(__file__).resolve().parent / "sample_documents"
+EXAMPLE_DOCUMENTS = [
+    {
+        "id": "example-wohnraummietvertrag",
+        "filename": "01_Wohnraummietvertrag_Lara_Hoffmann.pdf",
+        "title": "Wohnraummietvertrag",
+        "description": "Miete, Kaution, Kündigung und Regeln der Wohnung.",
+    },
+    {
+        "id": "example-arbeitsvertrag",
+        "filename": "02_Arbeitsvertrag_Lara_Hoffmann.pdf",
+        "title": "Arbeitsvertrag",
+        "description": "Gehalt, Urlaub, Probezeit und mobiles Arbeiten.",
+    },
+    {
+        "id": "example-hausratversicherung",
+        "filename": "03_Hausratversicherung_Lara_Hoffmann.pdf",
+        "title": "Hausratversicherung",
+        "description": "Deckung, Selbstbeteiligung und Schadenmeldung.",
+    },
+    {
+        "id": "example-internetvertrag",
+        "filename": "04_Internetvertrag_Lara_Hoffmann.pdf",
+        "title": "Internetvertrag",
+        "description": "Tarif, Aktionspreis, Laufzeit und Kündigung.",
+    },
+    {
+        "id": "example-betriebskostenabrechnung",
+        "filename": "05_Betriebskostenabrechnung_2025_Lara_Hoffmann.pdf",
+        "title": "Betriebskostenabrechnung 2025",
+        "description": "Nebenkosten, Verbrauch und Nachzahlung.",
+    },
+]
+EXAMPLE_FILENAMES = {item["filename"] for item in EXAMPLE_DOCUMENTS}
+
 # Azure OpenAI Configuration (matching App 1 Smart Inspector pattern)
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
@@ -97,6 +134,53 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> List[str]
         i += chunk_size - overlap
     return chunks if chunks else [text]
 
+
+def _store_document(
+    *,
+    doc_id: str,
+    filename: str,
+    file_size: int,
+    pages: List[str],
+    source: str,
+) -> DocumentItem:
+    chunks_created = 0
+    for page_number, page_text in enumerate(pages, start=1):
+        if not page_text.strip():
+            continue
+        for chunk_str in chunk_text(page_text):
+            CHUNKS_DB.append({
+                "chunk_id": f"{doc_id}_{chunks_created}",
+                "document_id": doc_id,
+                "filename": filename,
+                "page_number": page_number,
+                "content": chunk_str,
+                "chunk_index": chunks_created,
+                "source": source,
+            })
+            chunks_created += 1
+
+    doc_item = DocumentItem(
+        id=doc_id,
+        filename=filename,
+        file_type=filename.rsplit(".", 1)[-1].upper(),
+        file_size_bytes=file_size,
+        chunks_count=chunks_created,
+        created_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        source=source,
+    )
+    DOCUMENTS_DB[doc_id] = doc_item
+    return doc_item
+
+
+def _extract_pdf_pages(content_bytes: bytes, filename: str) -> List[str]:
+    if PdfReader is None:
+        raise HTTPException(status_code=503, detail="PDF parser is not available.")
+    try:
+        reader = PdfReader(io.BytesIO(content_bytes))
+        return [(page.extract_text() or "") for page in reader.pages]
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Could not read PDF '{filename}'.") from exc
+
 @app.get("/health")
 def health_check():
     client = _build_client()
@@ -123,8 +207,54 @@ def get_stats():
     )
 
 @app.get("/api/documents", response_model=List[DocumentItem])
-def list_documents():
-    return list(DOCUMENTS_DB.values())
+def list_documents(scope: str = Query(default="uploads", pattern="^(uploads|examples|all)$")):
+    documents = list(DOCUMENTS_DB.values())
+    if scope == "all":
+        return documents
+    source = "example" if scope == "examples" else "upload"
+    return [document for document in documents if document.source == source]
+
+
+@app.get("/api/examples")
+def list_example_documents():
+    return [
+        {
+            **item,
+            "loaded": item["id"] in DOCUMENTS_DB,
+            "download_url": f"/api/examples/{item['filename']}",
+        }
+        for item in EXAMPLE_DOCUMENTS
+    ]
+
+
+@app.post("/api/examples/load", response_model=List[DocumentItem])
+def load_example_documents():
+    for item in EXAMPLE_DOCUMENTS:
+        if item["id"] in DOCUMENTS_DB:
+            continue
+        path = EXAMPLE_DOCUMENTS_DIR / item["filename"]
+        if not path.is_file():
+            raise HTTPException(status_code=503, detail="Example documents are unavailable.")
+        content_bytes = path.read_bytes()
+        pages = _extract_pdf_pages(content_bytes, item["filename"])
+        _store_document(
+            doc_id=item["id"],
+            filename=item["filename"],
+            file_size=len(content_bytes),
+            pages=pages,
+            source="example",
+        )
+    return [document for document in DOCUMENTS_DB.values() if document.source == "example"]
+
+
+@app.get("/api/examples/{filename}")
+def download_example_document(filename: str):
+    if filename not in EXAMPLE_FILENAMES:
+        raise HTTPException(status_code=404, detail="Example document not found.")
+    path = EXAMPLE_DOCUMENTS_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Example document not found.")
+    return FileResponse(path, media_type="application/pdf", filename=filename)
 
 @app.post("/api/documents/upload", response_model=DocumentUploadResponse)
 async def upload_document(file: UploadFile = File(...)):
@@ -141,59 +271,38 @@ async def upload_document(file: UploadFile = File(...)):
         )
 
     # Read text content
-    extracted_text = ""
+    pages: List[str] = []
     if file_ext == "pdf":
-        if PdfReader is not None:
-            try:
-                reader = PdfReader(io.BytesIO(content_bytes))
-                for page in reader.pages:
-                    extracted_text += (page.extract_text() or "") + "\n"
-            except Exception:
-                extracted_text = f"Sample extracted content from PDF: {filename}. Content length: {file_size} bytes."
-        else:
-            extracted_text = f"Sample extracted content from PDF: {filename}. Content length: {file_size} bytes."
+        pages = _extract_pdf_pages(content_bytes, filename)
     else:
-        extracted_text = content_bytes.decode("utf-8", errors="ignore")
+        pages = [content_bytes.decode("utf-8", errors="ignore")]
 
-    if not extracted_text.strip():
-        extracted_text = f"Extracted text content from {filename}."
+    if not any(page.strip() for page in pages):
+        raise HTTPException(status_code=400, detail="The document contains no extractable text.")
 
     doc_id = str(uuid.uuid4())[:8]
-    chunks = chunk_text(extracted_text)
-    
-    # Store chunks in registry
-    for idx, chunk_str in enumerate(chunks):
-        CHUNKS_DB.append({
-            "chunk_id": f"{doc_id}_{idx}",
-            "document_id": doc_id,
-            "filename": filename,
-            "page_number": (idx // 2) + 1,
-            "content": chunk_str,
-            "chunk_index": idx,
-        })
-
-    doc_item = DocumentItem(
-        id=doc_id,
+    doc_item = _store_document(
+        doc_id=doc_id,
         filename=filename,
-        file_type=file_ext.upper(),
-        file_size_bytes=file_size,
-        chunks_count=len(chunks),
-        created_at=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        file_size=file_size,
+        pages=pages,
+        source="upload",
     )
-    DOCUMENTS_DB[doc_id] = doc_item
 
     return DocumentUploadResponse(
         document_id=doc_id,
         filename=filename,
-        chunks_created=len(chunks),
+        chunks_created=doc_item.chunks_count,
         message=f"Document '{filename}' successfully ingested and vectorized in ChromaDB local store.",
     )
 
 @app.delete("/api/documents")
 def clear_documents():
-    count = len(DOCUMENTS_DB)
-    DOCUMENTS_DB.clear()
-    CHUNKS_DB.clear()
+    upload_ids = {doc_id for doc_id, document in DOCUMENTS_DB.items() if document.source == "upload"}
+    count = len(upload_ids)
+    for doc_id in upload_ids:
+        DOCUMENTS_DB.pop(doc_id, None)
+    CHUNKS_DB[:] = [chunk for chunk in CHUNKS_DB if chunk["document_id"] not in upload_ids]
     return {"message": f"Cleared {count} documents and all vector indices.", "status": "success"}
 
 @app.post("/api/query", response_model=QueryResponse)
@@ -202,7 +311,10 @@ def query_rag(request: QueryRequest):
     
     lang = request.language or "de"
 
-    if not CHUNKS_DB:
+    source = None if request.scope == "all" else ("example" if request.scope == "examples" else "upload")
+    searchable_chunks = [chunk for chunk in CHUNKS_DB if source is None or chunk["source"] == source]
+
+    if not searchable_chunks:
         if lang == "de":
             no_docs_msg = (
                 "Noch keine Dokumente in Ihre pocketRag-Wissensdatenbank hochgeladen. "
@@ -230,7 +342,7 @@ def query_rag(request: QueryRequest):
     # Perform similarity match across stored chunks
     query_words = set(request.question.lower().split())
     scored_chunks = []
-    for chunk in CHUNKS_DB:
+    for chunk in searchable_chunks:
         chunk_words = set(chunk["content"].lower().split())
         overlap = len(query_words.intersection(chunk_words))
         score = overlap / max(len(query_words), 1) + 0.5
@@ -260,6 +372,7 @@ def query_rag(request: QueryRequest):
             chunk_index=c["chunk_index"],
             snippet=c["content"][:200] + "...",
             similarity_score=round(s, 2),
+            source=c["source"],
         )
         for idx, (s, c) in enumerate(top_matched)
     ]
