@@ -43,6 +43,19 @@
     "latency": "Latenz",
     "cost": "Geschätzte Kosten",
     "monthlySaved": "Cloud-Ersparnis",
-    "vectorDb": "Vektorspeicher"
+    "vectorDb": "Vektorspeicher",
+    "documentModeLabel": "Dokumentenquelle",
+    "myDocuments": "Meine Dokumente",
+    "tryExamples": "Beispieldokumente testen",
+    "loadingExamples": "Beispiele werden geladen...",
+    "exampleDisclaimer": "Fiktive Dokumente zur Demonstration. Sie enthalten keine echten personenbezogenen Daten und dürfen nicht als Verträge verwendet werden.",
+    "downloadExample": "Beispieldokument herunterladen",
+    "openSourcePdf": "Quell-PDF öffnen",
+    "chatEmptyState": "Laden Sie ein Dokument hoch oder verwenden Sie die Beispiele und stellen Sie anschließend eine Frage.",
+    "exampleQuestion1": "Wie hoch ist die Kaution für die Wohnung?",
+    "exampleQuestion2": "Wie viele Urlaubstage hat Lara?",
+    "exampleQuestion3": "Wie hoch ist die Selbstbeteiligung der Hausratversicherung?",
+    "exampleQuestion4": "Wie viel kostet das Internet nach dem Aktionszeitraum einschließlich Router?",
+    "exampleQuestion5": "Wie hoch ist die Betriebskostennachzahlung und warum ist sie entstanden?"
   }
 }

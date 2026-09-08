@@ -5,6 +5,16 @@ export interface DocumentItem {
   file_size_bytes: number;
   chunks_count: number;
   created_at: string;
+  source: 'upload' | 'example';
+}
+
+export interface ExampleDocument {
+  id: string;
+  filename: string;
+  title: string;
+  description: string;
+  loaded: boolean;
+  download_url: string;
 }
 
 export interface DocumentUploadResponse {
@@ -22,6 +32,7 @@ export interface Citation {
   chunk_index: number;
   snippet: string;
   similarity_score: number;
+  source: 'upload' | 'example';
 }
 
 export interface DocumentChunk {
@@ -61,10 +72,26 @@ export async function fetchHealth() {
   return res.json();
 }
 
-export async function fetchDocuments(): Promise<DocumentItem[]> {
-  const res = await fetch(`${API_BASE_URL}/api/documents`);
+export async function fetchDocuments(scope: 'uploads' | 'examples' = 'uploads'): Promise<DocumentItem[]> {
+  const res = await fetch(`${API_BASE_URL}/api/documents?scope=${scope}`);
   if (!res.ok) throw new Error('Failed to fetch documents');
   return res.json();
+}
+
+export async function fetchExampleDocuments(): Promise<ExampleDocument[]> {
+  const res = await fetch(`${API_BASE_URL}/api/examples`);
+  if (!res.ok) throw new Error('Failed to fetch example documents');
+  return res.json();
+}
+
+export async function loadExampleDocuments(): Promise<DocumentItem[]> {
+  const res = await fetch(`${API_BASE_URL}/api/examples/load`, { method: 'POST' });
+  if (!res.ok) throw new Error('Failed to load example documents');
+  return res.json();
+}
+
+export function getExampleDownloadUrl(filename: string): string {
+  return `${API_BASE_URL}/api/examples/${encodeURIComponent(filename)}`;
 }
 
 export async function uploadDocument(file: File): Promise<DocumentUploadResponse> {
@@ -96,7 +123,8 @@ export async function queryRAG(
   question: string,
   topK: number = 4,
   temperature: number = 0.3,
-  language: string = 'en'
+  language: string = 'en',
+  scope: 'uploads' | 'examples' = 'uploads'
 ): Promise<QueryResponse> {
   const res = await fetch(`${API_BASE_URL}/api/query`, {
     method: 'POST',
@@ -106,6 +134,7 @@ export async function queryRAG(
       top_k: topK,
       temperature,
       language,
+      scope,
     }),
   });
 

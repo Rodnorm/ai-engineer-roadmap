@@ -20,6 +20,7 @@ interface ChatInterfaceProps {
   onSend: (question: string) => Promise<void>;
   onSelectCitation: (citation: Citation) => void;
   labels: Record<string, string>;
+  suggestedQuestions?: string[];
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -28,6 +29,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onSend,
   onSelectCitation,
   labels,
+  suggestedQuestions = [],
 }) => {
   const [input, setInput] = useState('');
 
@@ -52,8 +54,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               pocketRag Assistant
             </h3>
             <p className="mt-1 max-w-sm text-xs text-muted">
-              Upload PDF or text documents on the left panel, then ask any question to retrieve grounded answers with vector citations!
+              {labels.chatEmptyState || 'Upload a document or use the examples, then ask a question to get a grounded answer with citations.'}
             </p>
+            {suggestedQuestions.length > 0 && (
+              <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
+                {suggestedQuestions.map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => onSend(question)}
+                    disabled={isLoading}
+                    className="rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50 cursor-pointer"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           messages.map((msg) => (

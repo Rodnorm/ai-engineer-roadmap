@@ -2,16 +2,18 @@
 
 import React from 'react';
 import { X, FileText, Sparkles, CheckCircle2 } from 'lucide-react';
-import { Citation } from '../lib/api';
+import { Citation, getExampleDownloadUrl } from '../lib/api';
 
 interface CitationsDrawerProps {
   citation: Citation | null;
   onClose: () => void;
+  labels: Record<string, string>;
 }
 
 export const CitationsDrawer: React.FC<CitationsDrawerProps> = ({
   citation,
   onClose,
+  labels,
 }) => {
   if (!citation) return null;
 
@@ -42,6 +44,16 @@ export const CitationsDrawer: React.FC<CitationsDrawerProps> = ({
             </p>
             {citation.page_number && (
               <p className="text-xs text-muted mt-1">Page {citation.page_number}</p>
+            )}
+            {citation.source === 'example' && (
+              <a
+                href={getExampleDownloadUrl(citation.filename)}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex text-xs font-medium text-sky-600 hover:underline dark:text-sky-300"
+              >
+                {labels.openSourcePdf}
+              </a>
             )}
           </div>
 

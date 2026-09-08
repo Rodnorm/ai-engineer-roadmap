@@ -22,6 +22,23 @@ A cost-optimized, local RAG (Retrieval-Augmented Generation) knowledge base buil
 - **Inline Citations**: Every answer includes clickable inline citations linking directly to source snippets.
 - **Cost & Token Telemetry**: Per-query token breakdown and cloud savings estimator.
 - **Multi-language UI**: Support for English, Portuguese, and German.
+- **Example Collection**: Five fictional German documents let visitors test retrieval and page citations without uploading personal files.
+
+## Example documents
+
+Select **Try example documents** in the document panel to load the bundled read-only demo collection:
+
+- residential rental agreement;
+- employment contract;
+- home contents insurance policy;
+- home internet contract;
+- 2025 operating-cost statement.
+
+The files live in `backend/sample_documents/`. They contain fictional data for Lara Hoffmann and are marked as test documents. The backend loads them only when requested, assigns stable IDs, and skips documents that are already loaded. No cloud indexing or embedding call is performed when the examples are prepared.
+
+Example queries are isolated from uploaded documents through the `examples` query scope. Switching back to **My documents** uses the `uploads` scope. Clearing uploaded documents leaves the bundled examples unchanged.
+
+To update the collection, replace a PDF while keeping its manifest entry in `backend/main.py` synchronized. Restart the backend to clear the in-memory registry, then select **Try example documents** again.
 
 ## Quickstart
 
