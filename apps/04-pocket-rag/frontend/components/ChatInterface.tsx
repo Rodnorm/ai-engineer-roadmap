@@ -148,15 +148,15 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
 
       {(isLoadingSuggestions || suggestedQuestions.length > 0) && (
-        <div className="border-t border-border bg-surface/10 px-3 py-2">
+        <div className="border-t border-border px-3 py-3">
           {isLoadingSuggestions ? (
-            <p className="flex items-center gap-2 text-xs text-muted" role="status">
+            <p className="flex items-center justify-center gap-2 text-xs text-muted" role="status">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
               {labels.suggestingQuestions || 'Creating questions from your documents...'}
             </p>
           ) : (
             <div
-              className="flex gap-2 overflow-x-auto pb-1"
+              className="mx-auto flex max-w-xl flex-wrap justify-center gap-2"
               role="group"
               aria-label={labels.suggestedQuestions || 'Suggested questions'}
             >
@@ -166,7 +166,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   type="button"
                   onClick={() => void onSend(question)}
                   disabled={isLoading}
-                  className="shrink-0 rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50"
+                  className="rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50"
                 >
                   {question}
                 </button>
