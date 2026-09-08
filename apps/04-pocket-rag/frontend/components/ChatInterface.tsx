@@ -82,21 +82,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <p className="mt-1 max-w-sm text-xs text-muted">
               {labels.emptyChat || 'Upload a document, then ask a grounded question.'}
             </p>
-            {isLoadingSuggestions && (
-              <p className="mt-4 flex items-center gap-2 text-xs text-muted" role="status">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-                {labels.suggestingQuestions || 'Creating questions from your documents...'}
-              </p>
-            )}
-            {suggestedQuestions.length > 0 && (
-              <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
-                {suggestedQuestions.map((question) => (
-                  <button key={question} type="button" onClick={() => void onSend(question)} disabled={isLoading} className="rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50">
-                    {question}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         ) : (
           messages.map((msg) => (
@@ -161,6 +146,35 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         )}
       </div>
+
+      {(isLoadingSuggestions || suggestedQuestions.length > 0) && (
+        <div className="border-t border-border bg-surface/10 px-3 py-2">
+          {isLoadingSuggestions ? (
+            <p className="flex items-center gap-2 text-xs text-muted" role="status">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+              {labels.suggestingQuestions || 'Creating questions from your documents...'}
+            </p>
+          ) : (
+            <div
+              className="flex gap-2 overflow-x-auto pb-1"
+              role="group"
+              aria-label={labels.suggestedQuestions || 'Suggested questions'}
+            >
+              {suggestedQuestions.map((question) => (
+                <button
+                  key={question}
+                  type="button"
+                  onClick={() => void onSend(question)}
+                  disabled={isLoading}
+                  className="shrink-0 rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50"
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="border-t border-border p-3 bg-surface/20 flex items-center gap-2">
