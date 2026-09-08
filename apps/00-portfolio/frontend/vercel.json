@@ -6,6 +6,7 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
+      "fix/00-deploy-preview-validation": true,
       "*": false
     }
   }

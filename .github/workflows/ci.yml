@@ -37,11 +37,11 @@ jobs:
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Filter changed paths
         id: filter
-        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        uses: dorny/paths-filter@v3.0.2
         with:
           filters: |
             app00:
@@ -68,10 +68,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@eef61447b9af4a24257410ef44c2f6f6bf42016e # v4.2.2
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: 20
 
@@ -104,32 +104,37 @@ jobs:
       run:
         working-directory: ${{ matrix.directory }}
 
-    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
-
     steps:
-      - name: Check out repository
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check out repository
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Node.js
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
-      - name: Install dependencies
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Lint
         run: npm run lint
 
-      - name: Type-check
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Type-check
         run: npm run typecheck --if-present
 
-      - name: Test
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Test
         run: npm test --if-present
 
-      - name: Build
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Build
         run: npm run build
 
   backend:
@@ -155,35 +160,39 @@ jobs:
       run:
         working-directory: ${{ matrix.directory }}
 
-    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
-
     steps:
-      - name: Check out repository
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check out repository
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Python
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Set up Python
         uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.directory }}/requirements.txt
 
-      - name: Install dependencies
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Install dependencies
         run: python -m pip install --disable-pip-version-check -r requirements.txt
 
-      - name: Check dependency compatibility
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check dependency compatibility
         run: python -m pip check
 
-      - name: Validate Python syntax
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Validate Python syntax
         run: python -m compileall -q .
 
-      - name: Run unit tests
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Run unit tests
         env:
-          # Dummy values let Smart Inspector validate malformed uploads without real credentials.
-          # Invalid-upload tests return before any external API request is made.
-          AZURE_OPENAI_ENDPOINT: ${{ matrix.app == 'Smart Inspector' && 'https://example.invalid/openai/v1' || '' }}
-          AZURE_OPENAI_DEPLOYMENT: ${{ matrix.app == 'Smart Inspector' && 'ci-test' || '' }}
-          AZURE_OPENAI_API_KEY: ${{ matrix.app == 'Smart Inspector' && 'ci-placeholder-not-a-secret' || '' }}
+          # Dummy values let validation tests reach upload/content checks without real credentials.
+          # These tests reject input before any external API request is made.
+          AZURE_OPENAI_ENDPOINT: ${{ (matrix.app == 'Smart Inspector' || matrix.app == 'promptForge') && 'https://example.invalid/openai/v1' || '' }}
+          AZURE_OPENAI_DEPLOYMENT: ${{ (matrix.app == 'Smart Inspector' || matrix.app == 'promptForge') && 'ci-test' || '' }}
+          AZURE_OPENAI_API_KEY: ${{ (matrix.app == 'Smart Inspector' || matrix.app == 'promptForge') && 'ci-placeholder-not-a-secret' || '' }}
         run: |
           if find . -type f -name "test_*.py" -print -quit | grep -q .; then
             python -m unittest discover -s . -p "test_*.py"
