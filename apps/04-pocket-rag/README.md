@@ -49,3 +49,29 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Validation
+
+From `backend/`, with the virtual environment activated:
+
+```bash
+python -m pip install -r requirements-test.txt
+python -m unittest -v test_app04
+```
+
+Each test uses a temporary ChromaDB directory, a unique collection, deterministic
+local embeddings, and a fake LLM response. Tests do not load `.env`, ignore Azure
+credentials, and block outbound socket connections. Temporary clients are closed
+before their directories are removed; the application's local database is not
+opened or cleared. These tests validate API behavior, not model quality.
+
+From `frontend/`:
+
+```bash
+npm run build
+npm run lint
+npm run typecheck
+```
+
+Lint excludes generated build and coverage files, so it can also run after a build.
+On Windows, use `npm.cmd` if PowerShell blocks the `npm.ps1` wrapper.
