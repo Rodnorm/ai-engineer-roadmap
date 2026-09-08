@@ -17,6 +17,7 @@ interface DocumentManagerProps {
   documents: DocumentItem[];
   isUploading: boolean;
   onUpload: (file: File) => Promise<void>;
+  onDeleteDoc?: (docId: string) => Promise<void>;
   onClearAll: () => Promise<void>;
   labels: Record<string, string>;
 }
@@ -25,6 +26,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   documents,
   isUploading,
   onUpload,
+  onDeleteDoc,
   onClearAll,
   labels,
 }) => {
@@ -121,7 +123,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center justify-between rounded-lg border border-border bg-surface/40 p-2.5 transition hover:border-border/80"
+              className="group flex items-center justify-between rounded-lg border border-border bg-surface/40 p-2.5 transition hover:border-border/80"
             >
               <div className="flex items-center gap-2.5 overflow-hidden">
                 <FileText className="h-4 w-4 shrink-0 text-sky-500 dark:text-sky-400" />
@@ -134,7 +136,21 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                   </p>
                 </div>
               </div>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+              <div className="flex items-center gap-1.5 shrink-0">
+                {onDeleteDoc && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteDoc(doc.id);
+                    }}
+                    className="p-1 rounded text-muted hover:text-red-500 hover:bg-surface transition cursor-pointer"
+                    title="Delete document"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+              </div>
             </div>
           ))
         )}

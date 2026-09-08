@@ -10,6 +10,7 @@ import { useI18n } from '@/lib/i18n/I18nProvider';
 import {
   fetchDocuments,
   uploadDocument,
+  deleteDocument,
   clearAllDocuments,
   queryRAG,
   fetchStats,
@@ -54,6 +55,15 @@ export default function Home() {
       await loadData();
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleDeleteDoc = async (docId: string) => {
+    try {
+      await deleteDocument(docId);
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting document:', e);
     }
   };
 
@@ -123,6 +133,7 @@ export default function Home() {
               documents={documents}
               isUploading={isUploading}
               onUpload={handleUpload}
+              onDeleteDoc={handleDeleteDoc}
               onClearAll={handleClearAll}
               labels={labels}
             />

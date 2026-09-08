@@ -3,4 +3,6 @@ __pycache__/
 .venv/
 .env
 data/
+chroma_db/
 *.db
+

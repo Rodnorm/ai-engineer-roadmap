@@ -84,6 +84,14 @@ export async function uploadDocument(file: File): Promise<DocumentUploadResponse
   return res.json();
 }
 
+export async function deleteDocument(docId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/documents/${docId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Failed to delete document');
+  return res.json();
+}
+
 export async function clearAllDocuments() {
   const res = await fetch(`${API_BASE_URL}/api/documents`, {
     method: 'DELETE',
