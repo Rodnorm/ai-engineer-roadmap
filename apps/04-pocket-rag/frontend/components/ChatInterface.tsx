@@ -1,7 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Send, Bot, User, Sparkles, BookOpen, Loader2, Square } from 'lucide-react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import {
+  ArrowUpRight,
+  BookOpen,
+  Bot,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Send,
+  Sparkles,
+  Square,
+  User,
+} from 'lucide-react';
 import { Citation, DocumentChunk } from '../lib/api';
 
 const CITATION_SPLIT = /(\[\d+\])/g;
@@ -25,7 +36,6 @@ interface ChatInterfaceProps {
   onSelectCitation: (citation: Citation) => void;
   labels: Record<string, string>;
   suggestedQuestions?: string[];
-  isLoadingSuggestions?: boolean;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -36,9 +46,35 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onSelectCitation,
   labels,
   suggestedQuestions = [],
-  isLoadingSuggestions = false,
 }) => {
   const [input, setInput] = useState('');
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const suggestionsButtonRef = useRef<HTMLButtonElement>(null);
+  const suggestionsPanelId = useId();
+
+  useEffect(() => {
+    if (!isSuggestionsOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!suggestionsRef.current?.contains(event.target as Node)) {
+        setIsSuggestionsOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsSuggestionsOpen(false);
+        suggestionsButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSuggestionsOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,62 +183,84 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
       </div>
 
-      {(isLoadingSuggestions || suggestedQuestions.length > 0) && (
-        <div className="border-t border-border px-3 py-3">
-          {isLoadingSuggestions ? (
-            <p className="flex items-center justify-center gap-2 text-xs text-muted" role="status">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-              {labels.suggestingQuestions || 'Creating questions from your documents...'}
-            </p>
-          ) : (
-            <div
-              className="mx-auto flex max-w-xl flex-wrap justify-center gap-2"
-              role="group"
-              aria-label={labels.suggestedQuestions || 'Suggested questions'}
+      <div className="border-t border-border bg-surface/20 p-3">
+        {suggestedQuestions.length > 0 && (
+          <div ref={suggestionsRef} className="relative mb-2">
+            <button
+              ref={suggestionsButtonRef}
+              type="button"
+              onClick={() => setIsSuggestionsOpen((open) => !open)}
+              disabled={isLoading}
+              aria-expanded={isSuggestionsOpen}
+              aria-controls={suggestionsPanelId}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-panel px-2.5 py-1.5 text-xs font-medium text-muted shadow-sm transition hover:border-sky-500/50 hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:opacity-50"
             >
-              {suggestedQuestions.map((question) => (
-                <button
-                  key={question}
-                  type="button"
-                  onClick={() => void onSend(question)}
-                  disabled={isLoading}
-                  className="rounded-full border border-border bg-surface/40 px-3 py-1.5 text-[11px] text-text transition hover:border-sky-500 hover:bg-sky-500/10 disabled:opacity-50"
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+              {labels.suggestedQuestions || 'Suggested questions'}
+              {isSuggestionsOpen ? (
+                <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+            </button>
 
-      {/* Input Area */}
-      <form onSubmit={handleSubmit} className="border-t border-border p-3 bg-surface/20 flex items-center gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={labels.queryPlaceholder || 'Ask a question about your documents...'}
-          className="flex-1 rounded-xl border border-border bg-panel px-4 py-2.5 text-xs text-text placeholder:text-muted focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-          disabled={isLoading}
-          aria-label={labels.queryLabel || 'Question'}
-          maxLength={2000}
-        />
-        {isLoading ? (
-          <button type="button" onClick={onCancel} aria-label={labels.cancel || 'Cancel'} className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500 text-white hover:bg-red-400">
-            <Square className="h-4 w-4" aria-hidden="true" />
-          </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            aria-label={labels.send || 'Send question'}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20 cursor-pointer"
-          >
-            <Send className="h-4 w-4" aria-hidden="true" />
-          </button>
+            {isSuggestionsOpen && (
+              <div
+                id={suggestionsPanelId}
+                role="region"
+                aria-label={labels.suggestedQuestions || 'Suggested questions'}
+                className="animate-fade-in absolute bottom-full left-0 z-20 mb-2 max-h-64 w-full overflow-y-auto rounded-xl border border-border bg-panel p-1.5 shadow-xl"
+              >
+                {suggestedQuestions.map((question) => (
+                  <button
+                    key={question}
+                    type="button"
+                    onClick={() => {
+                      setIsSuggestionsOpen(false);
+                      void onSend(question);
+                    }}
+                    disabled={isLoading}
+                    className="flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-xs leading-relaxed text-text transition hover:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500 disabled:opacity-50"
+                  >
+                    <span className="min-w-0 flex-1 whitespace-normal break-words">{question}</span>
+                    <ArrowUpRight
+                      className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted"
+                      aria-hidden="true"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
-      </form>
+
+        {/* Input Area */}
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={labels.queryPlaceholder || 'Ask a question about your documents...'}
+            className="flex-1 rounded-xl border border-border bg-panel px-4 py-2.5 text-xs text-text placeholder:text-muted focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+            disabled={isLoading}
+            aria-label={labels.queryLabel || 'Question'}
+            maxLength={2000}
+          />
+          {isLoading ? (
+            <button type="button" onClick={onCancel} aria-label={labels.cancel || 'Cancel'} className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500 text-white hover:bg-red-400">
+              <Square className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              aria-label={labels.send || 'Send question'}
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white hover:bg-sky-400 disabled:opacity-40 transition shadow-md shadow-sky-500/20 cursor-pointer"
+            >
+              <Send className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
+        </form>
+      </div>
     </div>
   );
 };

@@ -46,7 +46,6 @@ export default function Home() {
   const queryController = useRef<AbortController | null>(null);
   const suggestionController = useRef<AbortController | null>(null);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
-  const [isSuggestingQuestions, setIsSuggestingQuestions] = useState(false);
   const [needsAccess, setNeedsAccess] = useState(false);
   const [accessKey, setAccessKey] = useState('');
   const [accessError, setAccessError] = useState('');
@@ -77,14 +76,12 @@ export default function Home() {
     suggestionController.current?.abort();
     if (!uploadDocumentSignature) {
       setSuggestedQuestions([]);
-      setIsSuggestingQuestions(false);
       return;
     }
 
     const controller = new AbortController();
     suggestionController.current = controller;
     setSuggestedQuestions([]);
-    setIsSuggestingQuestions(true);
     void fetchSuggestedQuestions(locale, controller.signal)
       .then((response) => setSuggestedQuestions(response.questions))
       .catch((error) => {
@@ -95,7 +92,6 @@ export default function Home() {
       .finally(() => {
         if (suggestionController.current === controller) {
           suggestionController.current = null;
-          setIsSuggestingQuestions(false);
         }
       });
 
@@ -279,7 +275,6 @@ export default function Home() {
                 labels.exampleQuestion4,
                 labels.exampleQuestion5,
               ] : suggestedQuestions}
-              isLoadingSuggestions={documentMode === 'uploads' && isSuggestingQuestions}
               labels={labels}
             />
           </div>
