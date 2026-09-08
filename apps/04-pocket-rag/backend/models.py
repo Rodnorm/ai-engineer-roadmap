@@ -10,6 +10,7 @@ class DocumentItem(BaseModel):
     file_size_bytes: int
     chunks_count: int
     created_at: str
+    source: Literal["upload", "example"] = "upload"
 
 class DocumentUploadResponse(BaseModel):
     document_id: str
@@ -25,12 +26,14 @@ class DocumentChunk(BaseModel):
     chunk_index: int
     content: str
     score: Optional[float] = None
+    source: Literal["upload", "example"] = "upload"
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=2, max_length=2000, description="Question for RAG pipeline")
     top_k: int = Field(default=4, ge=1, le=10, description="Number of context chunks to retrieve")
     temperature: float = Field(default=0.3, ge=0.0, le=1.0)
     language: Literal["de", "en", "pt-BR"] = "de"
+    scope: Literal["uploads", "examples", "all"] = "uploads"
 
     @field_validator("question")
     @classmethod
@@ -48,6 +51,7 @@ class Citation(BaseModel):
     chunk_index: int
     snippet: str
     similarity_score: float
+    source: Literal["upload", "example"] = "upload"
 
 class QueryResponse(BaseModel):
     answer: str

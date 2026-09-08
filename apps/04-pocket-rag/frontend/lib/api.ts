@@ -5,6 +5,16 @@ export interface DocumentItem {
   file_size_bytes: number;
   chunks_count: number;
   created_at: string;
+  source: 'upload' | 'example';
+}
+
+export interface ExampleDocument {
+  id: string;
+  filename: string;
+  title: string;
+  description: string;
+  loaded: boolean;
+  download_url: string;
 }
 
 export interface DocumentUploadResponse {
@@ -22,6 +32,7 @@ export interface Citation {
   chunk_index: number;
   snippet: string;
   similarity_score: number;
+  source: 'upload' | 'example';
 }
 
 export interface DocumentChunk {
@@ -31,6 +42,7 @@ export interface DocumentChunk {
   page_number?: number;
   content: string;
   score?: number;
+  source: 'upload' | 'example';
 }
 
 export interface QueryResponse {
@@ -82,9 +94,35 @@ export async function fetchHealth() {
   return (await checked(res)).json();
 }
 
-export async function fetchDocuments(): Promise<DocumentItem[]> {
-  const res = await fetch(`${API_BASE_URL}/api/documents`, { headers: authHeaders() });
+export async function fetchDocuments(scope: 'uploads' | 'examples' | 'all' = 'uploads'): Promise<DocumentItem[]> {
+  const res = await fetch(`${API_BASE_URL}/api/documents?scope=${scope}`, { headers: authHeaders() });
   return (await checked(res)).json();
+}
+
+export async function fetchExampleDocuments(): Promise<ExampleDocument[]> {
+  const res = await fetch(`${API_BASE_URL}/api/examples`, { headers: authHeaders() });
+  return (await checked(res)).json();
+}
+
+export async function loadExampleDocuments(): Promise<DocumentItem[]> {
+  const res = await fetch(`${API_BASE_URL}/api/examples/load`, {
+    method: 'POST',
+    headers: authHeaders(),
+  });
+  return (await checked(res)).json();
+}
+
+export async function downloadExampleDocument(filename: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/examples/${encodeURIComponent(filename)}`, {
+    headers: authHeaders(),
+  });
+  const blob = await (await checked(res)).blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 export async function uploadDocument(file: File): Promise<DocumentUploadResponse> {
@@ -121,6 +159,7 @@ export async function queryRAG(
   topK: number = 4,
   temperature: number = 0.3,
   language: string = 'en',
+  scope: 'uploads' | 'examples' | 'all' = 'uploads',
   signal?: AbortSignal,
 ): Promise<QueryResponse> {
   const res = await fetch(`${API_BASE_URL}/api/query`, {
@@ -131,6 +170,7 @@ export async function queryRAG(
       top_k: topK,
       temperature,
       language,
+      scope,
     }),
     signal,
   });

@@ -18,6 +18,7 @@ from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, Uplo
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 
 from config import load_settings
 from ingestion import IngestionError, ParsedChunk, parse_document
@@ -90,6 +91,15 @@ AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
 AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+EXAMPLE_DOCUMENTS_DIR = Path(__file__).resolve().parent / "sample_documents"
+EXAMPLE_DOCUMENTS = [
+    {"id": "example-wohnraummietvertrag", "filename": "01_Wohnraummietvertrag_Lara_Hoffmann.pdf", "title": "Wohnraummietvertrag", "description": "Miete, Kaution, Kündigung und Regeln der Wohnung."},
+    {"id": "example-arbeitsvertrag", "filename": "02_Arbeitsvertrag_Lara_Hoffmann.pdf", "title": "Arbeitsvertrag", "description": "Gehalt, Urlaub, Probezeit und mobiles Arbeiten."},
+    {"id": "example-hausratversicherung", "filename": "03_Hausratversicherung_Lara_Hoffmann.pdf", "title": "Hausratversicherung", "description": "Deckung, Selbstbeteiligung und Schadenmeldung."},
+    {"id": "example-internetvertrag", "filename": "04_Internetvertrag_Lara_Hoffmann.pdf", "title": "Internetvertrag", "description": "Tarif, Aktionspreis, Laufzeit und Kündigung."},
+    {"id": "example-betriebskostenabrechnung", "filename": "05_Betriebskostenabrechnung_2025_Lara_Hoffmann.pdf", "title": "Betriebskostenabrechnung 2025", "description": "Nebenkosten, Verbrauch und Nachzahlung."},
+]
+EXAMPLE_FILENAMES = {item["filename"] for item in EXAMPLE_DOCUMENTS}
 
 
 @app.middleware("http")
@@ -132,6 +142,7 @@ def _error_response(request: Request, status_code: int, code: str, message: str,
 async def http_error(request: Request, error: HTTPException):
     code = {
         401: "unauthorized",
+        403: "forbidden",
         404: "not_found",
         409: "conflict",
         413: "payload_too_large",
@@ -224,7 +235,9 @@ def _parse(content: bytes, extension: str) -> list[ParsedChunk]:
     )
 
 
-def _chroma_payload(document_id: str, filename: str, chunks: list[ParsedChunk]):
+def _chroma_payload(
+    document_id: str, filename: str, chunks: list[ParsedChunk], source: str = "upload"
+):
     ids = [f"{document_id}_{chunk.chunk_index}" for chunk in chunks]
     documents = [chunk.content for chunk in chunks]
     metadatas = []
@@ -233,6 +246,7 @@ def _chroma_payload(document_id: str, filename: str, chunks: list[ParsedChunk]):
             "document_id": document_id,
             "filename": filename,
             "chunk_index": chunk.chunk_index,
+            "source": source,
         }
         if chunk.page_number is not None:
             metadata["page_number"] = chunk.page_number
@@ -261,8 +275,74 @@ def get_stats():
 
 
 @app.get("/api/documents", response_model=list[DocumentItem], dependencies=protected)
-def list_documents():
-    return store.list_documents()
+def list_documents(scope: str = "uploads"):
+    if scope not in {"uploads", "examples", "all"}:
+        raise HTTPException(status_code=422, detail="Invalid document scope")
+    source = None if scope == "all" else ("example" if scope == "examples" else "upload")
+    return store.list_documents(source)
+
+
+@app.get("/api/examples", dependencies=protected)
+def list_example_documents():
+    return [
+        {
+            **item,
+            "loaded": store.get_record(item["id"]) is not None,
+            "download_url": f"/api/examples/{item['filename']}",
+        }
+        for item in EXAMPLE_DOCUMENTS
+    ]
+
+
+@app.post("/api/examples/load", response_model=list[DocumentItem], dependencies=protected)
+async def load_example_documents():
+    collection = await asyncio.to_thread(_get_chroma_collection)
+    for definition in EXAMPLE_DOCUMENTS:
+        if store.get_record(definition["id"]) is not None:
+            continue
+        path = EXAMPLE_DOCUMENTS_DIR / definition["filename"]
+        if not path.is_file():
+            raise HTTPException(status_code=503, detail="Example documents are unavailable")
+        content = await asyncio.to_thread(path.read_bytes)
+        try:
+            chunks = await asyncio.to_thread(_parse, content, "pdf")
+            item = DocumentItem(
+                id=definition["id"],
+                filename=definition["filename"],
+                file_type="PDF",
+                file_size_bytes=len(content),
+                chunks_count=len(chunks),
+                created_at=datetime.now(timezone.utc).isoformat(),
+                source="example",
+            )
+            ids, documents, metadatas = _chroma_payload(
+                item.id, item.filename, chunks, source="example"
+            )
+            await asyncio.to_thread(
+                collection.add, ids=ids, documents=documents, metadatas=metadatas
+            )
+            store.add(
+                item,
+                stored_filename=f"sample:{item.filename}",
+                content_sha256=hashlib.sha256(content).hexdigest(),
+            )
+        except Exception as error:
+            try:
+                await asyncio.to_thread(collection.delete, where={"document_id": definition["id"]})
+            except Exception:
+                logger.error("example_rollback_failed", extra={"document_id": definition["id"]})
+            raise HTTPException(status_code=503, detail="Example document indexing failed") from error
+    return store.list_documents("example")
+
+
+@app.get("/api/examples/{filename}", dependencies=protected)
+def download_example_document(filename: str):
+    if filename not in EXAMPLE_FILENAMES:
+        raise HTTPException(status_code=404, detail="Example document not found")
+    path = EXAMPLE_DOCUMENTS_DIR / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Example document not found")
+    return FileResponse(path, media_type="application/pdf", filename=filename)
 
 
 @app.post(
@@ -272,7 +352,7 @@ def list_documents():
     dependencies=protected,
 )
 async def upload_document(file: UploadFile = File(...)):
-    if store.count_documents() >= settings.max_documents:
+    if store.count_documents("upload") >= settings.max_documents:
         raise HTTPException(status_code=429, detail="Document limit reached")
     filename = Path(file.filename or "document.txt").name
     extension = Path(filename).suffix.lower().lstrip(".")
@@ -332,6 +412,8 @@ def delete_document(document_id: str):
     record = store.get_record(document_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Document not found")
+    if record["source"] != "upload":
+        raise HTTPException(status_code=403, detail="Bundled examples cannot be deleted")
     original = store.original_path(record["stored_filename"])
     quarantine = original.with_suffix(original.suffix + ".deleting")
     try:
@@ -351,13 +433,13 @@ def delete_document(document_id: str):
 
 @app.delete("/api/documents", dependencies=protected)
 def clear_documents():
-    records = [store.get_record(item.id) for item in store.list_documents()]
+    records = [store.get_record(item.id) for item in store.list_documents("upload")]
     try:
         collection = _get_chroma_collection()
-        ids = collection.get().get("ids", [])
+        ids = collection.get(where={"source": "upload"}).get("ids", [])
         if ids:
             collection.delete(ids=ids)
-        store.clear_metadata()
+        store.clear_metadata("upload")
         for record in records:
             if record:
                 store.original_path(record["stored_filename"]).unlink(missing_ok=True)
@@ -385,13 +467,20 @@ def query_rag(request: QueryRequest):
         count = collection.count()
     except Exception as error:
         raise HTTPException(status_code=503, detail="Vector search is temporarily unavailable") from error
-    if count == 0:
+    requested_source = None if request.scope == "all" else (
+        "example" if request.scope == "examples" else "upload"
+    )
+    if count == 0 or (requested_source and store.count_documents(requested_source) == 0):
         return QueryResponse.empty(_abstention(request.language), start)
 
     try:
-        results = collection.query(
-            query_texts=[request.question], n_results=min(request.top_k, count)
-        )
+        query_options: dict[str, Any] = {
+            "query_texts": [request.question],
+            "n_results": min(request.top_k, count),
+        }
+        if requested_source:
+            query_options["where"] = {"source": requested_source}
+        results = collection.query(**query_options)
     except Exception as error:
         raise HTTPException(status_code=503, detail="Vector search is temporarily unavailable") from error
 
@@ -415,6 +504,7 @@ def query_rag(request: QueryRequest):
             chunk_index=int(match["chunk_index"]),
             content=match["content"],
             score=round(score, 3),
+            source=match.get("source", "upload"),
         )
         for score, match in matches
     ]
@@ -427,6 +517,7 @@ def query_rag(request: QueryRequest):
             chunk_index=chunk.chunk_index,
             snippet=chunk.content,
             similarity_score=chunk.score or 0,
+            source=chunk.source,
         )
         for index, chunk in enumerate(retrieved)
     ]

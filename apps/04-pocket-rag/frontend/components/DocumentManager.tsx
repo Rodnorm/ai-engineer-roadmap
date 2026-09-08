@@ -9,8 +9,9 @@ import {
   AlertCircle,
   Loader2,
   FolderOpen,
+  Download,
 } from 'lucide-react';
-import { DocumentItem } from '../lib/api';
+import { DocumentItem, ExampleDocument, downloadExampleDocument } from '../lib/api';
 
 interface DocumentManagerProps {
   documents: DocumentItem[];
@@ -19,6 +20,11 @@ interface DocumentManagerProps {
   onUpload: (file: File) => Promise<void>;
   onDeleteDoc?: (docId: string) => Promise<void>;
   onClearAll: () => Promise<void>;
+  mode: 'uploads' | 'examples';
+  examples: ExampleDocument[];
+  isLoadingExamples: boolean;
+  onModeChange: (mode: 'uploads' | 'examples') => Promise<void>;
+  onLoadExamples: () => Promise<void>;
   labels: Record<string, string>;
 }
 
@@ -29,6 +35,11 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
   onUpload,
   onDeleteDoc,
   onClearAll,
+  mode,
+  examples,
+  isLoadingExamples,
+  onModeChange,
+  onLoadExamples,
   labels,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +97,24 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     }
   };
 
+  const handleLoadExamples = async () => {
+    setErrorMsg(null);
+    try {
+      await onLoadExamples();
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
+    }
+  };
+
+  const handleDownload = async (filename: string) => {
+    setErrorMsg(null);
+    try {
+      await downloadExampleDocument(filename);
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-panel p-4 sm:p-5 backdrop-blur-sm shadow-sm">
       <div className="flex items-center justify-between">
@@ -100,12 +129,23 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
         </span>
       </div>
 
-      <p className="rounded-lg border border-border bg-surface/30 p-3 text-[11px] leading-relaxed text-muted">
-        {labels.privacyNotice}
-      </p>
+      <div className="grid grid-cols-2 gap-2" role="group" aria-label={labels.documentModeLabel}>
+        <button type="button" onClick={() => void onModeChange('uploads')} disabled={isLocked || isLoadingExamples} className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${mode === 'uploads' ? 'border-sky-500 bg-sky-500/10 text-sky-600 dark:text-sky-300' : 'border-border text-muted hover:bg-surface/50'}`}>
+          {labels.myDocuments}
+        </button>
+        <button type="button" onClick={() => void handleLoadExamples()} disabled={isLocked || isLoadingExamples} className={`rounded-lg border px-3 py-2 text-xs font-medium transition disabled:opacity-60 ${mode === 'examples' ? 'border-sky-500 bg-sky-500/10 text-sky-600 dark:text-sky-300' : 'border-border text-muted hover:bg-surface/50'}`}>
+          {isLoadingExamples ? labels.loadingExamples : labels.tryExamples}
+        </button>
+      </div>
+
+      {mode === 'uploads' ? (
+        <p className="rounded-lg border border-border bg-surface/30 p-3 text-[11px] leading-relaxed text-muted">{labels.privacyNotice}</p>
+      ) : (
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-200">{labels.exampleDisclaimer}</p>
+      )}
 
       {/* Upload Zone */}
-      <label
+      {mode === 'uploads' && <label
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         className="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-surface/30 p-6 text-center transition hover:border-sky-500 hover:bg-surface/60 focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500"
@@ -136,7 +176,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             </p>
           </>
         )}
-      </label>
+      </label>}
 
       {errorMsg && (
         <div role="alert" className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-xs text-red-600 dark:text-red-300">
@@ -152,7 +192,9 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
             {labels.noDocs}
           </div>
         ) : (
-          documents.map((doc) => (
+          documents.map((doc) => {
+            const example = examples.find((item) => item.id === doc.id);
+            return (
             <div
               key={doc.id}
               className="group flex items-center justify-between rounded-lg border border-border bg-surface/40 p-2.5 transition hover:border-border/80"
@@ -161,15 +203,20 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                 <FileText className="h-4 w-4 shrink-0 text-sky-500 dark:text-sky-400" />
                 <div className="truncate">
                   <p className="truncate text-xs font-medium text-text">
-                    {doc.filename}
+                    {example?.title || doc.filename}
                   </p>
+                  {example && <p className="mt-1 text-[10px] text-muted">{example.description}</p>}
                   <p className="text-[10px] text-muted">
                     {doc.file_type} • {doc.chunks_count} chunks • {(doc.file_size_bytes / 1024).toFixed(1)} KB
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
-                {onDeleteDoc && (
+                {doc.source === 'example' ? (
+                  <button type="button" onClick={() => void handleDownload(doc.filename)} aria-label={`${labels.downloadExample}: ${example?.title || doc.filename}`} className="icon-button shrink-0">
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                ) : onDeleteDoc && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -183,14 +230,14 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
                     {deletingId === doc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                   </button>
                 )}
-                <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+                {doc.source === 'upload' && <CheckCircle2 className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />}
               </div>
             </div>
-          ))
+          )})
         )}
       </div>
 
-      {documents.length > 0 && (
+      {mode === 'uploads' && documents.length > 0 && (
         <button
           onClick={handleClear}
           disabled={Boolean(deletingId) || isUploading || isLocked}

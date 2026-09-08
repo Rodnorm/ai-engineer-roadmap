@@ -9,6 +9,8 @@ import { TelemetryPanel } from '../components/TelemetryPanel';
 import { useI18n } from '@/lib/i18n/I18nProvider';
 import {
   fetchDocuments,
+  fetchExampleDocuments,
+  loadExampleDocuments,
   uploadDocument,
   deleteDocument,
   clearAllDocuments,
@@ -19,13 +21,19 @@ import {
   SystemStats,
   ApiError,
   setAccessToken,
+  ExampleDocument,
 } from '../lib/api';
+
+type DocumentMode = 'uploads' | 'examples';
 
 export default function Home() {
   const { locale, dict } = useI18n();
   const labels = dict.labels;
 
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [examples, setExamples] = useState<ExampleDocument[]>([]);
+  const [documentMode, setDocumentMode] = useState<DocumentMode>('uploads');
+  const [isLoadingExamples, setIsLoadingExamples] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isQuerying, setIsQuerying] = useState(false);
@@ -39,19 +47,22 @@ export default function Home() {
   const [accessKey, setAccessKey] = useState('');
   const [accessError, setAccessError] = useState('');
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (scope: DocumentMode = 'uploads') => {
     try {
-      const [docs, currentStats] = await Promise.all([fetchDocuments(), fetchStats()]);
+      const [docs, currentStats] = await Promise.all([fetchDocuments(scope), fetchStats()]);
       setDocuments(docs);
       setStats(currentStats);
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) setNeedsAccess(true);
       console.warn('Backend connection pending or offline:', e);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadData();
+    void loadData('uploads');
+    void fetchExampleDocuments().then(setExamples).catch((error) => {
+      if (error instanceof ApiError && error.status === 401) setNeedsAccess(true);
+    });
     return () => queryController.current?.abort();
   }, [loadData]);
 
@@ -59,7 +70,7 @@ export default function Home() {
     setIsUploading(true);
     try {
       await uploadDocument(file);
-      await loadData();
+      await loadData('uploads');
     } finally {
       setIsUploading(false);
     }
@@ -67,13 +78,36 @@ export default function Home() {
 
   const handleDeleteDoc = async (docId: string) => {
     await deleteDocument(docId);
-    await loadData();
+    await loadData('uploads');
   };
 
   const handleClearAll = async () => {
     await clearAllDocuments();
-    await loadData();
+    await loadData('uploads');
     setMessages([]);
+  };
+
+  const handleModeChange = async (mode: DocumentMode) => {
+    setDocumentMode(mode);
+    setMessages([]);
+    await loadData(mode);
+  };
+
+  const handleLoadExamples = async () => {
+    setIsLoadingExamples(true);
+    try {
+      await loadExampleDocuments();
+      setDocumentMode('examples');
+      setMessages([]);
+      const [docs, availableExamples] = await Promise.all([
+        fetchDocuments('examples'),
+        fetchExampleDocuments(),
+      ]);
+      setDocuments(docs);
+      setExamples(availableExamples);
+    } finally {
+      setIsLoadingExamples(false);
+    }
   };
 
   const handleSendQuestion = async (question: string) => {
@@ -89,7 +123,7 @@ export default function Home() {
     queryController.current = controller;
 
     try {
-      const res = await queryRAG(question, 4, 0.3, locale, controller.signal);
+      const res = await queryRAG(question, 4, 0.3, locale, documentMode, controller.signal);
 
       const botMsg: ChatMessage = {
         id: String(Date.now() + 1),
@@ -129,16 +163,21 @@ export default function Home() {
         setIsQuerying(false);
       }
     }
-  }, []);
+  };
 
   const handleUnlock = async (event: React.FormEvent) => {
     event.preventDefault();
     setAccessToken(accessKey.trim());
     setAccessError('');
     try {
-      const [docs, currentStats] = await Promise.all([fetchDocuments(), fetchStats()]);
+      const [docs, currentStats, availableExamples] = await Promise.all([
+        fetchDocuments('uploads'),
+        fetchStats(),
+        fetchExampleDocuments(),
+      ]);
       setDocuments(docs);
       setStats(currentStats);
+      setExamples(availableExamples);
       setNeedsAccess(false);
       setAccessKey('');
     } catch {
@@ -181,6 +220,11 @@ export default function Home() {
               onUpload={handleUpload}
               onDeleteDoc={handleDeleteDoc}
               onClearAll={handleClearAll}
+              mode={documentMode}
+              examples={examples}
+              isLoadingExamples={isLoadingExamples}
+              onModeChange={handleModeChange}
+              onLoadExamples={handleLoadExamples}
               labels={labels}
             />
           </div>
@@ -192,6 +236,13 @@ export default function Home() {
               onSend={handleSendQuestion}
               onCancel={() => queryController.current?.abort()}
               onSelectCitation={(cit) => setSelectedCitation(cit)}
+              suggestedQuestions={documentMode === 'examples' ? [
+                labels.exampleQuestion1,
+                labels.exampleQuestion2,
+                labels.exampleQuestion3,
+                labels.exampleQuestion4,
+                labels.exampleQuestion5,
+              ] : []}
               labels={labels}
             />
           </div>

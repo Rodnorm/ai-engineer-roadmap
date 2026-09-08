@@ -70,6 +70,17 @@
     "accessDescription": "Digite a chave de acesso do servidor. Ela fica somente nesta aba do navegador.",
     "accessKey": "Chave de acesso",
     "invalidAccess": "A chave é inválida ou o servidor está indisponível.",
-    "unlock": "Desbloquear"
+    "unlock": "Desbloquear",
+    "documentModeLabel": "Origem dos documentos",
+    "myDocuments": "Meus documentos",
+    "tryExamples": "Testar documentos de exemplo",
+    "loadingExamples": "Carregando exemplos...",
+    "exampleDisclaimer": "Documentos fictícios para demonstração. Eles não contêm dados pessoais reais e não devem ser usados como contratos.",
+    "downloadExample": "Baixar documento de exemplo",
+    "exampleQuestion1": "Qual é o valor da caução do apartamento?",
+    "exampleQuestion2": "Quantos dias de férias Lara possui?",
+    "exampleQuestion3": "Qual é a franquia do seguro residencial?",
+    "exampleQuestion4": "Quanto custa a internet depois do período promocional, incluindo o roteador?",
+    "exampleQuestion5": "Qual é o valor adicional das despesas do imóvel e por que ele foi cobrado?"
   }
 }

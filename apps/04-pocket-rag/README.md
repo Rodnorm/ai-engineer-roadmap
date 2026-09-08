@@ -20,6 +20,12 @@ Supported uploads are PDF, Markdown, UTF-8 TXT, and DOCX. Defaults are 10 MB,
 per chunk, and 50 overlapping words. Scanned PDFs need OCR and are rejected. DOCX
 archives have expansion and entry-count limits.
 
+The repository also includes five fictional German PDF documents covering housing,
+employment, insurance, internet, and service charges. The UI can index them
+idempotently in a separate `examples` scope, offers suggested questions, and lets the
+user download the source PDFs. Example retrieval never searches private uploads, and
+clearing personal documents preserves the bundled examples.
+
 Original files receive server-generated names under `backend/data/uploads`.
 Document metadata is persisted in SQLite and vectors in `backend/data/chroma_db`.
 All three stores are ignored by Git. Upload rolls back on indexing failure; deletion

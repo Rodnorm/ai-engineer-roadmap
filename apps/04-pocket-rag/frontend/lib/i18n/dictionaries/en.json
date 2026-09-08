@@ -70,6 +70,17 @@
     "accessDescription": "Enter the server access key. It is kept only in this browser tab.",
     "accessKey": "Access key",
     "invalidAccess": "The access key is invalid or the server is unavailable.",
-    "unlock": "Unlock"
+    "unlock": "Unlock",
+    "documentModeLabel": "Document source",
+    "myDocuments": "My documents",
+    "tryExamples": "Try example documents",
+    "loadingExamples": "Loading examples...",
+    "exampleDisclaimer": "Fictional documents for demonstration. They contain no real personal data and must not be used as contracts.",
+    "downloadExample": "Download example document",
+    "exampleQuestion1": "What is the apartment security deposit?",
+    "exampleQuestion2": "How many vacation days does Lara have?",
+    "exampleQuestion3": "What is the home insurance deductible?",
+    "exampleQuestion4": "How much does the internet cost after the promotional period, including the router?",
+    "exampleQuestion5": "What is the additional service charge payment and why was it incurred?"
   }
 }

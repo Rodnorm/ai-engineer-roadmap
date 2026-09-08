@@ -199,6 +199,32 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(self.collection.count(), 0)
         self.assertEqual(other_collection.get()["ids"], ["keep"])
 
+    def test_examples_are_idempotent_scoped_and_preserved_by_clear(self):
+        first = self.client.post("/api/examples/load")
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(len(first.json()), 5)
+        example_chunk_count = self.collection.count()
+
+        second = self.client.post("/api/examples/load")
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(self.collection.count(), example_chunk_count)
+        self.assertEqual(self.client.get("/api/documents?scope=uploads").json(), [])
+        self.assertEqual(len(self.client.get("/api/documents?scope=examples").json()), 5)
+
+        uploaded = self.upload("private.txt", b"SECRET private uploaded material")
+        self.assertEqual(uploaded.status_code, 201)
+        cleared = self.client.delete("/api/documents")
+        self.assertEqual(cleared.status_code, 200)
+        self.assertEqual(len(self.client.get("/api/documents?scope=examples").json()), 5)
+
+        query = self.client.post(
+            "/api/query",
+            json={"question": "Wie hoch ist die Kaution?", "language": "de", "scope": "examples"},
+        )
+        self.assertEqual(query.status_code, 200)
+        self.assertTrue(query.json()["retrieved_chunks"])
+        self.assertTrue(all(chunk["source"] == "example" for chunk in query.json()["retrieved_chunks"]))
+
     def test_private_mode_requires_bearer_key(self):
         with patch.object(self.backend, "settings", replace(self.backend.settings, api_key="private-key")):
             denied = self.client.get("/api/documents")

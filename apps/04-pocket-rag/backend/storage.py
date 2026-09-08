@@ -42,7 +42,8 @@ class DocumentStore:
                     chunks_count INTEGER NOT NULL,
                     created_at TEXT NOT NULL,
                     stored_filename TEXT NOT NULL UNIQUE,
-                    content_sha256 TEXT NOT NULL
+                    content_sha256 TEXT NOT NULL,
+                    source TEXT NOT NULL DEFAULT 'upload'
                 );
                 CREATE INDEX IF NOT EXISTS idx_documents_sha256
                     ON documents(content_sha256);
@@ -55,18 +56,28 @@ class DocumentStore:
                 );
                 """
             )
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(documents)")}
+            if "source" not in columns:
+                connection.execute(
+                    "ALTER TABLE documents ADD COLUMN source TEXT NOT NULL DEFAULT 'upload'"
+                )
 
-    def list_documents(self) -> list[DocumentItem]:
+    def list_documents(self, source: str | None = None) -> list[DocumentItem]:
+        where = " WHERE source = ?" if source else ""
+        parameters = (source,) if source else ()
         with self.connection() as connection:
             rows = connection.execute(
-                "SELECT id, filename, file_type, file_size_bytes, chunks_count, created_at "
-                "FROM documents ORDER BY created_at DESC"
+                "SELECT id, filename, file_type, file_size_bytes, chunks_count, created_at, source "
+                f"FROM documents{where} ORDER BY created_at DESC",
+                parameters,
             ).fetchall()
         return [DocumentItem(**dict(row)) for row in rows]
 
-    def count_documents(self) -> int:
+    def count_documents(self, source: str | None = None) -> int:
+        where = " WHERE source = ?" if source else ""
+        parameters = (source,) if source else ()
         with self.connection() as connection:
-            return int(connection.execute("SELECT COUNT(*) FROM documents").fetchone()[0])
+            return int(connection.execute(f"SELECT COUNT(*) FROM documents{where}", parameters).fetchone()[0])
 
     def get_record(self, document_id: str) -> sqlite3.Row | None:
         with self.connection() as connection:
@@ -83,7 +94,9 @@ class DocumentStore:
     def add(self, item: DocumentItem, stored_filename: str, content_sha256: str) -> None:
         with self._lock, self.connection() as connection:
             connection.execute(
-                "INSERT INTO documents VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO documents "
+                "(id, filename, file_type, file_size_bytes, chunks_count, created_at, stored_filename, content_sha256, source) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     item.id,
                     item.filename,
@@ -93,6 +106,7 @@ class DocumentStore:
                     item.created_at,
                     stored_filename,
                     content_sha256,
+                    item.source,
                 ),
             )
 
@@ -102,9 +116,12 @@ class DocumentStore:
             if cursor.rowcount != 1:
                 raise KeyError(document_id)
 
-    def clear_metadata(self) -> None:
+    def clear_metadata(self, source: str | None = None) -> None:
         with self._lock, self.connection() as connection:
-            connection.execute("DELETE FROM documents")
+            if source:
+                connection.execute("DELETE FROM documents WHERE source = ?", (source,))
+            else:
+                connection.execute("DELETE FROM documents")
 
     def original_path(self, stored_filename: str) -> Path:
         path = (self.upload_dir / stored_filename).resolve()
