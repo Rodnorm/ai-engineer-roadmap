@@ -63,6 +63,27 @@ npm run lint
 # Run Unit Tests (locale resolution, theme preference & fallback coverage)
 npm test
 
-# Build production bundle with full static export
+# Build the production Next.js bundle
 npm run build
 ```
+
+## Vercel deployment
+
+The existing `roadmap-portfolio` project uses `apps/00-portfolio` as its Root Directory.
+Its `vercel.json` explicitly builds `frontend/package.json` with `@vercel/next`, so Vercel
+publishes the Next.js output instead of serving the source directory as static files.
+This compatibility configuration fixes the existing project without moving source files
+or requiring a dashboard change. `builds` is a legacy Vercel setting; for a new project,
+prefer Root Directory `apps/00-portfolio/frontend`, Framework Preset **Next.js**, Install
+Command `npm ci`, Build Command `npm run build`, and the default Output Directory.
+Enable **Include source files outside of the Root Directory** so the build can read the
+shared catalog and case studies.
+
+Both configurations allow production deployments from `main` and preview deployments
+from `fix/00-deploy-preview-validation` only. Other branches remain disabled to limit
+deployment usage. The preview has its own URL and does not replace the production domain.
+
+Before merging the deployment fix, check the PR's **Vercel – roadmap-portfolio** status
+and open its preview. `/`, `/pt`, `/de`, `/apps`, and the case studies must render; source
+paths such as `/frontend/package.json` must return 404. A successful deployment status
+alone is insufficient: the previous deployment was successful but served the wrong files.

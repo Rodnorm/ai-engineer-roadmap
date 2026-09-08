@@ -104,32 +104,37 @@ jobs:
       run:
         working-directory: ${{ matrix.directory }}
 
-    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
-
     steps:
-      - name: Check out repository
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check out repository
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Node.js
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4.1.0
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: ${{ matrix.directory }}/package-lock.json
 
-      - name: Install dependencies
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Lint
         run: npm run lint
 
-      - name: Type-check
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Type-check
         run: npm run typecheck --if-present
 
-      - name: Test
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Test
         run: npm test --if-present
 
-      - name: Build
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Build
         run: npm run build
 
   backend:
@@ -155,29 +160,33 @@ jobs:
       run:
         working-directory: ${{ matrix.directory }}
 
-    if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
-
     steps:
-      - name: Check out repository
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check out repository
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Python
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.directory }}/requirements.txt
 
-      - name: Install dependencies
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Install dependencies
         run: python -m pip install --disable-pip-version-check -r requirements.txt
 
-      - name: Check dependency compatibility
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check dependency compatibility
         run: python -m pip check
 
-      - name: Validate Python syntax
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Validate Python syntax
         run: python -m compileall -q .
 
-      - name: Run unit tests
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Run unit tests
         env:
           # Dummy values let Smart Inspector validate malformed uploads without real credentials.
           # Invalid-upload tests return before any external API request is made.
