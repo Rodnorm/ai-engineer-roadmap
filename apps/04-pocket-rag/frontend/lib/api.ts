@@ -59,6 +59,11 @@ export interface QueryResponse {
   generation_status: 'generated' | 'disabled' | 'not_needed';
 }
 
+export interface SuggestionResponse {
+  questions: string[];
+  generation_status: 'generated' | 'disabled' | 'not_needed';
+}
+
 export interface SystemStats {
   total_documents: number;
   total_chunks: number;
@@ -172,6 +177,19 @@ export async function queryRAG(
       language,
       scope,
     }),
+    signal,
+  });
+  return (await checked(res)).json();
+}
+
+export async function fetchSuggestedQuestions(
+  language: string = 'en',
+  signal?: AbortSignal,
+): Promise<SuggestionResponse> {
+  const res = await fetch(`${API_BASE_URL}/api/suggestions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ language }),
     signal,
   });
   return (await checked(res)).json();

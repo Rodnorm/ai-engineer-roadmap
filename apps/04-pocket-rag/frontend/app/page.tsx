@@ -16,6 +16,7 @@ import {
   clearAllDocuments,
   queryRAG,
   fetchStats,
+  fetchSuggestedQuestions,
   DocumentItem,
   Citation,
   SystemStats,
@@ -43,9 +44,15 @@ export default function Home() {
   const [lastTokens, setLastTokens] = useState(0);
   const [lastLatency, setLastLatency] = useState(0);
   const queryController = useRef<AbortController | null>(null);
+  const suggestionController = useRef<AbortController | null>(null);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  const [isSuggestingQuestions, setIsSuggestingQuestions] = useState(false);
   const [needsAccess, setNeedsAccess] = useState(false);
   const [accessKey, setAccessKey] = useState('');
   const [accessError, setAccessError] = useState('');
+  const uploadDocumentSignature = documentMode === 'uploads'
+    ? documents.map((document) => document.id).join('|')
+    : '';
 
   const loadData = useCallback(async (scope: DocumentMode = 'uploads') => {
     try {
@@ -65,6 +72,35 @@ export default function Home() {
     });
     return () => queryController.current?.abort();
   }, [loadData]);
+
+  useEffect(() => {
+    suggestionController.current?.abort();
+    if (!uploadDocumentSignature) {
+      setSuggestedQuestions([]);
+      setIsSuggestingQuestions(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    suggestionController.current = controller;
+    setSuggestedQuestions([]);
+    setIsSuggestingQuestions(true);
+    void fetchSuggestedQuestions(locale, controller.signal)
+      .then((response) => setSuggestedQuestions(response.questions))
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (error instanceof ApiError && error.status === 401) setNeedsAccess(true);
+        console.warn('Question suggestions are unavailable:', error);
+      })
+      .finally(() => {
+        if (suggestionController.current === controller) {
+          suggestionController.current = null;
+          setIsSuggestingQuestions(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [locale, uploadDocumentSignature]);
 
   const handleUpload = async (file: File) => {
     setIsUploading(true);
@@ -242,7 +278,8 @@ export default function Home() {
                 labels.exampleQuestion3,
                 labels.exampleQuestion4,
                 labels.exampleQuestion5,
-              ] : []}
+              ] : suggestedQuestions}
+              isLoadingSuggestions={documentMode === 'uploads' && isSuggestingQuestions}
               labels={labels}
             />
           </div>

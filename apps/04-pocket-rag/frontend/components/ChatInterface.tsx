@@ -25,6 +25,7 @@ interface ChatInterfaceProps {
   onSelectCitation: (citation: Citation) => void;
   labels: Record<string, string>;
   suggestedQuestions?: string[];
+  isLoadingSuggestions?: boolean;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -35,6 +36,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onSelectCitation,
   labels,
   suggestedQuestions = [],
+  isLoadingSuggestions = false,
 }) => {
   const [input, setInput] = useState('');
 
@@ -80,6 +82,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <p className="mt-1 max-w-sm text-xs text-muted">
               {labels.emptyChat || 'Upload a document, then ask a grounded question.'}
             </p>
+            {isLoadingSuggestions && (
+              <p className="mt-4 flex items-center gap-2 text-xs text-muted" role="status">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                {labels.suggestingQuestions || 'Creating questions from your documents...'}
+              </p>
+            )}
             {suggestedQuestions.length > 0 && (
               <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
                 {suggestedQuestions.map((question) => (

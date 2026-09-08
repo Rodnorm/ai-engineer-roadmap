@@ -60,6 +60,11 @@ server. On Windows, use `npm.cmd` when PowerShell blocks `npm.ps1`.
 The multilingual embedding model downloads on first use. Pre-download and retain its
 cache on a production host to avoid unpredictable cold starts.
 
+For uploaded documents, the empty chat view generates up to five suggested questions
+from bounded excerpts of the five most recent documents. Suggestions use the same
+Azure deployment, generation limits, access control, and prompt-injection boundary as
+grounded answers. Bundled examples keep their static suggestions and incur no extra call.
+
 ## Configuration and access
 
 Copy `backend/.env.example` and review every limit. Important controls:
