@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import Mock, patch
 import uuid
 import zipfile
+from dataclasses import replace
 
 import chromadb
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
@@ -145,6 +146,8 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(query.json()["generation_status"], "generated")
         self.assertEqual(query.json()["tokens_used"]["total_tokens"], 30)
         self.assertEqual(query.json()["citations"][0]["chunk_index"], 0)
+        system_prompt = self.llm.chat.completions.create.call_args.kwargs["messages"][0]["content"]
+        self.assertIn("untrusted data", system_prompt)
 
         deleted = self.client.delete(f"/api/documents/{document_id}")
         self.assertEqual(deleted.status_code, 200)
@@ -195,6 +198,47 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.collection.count(), 0)
         self.assertEqual(other_collection.get()["ids"], ["keep"])
+
+    def test_private_mode_requires_bearer_key(self):
+        with patch.object(self.backend, "settings", replace(self.backend.settings, api_key="private-key")):
+            denied = self.client.get("/api/documents")
+            allowed = self.client.get(
+                "/api/documents", headers={"Authorization": "Bearer private-key"}
+            )
+        self.assertEqual(denied.status_code, 401)
+        self.assertEqual(denied.json()["error"]["code"], "unauthorized")
+        self.assertTrue(denied.json()["error"]["request_id"])
+        self.assertEqual(allowed.status_code, 200)
+
+    def test_generation_kill_switch_uses_no_tokens_or_provider(self):
+        self.assertEqual(self.upload().status_code, 201)
+        self.llm.reset_mock()
+        with patch.object(
+            self.backend, "settings", replace(self.backend.settings, generation_enabled=False)
+        ):
+            response = self.client.post(
+                "/api/query", json={"question": "What is PocketRAG?", "language": "en"}
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["generation_status"], "disabled")
+        self.assertEqual(response.json()["tokens_used"]["total_tokens"], 0)
+        self.assertEqual(response.json()["citations"], [])
+        self.llm.chat.completions.create.assert_not_called()
+
+    def test_shared_rate_limit_and_provider_error_are_sanitized(self):
+        self.assertEqual(self.upload().status_code, 201)
+        limited = replace(self.backend.settings, requests_per_minute=1, daily_generation_limit=1)
+        with patch.object(self.backend, "settings", limited):
+            first = self.client.post(
+                "/api/query", json={"question": "What is PocketRAG?", "language": "en"}
+            )
+            second = self.client.post(
+                "/api/query", json={"question": "What is it?", "language": "en"}
+            )
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 429)
+        self.assertIn("Retry-After", second.headers)
+        self.assertNotIn("private", str(second.json()).lower())
 
 
 if __name__ == "__main__":
