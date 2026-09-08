@@ -9,9 +9,10 @@ This document details the deployment policy and GitHub Actions CI standards for 
 To ensure stability and cost control:
 
 - Production deployments are **restricted exclusively to the `main` branch**.
-- Every application root MUST include a `vercel.json` file specifying:
+- Every application root MUST include a `vercel.json` file specifying an `ignoreCommand` to prevent building apps unaffected by changes in PRs and commits:
   ```json
   {
+    "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then git diff HEAD^ HEAD --quiet -- .; else git diff $(git merge-base HEAD origin/main 2>/dev/null || echo HEAD^) HEAD --quiet -- .; fi",
     "git": {
       "deploymentEnabled": {
         "main": true,
@@ -20,6 +21,7 @@ To ensure stability and cost control:
     }
   }
   ```
+- Applications that consume shared resources (e.g. `catalog/apps.json` in `apps/00-portfolio`) must include those paths in the diff check.
 - Preview branches must NOT receive production Azure credentials.
 
 ---

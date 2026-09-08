@@ -3,10 +3,10 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
+  "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then git diff HEAD^ HEAD --quiet -- . ../content ../../../catalog; else git diff $(git merge-base HEAD origin/main 2>/dev/null || echo HEAD^) HEAD --quiet -- . ../content ../../../catalog; fi",
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "fix/00-deploy-preview-validation": true,
       "*": false
     }
   }

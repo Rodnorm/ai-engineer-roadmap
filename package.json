@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "description": "AI Engineering Roadmap & Production Portfolio Monorepo",
+  "workspaces": [
+    "apps/00-portfolio/frontend",
+    "apps/01-smart-inspector/frontend",
+    "apps/02-support-bot/frontend",
+    "apps/03-prompt-forge/frontend"
+  ],
   "scripts": {
     "dev": "node scripts/dev/run.mjs --all",
     "dev:all": "node scripts/dev/run.mjs --all",

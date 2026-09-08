@@ -1,4 +1,6 @@
 {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then git diff HEAD^ HEAD --quiet -- .; else git diff $(git merge-base HEAD origin/main 2>/dev/null || echo HEAD^) HEAD --quiet -- .; fi",
     "git": {
         "deploymentEnabled": {
             "main": true,
