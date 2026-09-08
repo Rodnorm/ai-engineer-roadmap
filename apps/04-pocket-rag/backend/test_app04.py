@@ -155,6 +155,28 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(self.collection.count(), 0)
         self.assertEqual(list((self.data_path / "uploads").iterdir()), [])
 
+    def test_generates_questions_from_uploaded_context(self):
+        self.assertEqual(self.upload().status_code, 201)
+        self.llm.chat.completions.create.return_value = SimpleNamespace(
+            choices=[
+                SimpleNamespace(
+                    message=SimpleNamespace(
+                        content='{"questions":["What is PocketRAG?","How does grounded retrieval work?"]}'
+                    )
+                )
+            ],
+            usage=SimpleNamespace(prompt_tokens=20, completion_tokens=10),
+        )
+
+        response = self.client.post("/api/suggestions", json={"language": "en"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["generation_status"], "generated")
+        self.assertEqual(len(response.json()["questions"]), 2)
+        messages = self.llm.chat.completions.create.call_args.kwargs["messages"]
+        self.assertIn("untrusted data", messages[0]["content"])
+        self.assertIn("PocketRAG is a local knowledge base", messages[1]["content"])
+
     def test_docx_markdown_and_utf8_validation(self):
         docx = self.upload("guide.docx", docx_bytes("DOCX content is indexed safely."))
         self.assertEqual(docx.status_code, 201)

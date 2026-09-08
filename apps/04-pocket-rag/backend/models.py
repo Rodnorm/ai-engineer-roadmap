@@ -43,6 +43,13 @@ class QueryRequest(BaseModel):
             raise ValueError("Question is too short")
         return value
 
+class SuggestionRequest(BaseModel):
+    language: Literal["de", "en", "pt-BR"] = "de"
+
+class SuggestionResponse(BaseModel):
+    questions: list[str]
+    generation_status: Literal["generated", "disabled", "not_needed"]
+
 class Citation(BaseModel):
     citation_id: int
     document_id: str
