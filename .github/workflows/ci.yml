@@ -38,11 +38,11 @@ jobs:
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.4.0
 
       - name: Filter changed paths
         id: filter
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/paths-filter@v3.0.4
         with:
           filters: |
             app00:
@@ -71,10 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.4.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
 
@@ -113,7 +113,7 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.4.0
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Node.js
@@ -176,7 +176,7 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.4.0
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Python
