@@ -11,11 +11,11 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
   return (
     <div className="space-y-16 py-4">
       {/* Hero Section */}
-      <section className="text-center space-y-6 max-w-3xl mx-auto pt-8">
+      <section className="text-center space-y-6 max-w-3xl mx-auto pt-8 px-1">
         <RotatingSkillBadge locale={locale} />
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight break-words">
           {dict.home.heroTitlePrefix}{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+          <span className="text-primary">
             {dict.home.heroTitleHighlight}
           </span>
         </h1>
