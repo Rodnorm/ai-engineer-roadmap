@@ -27,7 +27,7 @@ export const CitationsDrawer: React.FC<CitationsDrawerProps> = ({
   if (!citation) return null;
 
   return (
-    <dialog ref={dialogRef} aria-labelledby={titleId} onClose={onClose} className="fixed inset-0 z-50 m-0 ml-auto h-dvh max-h-none w-full max-w-md bg-transparent p-0 backdrop:bg-slate-950/60 backdrop:backdrop-blur-sm">
+    <dialog ref={dialogRef} aria-labelledby={titleId} onClose={onClose} onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }} className="fixed inset-0 z-50 m-0 ml-auto h-dvh max-h-none w-full max-w-md bg-transparent p-0 backdrop:bg-slate-950/60 backdrop:backdrop-blur-sm">
       <div className="flex w-full max-w-md flex-col border-l border-border bg-panel p-6 shadow-2xl text-text">
         <div className="flex items-center justify-between border-b border-border pb-4">
           <div className="flex items-center gap-2">

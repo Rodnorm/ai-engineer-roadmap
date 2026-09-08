@@ -15,6 +15,7 @@ import { DocumentItem } from '../lib/api';
 interface DocumentManagerProps {
   documents: DocumentItem[];
   isUploading: boolean;
+  isLocked: boolean;
   onUpload: (file: File) => Promise<void>;
   onDeleteDoc?: (docId: string) => Promise<void>;
   onClearAll: () => Promise<void>;
@@ -24,6 +25,7 @@ interface DocumentManagerProps {
 export const DocumentManager: React.FC<DocumentManagerProps> = ({
   documents,
   isUploading,
+  isLocked,
   onUpload,
   onDeleteDoc,
   onClearAll,
@@ -47,7 +49,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    if (isUploading) return;
+    if (isUploading || isLocked || deletingId) return;
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
     setErrorMsg(null);
@@ -114,7 +116,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
           accept=".pdf,.txt,.md,.docx"
           className="sr-only"
           onChange={handleFileChange}
-          disabled={isUploading}
+          disabled={isUploading || isLocked || Boolean(deletingId)}
         />
         {isUploading ? (
           <div className="flex flex-col items-center gap-2 text-sky-500 dark:text-sky-400">
@@ -191,7 +193,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       {documents.length > 0 && (
         <button
           onClick={handleClear}
-          disabled={Boolean(deletingId) || isUploading}
+          disabled={Boolean(deletingId) || isUploading || isLocked}
           className="flex items-center justify-center gap-1.5 rounded-lg border border-red-500/20 bg-red-500/10 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/20 transition cursor-pointer"
         >
           <Trash2 className="h-3.5 w-3.5" />

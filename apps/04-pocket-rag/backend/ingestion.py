@@ -106,8 +106,8 @@ def parse_document(
             text = content.decode("utf-8-sig")
         except UnicodeDecodeError as error:
             raise IngestionError("Text files must use UTF-8 encoding") from error
-        if extension == "md" and b"\x00" in content:
-            raise IngestionError("The Markdown file contains binary data")
+        if b"\x00" in content:
+            raise IngestionError("The text file contains binary data")
         sections = [(text.strip(), None)]
 
     total_chars = sum(len(text) for text, _ in sections)

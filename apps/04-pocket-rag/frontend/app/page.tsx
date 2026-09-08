@@ -177,6 +177,7 @@ export default function Home() {
             <DocumentManager
               documents={documents}
               isUploading={isUploading}
+              isLocked={isQuerying}
               onUpload={handleUpload}
               onDeleteDoc={handleDeleteDoc}
               onClearAll={handleClearAll}
