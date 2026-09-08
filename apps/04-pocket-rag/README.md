@@ -65,8 +65,9 @@ cache on a production host to avoid unpredictable cold starts.
 Copy `backend/.env.example` and review every limit. Important controls:
 
 - `APP_ENV=production` disables Swagger/OpenAPI and requires `POCKET_RAG_API_KEY`.
-- `GENERATION_ENABLED=false` is the default kill switch. Set it to `true` only after
-  configuring Azure credentials, limits, and a budget.
+- Local development enables generation by default when `GENERATION_ENABLED` is
+  omitted. Test and production environments default to the safe `false` kill switch;
+  set it to `true` only after configuring Azure credentials, limits, and a budget.
 - `CORS_ORIGINS` is an explicit comma-separated allowlist.
 - `REQUESTS_PER_MINUTE` and `DAILY_GENERATION_LIMIT` are enforced through SQLite,
   shared by processes using the same volume. `MAX_CONCURRENT_GENERATIONS` bounds

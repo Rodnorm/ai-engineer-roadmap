@@ -68,6 +68,7 @@ def load_settings() -> Settings:
     api_key = os.getenv("POCKET_RAG_API_KEY", "")
     if environment == "production" and not api_key:
         raise ValueError("POCKET_RAG_API_KEY is required in production")
+    generation_enabled_default = "true" if environment == "development" else "false"
 
     data_dir = _path_from_env("DATA_DIR", "data")
     origins = tuple(
@@ -94,7 +95,8 @@ def load_settings() -> Settings:
         max_context_chars=_int_from_env("MAX_CONTEXT_CHARS", 16000),
         max_output_tokens=_int_from_env("MAX_OUTPUT_TOKENS", 700),
         min_relevance_score=_float_from_env("MIN_RELEVANCE_SCORE", 0.2),
-        generation_enabled=os.getenv("GENERATION_ENABLED", "false").lower() == "true",
+        generation_enabled=os.getenv("GENERATION_ENABLED", generation_enabled_default).lower()
+        == "true",
         api_key=api_key,
         cors_origins=origins,
         provider_timeout_seconds=_float_from_env("PROVIDER_TIMEOUT_SECONDS", 30.0, 1.0),
