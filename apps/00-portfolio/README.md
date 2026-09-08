@@ -70,14 +70,16 @@ npm run build
 ## Vercel deployment
 
 The existing `roadmap-portfolio` project uses `apps/00-portfolio` as its Root Directory.
-Its `vercel.json` explicitly builds `frontend/package.json` with `@vercel/next`, so Vercel
-publishes the Next.js output instead of serving the source directory as static files.
-This compatibility configuration fixes the existing project without moving source files
-or requiring a dashboard change. `builds` is a legacy Vercel setting; for a new project,
-prefer Root Directory `apps/00-portfolio/frontend`, Framework Preset **Next.js**, Install
-Command `npm ci`, Build Command `npm run build`, and the default Output Directory.
-Enable **Include source files outside of the Root Directory** so the build can read the
-shared catalog and case studies.
+Its root `vercel.json` declares `frontend` as the Next.js service and routes all requests
+to that service. This matches the deployment structure used by Apps 01–03 and prevents
+Vercel from publishing the repository files as a static directory.
+
+The Vercel project Framework Preset must remain **Services**. If the project is recreated
+as a standalone Next.js project instead, use Root Directory
+`apps/00-portfolio/frontend`, Framework Preset **Next.js**, Install Command `npm ci`,
+Build Command `npm run build`, and the default Output Directory. Enable **Include source
+files outside of the Root Directory** so the build can read the shared catalog and case
+studies.
 
 Both configurations allow production deployments from `main` and preview deployments
 from `fix/00-deploy-preview-validation` only. Other branches remain disabled to limit
