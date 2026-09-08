@@ -11,6 +11,7 @@ from unittest.mock import Mock, patch
 import uuid
 import zipfile
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 
 import chromadb
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
@@ -209,6 +210,23 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertIsNotNone(self.backend.store.get_record(document_id))
         self.assertEqual(len(list((self.data_path / "uploads").iterdir())), 1)
+
+    def test_expired_upload_cleanup_removes_file_vectors_and_metadata(self):
+        upload = self.upload()
+        document_id = upload.json()["document_id"]
+        expired_at = datetime.now(timezone.utc) - timedelta(minutes=31)
+        with self.backend.store.connection() as connection:
+            connection.execute(
+                "UPDATE documents SET created_at = ? WHERE id = ?",
+                (expired_at.isoformat(), document_id),
+            )
+
+        deleted = self.backend._cleanup_expired_uploads(datetime.now(timezone.utc))
+
+        self.assertEqual(deleted, 1)
+        self.assertIsNone(self.backend.store.get_record(document_id))
+        self.assertEqual(self.collection.count(), 0)
+        self.assertEqual(list((self.data_path / "uploads").iterdir()), [])
 
     def test_clear_only_removes_app_collection(self):
         other_collection = self.vector_client.create_collection(

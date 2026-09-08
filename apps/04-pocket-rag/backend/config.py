@@ -36,6 +36,8 @@ class Settings:
     max_text_chars: int
     max_chunks_per_document: int
     max_documents: int
+    upload_retention_minutes: int
+    cleanup_interval_seconds: int
     chunk_size_words: int
     chunk_overlap_words: int
     embedding_model: str
@@ -86,6 +88,8 @@ def load_settings() -> Settings:
         max_text_chars=_int_from_env("MAX_TEXT_CHARS", 2_000_000),
         max_chunks_per_document=_int_from_env("MAX_CHUNKS_PER_DOCUMENT", 1000),
         max_documents=_int_from_env("MAX_DOCUMENTS", 100),
+        upload_retention_minutes=_int_from_env("UPLOAD_RETENTION_MINUTES", 30),
+        cleanup_interval_seconds=_int_from_env("CLEANUP_INTERVAL_SECONDS", 60),
         chunk_size_words=chunk_size,
         chunk_overlap_words=chunk_overlap,
         embedding_model=os.getenv(

@@ -85,6 +85,14 @@ class DocumentStore:
                 "SELECT * FROM documents WHERE id = ?", (document_id,)
             ).fetchone()
 
+    def list_expired_upload_records(self, cutoff: str) -> list[sqlite3.Row]:
+        with self.connection() as connection:
+            return connection.execute(
+                "SELECT * FROM documents "
+                "WHERE source = 'upload' AND created_at <= ? ORDER BY created_at",
+                (cutoff,),
+            ).fetchall()
+
     def find_by_hash(self, content_sha256: str) -> sqlite3.Row | None:
         with self.connection() as connection:
             return connection.execute(

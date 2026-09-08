@@ -8,7 +8,8 @@ import secrets
 import threading
 import time
 import uuid
-from datetime import datetime, timezone
+from contextlib import asynccontextmanager, suppress
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -48,6 +49,19 @@ load_dotenv()
 settings = load_settings()
 logger = logging.getLogger("pocket_rag")
 generation_slots = threading.BoundedSemaphore(settings.max_concurrent_generations)
+document_mutation_lock = threading.RLock()
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    await asyncio.to_thread(_cleanup_expired_uploads)
+    cleanup_task = asyncio.create_task(_cleanup_expired_uploads_periodically())
+    try:
+        yield
+    finally:
+        cleanup_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await cleanup_task
 
 
 class JsonFormatter(logging.Formatter):
@@ -73,6 +87,7 @@ app = FastAPI(
     title="pocketRag Backend",
     description="Local-first RAG API with ChromaDB and Azure OpenAI",
     version="0.2.0",
+    lifespan=lifespan,
     docs_url=None if settings.environment == "production" else "/docs",
     redoc_url=None if settings.environment == "production" else "/redoc",
     openapi_url=None if settings.environment == "production" else "/openapi.json",
@@ -254,6 +269,68 @@ def _chroma_payload(
     return ids, documents, metadatas
 
 
+def _delete_upload_record(record) -> bool:
+    with document_mutation_lock:
+        current = store.get_record(record["id"])
+        if current is None or current["source"] != "upload":
+            return False
+        original = store.original_path(current["stored_filename"])
+        quarantine = original.with_suffix(original.suffix + ".deleting")
+        try:
+            if original.exists():
+                original.replace(quarantine)
+            collection = _get_chroma_collection()
+            collection.delete(where={"document_id": current["id"]})
+            store.delete_metadata(current["id"])
+            quarantine.unlink(missing_ok=True)
+        except Exception:
+            if quarantine.exists():
+                quarantine.replace(original)
+            raise
+    return True
+
+
+def _cleanup_expired_uploads(now: datetime | None = None) -> int:
+    current_time = now or datetime.now(timezone.utc)
+    cutoff = current_time - timedelta(minutes=settings.upload_retention_minutes)
+    deleted = 0
+    for record in store.list_expired_upload_records(cutoff.isoformat()):
+        try:
+            if _delete_upload_record(record):
+                deleted += 1
+        except Exception as error:
+            logger.error(
+                "expired_document_cleanup_failed",
+                extra={"document_id": record["id"], "error_type": type(error).__name__},
+            )
+
+    active_filenames = {
+        record["stored_filename"]
+        for document in store.list_documents("upload")
+        if (record := store.get_record(document.id)) is not None
+    }
+    for path in settings.upload_dir.iterdir():
+        try:
+            if (
+                path.is_file()
+                and path.name not in active_filenames
+                and path.stat().st_mtime <= cutoff.timestamp()
+            ):
+                path.unlink()
+        except OSError as error:
+            logger.error("orphan_upload_cleanup_failed", extra={"error_type": type(error).__name__})
+
+    if deleted:
+        logger.info("expired_documents_deleted", extra={"deleted_count": deleted})
+    return deleted
+
+
+async def _cleanup_expired_uploads_periodically() -> None:
+    while True:
+        await asyncio.sleep(settings.cleanup_interval_seconds)
+        await asyncio.to_thread(_cleanup_expired_uploads)
+
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "app": "pocketRag", "version": "0.2.0"}
@@ -414,18 +491,9 @@ def delete_document(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
     if record["source"] != "upload":
         raise HTTPException(status_code=403, detail="Bundled examples cannot be deleted")
-    original = store.original_path(record["stored_filename"])
-    quarantine = original.with_suffix(original.suffix + ".deleting")
     try:
-        if original.exists():
-            original.replace(quarantine)
-        collection = _get_chroma_collection()
-        collection.delete(where={"document_id": document_id})
-        store.delete_metadata(document_id)
-        quarantine.unlink(missing_ok=True)
+        _delete_upload_record(record)
     except Exception as error:
-        if quarantine.exists():
-            quarantine.replace(original)
         logger.error("document_delete_failed", extra={"document_id": document_id})
         raise HTTPException(status_code=503, detail="Document deletion failed; please retry") from error
     return {"message": "Document deleted successfully", "status": "success"}
