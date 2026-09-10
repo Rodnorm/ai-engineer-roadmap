@@ -51,4 +51,15 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
   min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@layer components {
+  .control-button {
+    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel text-sm font-medium text-muted shadow-sm transition hover:border-sky-400 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950;
+  }
+
+  .icon-button {
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+  }
 }
