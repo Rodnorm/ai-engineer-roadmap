@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
                 </span>
               </div>
               <p className="text-xs text-muted">
-                Personal AI Knowledge Base • Local ChromaDB + OpenAI LLM
+                Personal AI Knowledge Base • SQLite Vector + OpenAI LLM
               </p>
             </div>
           </div>

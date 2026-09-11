@@ -1,6 +1,7 @@
 import hashlib
 import importlib.util
 import io
+import math
 import os
 from pathlib import Path
 import socket
@@ -13,35 +14,17 @@ import zipfile
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
-import chromadb
-from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
-from chromadb.config import Settings
 from fastapi.testclient import TestClient
 
 
-class TestEmbeddings(EmbeddingFunction[Documents]):
-    def __init__(self):
-        pass
-
-    def __call__(self, input: Documents) -> Embeddings:
-        vectors = []
-        for text in input:
-            vector = [0.0] * 16
-            for word in text.lower().split():
-                vector[hashlib.sha256(word.encode()).digest()[0] % len(vector)] += 1.0
-            vectors.append(vector)
-        return vectors
-
-    @staticmethod
-    def name():
-        return "pocket-rag-test-embeddings"
-
-    def get_config(self):
-        return {}
-
-    @staticmethod
-    def build_from_config(config):
-        return TestEmbeddings()
+def make_test_embedding(text: str) -> list[float]:
+    vector = [0.0] * 16
+    for word in text.lower().split():
+        vector[hashlib.sha256(word.encode()).digest()[0] % len(vector)] += 1.0
+    norm = math.sqrt(sum(x * x for x in vector))
+    if norm > 0:
+        vector = [x / norm for x in vector]
+    return vector
 
 
 def docx_bytes(text: str) -> bytes:
@@ -79,11 +62,11 @@ class TestPocketRagBackend(unittest.TestCase):
                 {
                     "APP_ENV": "test",
                     "DATA_DIR": str(self.data_path),
-                    "CHROMA_DB_PATH": str(self.data_path / "chroma"),
                     "UPLOAD_DIR": str(self.data_path / "uploads"),
                     "METADATA_DB_PATH": str(self.data_path / "metadata.sqlite3"),
                     "AZURE_OPENAI_ENDPOINT": "",
                     "AZURE_OPENAI_DEPLOYMENT": "",
+                    "AZURE_OPENAI_EMBEDDING_DEPLOYMENT": "text-embedding-test",
                     "AZURE_OPENAI_API_KEY": "",
                     "GENERATION_ENABLED": "true",
                     "MIN_RELEVANCE_SCORE": "0",
@@ -97,21 +80,18 @@ class TestPocketRagBackend(unittest.TestCase):
         self.backend = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.backend)
 
-        self.vector_client = chromadb.PersistentClient(
-            path=str(self.data_path / "test-vectors"), settings=Settings(anonymized_telemetry=False)
-        )
-        self.addCleanup(self.vector_client.close)
-        self.collection = self.vector_client.create_collection(
-            name=f"test-{uuid.uuid4().hex}",
-            embedding_function=TestEmbeddings(),
-            metadata={"hnsw:space": "cosine"},
-        )
-        self.enterContext(patch.object(self.backend, "_get_chroma_collection", return_value=self.collection))
         self.llm = Mock()
         self.llm.chat.completions.create.return_value = SimpleNamespace(
             choices=[SimpleNamespace(message=SimpleNamespace(content="PocketRAG is a local knowledge base. [1]"))],
             usage=SimpleNamespace(prompt_tokens=20, completion_tokens=10),
         )
+
+        def mock_embeddings_create(model=None, input=None):
+            texts = [input] if isinstance(input, str) else list(input)
+            data = [SimpleNamespace(embedding=make_test_embedding(t)) for t in texts]
+            return SimpleNamespace(data=data)
+
+        self.llm.embeddings.create.side_effect = mock_embeddings_create
         self.real_build_client = self.backend._build_client
         self.enterContext(patch.object(self.backend, "_build_client", return_value=self.llm))
         self.client = self.enterContext(TestClient(self.backend.app))
@@ -130,7 +110,7 @@ class TestPocketRagBackend(unittest.TestCase):
         upload = self.upload()
         self.assertEqual(upload.status_code, 201)
         document_id = upload.json()["document_id"]
-        self.assertEqual(self.collection.count(), 1)
+        self.assertEqual(self.backend.store.count_chunks(), 1)
         records = self.backend.store.list_documents()
         self.assertEqual(records[0].id, document_id)
         stored = list((self.data_path / "uploads").iterdir())
@@ -153,7 +133,7 @@ class TestPocketRagBackend(unittest.TestCase):
         deleted = self.client.delete(f"/api/documents/{document_id}")
         self.assertEqual(deleted.status_code, 200)
         self.assertEqual(restarted_store.list_documents(), [])
-        self.assertEqual(self.collection.count(), 0)
+        self.assertEqual(self.backend.store.count_chunks(), 0)
         self.assertEqual(list((self.data_path / "uploads").iterdir()), [])
 
     def test_generates_questions_from_uploaded_context(self):
@@ -196,8 +176,8 @@ class TestPocketRagBackend(unittest.TestCase):
         duplicate = self.upload()
         self.assertEqual(duplicate.status_code, 409)
 
-        self.collection.add = Mock(side_effect=RuntimeError("index unavailable"))
-        failed = self.upload("different.txt", b"Different valid document content")
+        with patch.object(self.backend, "_generate_embeddings", side_effect=RuntimeError("embeddings failed")):
+            failed = self.upload("different.txt", b"Different valid document content")
         self.assertEqual(failed.status_code, 503)
         self.assertEqual(len(self.backend.store.list_documents()), 1)
         self.assertEqual(len(list((self.data_path / "uploads").iterdir())), 1)
@@ -205,7 +185,7 @@ class TestPocketRagBackend(unittest.TestCase):
     def test_delete_failure_is_reported_and_original_is_restored(self):
         upload = self.upload()
         document_id = upload.json()["document_id"]
-        with patch.object(self.collection, "delete", side_effect=RuntimeError("store unavailable")):
+        with patch.object(self.backend.store, "delete_metadata", side_effect=RuntimeError("store unavailable")):
             response = self.client.delete(f"/api/documents/{document_id}")
         self.assertEqual(response.status_code, 503)
         self.assertIsNotNone(self.backend.store.get_record(document_id))
@@ -225,29 +205,30 @@ class TestPocketRagBackend(unittest.TestCase):
 
         self.assertEqual(deleted, 1)
         self.assertIsNone(self.backend.store.get_record(document_id))
-        self.assertEqual(self.collection.count(), 0)
+        self.assertEqual(self.backend.store.count_chunks(), 0)
         self.assertEqual(list((self.data_path / "uploads").iterdir()), [])
 
-    def test_clear_only_removes_app_collection(self):
-        other_collection = self.vector_client.create_collection(
-            name=f"unrelated-{uuid.uuid4().hex}", embedding_function=TestEmbeddings()
-        )
-        other_collection.add(ids=["keep"], documents=["Unrelated document"])
+    def test_clear_only_removes_upload_records_and_preserves_examples(self):
+        self.client.post("/api/examples/load")
+        example_count = self.backend.store.count_chunks("example")
+        self.assertGreater(example_count, 0)
         self.assertEqual(self.upload().status_code, 201)
+        self.assertGreater(self.backend.store.count_chunks("upload"), 0)
+
         response = self.client.delete("/api/documents")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.collection.count(), 0)
-        self.assertEqual(other_collection.get()["ids"], ["keep"])
+        self.assertEqual(self.backend.store.count_chunks("upload"), 0)
+        self.assertEqual(self.backend.store.count_chunks("example"), example_count)
 
     def test_examples_are_idempotent_scoped_and_preserved_by_clear(self):
         first = self.client.post("/api/examples/load")
         self.assertEqual(first.status_code, 200)
         self.assertEqual(len(first.json()), 5)
-        example_chunk_count = self.collection.count()
+        example_chunk_count = self.backend.store.count_chunks("example")
 
         second = self.client.post("/api/examples/load")
         self.assertEqual(second.status_code, 200)
-        self.assertEqual(self.collection.count(), example_chunk_count)
+        self.assertEqual(self.backend.store.count_chunks("example"), example_chunk_count)
         self.assertEqual(self.client.get("/api/documents?scope=uploads").json(), [])
         self.assertEqual(len(self.client.get("/api/documents?scope=examples").json()), 5)
 

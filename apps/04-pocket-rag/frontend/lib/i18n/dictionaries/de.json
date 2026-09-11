@@ -16,7 +16,7 @@
     "statusLabel": "Status",
     "status": "In Entwicklung",
     "whatItDoes": "Was es tut",
-    "what1": "Indiziert lokale Dokumente in einer ChromaDB-Vektordatenbank.",
+    "what1": "Indiziert lokale Dokumente in einer SQLite-Vektordatenbank.",
     "what2": "Ermöglicht semantische Suche über Ihre eigenen Daten.",
     "what3": "Nutzt Azure OpenAI für präzise Antworten mit Quellenangaben.",
     "howToUse": "So wird es verwendet",
@@ -27,7 +27,7 @@
   },
   "labels": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Kostengünstige persönliche KI-Wissensdatenbank mit lokalam ChromaDB-RAG",
+    "appSubtitle": "Kostengünstige persönliche KI-Wissensdatenbank mit SQLite-Vektor-RAG",
     "docManagerTitle": "Dokumenten-Wissensdatenbank",
     "uploadButton": "Dokument hochladen",
     "uploading": "Wird hochgeladen & vektorisiert...",

@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=user:user . .
 
 # Ensure storage directories exist and are writable
-RUN mkdir -p /app/data/uploads /app/data/chroma_db /home/user/.cache && \
+RUN mkdir -p /app/data/uploads /home/user/.cache && \
     chown -R user:user /app /home/user
 
 USER user

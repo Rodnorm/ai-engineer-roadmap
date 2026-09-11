@@ -1,7 +1,7 @@
 # App 04 — pocketRag
 
 pocketRag is a local-first personal RAG knowledge base built with Next.js, FastAPI,
-ChromaDB, multilingual sentence-transformer embeddings, and optional Azure OpenAI
+SQLite Vector storage, Azure OpenAI embeddings, and Azure OpenAI
 answer generation. Its current status is **in development** until a durable host and
 the credentialed evaluation are validated.
 
@@ -9,9 +9,8 @@ the credentialed evaluation are validated.
 
 ```text
 browser -> authenticated FastAPI API -> private original file
-                                  |--> SQLite document catalog
-                                  |--> parser + word chunks -> ChromaDB embeddings
-question -> ChromaDB top-k -> relevance gate -> bounded context -> Azure OpenAI
+                                  |--> SQLite document catalog & chunks (embeddings)
+question -> SQLite vector top-k -> relevance gate -> bounded context -> Azure OpenAI
                                                         -> answer + inline citations
 ```
 
@@ -27,9 +26,9 @@ user download the source PDFs. Example retrieval never searches private uploads,
 clearing personal documents preserves the bundled examples.
 
 Original files receive server-generated names under `backend/data/uploads`.
-Document metadata is persisted in SQLite and vectors in `backend/data/chroma_db`.
-All three stores are ignored by Git. Upload rolls back on indexing failure; deletion
-removes the original, metadata, and vectors and reports failures instead of claiming
+Document metadata and vector embeddings are persisted in SQLite (`backend/data/metadata.sqlite3`).
+Both stores are ignored by Git. Upload rolls back on indexing failure; deletion
+removes the original, metadata, and chunk vectors and reports failures instead of claiming
 success. Identical file content is rejected to avoid accidental duplicates.
 
 ## Local setup
@@ -128,9 +127,8 @@ configured.
 | `POST` | `/api/query` | Retrieve evidence and optionally generate an answer |
 | `GET` | `/api/stats` | Document/chunk counts and vector-store state |
 
-Retrieval uses the pinned
-`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` model and cosine
-distance. Index configuration is stored beside metadata; changing model or chunking
+Retrieval uses Azure OpenAI embeddings (`text-embedding-3-small`) and cosine
+similarity computed directly in SQLite/NumPy. Index configuration is stored beside metadata; changing model or chunking
 with existing documents requires clearing and reindexing. Similarity is a retrieval
 score, not a probability that an answer is correct. Below-threshold results abstain.
 Document content is delimited as untrusted data in the generation prompt, context and
@@ -138,8 +136,8 @@ output are bounded, and unknown citation references fail safely.
 
 ## Validation
 
-Common tests use a temporary SQLite catalog/upload directory, a unique ChromaDB
-collection, deterministic embeddings, a fake LLM, and blocked network sockets:
+Common tests use a temporary SQLite catalog/upload directory,
+deterministic embeddings, a fake LLM, and blocked network sockets:
 
 ```bash
 cd apps/04-pocket-rag/backend
@@ -170,11 +168,10 @@ paid generation/evaluator calls. Never publish simulated scores as measurements.
 and FastAPI at `/api/backend`. Select the **Services** framework preset if evaluating
 that configuration. The frontend sends same-origin API requests.
 
-Vercel's default function filesystem is not evidence of durable ChromaDB, SQLite, or
+Vercel's default function filesystem is not evidence of durable SQLite or
 uploaded-file storage. Do not label that deployment production-ready unless the host
 provides a mounted persistent filesystem shared by backend instances and restart tests
-prove all three stores survive. A host with a persistent volume is required for the
-current architecture. Store production secrets only in the production environment,
+prove all stores survive.
 keep generation disabled in previews, deploy publicly from `main`, and test upload,
 query, delete, restart recovery, model cold start, duration, and kill switch on the
 actual host.
