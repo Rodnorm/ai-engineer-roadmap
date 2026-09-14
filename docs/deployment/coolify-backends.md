@@ -10,8 +10,7 @@ Este monorepo usa **uma aplicação Coolify por backend**. Todos podem rodar no 
 | App 02 — Support Bot | `/apps/02-support-bot/backend` | `/Dockerfile` | `8000` | `/health` |
 | App 03 — Prompt Forge | `/apps/03-prompt-forge/backend` | `/Dockerfile` | `8000` | `/health` |
 | App 04 — pocketRag | `/apps/04-pocket-rag/backend` | `/Dockerfile` | `8000` | `/health` |
-
-> O App 05 ainda não existe na `main`. Quando ele entrar no repositório, adicione um Dockerfile no backend e crie uma quinta aplicação seguindo o mesmo padrão.
+| App 05 — Agentic Workflow | `/apps/05-agentic-workflow/backend` | `/Dockerfile` | `8005` | `/health` |
 
 ## Criar cada aplicação
 
@@ -19,7 +18,7 @@ Este monorepo usa **uma aplicação Coolify por backend**. Todos podem rodar no 
 2. Adicione uma **Application** e escolha **Dockerfile** como build pack.
 3. Selecione a branch `chore/coolify-backend-deploy` durante a homologação. Depois do merge, altere para `main`.
 4. Preencha `Base Directory` e `Dockerfile Location` conforme a tabela.
-5. Configure `Ports Exposes` como `8000`.
+5. Configure `Ports Exposes` com a porta indicada na tabela.
 6. Configure um domínio por backend, por exemplo `api-app01.seudominio.com`.
 7. Configure o health check HTTP em `/health`.
 8. Ative deploy automático somente para a branch usada em produção.
@@ -37,10 +36,15 @@ APP_ENV=production
 PORT=8000
 ```
 
-No App 04, configure também a origem exata do frontend:
+Configure também a origem exata do frontend nos serviços que validam CORS:
 
 ```dotenv
+# App 04
 CORS_ORIGINS=https://frontend-app04.seudominio.com
+
+# App 05
+ALLOWED_ORIGINS=https://frontend-app05.seudominio.com
+PORT=8005
 ```
 
 Além dessas variáveis, configure as credenciais Azure e os limites de custo/rate limit indicados em cada arquivo:
@@ -49,6 +53,7 @@ Além dessas variáveis, configure as credenciais Azure e os limites de custo/ra
 - `apps/02-support-bot/backend/.env.example`
 - `apps/03-prompt-forge/backend/.env.example`
 - `apps/04-pocket-rag/backend/.env.example`
+- `apps/05-agentic-workflow/backend/.env.example`
 
 ## Storage do App 04
 
@@ -69,6 +74,7 @@ Para evitar rebuild de todos os serviços a cada commit, configure no Coolify:
 | App 02 | `apps/02-support-bot/backend/**` |
 | App 03 | `apps/03-prompt-forge/backend/**` |
 | App 04 | `apps/04-pocket-rag/backend/**` |
+| App 05 | `apps/05-agentic-workflow/backend/**` |
 
 Se mudanças em arquivos compartilhados da raiz passarem a afetar os backends, acrescente esses caminhos às respectivas aplicações.
 
@@ -79,6 +85,7 @@ curl --fail https://api-app01.seudominio.com/health
 curl --fail https://api-app02.seudominio.com/health
 curl --fail https://api-app03.seudominio.com/health
 curl --fail https://api-app04.seudominio.com/health
+curl --fail https://api-app05.seudominio.com/health
 ```
 
 Todos os comandos devem retornar HTTP `200`. Em seguida, atualize as URLs públicas consumidas pelos frontends para apontar aos novos domínios.
