@@ -10,9 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN useradd -m -u 1000 user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
     PORT=8005
-
-WORKDIR /app
 
 COPY --chown=user:user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -25,4 +25,7 @@ USER user
 
 EXPOSE 8005
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8005"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl --fail --silent --show-error "http://127.0.0.1:${PORT:-8005}/health" > /dev/null || exit 1
+
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port \"${PORT:-8005}\""]
