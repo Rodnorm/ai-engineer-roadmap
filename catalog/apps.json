@@ -112,7 +112,7 @@
       "summary": "Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization.",
       "description": "Agentic Workflow implements a ReAct loop with deterministic tool calling (calculator, knowledge search, and sensitive alerts). Integrates mandatory Human-in-the-Loop authorization before executing critical actions.",
       "category": "Autonomous Agents & Tool Calling",
-      "status": "development",
+      "status": "ready",
       "technologies": ["Next.js 15", "FastAPI", "Azure OpenAI", "ReAct Loop"],
       "liveUrl": "",
       "repositoryPath": "apps/05-agentic-workflow",

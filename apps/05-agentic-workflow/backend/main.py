@@ -10,13 +10,13 @@ import logging
 import os
 import time
 import uuid
-from typing import Optional
+from typing import Any, Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from openai import OpenAI
+from openai import AzureOpenAI, OpenAI
 
 from agent import SESSIONS, resume_agent_approval, run_agent_loop
 from models import AgentSessionResponse, ApproveTaskRequest, PendingApproval, RunTaskRequest
@@ -81,13 +81,29 @@ rate_limiter = InMemoryRateLimiter(
 )
 
 
-def _build_client() -> Optional[OpenAI]:
+API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
+
+
+def _build_client() -> Optional[Any]:
     if not ENDPOINT or not DEPLOYMENT or not API_KEY:
         log.info("Azure OpenAI credentials not configured. Using deterministic offline agent planner.")
         return None
     try:
+        if "/openai/v1" in ENDPOINT:
+            return OpenAI(
+                base_url=ENDPOINT,
+                api_key=API_KEY,
+                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+            )
+        if AzureOpenAI:
+            return AzureOpenAI(
+                azure_endpoint=ENDPOINT,
+                api_key=API_KEY,
+                api_version=API_VERSION,
+                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+            )
         return OpenAI(
-            base_url=ENDPOINT,
+            base_url=f"{ENDPOINT}/openai/v1",
             api_key=API_KEY,
             timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
         )
@@ -96,7 +112,7 @@ def _build_client() -> Optional[OpenAI]:
         return None
 
 
-client: Optional[OpenAI] = _build_client()
+client: Optional[Any] = _build_client()
 
 
 def _get_client_ip(request: Request) -> str:
