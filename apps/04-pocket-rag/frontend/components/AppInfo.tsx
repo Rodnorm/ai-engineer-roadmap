@@ -52,7 +52,7 @@ export default function AppInfo() {
           <section className="mt-7">
             <h3 className="text-sm font-semibold">{infoT("technologies")}</h3>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {["Next.js 15", "React 19", "TypeScript", "Tailwind CSS 4", "FastAPI", "ChromaDB", "Azure OpenAI"].map((technology) => (
+              {["Next.js 15", "React 19", "TypeScript", "Tailwind CSS 4", "FastAPI", "SQLite Vector", "Azure OpenAI"].map((technology) => (
                 <li key={technology} className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted">{technology}</li>
               ))}
             </ul>

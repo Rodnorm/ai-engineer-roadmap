@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = resolveLocale(store.get('pocket-rag-locale')?.value);
   return {
     title: dictionaries[locale].app.title,
-    description: 'Cost-optimized Local RAG with ChromaDB vector store and OpenAI LLM',
+    description: 'Cost-optimized Local RAG with SQLite vector store and OpenAI LLM',
   };
 }
 

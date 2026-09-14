@@ -16,7 +16,7 @@
     "statusLabel": "Status",
     "status": "In development",
     "whatItDoes": "What it does",
-    "what1": "Indexes local documents into a ChromaDB vector database.",
+    "what1": "Indexes local documents into a SQLite vector database.",
     "what2": "Enables semantic search across your own data.",
     "what3": "Uses Azure OpenAI for precise answers with citations.",
     "howToUse": "How to use it",
@@ -27,7 +27,7 @@
   },
   "labels": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Cost-optimized Personal AI Knowledge Base with Local ChromaDB RAG",
+    "appSubtitle": "Cost-optimized Personal AI Knowledge Base with SQLite Vector RAG",
     "docManagerTitle": "Document Knowledge Base",
     "uploadButton": "Upload Document",
     "uploading": "Uploading & Vectorizing...",

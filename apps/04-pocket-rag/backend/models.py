@@ -84,4 +84,4 @@ class QueryResponse(BaseModel):
 class SystemStats(BaseModel):
     total_documents: int
     total_chunks: int
-    vector_store_type: str = "ChromaDB (Local)"
+    vector_store_type: str = "SQLite Vector (Local)"

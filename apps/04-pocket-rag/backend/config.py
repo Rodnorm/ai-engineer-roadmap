@@ -28,7 +28,6 @@ def _float_from_env(name: str, default: float, minimum: float = 0.0) -> float:
 @dataclass(frozen=True)
 class Settings:
     environment: str
-    chroma_db_path: Path
     upload_dir: Path
     metadata_db_path: Path
     max_file_bytes: int
@@ -78,9 +77,13 @@ def load_settings() -> Settings:
         for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
         if origin.strip()
     )
+    embedding_deployment = (
+        os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+        or os.getenv("EMBEDDING_MODEL")
+        or "text-embedding-3-small"
+    )
     return Settings(
         environment=environment,
-        chroma_db_path=_path_from_env("CHROMA_DB_PATH", str(data_dir / "chroma_db")),
         upload_dir=_path_from_env("UPLOAD_DIR", str(data_dir / "uploads")),
         metadata_db_path=_path_from_env("METADATA_DB_PATH", str(data_dir / "metadata.sqlite3")),
         max_file_bytes=_int_from_env("MAX_FILE_BYTES", 10 * 1024 * 1024),
@@ -92,9 +95,7 @@ def load_settings() -> Settings:
         cleanup_interval_seconds=_int_from_env("CLEANUP_INTERVAL_SECONDS", 60),
         chunk_size_words=chunk_size,
         chunk_overlap_words=chunk_overlap,
-        embedding_model=os.getenv(
-            "EMBEDDING_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        ),
+        embedding_model=embedding_deployment,
         max_question_chars=_int_from_env("MAX_QUESTION_CHARS", 2000),
         max_context_chars=_int_from_env("MAX_CONTEXT_CHARS", 16000),
         max_output_tokens=_int_from_env("MAX_OUTPUT_TOKENS", 700),

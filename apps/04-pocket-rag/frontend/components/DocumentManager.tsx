@@ -186,7 +186,7 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
       )}
 
       {/* Documents List */}
-      <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+      <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto pr-1">
         {documents.length === 0 ? (
           <div className="rounded-lg border border-border/60 bg-surface/20 p-4 text-center text-xs text-muted">
             {labels.noDocs}
