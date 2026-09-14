@@ -102,6 +102,11 @@ export const de: Dictionary = {
       summary: "Private, mehrsprachige RAG-Wissensbasis mit SQLite-Vektorspeicher, Beispieldokumenten und nachvollziehbaren Quellenangaben.",
       description: "pocketRag indexiert PDF-, Markdown-, TXT- und DOCX-Dateien mit Azure-OpenAI-Embeddings und Kosinus-Suche in SQLite/NumPy und erzeugt fundierte Antworten mit Quellenangaben, privatem Zugriff, Kostenkontrollen und automatischer Upload-Löschung.",
       category: "Wissensbasis & RAG",
+    },
+    "agentic-workflow": {
+      summary: "Autonomer ReAct-Agent mit mehreren Werkzeugen, Offline-Ausführung und menschlicher Freigabe vor sensiblen Aktionen.",
+      description: "Agentic Workflow orchestriert Rechner-, Wissenssuch- und Alarmierungswerkzeuge über Azure-OpenAI-Function-Calling oder einen deterministischen Offline-Planer – mit Iterationsgrenzen, Rate Limiting und verpflichtender Human-in-the-Loop-Freigabe.",
+      category: "Autonome Agenten & Tool Calling",
     }
   },
 };
