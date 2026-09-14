@@ -100,6 +100,11 @@ export const en = {
       summary: "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
       description: "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       category: "Knowledge Base & RAG",
+    },
+    "agentic-workflow": {
+      summary: "Autonomous ReAct agent with multi-tool calling, offline execution, and human approval before sensitive actions.",
+      description: "Agentic Workflow orchestrates calculator, knowledge-search, and alert tools through Azure OpenAI function calling or a deterministic offline planner, with iteration limits, rate limits, and mandatory Human-in-the-Loop authorization.",
+      category: "Autonomous Agents & Tool Calling",
     }
   },
 };

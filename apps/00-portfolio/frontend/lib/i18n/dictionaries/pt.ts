@@ -102,6 +102,11 @@ export const pt: Dictionary = {
       summary: "Base de conhecimento RAG privada e multilíngue com armazenamento vetorial em SQLite, documentos de exemplo e citações verificáveis.",
       description: "O pocketRag indexa arquivos PDF, Markdown, TXT e DOCX com embeddings do Azure OpenAI e busca por similaridade de cosseno em SQLite/NumPy, gerando respostas fundamentadas com citações, acesso privado, controle de custos e expiração automática dos uploads.",
       category: "Base de Conhecimento & RAG",
+    },
+    "agentic-workflow": {
+      summary: "Agente ReAct autônomo com múltiplas ferramentas, execução offline e aprovação humana antes de ações sensíveis.",
+      description: "O Agentic Workflow orquestra ferramentas de cálculo, busca de conhecimento e alertas por function calling do Azure OpenAI ou por um planejador offline determinístico, com limites de iteração, rate limiting e autorização Human-in-the-Loop obrigatória.",
+      category: "Agentes Autônomos & Chamada de Ferramentas",
     }
   },
 };

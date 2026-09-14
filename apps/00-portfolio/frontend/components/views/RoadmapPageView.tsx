@@ -68,13 +68,14 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
     {
       id: "05",
       title: "App 05: Agentic Workflow",
-      status: "in_progress",
+      status: "completed",
       description: locale === "pt"
         ? "Loop autônomo de agentes, múltiplas ferramentas (tool calling), persistência de máquina de estados e validação humana."
         : locale === "de"
         ? "Autonome Agenten-Ausführungsschleife, Multi-Tool-Aufrufe, State-Machine-Persistenz und Human-in-the-Loop-Validierung."
         : "Autonomous agent execution loop, multi-tool calling, state machine persistence, and human-in-the-loop validation.",
       badge: "Autonomous Agents",
+      link: "/apps/agentic-workflow",
     },
   ];
 
