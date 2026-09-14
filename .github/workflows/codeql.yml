@@ -34,12 +34,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.4.0
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3.37.9
+        uses: github/codeql-action/init@v3.38.0
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3.37.9
+        uses: github/codeql-action/analyze@v3.38.0
