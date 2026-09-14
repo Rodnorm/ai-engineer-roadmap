@@ -9,7 +9,7 @@ Este monorepo usa **uma aplicação Coolify por backend**. Todos podem rodar no 
 | App 01 — Smart Inspector | `/apps/01-smart-inspector/backend` | `/Dockerfile` | `8000` | `/health` |
 | App 02 — Support Bot | `/apps/02-support-bot/backend` | `/Dockerfile` | `8000` | `/health` |
 | App 03 — Prompt Forge | `/apps/03-prompt-forge/backend` | `/Dockerfile` | `8000` | `/health` |
-| App 04 — pocketRag | `/apps/04-pocket-rag/backend` | `/Dockerfile` | `7860` | `/health` |
+| App 04 — pocketRag | `/apps/04-pocket-rag/backend` | `/Dockerfile` | `8000` | `/health` |
 
 > O App 05 ainda não existe na `main`. Quando ele entrar no repositório, adicione um Dockerfile no backend e crie uma quinta aplicação seguindo o mesmo padrão.
 
@@ -19,7 +19,7 @@ Este monorepo usa **uma aplicação Coolify por backend**. Todos podem rodar no 
 2. Adicione uma **Application** e escolha **Dockerfile** como build pack.
 3. Selecione a branch `chore/coolify-backend-deploy` durante a homologação. Depois do merge, altere para `main`.
 4. Preencha `Base Directory` e `Dockerfile Location` conforme a tabela.
-5. Configure `Ports Exposes` com a porta da tabela.
+5. Configure `Ports Exposes` como `8000`.
 6. Configure um domínio por backend, por exemplo `api-app01.seudominio.com`.
 7. Configure o health check HTTP em `/health`.
 8. Ative deploy automático somente para a branch usada em produção.
@@ -37,11 +37,9 @@ APP_ENV=production
 PORT=8000
 ```
 
-Para o App 04, preserve a porta do container atual:
+No App 04, configure também a origem exata do frontend:
 
 ```dotenv
-APP_ENV=production
-PORT=7860
 CORS_ORIGINS=https://frontend-app04.seudominio.com
 ```
 
@@ -54,9 +52,12 @@ Além dessas variáveis, configure as credenciais Azure e os limites de custo/ra
 
 ## Storage do App 04
 
-Não configure volume persistente para o App 04 depois que a alteração sem persistência for integrada à `main`. Enquanto a implementação atual ainda estiver na branch-base, os diretórios locais continuam existindo dentro do container e serão descartados em rebuilds ou redeploys.
+O App 04 não usa mais ChromaDB. Os documentos enviados, embeddings, metadados e contadores de rate limit são armazenados em SQLite e arquivos locais dentro de `/app/data`.
 
-Depois que a alteração de storage entrar na `main`, atualize esta branch antes do merge e confirme que o build continua sem referências obrigatórias ao ChromaDB/SQLite.
+- Para uma demo efêmera, não configure volume. Os dados serão perdidos em rebuilds ou redeploys.
+- Para manter documentos entre deploys, adicione um **Persistent Storage** no Coolify com destino `/app/data`. Em bind mounts, garanta permissão de escrita para o UID `1000`; volumes Docker normalmente herdam as permissões do diretório criado na imagem.
+
+Não monte somente o arquivo SQLite: o banco e os uploads precisam permanecer sincronizados, portanto persista o diretório `/app/data` inteiro.
 
 ## Watch paths recomendados
 

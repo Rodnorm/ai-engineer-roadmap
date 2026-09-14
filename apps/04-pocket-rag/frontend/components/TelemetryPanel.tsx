@@ -30,7 +30,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({
             {labels.vectorDb || 'Vector Store'}
           </p>
           <p className="text-xs font-bold text-text">
-            {stats?.vector_store_type || 'ChromaDB Local'}
+            {stats?.vector_store_type || 'SQLite Vector'}
           </p>
         </div>
       </div>

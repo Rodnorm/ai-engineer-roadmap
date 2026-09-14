@@ -1,7 +1,7 @@
 {
   "en": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Cost-optimized Personal AI Knowledge Base with Local ChromaDB RAG",
+    "appSubtitle": "Cost-optimized Personal AI Knowledge Base with SQLite Vector RAG",
     "docManagerTitle": "Document Knowledge Base",
     "uploadButton": "Upload Document",
     "uploading": "Uploading & Vectorizing...",
@@ -21,7 +21,7 @@
   },
   "pt-BR": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Base de Conhecimento IA Pessoal de Custo Zero com RAG Local em ChromaDB",
+    "appSubtitle": "Base de Conhecimento IA Pessoal com RAG Local em SQLite Vector",
     "docManagerTitle": "Base de Conhecimento de Documentos",
     "uploadButton": "Enviar Documento",
     "uploading": "Enviando e Vetorizando...",
@@ -41,7 +41,7 @@
   },
   "de": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Kostengünstige persönliche KI-Wissensdatenbank mit lokalam ChromaDB-RAG",
+    "appSubtitle": "Kostengünstige persönliche KI-Wissensdatenbank mit SQLite-Vektor-RAG",
     "docManagerTitle": "Dokumenten-Wissensdatenbank",
     "uploadButton": "Dokument hochladen",
     "uploading": "Wird hochgeladen & vektorisiert...",

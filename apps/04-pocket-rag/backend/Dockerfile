@@ -12,21 +12,21 @@ ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=7860
+    PORT=8000
 
 COPY --chown=user:user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=user:user . .
 
-RUN mkdir -p /app/data/uploads /app/data/chroma_db /home/user/.cache && \
+RUN mkdir -p /app/data/uploads /home/user/.cache && \
     chown -R user:user /app /home/user
 
 USER user
 
-EXPOSE 7860
+EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl --fail --silent --show-error "http://127.0.0.1:${PORT:-7860}/health" > /dev/null || exit 1
+    CMD curl --fail --silent --show-error "http://127.0.0.1:${PORT:-8000}/health" > /dev/null || exit 1
 
-CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port \"${PORT:-7860}\""]
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port \"${PORT:-8000}\""]

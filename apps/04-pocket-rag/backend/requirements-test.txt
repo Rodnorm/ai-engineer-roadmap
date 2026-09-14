@@ -1,6 +1,4 @@
 -r requirements.txt
 
-# PersistentClient.close() releases temporary database files on Windows.
-chromadb==1.5.9
 # Explicit transport dependency for FastAPI's TestClient.
 httpx==0.28.1

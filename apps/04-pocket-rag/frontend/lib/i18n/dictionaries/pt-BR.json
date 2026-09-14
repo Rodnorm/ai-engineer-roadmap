@@ -16,7 +16,7 @@
     "statusLabel": "Status",
     "status": "Em desenvolvimento",
     "whatItDoes": "O que ele faz",
-    "what1": "Indexa documentos locais em um banco de dados vetorial ChromaDB.",
+    "what1": "Indexa documentos locais em um banco de dados vetorial SQLite.",
     "what2": "Permite a busca semântica em seus próprios dados.",
     "what3": "Utiliza Azure OpenAI para respostas precisas com citações.",
     "howToUse": "Como usar",
@@ -27,7 +27,7 @@
   },
   "labels": {
     "appTitle": "pocketRag",
-    "appSubtitle": "Base de Conhecimento IA Pessoal de Custo Zero com RAG Local em ChromaDB",
+    "appSubtitle": "Base de Conhecimento IA Pessoal com RAG Local em SQLite Vector",
     "docManagerTitle": "Base de Conhecimento de Documentos",
     "uploadButton": "Enviar Documento",
     "uploading": "Enviando e Vetorizando...",

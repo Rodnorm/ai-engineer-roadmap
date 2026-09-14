@@ -37,12 +37,6 @@ except ImportError:
     AzureOpenAI = None
     OpenAI = None
 
-try:
-    import chromadb
-    from chromadb.utils import embedding_functions
-except ImportError:
-    chromadb = None
-    embedding_functions = None
 
 
 load_dotenv()
@@ -85,7 +79,7 @@ if not logger.handlers:
 
 app = FastAPI(
     title="pocketRag Backend",
-    description="Local-first RAG API with ChromaDB and Azure OpenAI",
+    description="Local-first RAG API with SQLite Vector and Azure OpenAI",
     version="0.2.0",
     lifespan=lifespan,
     docs_url=None if settings.environment == "production" else "/docs",
@@ -101,9 +95,22 @@ app.add_middleware(
 )
 
 store = DocumentStore(settings.metadata_db_path, settings.upload_dir)
+try:
+    store.set_index_config(
+        {
+            "embedding_model": settings.embedding_model,
+            "chunk_size_words": settings.chunk_size_words,
+            "chunk_overlap_words": settings.chunk_overlap_words,
+        }
+    )
+except Exception:
+    pass
 
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
 AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT = (
+    os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT") or settings.embedding_model
+)
 AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
 EXAMPLE_DOCUMENTS_DIR = Path(__file__).resolve().parent / "sample_documents"
@@ -185,30 +192,6 @@ def require_access(authorization: str | None = Header(default=None)) -> None:
 protected = [Depends(require_access)]
 
 
-@lru_cache(maxsize=1)
-def _get_chroma_collection():
-    if chromadb is None or embedding_functions is None:
-        raise RuntimeError("ChromaDB is unavailable")
-    settings.chroma_db_path.mkdir(parents=True, exist_ok=True)
-    embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=settings.embedding_model
-    )
-    client = chromadb.PersistentClient(path=str(settings.chroma_db_path))
-    collection = client.get_or_create_collection(
-        name="pocket_rag_docs",
-        embedding_function=embedding_function,
-        metadata={"hnsw:space": "cosine"},
-    )
-    store.set_index_config(
-        {
-            "embedding_model": settings.embedding_model,
-            "chunk_size_words": settings.chunk_size_words,
-            "chunk_overlap_words": settings.chunk_overlap_words,
-        }
-    )
-    return collection
-
-
 def _build_client():
     if not AZURE_OPENAI_ENDPOINT or not AZURE_OPENAI_DEPLOYMENT or not AZURE_OPENAI_API_KEY:
         return None
@@ -226,6 +209,55 @@ def _build_client():
             **common,
         )
     return OpenAI(base_url=f"{AZURE_OPENAI_ENDPOINT}/openai/v1", **common) if OpenAI else None
+
+
+def _generate_embeddings(texts: list[str]) -> list[list[float]]:
+    if not texts:
+        return []
+    client = _build_client()
+    if client is None:
+        raise RuntimeError("Embedding provider is not configured")
+    embeddings: list[list[float]] = []
+    batch_size = 64
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i : i + batch_size]
+        response = client.embeddings.create(
+            model=AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
+            input=batch,
+        )
+        embeddings.extend([item.embedding for item in response.data])
+    return embeddings
+
+
+def _generate_query_embedding(text: str) -> list[float]:
+    embeddings = _generate_embeddings([text])
+    if not embeddings:
+        raise RuntimeError("No embedding generated for query")
+    return embeddings[0]
+
+
+def _build_chunk_records(
+    document_id: str,
+    filename: str,
+    chunks: list[ParsedChunk],
+    embeddings: list[list[float]],
+    source: str = "upload",
+) -> list[dict[str, Any]]:
+    records = []
+    for chunk, emb in zip(chunks, embeddings):
+        records.append(
+            {
+                "id": f"{document_id}_{chunk.chunk_index}",
+                "document_id": document_id,
+                "filename": filename,
+                "chunk_index": chunk.chunk_index,
+                "content": chunk.content,
+                "embedding": emb,
+                "source": source,
+                "page_number": chunk.page_number,
+            }
+        )
+    return records
 
 
 async def _read_limited(file: UploadFile) -> bytes:
@@ -250,25 +282,6 @@ def _parse(content: bytes, extension: str) -> list[ParsedChunk]:
     )
 
 
-def _chroma_payload(
-    document_id: str, filename: str, chunks: list[ParsedChunk], source: str = "upload"
-):
-    ids = [f"{document_id}_{chunk.chunk_index}" for chunk in chunks]
-    documents = [chunk.content for chunk in chunks]
-    metadatas = []
-    for chunk in chunks:
-        metadata: dict[str, str | int] = {
-            "document_id": document_id,
-            "filename": filename,
-            "chunk_index": chunk.chunk_index,
-            "source": source,
-        }
-        if chunk.page_number is not None:
-            metadata["page_number"] = chunk.page_number
-        metadatas.append(metadata)
-    return ids, documents, metadatas
-
-
 def _delete_upload_record(record) -> bool:
     with document_mutation_lock:
         current = store.get_record(record["id"])
@@ -279,8 +292,6 @@ def _delete_upload_record(record) -> bool:
         try:
             if original.exists():
                 original.replace(quarantine)
-            collection = _get_chroma_collection()
-            collection.delete(where={"document_id": current["id"]})
             store.delete_metadata(current["id"])
             quarantine.unlink(missing_ok=True)
         except Exception:
@@ -339,8 +350,8 @@ def health_check():
 @app.get("/api/stats", response_model=SystemStats, dependencies=protected)
 def get_stats():
     try:
-        chunks = _get_chroma_collection().count()
-        vector_store = "ChromaDB (persistent)"
+        chunks = store.count_chunks()
+        vector_store = "SQLite Vector (Local)"
     except Exception:
         chunks = 0
         vector_store = "Unavailable"
@@ -373,7 +384,6 @@ def list_example_documents():
 
 @app.post("/api/examples/load", response_model=list[DocumentItem], dependencies=protected)
 async def load_example_documents():
-    collection = await asyncio.to_thread(_get_chroma_collection)
     for definition in EXAMPLE_DOCUMENTS:
         if store.get_record(definition["id"]) is not None:
             continue
@@ -392,20 +402,21 @@ async def load_example_documents():
                 created_at=datetime.now(timezone.utc).isoformat(),
                 source="example",
             )
-            ids, documents, metadatas = _chroma_payload(
-                item.id, item.filename, chunks, source="example"
-            )
-            await asyncio.to_thread(
-                collection.add, ids=ids, documents=documents, metadatas=metadatas
+            chunk_texts = [c.content for c in chunks]
+            embeddings = await asyncio.to_thread(_generate_embeddings, chunk_texts)
+            chunk_records = _build_chunk_records(
+                item.id, item.filename, chunks, embeddings, source="example"
             )
             store.add(
                 item,
                 stored_filename=f"sample:{item.filename}",
                 content_sha256=hashlib.sha256(content).hexdigest(),
             )
+            store.add_chunks(chunk_records)
         except Exception as error:
             try:
-                await asyncio.to_thread(collection.delete, where={"document_id": definition["id"]})
+                store.delete_chunks(definition["id"])
+                store.delete_metadata(definition["id"])
             except Exception:
                 logger.error("example_rollback_failed", extra={"document_id": definition["id"]})
             raise HTTPException(status_code=503, detail="Example document indexing failed") from error
@@ -455,22 +466,25 @@ async def upload_document(file: UploadFile = File(...)):
         chunks_count=len(chunks),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
-    collection = None
     indexed = False
     try:
         temporary_path.write_bytes(content)
+        chunk_texts = [c.content for c in chunks]
+        embeddings = await asyncio.to_thread(_generate_embeddings, chunk_texts)
+        chunk_records = _build_chunk_records(
+            document_id, filename, chunks, embeddings, source="upload"
+        )
         temporary_path.replace(original_path)
-        collection = await asyncio.to_thread(_get_chroma_collection)
-        ids, documents, metadatas = _chroma_payload(document_id, filename, chunks)
-        await asyncio.to_thread(collection.add, ids=ids, documents=documents, metadatas=metadatas)
-        indexed = True
         store.add(item, stored_filename, digest)
+        store.add_chunks(chunk_records)
+        indexed = True
     except Exception as error:
-        if indexed and collection is not None:
+        if indexed:
             try:
-                await asyncio.to_thread(collection.delete, where={"document_id": document_id})
+                store.delete_chunks(document_id)
+                store.delete_metadata(document_id)
             except Exception:
-                logger.error("upload_rollback_vector_delete_failed", extra={"document_id": document_id})
+                logger.error("upload_rollback_failed", extra={"document_id": document_id})
         temporary_path.unlink(missing_ok=True)
         original_path.unlink(missing_ok=True)
         logger.error("document_upload_failed", extra={"document_id": document_id})
@@ -503,10 +517,6 @@ def delete_document(document_id: str):
 def clear_documents():
     records = [store.get_record(item.id) for item in store.list_documents("upload")]
     try:
-        collection = _get_chroma_collection()
-        ids = collection.get(where={"source": "upload"}).get("ids", [])
-        if ids:
-            collection.delete(ids=ids)
         store.clear_metadata("upload")
         for record in records:
             if record:
@@ -523,24 +533,6 @@ def _abstention(language: str) -> str:
         "pt-BR": "Não encontrei evidências suficientes nos documentos enviados.",
         "en": "I could not find sufficient evidence in the uploaded documents.",
     }[language]
-
-
-def _suggestion_context(collection) -> str:
-    parts: list[str] = []
-    context_length = 0
-    for document in store.list_documents("upload")[:5]:
-        result = collection.get(
-            where={"document_id": document.id},
-            limit=3,
-            include=["documents", "metadatas"],
-        )
-        for content in result.get("documents") or []:
-            part = f"[DOCUMENT: {document.filename}]\n{content}\n[/DOCUMENT]"
-            if context_length + len(part) > settings.max_context_chars:
-                return "\n\n".join(parts)
-            parts.append(part)
-            context_length += len(part)
-    return "\n\n".join(parts)
 
 
 def _parse_suggestions(content: str) -> list[str]:
@@ -574,8 +566,7 @@ def suggest_questions(request: SuggestionRequest):
         return SuggestionResponse(questions=[], generation_status="disabled")
 
     try:
-        collection = _get_chroma_collection()
-        context = _suggestion_context(collection)
+        context = store.get_chunks_for_suggestions(max_chars=settings.max_context_chars)
     except Exception as error:
         raise HTTPException(status_code=503, detail="Suggestion context is temporarily unavailable") from error
     if not context:
@@ -638,36 +629,25 @@ def query_rag(request: QueryRequest):
     start = time.perf_counter()
     if len(request.question) > settings.max_question_chars:
         raise HTTPException(status_code=422, detail="Question exceeds the configured limit")
-    try:
-        collection = _get_chroma_collection()
-        count = collection.count()
-    except Exception as error:
-        raise HTTPException(status_code=503, detail="Vector search is temporarily unavailable") from error
     requested_source = None if request.scope == "all" else (
         "example" if request.scope == "examples" else "upload"
     )
-    if count == 0 or (requested_source and store.count_documents(requested_source) == 0):
+    count = store.count_chunks(requested_source)
+    if count == 0:
         return QueryResponse.empty(_abstention(request.language), start)
 
     try:
-        query_options: dict[str, Any] = {
-            "query_texts": [request.question],
-            "n_results": min(request.top_k, count),
-        }
-        if requested_source:
-            query_options["where"] = {"source": requested_source}
-        results = collection.query(**query_options)
+        query_embedding = _generate_query_embedding(request.question)
+        matches = store.search_chunks(
+            query_embedding,
+            top_k=request.top_k,
+            min_score=settings.min_relevance_score,
+            source=requested_source,
+        )
     except Exception as error:
+        logger.error("vector_search_failed", extra={"error_type": type(error).__name__})
         raise HTTPException(status_code=503, detail="Vector search is temporarily unavailable") from error
 
-    matches: list[tuple[float, dict[str, Any]]] = []
-    documents = (results.get("documents") or [[]])[0]
-    for index, content in enumerate(documents):
-        metadata = (results.get("metadatas") or [[]])[0][index] or {}
-        distance = (results.get("distances") or [[]])[0][index]
-        score = max(0.0, min(1.0, 1.0 - float(distance)))
-        if score >= settings.min_relevance_score:
-            matches.append((score, {"content": content, **metadata, "chunk_id": results["ids"][0][index]}))
     if not matches:
         return QueryResponse.empty(_abstention(request.language), start)
 

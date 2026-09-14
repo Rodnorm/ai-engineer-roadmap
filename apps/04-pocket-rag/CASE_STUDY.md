@@ -8,20 +8,20 @@ to inspect.
 
 ## Approach
 
-The solution keeps retrieval local: strict parsers produce bounded overlapping word
-chunks, a pinned multilingual sentence-transformer creates embeddings, and ChromaDB
-performs cosine retrieval. SQLite is the source of truth for the document catalog and
-original files use opaque server-generated names. Azure OpenAI is used only for the
-final answer and is behind an opt-in kill switch and cost controls.
+The solution keeps retrieval fast and lightweight: strict parsers produce bounded overlapping word
+chunks, Azure OpenAI generates embeddings (`text-embedding-3-small`), and SQLite/NumPy
+performs cosine similarity retrieval. SQLite is the source of truth for the document catalog and
+chunk vectors, while original files use opaque server-generated names. Azure OpenAI is used for
+embeddings and answer generation, behind opt-in kill switches and cost controls.
 
 Reliability work focused on transactional behavior at storage boundaries. Failed
-indexing removes the saved file and vectors. Deletion quarantines the original before
-removing vectors and metadata, restoring it when vector deletion fails. Tests use
+indexing removes the saved file and chunk records. Deletion quarantines the original before
+removing chunk vectors and metadata, restoring it when metadata deletion fails. Tests use
 temporary storage and deterministic doubles, so local personal data and paid APIs are
 never touched.
 
 User uploads have a 30-minute server-side TTL. Cleanup runs at startup and every
-minute, removing originals, ChromaDB vectors, and SQLite metadata without relying on
+minute, removing originals, chunk vectors, and SQLite metadata without relying on
 the browser remaining open. Bundled examples are excluded, and failed cleanup is
 logged for retry on the next sweep.
 
@@ -40,8 +40,8 @@ open the complete retrieved chunk in a native modal dialog.
 - The private API-key mode is intentionally single-user. It avoids pretending that a
   browser-generated identifier provides authorization, but it is not a multi-tenant
   product.
-- Local embeddings remove per-query embedding fees, not hosting, CPU, disk, or model
-  download costs.
+- SQLite vector search avoids the multi-gigabyte dependency footprint of ChromaDB and
+  PyTorch, making the application lightweight and compatible with standard serverless hosting.
 
 ## Evidence and next release gate
 

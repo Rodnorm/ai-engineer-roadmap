@@ -19,6 +19,7 @@ The command clears only the configured pocketRag instance, uploads the evaluatio
 corpus, queries the API, and writes untracked `evals/results.json`. Review per-question
 scores, aggregates, failures, token usage, and Azure cost before replacing this status.
 
-ChromaDB keeps the demo architecture simple and local-first. The multilingual MiniLM
-model avoids paid retrieval calls, but model download, cold start, disk, CPU, and
-multilingual retrieval quality still need measurement on the target host.
+SQLite vector search keeps the demo architecture simple and lightweight, avoiding
+multi-gigabyte local embedding models and native vector databases. Azure OpenAI
+embeddings provide fast, high-quality multilingual retrieval while allowing the application
+to deploy easily on serverless environments.
