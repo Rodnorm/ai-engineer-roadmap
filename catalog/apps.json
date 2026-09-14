@@ -83,11 +83,11 @@
       "id": "04",
       "slug": "pocket-rag",
       "title": "pocketRag",
-      "summary": "Local-first personal RAG knowledge base with persistent document storage, multilingual retrieval, and inspectable citations.",
-      "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with local multilingual embeddings and ChromaDB, then optionally generates grounded Azure OpenAI answers behind private access and cost controls.",
+      "summary": "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
+      "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       "category": "Knowledge Base & RAG",
       "status": "development",
-      "technologies": ["Next.js 15", "FastAPI", "ChromaDB", "Azure OpenAI"],
+      "technologies": ["Next.js 15", "FastAPI", "SQLite Vector", "Azure OpenAI"],
       "liveUrl": "",
       "repositoryPath": "apps/04-pocket-rag",
       "caseStudyPath": "pocket-rag.md",
@@ -102,6 +102,32 @@
       },
       "backend": {
         "path": "apps/04-pocket-rag/backend",
+        "framework": "FastAPI"
+      }
+    },
+    {
+      "id": "05",
+      "slug": "agentic-workflow",
+      "title": "Agentic Workflow",
+      "summary": "Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization.",
+      "description": "Agentic Workflow implements a ReAct loop with deterministic tool calling (calculator, knowledge search, and sensitive alerts). Integrates mandatory Human-in-the-Loop authorization before executing critical actions.",
+      "category": "Autonomous Agents & Tool Calling",
+      "status": "ready",
+      "technologies": ["Next.js 15", "FastAPI", "Azure OpenAI", "ReAct Loop"],
+      "liveUrl": "",
+      "repositoryPath": "apps/05-agentic-workflow",
+      "caseStudyPath": "agentic-workflow.md",
+      "security": {
+        "publicDemo": false,
+        "rateLimited": true,
+        "storesUserContent": false
+      },
+      "frontend": {
+        "path": "apps/05-agentic-workflow/frontend",
+        "framework": "Next.js"
+      },
+      "backend": {
+        "path": "apps/05-agentic-workflow/backend",
         "framework": "FastAPI"
       }
     }

@@ -15,6 +15,7 @@ This repository documents the transition from senior frontend engineering toward
 | [02 — Support Bot](./apps/02-support-bot) | Healthcare billing assistant with Azure AI Language NLP, PII data masking, and grounded retrieval | Next.js 16, FastAPI, Azure AI Language, Azure AI Agents | Live |
 | [03 — Prompt Forge](./apps/03-prompt-forge) | Structured content generation workbench with Azure Content Safety filtering and SSE streaming | Next.js 16, FastAPI, Azure OpenAI, Azure Content Safety | Live |
 | [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and RAGAS evaluation tooling | Next.js 15, FastAPI, ChromaDB, Azure OpenAI | In development |
+| [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Ready |
 
 ---
 
@@ -27,7 +28,8 @@ This repository documents the transition from senior frontend engineering toward
 │   ├── 01-smart-inspector/    # Vision & OCR multi-modal service
 │   ├── 02-support-bot/        # Healthcare NLP & grounded RAG assistant
 │   ├── 03-prompt-forge/       # Structured content & Content Safety studio
-│   └── 04-pocket-rag/          # Local-first personal RAG knowledge base
+│   ├── 04-pocket-rag/          # Local-first personal RAG knowledge base
+│   └── 05-agentic-workflow/   # Autonomous agent loop & HITL approval
 ├── catalog/                   # Monorepo catalog registry (apps.json, schema.json)
 ├── templates/                 # Reusable starter application template (templates/ai-app)
 ├── docs/                      # Architectural, security, testing, and deployment standards
@@ -84,6 +86,8 @@ The monorepo includes a cross-platform Node.js development orchestrator (`script
 | | Backend | `8003` | `apps/03-prompt-forge/backend` | |
 | **App 04** (pocketRag) | Frontend | `3004` | `apps/04-pocket-rag/frontend` | `npm run dev:04` |
 | | Backend | `8004` | `apps/04-pocket-rag/backend` | |
+| **App 05** (Agentic Workflow) | Frontend | `3005` | `apps/05-agentic-workflow/frontend` | `npm run dev:05` |
+| | Backend | `8005` | `apps/05-agentic-workflow/backend` | |
 
 ### 🛠️ One-Command Local Startup
 
@@ -98,6 +102,7 @@ npm run dev:01    # Smart Inspector (3001 & 8001)
 npm run dev:02    # Support Bot (3002 & 8002)
 npm run dev:03    # Prompt Forge (3003 & 8003)
 npm run dev:04    # pocketRag (3004 & 8004)
+npm run dev:05    # Agentic Workflow (3005 & 8005)
 npm run dev:00    # Portfolio Catalog (3000)
 ```
 

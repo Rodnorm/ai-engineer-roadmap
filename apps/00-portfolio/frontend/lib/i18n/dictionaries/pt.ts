@@ -98,5 +98,10 @@ export const pt: Dictionary = {
       description: "O Prompt Forge permite a equipes de marketing gerar variações de conteúdo com controle de personas, moderação prévia com Azure Content Safety, streaming SSE em tempo real e histórico no cliente.",
       category: "Engenharia de Prompt & Geração de Conteúdo",
     },
+    "pocket-rag": {
+      summary: "Base de conhecimento RAG privada e multilíngue com armazenamento vetorial em SQLite, documentos de exemplo e citações verificáveis.",
+      description: "O pocketRag indexa arquivos PDF, Markdown, TXT e DOCX com embeddings do Azure OpenAI e busca por similaridade de cosseno em SQLite/NumPy, gerando respostas fundamentadas com citações, acesso privado, controle de custos e expiração automática dos uploads.",
+      category: "Base de Conhecimento & RAG",
+    }
   },
 };
