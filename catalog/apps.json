@@ -9,7 +9,12 @@
       "description": "Smart Inspector leverages Azure OpenAI Responses API to inspect uploaded images. Built with Pillow-based image validation, EXIF metadata stripping, dimension bounds, and server-enforced rate limits.",
       "category": "Vision & Multi-modal",
       "status": "live",
-      "technologies": ["Next.js 14", "FastAPI", "Azure OpenAI", "Pillow"],
+      "technologies": [
+        "Next.js 14",
+        "FastAPI",
+        "Azure OpenAI",
+        "Pillow"
+      ],
       "liveUrl": "https://ai-engineer-roadmap-lyart.vercel.app",
       "repositoryPath": "apps/01-smart-inspector",
       "caseStudyPath": "smart-inspector.md",
@@ -35,7 +40,12 @@
       "description": "Support Bot connects Azure AI Language (PII detection, sentiment, key phrase extraction) with Azure AI Agents. Includes strict grounding against prompt injection using untrusted input isolation tags.",
       "category": "Conversational AI & RAG",
       "status": "live",
-      "technologies": ["Next.js 16", "FastAPI", "Azure AI Language", "Azure AI Agents"],
+      "technologies": [
+        "Next.js 16",
+        "FastAPI",
+        "Azure AI Language",
+        "Azure AI Agents"
+      ],
       "liveUrl": "https://suport-bot-hazel.vercel.app/",
       "repositoryPath": "apps/02-support-bot",
       "caseStudyPath": "support-bot.md",
@@ -61,7 +71,12 @@
       "description": "Prompt Forge enables marketing teams to generate structured content variations. Integrates Azure Content Safety for pre-generation inspection, streaming SSE responses, and client-side history storage.",
       "category": "Prompt Engineering & Content Gen",
       "status": "live",
-      "technologies": ["Next.js 16", "FastAPI", "Azure OpenAI", "Azure Content Safety"],
+      "technologies": [
+        "Next.js 16",
+        "FastAPI",
+        "Azure OpenAI",
+        "Azure Content Safety"
+      ],
       "liveUrl": "https://prompt-forge-seven-tau.vercel.app/",
       "repositoryPath": "apps/03-prompt-forge",
       "caseStudyPath": "prompt-forge.md",
@@ -83,11 +98,16 @@
       "id": "04",
       "slug": "pocket-rag",
       "title": "pocketRag",
-      "summary": "Local-first personal RAG knowledge base with persistent document storage, multilingual retrieval, and inspectable citations.",
-      "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with local multilingual embeddings and ChromaDB, then optionally generates grounded Azure OpenAI answers behind private access and cost controls.",
+      "summary": "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
+      "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       "category": "Knowledge Base & RAG",
       "status": "development",
-      "technologies": ["Next.js 15", "FastAPI", "ChromaDB", "Azure OpenAI"],
+      "technologies": [
+        "Next.js 15",
+        "FastAPI",
+        "SQLite Vector",
+        "Azure OpenAI"
+      ],
       "liveUrl": "",
       "repositoryPath": "apps/04-pocket-rag",
       "caseStudyPath": "pocket-rag.md",
