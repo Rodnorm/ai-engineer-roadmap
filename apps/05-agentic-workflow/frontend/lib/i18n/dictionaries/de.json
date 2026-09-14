@@ -1,0 +1,71 @@
+{
+  "app": {
+    "badge": "APP 05",
+    "port": "PORT 3005",
+    "title": "Agentic Workflow",
+    "subtitle": "Autonome ReAct-Agentenschleife mit mehrstufiger Aufgabenbegründung, deterministischen Tool-Aufrufen, Zustandspersistenz und obligatorischer Human-in-the-Loop-Autorisierung.",
+    "loopBadge": "ReAct-Schleife (Max. 4 Schritte)",
+    "toolsBadge": "Tools: Rechner & Wissenssuche",
+    "hitlBadge": "Human-in-the-Loop (send_alert)",
+    "inputPlaceholder": "Weisen Sie den Agenten an (z. B. 'Berechne (25 * 40) + 150', 'Wie lautet die Rückerstattungsrichtlinie?', 'Sende Warnung an @ops-team')...",
+    "runButton": "Agent Ausführen",
+    "runningButton": "Wird ausgeführt...",
+    "resetButton": "Sitzung Zurücksetzen",
+    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+  },
+  "controls": {
+    "language": "Sprache ändern",
+    "lightTheme": "Zum hellen Design wechseln",
+    "darkTheme": "Zum dunklen Design wechseln",
+    "about": "Über App 05",
+    "close": "Dialog schließen"
+  },
+  "info": {
+    "description": "Agentic Workflow demonstriert eine autonome Agenten-Ausführungsschleife mit deterministischem Tool-Aufruf und einer Human-in-the-Loop-Sicherheitskontrolle. Entwickelt mit modernem Next.js und FastAPI ohne überladene Frameworks.",
+    "categoryLabel": "Kategorie",
+    "category": "Autonome Agenten",
+    "statusLabel": "Status",
+    "status": "Produktionsbereit",
+    "whatItDoes": "Kernfunktionen",
+    "what1": "Mehrstufige ReAct-Schleife (Gedanke -> Aktion -> Beobachtung -> Finale Antwort) mit Iterationsschutz.",
+    "what2": "Lokale deterministische Tools: sichere AST-Mathematik, Wissensdatenbankabfrage und Warnmeldungen.",
+    "what3": "Human-in-the-Loop-Autorisierung: pausiert sensible Aktionen bis zur Genehmigung durch den Benutzer.",
+    "howToUse": "Verwendung",
+    "step1": "Wählen Sie eine der vorgeschlagenen Aufgaben oder geben Sie eine eigene Anweisung ein.",
+    "step2": "Verfolgen Sie die schrittweise Begründung und Tool-Aufrufe in der Ausführungs-Timeline.",
+    "step3": "Wenn ein Alarm ausgelöst wird, klicken Sie auf Genehmigen oder Ablehnen.",
+    "technologies": "Verwendete Technologien"
+  },
+  "prompts": {
+    "sectionTitle": "Vorgeschlagene Testaufgaben:",
+    "mathTitle": "Mathematikrechner",
+    "mathPrompt": "Berechne wie viel (45 * 12) + 230 für das Budget ist.",
+    "mathTag": "calculator",
+    "policyTitle": "Richtliniensuche",
+    "policyPrompt": "Wie lautet die Rückerstattungsrichtlinie (refund policy)?",
+    "policyTag": "knowledge_search",
+    "slaTitle": "Infrastruktur-SLA",
+    "slaPrompt": "Was sind die SLA-Ziele und Bereitschaftsregeln (on-call)?",
+    "slaTag": "knowledge_search",
+    "alertTitle": "Warnung Senden (HITL)",
+    "alertPrompt": "Sende eine dringende Warnung an @ops-team bezüglich hoher API-Latenz.",
+    "alertTag": "send_alert (HITL)"
+  },
+  "timeline": {
+    "title": "Ausführungs-Timeline",
+    "steps": "{count} Schritte",
+    "step": "1 Schritt",
+    "toolArgs": "Tool-Argumente:",
+    "toolOutput": "Tool-Ergebnis:",
+    "completedTitle": "Aufgabe Erfolgreich Beendet",
+    "rejectedTitle": "Ausführung Abgebrochen"
+  },
+  "approval": {
+    "title": "Human-in-the-Loop: Autorisierung Erforderlich",
+    "subtitle": "Der Agent hat vor dem Ausführen einer sensiblen Aktion pausiert. Bitte prüfen Sie die Parameter.",
+    "payloadTitle": "Payload-Argumente:",
+    "rejectButton": "Aktion Ablehnen",
+    "approveButton": "Autorisieren & Fortsetzen",
+    "authorizing": "Wird autorisiert..."
+  }
+}

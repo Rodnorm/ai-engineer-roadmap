@@ -68,7 +68,7 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
     {
       id: "05",
       title: "App 05: Agentic Workflow",
-      status: "planned",
+      status: "in_progress",
       description: locale === "pt"
         ? "Loop autônomo de agentes, múltiplas ferramentas (tool calling), persistência de máquina de estados e validação humana."
         : locale === "de"

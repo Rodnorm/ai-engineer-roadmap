@@ -11,7 +11,8 @@
           "NEXT_PUBLIC_APP_01_URL": "http://localhost:3001",
           "NEXT_PUBLIC_APP_02_URL": "http://localhost:3002",
           "NEXT_PUBLIC_APP_03_URL": "http://localhost:3003",
-          "NEXT_PUBLIC_APP_04_URL": "http://localhost:3004"
+          "NEXT_PUBLIC_APP_04_URL": "http://localhost:3004",
+          "NEXT_PUBLIC_APP_05_URL": "http://localhost:3005"
         }
       }
     },
@@ -92,6 +93,26 @@
         "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8004",
         "env": {
           "PORT": "8004"
+        }
+      }
+    },
+    {
+      "id": "05",
+      "name": "Agentic Workflow",
+      "frontend": {
+        "dir": "apps/05-agentic-workflow/frontend",
+        "port": 3005,
+        "command": "npm run dev",
+        "env": {
+          "BACKEND_URL": "http://localhost:8005"
+        }
+      },
+      "backend": {
+        "dir": "apps/05-agentic-workflow/backend",
+        "port": 8005,
+        "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8005",
+        "env": {
+          "PORT": "8005"
         }
       }
     }

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "badge": "APP 05",
+    "port": "PORT 3005",
+    "title": "Agentic Workflow",
+    "subtitle": "Autonomous ReAct agent loop executing multi-step task reasoning, deterministic tool calls, state persistence, and mandatory Human-in-the-Loop authorization.",
+    "loopBadge": "ReAct Loop (Max 4 Steps)",
+    "toolsBadge": "Tools: Calculator & Knowledge Search",
+    "hitlBadge": "Human-in-the-Loop (send_alert)",
+    "inputPlaceholder": "Instruct the agent (e.g. 'Calculate (25 * 40) + 150', 'What is the refund policy?', 'Send an alert to @ops-team')...",
+    "runButton": "Run Agent",
+    "runningButton": "Executing...",
+    "resetButton": "Reset Session",
+    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+  },
+  "controls": {
+    "language": "Change language",
+    "lightTheme": "Switch to light theme",
+    "darkTheme": "Switch to dark theme",
+    "about": "About App 05",
+    "close": "Close dialog"
+  },
+  "info": {
+    "description": "Agentic Workflow demonstrates an autonomous agent execution loop with deterministic tool calling and a Human-in-the-Loop safety gate. Built using standard Next.js and FastAPI without heavy orchestration libraries.",
+    "categoryLabel": "Category",
+    "category": "Autonomous Agents",
+    "statusLabel": "Status",
+    "status": "Production Ready",
+    "whatItDoes": "Core Capabilities",
+    "what1": "Multi-step ReAct loop (Thought -> Action -> Observation -> Final Answer) with iteration guards.",
+    "what2": "Deterministic local tools: safe AST math calculation, knowledge base lookup, and operational alerts.",
+    "what3": "Human-in-the-Loop authorization: pauses execution on sensitive actions until user approval.",
+    "howToUse": "How to Use",
+    "step1": "Select one of the suggested tasks or type a custom instruction.",
+    "step2": "Observe the step-by-step reasoning and tool call trace in the execution timeline.",
+    "step3": "If an alert is triggered, click Authorize or Reject to control agent execution.",
+    "technologies": "Technologies Used"
+  },
+  "prompts": {
+    "sectionTitle": "Suggested Tasks for Testing:",
+    "mathTitle": "Math Calculator",
+    "mathPrompt": "Calculate (45 * 12) + 230 for the project budget.",
+    "mathTag": "calculator",
+    "policyTitle": "Policy Search",
+    "policyPrompt": "What is the reimbursement & refund policy?",
+    "policyTag": "knowledge_search",
+    "slaTitle": "Infrastructure SLA",
+    "slaPrompt": "What are the SLA targets and on-call escalation rules?",
+    "slaTag": "knowledge_search",
+    "alertTitle": "Dispatch Alert (HITL)",
+    "alertPrompt": "Send an urgent alert to @ops-team warning about high API latency.",
+    "alertTag": "send_alert (HITL)"
+  },
+  "timeline": {
+    "title": "Execution Timeline",
+    "steps": "{count} steps",
+    "step": "1 step",
+    "toolArgs": "Tool Arguments:",
+    "toolOutput": "Tool Output:",
+    "completedTitle": "Mission Accomplished",
+    "rejectedTitle": "Execution Terminated"
+  },
+  "approval": {
+    "title": "Human-in-the-Loop: Authorization Required",
+    "subtitle": "The agent paused execution before dispatching a sensitive action. Please review arguments below.",
+    "payloadTitle": "Payload Arguments:",
+    "rejectButton": "Reject Action",
+    "approveButton": "Authorize & Resume",
+    "authorizing": "Authorizing..."
+  }
+}

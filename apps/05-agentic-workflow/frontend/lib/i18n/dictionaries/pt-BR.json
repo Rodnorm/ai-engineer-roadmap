@@ -1,0 +1,71 @@
+{
+  "app": {
+    "badge": "APP 05",
+    "port": "PORTA 3005",
+    "title": "Fluxo de Trabalho de Agente (Agentic Workflow)",
+    "subtitle": "Loop autônomo ReAct executando raciocínio em múltiplos passos, chamadas determinísticas de ferramentas, persistência de estado e autorização humana obrigatória (Human-in-the-Loop).",
+    "loopBadge": "Loop ReAct (Máx. 4 Passos)",
+    "toolsBadge": "Ferramentas: Calculadora & Busca de Conhecimento",
+    "hitlBadge": "Human-in-the-Loop (send_alert)",
+    "inputPlaceholder": "Instrua o agente (ex: 'Calcule (25 * 40) + 150', 'Qual é a política de reembolso?', 'Envie um alerta para @ops-team')...",
+    "runButton": "Executar Agente",
+    "runningButton": "Executando...",
+    "resetButton": "Reiniciar Sessão",
+    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+  },
+  "controls": {
+    "language": "Alterar idioma",
+    "lightTheme": "Mudar para tema claro",
+    "darkTheme": "Mudar para tema escuro",
+    "about": "Sobre o App 05",
+    "close": "Fechar diálogo"
+  },
+  "info": {
+    "description": "O Agentic Workflow demonstra um ciclo autônomo de execução com chamadas determinísticas de ferramentas e um portão de segurança com intervenção humana. Construído com Next.js e FastAPI puros, sem frameworks pesados de orquestração.",
+    "categoryLabel": "Categoria",
+    "category": "Agentes Autônomos",
+    "statusLabel": "Status",
+    "status": "Pronto para Produção",
+    "whatItDoes": "Capacidades Principais",
+    "what1": "Ciclo ReAct em múltiplos passos (Pensamento -> Ação -> Observação -> Resposta Final) com travas de iteração.",
+    "what2": "Ferramentas locais determinísticas: cálculo seguro via AST, busca em base de dados e despacho de alertas operacionais.",
+    "what3": "Autorização Human-in-the-Loop: pausa a execução em ações sensíveis até a aprovação explícita do usuário.",
+    "howToUse": "Como Usar",
+    "step1": "Selecione uma das tarefas sugeridas ou digite uma instrução personalizada.",
+    "step2": "Acompanhe na linha do tempo o raciocínio passo a passo e as chamadas de ferramentas.",
+    "step3": "Caso um alerta seja acionado, clique em Autorizar ou Recusar para controlar a decisão do agente.",
+    "technologies": "Tecnologias Utilizadas"
+  },
+  "prompts": {
+    "sectionTitle": "Tarefas Sugeridas para Teste:",
+    "mathTitle": "Calculadora Matemática",
+    "mathPrompt": "Calcule quanto é (45 * 12) + 230 para o orçamento do projeto.",
+    "mathTag": "calculator",
+    "policyTitle": "Consulta de Políticas",
+    "policyPrompt": "Qual é a política de reembolso (refund policy) da empresa?",
+    "policyTag": "knowledge_search",
+    "slaTitle": "SLA de Infraestrutura",
+    "slaPrompt": "Quais são as metas de SLA e regras de plantão (on-call)?",
+    "slaTag": "knowledge_search",
+    "alertTitle": "Despacho de Alerta (HITL)",
+    "alertPrompt": "Envie um alerta urgente para @ops-team avisando sobre alta latência na API.",
+    "alertTag": "send_alert (HITL)"
+  },
+  "timeline": {
+    "title": "Linha do Tempo da Execução",
+    "steps": "{count} passos",
+    "step": "1 passo",
+    "toolArgs": "Argumentos da Ferramenta:",
+    "toolOutput": "Resultado da Ferramenta:",
+    "completedTitle": "Missão Concluída",
+    "rejectedTitle": "Execução Cancelada"
+  },
+  "approval": {
+    "title": "Human-in-the-Loop: Autorização Necessária",
+    "subtitle": "O agente pausou a execução antes de despachar uma ação sensível. Revise os argumentos abaixo.",
+    "payloadTitle": "Argumentos do Payload:",
+    "rejectButton": "Recusar Ação",
+    "approveButton": "Autorizar & Retomar",
+    "authorizing": "Autorizando..."
+  }
+}

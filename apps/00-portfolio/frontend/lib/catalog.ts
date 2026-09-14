@@ -105,6 +105,20 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
         caseStudyPath: "pocket-rag.md",
         security: { publicDemo: false, rateLimited: true, storesUserContent: true },
       },
+      {
+        id: "05",
+        slug: "agentic-workflow",
+        title: "Agentic Workflow",
+        summary: "Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization.",
+        description: "Agentic Workflow implements a ReAct loop with deterministic tool calling (calculator, knowledge search, and sensitive alerts) and mandatory Human-in-the-Loop authorization.",
+        category: "Autonomous Agents & Tool Calling",
+        status: "ready",
+        technologies: ["Next.js 15", "FastAPI", "Azure OpenAI", "ReAct Loop"],
+        liveUrl: "",
+        repositoryPath: "apps/05-agentic-workflow",
+        caseStudyPath: "agentic-workflow.md",
+        security: { publicDemo: false, rateLimited: true, storesUserContent: false },
+      },
     ];
   }
 
