@@ -97,7 +97,7 @@ export const de: Dictionary = {
       summary: "Workbench für strukturierte Inhaltserstellung mit Azure Content Safety Filterung, Persona-Tuning und SSE-Streaming in Echtzeit.",
       description: "Prompt Forge ermöglicht Marketing-Teams die Generierung zielgerichteter Textvarianten mit vorgeschalteter Sicherheitsüberprüfung, SSE-Streaming und lokaler Speicherung.",
       category: "Prompt Engineering & Content-Generierung",
-    },,
+    },
     "pocket-rag": {
       summary: "Private, mehrsprachige RAG-Wissensbasis mit SQLite-Vektorspeicher, Beispieldokumenten und nachvollziehbaren Quellenangaben.",
       description: "pocketRag indexiert PDF-, Markdown-, TXT- und DOCX-Dateien mit Azure-OpenAI-Embeddings und Kosinus-Suche in SQLite/NumPy und erzeugt fundierte Antworten mit Quellenangaben, privatem Zugriff, Kostenkontrollen und automatischer Upload-Löschung.",

@@ -95,7 +95,7 @@ export const en = {
       summary: "Structured content generation workbench with Azure Content Safety filtering, persona tuning, and SSE real-time streaming.",
       description: "Prompt Forge enables marketing teams to generate structured content variations. Integrates Azure Content Safety for pre-generation inspection, streaming SSE responses, and client-side history storage.",
       category: "Prompt Engineering & Content Gen",
-    },,
+    },
     "pocket-rag": {
       summary: "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
       description: "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
