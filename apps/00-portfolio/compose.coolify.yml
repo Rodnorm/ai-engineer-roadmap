@@ -1,8 +1,8 @@
 services:
   web:
     build:
-      context: ../..
-      dockerfile: apps/00-portfolio/frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_APP_01_URL: ${NEXT_PUBLIC_APP_01_URL:-https://inspector.rodrigodev.de}
         NEXT_PUBLIC_APP_02_URL: ${NEXT_PUBLIC_APP_02_URL:-https://support.rodrigodev.de}

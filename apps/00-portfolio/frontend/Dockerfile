@@ -1,13 +1,15 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS deps
 
-WORKDIR /workspace/apps/00-portfolio/frontend
-
-COPY apps/00-portfolio/frontend/package.json apps/00-portfolio/frontend/package-lock.json ./
+WORKDIR /app
+COPY package.json package-lock.json ./
 RUN npm ci --workspaces=false
 
-COPY apps/00-portfolio/frontend ./
-COPY apps/00-portfolio/content ../content
-COPY catalog /workspace/catalog
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN mkdir -p public
 
 ARG NEXT_PUBLIC_APP_01_URL
 ARG NEXT_PUBLIC_APP_02_URL
@@ -20,7 +22,7 @@ ENV NEXT_PUBLIC_APP_01_URL=$NEXT_PUBLIC_APP_01_URL \
     NEXT_PUBLIC_APP_04_URL=$NEXT_PUBLIC_APP_04_URL \
     NEXT_PUBLIC_APP_05_URL=$NEXT_PUBLIC_APP_05_URL
 
-RUN npm run build && npm prune --omit=dev
+RUN npm run build
 
 FROM node:20-alpine AS runner
 
@@ -31,8 +33,12 @@ ENV NODE_ENV=production \
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --ingroup nodejs nextjs
 
-WORKDIR /workspace/apps/00-portfolio/frontend
-COPY --from=builder --chown=nextjs:nodejs /workspace /workspace
+WORKDIR /app
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/catalog ./catalog
+COPY --from=builder --chown=nextjs:nodejs /app/content ./content
 
 USER nextjs
 EXPOSE 3000
@@ -40,4 +46,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 
-CMD ["npm", "run", "start", "--", "-H", "0.0.0.0", "-p", "3000"]
+CMD ["node", "server.js"]
