@@ -1,0 +1,490 @@
+# Technical Hardening Roadmap
+
+> Living execution plan for improving the AI Engineer Roadmap monorepo.
+>
+> Baseline reviewed: `main@00a2889` — 2026-09-16.
+
+## Purpose
+
+This document turns the repository check-up into small, reviewable implementation stages. It covers application security, AI-specific safeguards, dependency integrity, testing, observability, deployment reliability, and portfolio differentiation.
+
+The goal is not to implement every possible platform feature. Each stage should produce a concrete improvement that can be validated independently.
+
+## How to use this document
+
+- Complete work in priority order unless a dependency requires otherwise.
+- Use one branch and pull request per stage or coherent substage.
+- Keep pull requests small enough to review safely.
+- Mark a checkbox only after its acceptance criteria pass.
+- Record material architectural decisions in the decision log.
+- Update the baseline commit after each completed phase.
+- Do not include secrets, production data, prompts, uploaded documents, or PII in logs or test fixtures.
+
+### Status legend
+
+- [ ] Not started
+- [x] Completed
+- **P0** — address before treating the application as a safe public demo
+- **P1** — high-priority reliability or security work
+- **P2** — quality and maintainability improvement
+- **Differentiator** — work intended to demonstrate senior AI engineering capability
+
+## Current baseline
+
+### Existing strengths
+
+- [x] Applications are separated by responsibility inside a clear monorepo structure.
+- [x] Docker images run with non-root users.
+- [x] Expensive AI operations generally have input limits, concurrency controls, rate limiting, and kill switches.
+- [x] App 04 protects its API with a bearer secret and applies upload retention.
+- [x] Apps 02 and 03 include prompt-injection or security-focused tests.
+- [x] App 05 demonstrates Human-in-the-Loop approval.
+- [x] Gitleaks scans the full Git history.
+- [x] CI builds and validates the current applications.
+- [x] The repository contains a threat model, security policy, and engineering standards.
+
+### Known gaps
+
+- [ ] App 06 conversations are not isolated by user or tenant.
+- [ ] App 06 internal tokens are optional and local Compose has a predictable fallback token.
+- [ ] App 05 sessions have no owner binding, TTL, or bounded storage.
+- [ ] Several services trust client-controlled forwarded-IP headers by default.
+- [ ] AI request quotas are stored in process memory and reset with deployments.
+- [ ] CodeQL and Dependency Review are skipped while the repository is private.
+- [ ] GitHub Actions use version tags although the security policy claims SHA pinning.
+- [ ] Dependabot does not cover every maintained package manifest.
+- [ ] Most Python dependency sets are not reproducibly locked.
+- [ ] Frontend-to-backend flows are not covered by browser E2E tests.
+- [ ] Security headers are inconsistent across applications.
+- [ ] Documentation contains statements that no longer match implementation.
+
+---
+
+## Phase 1 — Public API safety
+
+### 1.1 App 06 conversation isolation — P0
+
+Suggested branch: `security/06-conversation-isolation`
+
+- [ ] Choose the initial identity model:
+  - authenticated user identity; or
+  - signed anonymous browser session for the public demo.
+- [ ] Add an immutable `ownerId` or `tenantId` to every conversation.
+- [ ] Scope list, read, update, delete, message, and approval operations to the owner.
+- [ ] Prevent cross-owner access even when a valid conversation UUID is known.
+- [ ] Update Cosmos DB partitioning/query strategy to include the owner boundary.
+- [ ] Add a migration or explicit disposable-demo-data strategy.
+- [ ] Add tests for allowed same-owner access.
+- [ ] Add tests for rejected cross-owner read, delete, message, and approval operations.
+- [ ] Ensure API errors do not reveal whether another owner's conversation exists.
+
+Acceptance criteria:
+
+- User A cannot list, fetch, modify, approve, or delete User B's data.
+- Isolation is enforced in the repository/data layer, not only in UI code.
+- Tests exercise both memory and Cosmos-compatible repository behavior.
+
+### 1.2 App 06 MCP boundary — P0
+
+Suggested branch: `security/06-mcp-boundary`
+
+- [ ] Make `INTERNAL_API_TOKEN` mandatory in production.
+- [ ] Make `MCP_API_KEY` mandatory whenever the public MCP endpoint is enabled.
+- [ ] Remove `local-development-token` from production-capable Compose configuration.
+- [ ] Keep development defaults in a clearly local-only override or example.
+- [ ] Compare secrets using a timing-safe implementation.
+- [ ] Confirm the MCP container is not routed publicly by Coolify.
+- [ ] Restrict allowed hosts to the actual internal service names.
+- [ ] Add startup validation that fails closed on invalid production configuration.
+- [ ] Add authentication and missing-configuration tests.
+- [ ] Document key generation and rotation without committing values.
+
+Acceptance criteria:
+
+- Production startup fails when required tokens are absent.
+- Internal tool calls fail without the correct token.
+- The MCP service has no public route unless explicitly enabled.
+
+### 1.3 App 05 session lifecycle — P0
+
+Suggested branch: `security/05-session-lifecycle`
+
+- [ ] Bind each session to an owner/session secret.
+- [ ] Require that binding for session read and approval operations.
+- [ ] Add session TTL.
+- [ ] Add a maximum session count and deterministic eviction policy.
+- [ ] Remove completed/expired sessions safely.
+- [ ] Restrict CORS methods, headers, origins, and credential usage.
+- [ ] Add tests for expiry, unauthorized access, eviction, and approval ownership.
+
+Acceptance criteria:
+
+- A leaked or guessed session ID alone is insufficient for access.
+- Session memory remains bounded during sustained usage.
+- Browser clients continue to complete the run/approval flow.
+
+---
+
+## Phase 2 — Abuse and cost protection
+
+### 2.1 Trusted client identity — P1
+
+Suggested branch: `security/trusted-client-addresses`
+
+- [ ] Document the exact Coolify/Traefik forwarded-header behavior.
+- [ ] Stop trusting arbitrary first-hop `X-Forwarded-For` values.
+- [ ] Accept proxy headers only from trusted proxy addresses or use a sanitized edge header.
+- [ ] Share one tested client-address helper across equivalent backends where practical.
+- [ ] Add tests for forged and multi-hop forwarded headers.
+- [ ] Apply the same policy to Next.js App 06 routes.
+
+Acceptance criteria:
+
+- Supplying a forged `X-Forwarded-For` value does not create a new rate-limit identity.
+- Local development still resolves a usable client identity.
+
+### 2.2 Persistent AI quotas — P1
+
+Suggested branch: `security/persistent-ai-quotas`
+
+- [ ] Select SQLite for the single-node deployment or Redis for multi-instance deployment.
+- [ ] Persist per-minute, per-client daily, and global daily counters.
+- [ ] Make counter updates atomic.
+- [ ] Define behavior when the quota store is unavailable.
+- [ ] Record token usage and estimated cost without recording request content.
+- [ ] Add per-app and global daily cost ceilings.
+- [ ] Add an automatic circuit breaker.
+- [ ] Preserve the manual `GENERATION_ENABLED` kill switch.
+- [ ] Add tests covering restart persistence and concurrent updates.
+- [ ] Document matching Azure budgets, quotas, and alerts.
+
+Acceptance criteria:
+
+- Restarting a container does not reset daily protection.
+- Multiple workers cannot independently exceed the global budget.
+- Metrics contain no prompts, images, document text, or PII.
+
+---
+
+## Phase 3 — Supply-chain and CI hardening
+
+### 3.1 Private-repository security scans — P1
+
+Suggested branch: `ci/private-security-scans`
+
+- [ ] Pin every third-party GitHub Action to a full commit SHA.
+- [ ] Keep the human-readable release version in a comment.
+- [ ] Add OSV-Scanner or Trivy filesystem dependency scanning.
+- [ ] Add `pip-audit` for every Python backend.
+- [ ] Add Bandit or a focused Semgrep ruleset for Python.
+- [ ] Scan Docker images for OS and application vulnerabilities.
+- [ ] Define severity thresholds and documented exception handling.
+- [ ] Upload machine-readable reports as CI artifacts.
+- [ ] Correct `SECURITY.md` so its claims match active controls.
+- [ ] Keep CodeQL and Dependency Review ready for public-repository activation.
+
+Acceptance criteria:
+
+- Security checks run on the private repository.
+- A deliberately vulnerable fixture or controlled test proves that blocking works.
+- Findings include the affected app and dependency path.
+
+### 3.2 Dependabot coverage — P1
+
+Suggested branch: `ci/complete-dependabot-coverage`
+
+- [ ] Add App 00 frontend.
+- [ ] Add App 05 frontend and backend.
+- [ ] Add App 06 frontend and MCP server.
+- [ ] Review whether root workspace and template manifests should be monitored.
+- [ ] Keep updates grouped by application to avoid oversized PRs.
+- [ ] Preserve explicit manual review for major updates.
+- [ ] Document the expected validation before merging dependency PRs.
+
+Acceptance criteria:
+
+- Every deployed package manifest is either monitored or explicitly documented as excluded.
+- Dependency PRs trigger only the relevant CI jobs.
+
+### 3.3 Reproducible Python environments — P1
+
+Suggested branch: `build/reproducible-python-dependencies`
+
+- [ ] Choose `uv` or `pip-tools` as the repository standard.
+- [ ] Lock direct and transitive dependencies for Apps 01–05.
+- [ ] Include hashes where the chosen workflow supports them.
+- [ ] Align the supported Python version across CI and containers.
+- [ ] Update Docker and CI installation commands.
+- [ ] Configure dependency update automation for lock files.
+- [ ] Document the update procedure.
+
+Acceptance criteria:
+
+- Two clean builds from the same commit install identical Python dependency versions.
+- CI validates lock consistency.
+
+### 3.4 Container hardening — P1
+
+Suggested branch: `security/container-hardening`
+
+- [ ] Pin base images to immutable digests.
+- [ ] Add missing App 06 Dockerfile healthchecks.
+- [ ] Drop unnecessary Linux capabilities.
+- [ ] Enable `no-new-privileges`.
+- [ ] Use read-only root filesystems where application behavior permits.
+- [ ] Define explicit writable temporary/data mounts.
+- [ ] Add sensible CPU and memory limits in deployment documentation.
+- [ ] Generate a CycloneDX or SPDX SBOM for each deployed image.
+- [ ] Define a base-image update process.
+
+Acceptance criteria:
+
+- Every image continues to start and pass its healthcheck with the hardened configuration.
+- Required writable paths are explicit.
+- Every released image has an attached SBOM.
+
+---
+
+## Phase 4 — Contracts, tests, and deployment confidence
+
+### 4.1 API contract consistency — P1
+
+Suggested branch: `test/openapi-contracts`
+
+- [ ] Standardize environment-variable naming for server-side backend endpoints.
+- [ ] Fail builds or startup when required production endpoints are missing.
+- [ ] Store or generate an OpenAPI contract for every FastAPI backend.
+- [ ] Generate TypeScript API types or clients from those contracts.
+- [ ] Add contract drift checks to CI.
+- [ ] Test proxy paths and backend endpoint paths together.
+- [ ] Define a consistent error envelope and request ID.
+
+Acceptance criteria:
+
+- A backend route or schema change that breaks a frontend contract fails CI.
+- Frontends do not maintain hand-written duplicate response types without justification.
+
+### 4.2 End-to-end smoke tests — P1
+
+Suggested branch: `test/e2e-smoke-baseline`
+
+- [ ] Add Playwright infrastructure.
+- [ ] Cover one critical user journey per app.
+- [ ] Exercise browser → Next.js proxy → backend.
+- [ ] Use deterministic/offline provider modes in CI.
+- [ ] Test successful responses and representative 400, 413, 429, and 503 responses.
+- [ ] Test streaming cancellation and interrupted requests where applicable.
+- [ ] Add `axe-core` accessibility checks.
+- [ ] Capture useful artifacts only on failure.
+
+Acceptance criteria:
+
+- Environment/proxy regressions like the recent frontend API URL issues fail before merge.
+- Tests do not require paid Azure calls.
+
+### 4.3 Coverage and static quality — P2
+
+Suggested branch: `test/quality-gates`
+
+- [ ] Add Ruff formatting/linting for Python.
+- [ ] Add Python type checking incrementally.
+- [ ] Add backend coverage reports.
+- [ ] Add focused component tests for complex frontend interactions.
+- [ ] Define realistic initial thresholds per app.
+- [ ] Raise thresholds gradually instead of enforcing an artificial global target.
+
+Acceptance criteria:
+
+- New critical backend and API route code is covered.
+- Quality checks remain fast enough for normal pull requests.
+
+### 4.4 Selective CI and Coolify deployment — P2
+
+Suggested branch: `ci/selective-main-builds`
+
+- [ ] Keep path-aware jobs for pull requests.
+- [ ] Make normal `main` pushes path-aware.
+- [ ] Add a scheduled full validation run.
+- [ ] Preserve manual `run_all`.
+- [ ] Configure a Watch Path for every separate Coolify resource.
+- [ ] Document frontends and backends as independent resources.
+- [ ] Verify that changing App 01 does not redeploy Apps 02–06.
+
+Acceptance criteria:
+
+- Normal merges validate and deploy only affected services.
+- A scheduled full build still detects cross-project drift.
+
+---
+
+## Phase 5 — Runtime security and observability
+
+### 5.1 Browser and edge security — P2
+
+Suggested branch: `security/browser-edge-headers`
+
+- [ ] Inspect actual production response headers through the Coolify proxy.
+- [ ] Decide whether HSTS is owned by Next.js or Traefik.
+- [ ] Standardize CSP across applications.
+- [ ] Move report-only policies to enforcement after resolving violations.
+- [ ] Remove `unsafe-inline` where practical.
+- [ ] Standardize frame, referrer, MIME-sniffing, and permissions policies.
+- [ ] Add automated header checks.
+
+Acceptance criteria:
+
+- Every deployed frontend passes the agreed header policy.
+- CSP enforcement does not break Next.js hydration or required API connections.
+
+### 5.2 Untrusted document processing — P1
+
+Suggested branch: `security/04-document-processing`
+
+- [ ] Add CPU/time limits around PDF parsing and embedding.
+- [ ] Reject encrypted, malformed, or pathological PDFs safely.
+- [ ] Consider a separate worker/process for untrusted parsing.
+- [ ] Ensure temporary files cannot escape configured directories.
+- [ ] Verify cleanup after parsing failure and process interruption.
+- [ ] Add adversarial PDF fixtures with safe synthetic content.
+
+Acceptance criteria:
+
+- A malformed or expensive PDF cannot indefinitely block the API process.
+- Partial uploads and generated data are cleaned up predictably.
+
+### 5.3 OpenTelemetry and operational metrics — P2
+
+Suggested branch: `observability/otel-ai-tracing`
+
+- [ ] Propagate a correlation ID from browser to Next.js, backend, Azure, and MCP.
+- [ ] Add OpenTelemetry traces to external model/tool calls.
+- [ ] Record latency, status, retry count, tokens, and estimated cost.
+- [ ] Explicitly exclude prompt/document content and PII.
+- [ ] Add p50/p95 latency and error-rate dashboards.
+- [ ] Add Uptime Kuma or an equivalent synthetic health monitor.
+- [ ] Define alerts for error spikes, quota exhaustion, and unavailable providers.
+
+Acceptance criteria:
+
+- A failed request can be followed across services by correlation ID.
+- Operational dashboards reveal no user content.
+
+---
+
+## Phase 6 — AI engineering differentiators
+
+### 6.1 Versioned AI evaluation corpus — Differentiator
+
+Suggested branch: `evals/cross-app-regression-suite`
+
+- [ ] Create versioned, synthetic evaluation datasets.
+- [ ] Add prompt-injection cases.
+- [ ] Add PII leakage cases.
+- [ ] Add malformed structured-output cases.
+- [ ] Add RAG answerability, citation validity, and abstention cases.
+- [ ] Add agent tool-authorization and approval-bypass cases.
+- [ ] Store expected behavior and scoring rules.
+- [ ] Run deterministic tests on every relevant PR.
+- [ ] Run provider-backed evaluations on a controlled schedule.
+- [ ] Define thresholds that block meaningful regressions.
+
+Acceptance criteria:
+
+- Model, prompt, retrieval, or tool changes produce comparable before/after results.
+- Evaluation data contains no real user information.
+
+### 6.2 AI Reliability & Safety Scorecard — Differentiator
+
+Suggested branch: `feat/portfolio-ai-scorecard`
+
+- [ ] Define a shared metrics schema.
+- [ ] Display groundedness/citation quality where applicable.
+- [ ] Display prompt-injection resistance results.
+- [ ] Display PII leakage test results.
+- [ ] Display tool approval/bypass results.
+- [ ] Display latency and cost per representative task.
+- [ ] Display last evaluation and security-scan dates.
+- [ ] Link every metric to its methodology and commit.
+- [ ] Clearly distinguish measured results from design claims.
+
+Acceptance criteria:
+
+- The portfolio shows reproducible engineering evidence rather than unsupported badges.
+- A reviewer can trace each score to a test, dataset, and commit.
+
+### 6.3 AI Bill of Materials and system cards — Differentiator
+
+Suggested branch: `docs/ai-system-cards`
+
+- [ ] Document models, providers, regions, and deployment names without secrets.
+- [ ] Document input/output data classes.
+- [ ] Document retention and deletion behavior.
+- [ ] Document model and application limitations.
+- [ ] Document prompt-injection and tool-use boundaries.
+- [ ] Document human-approval requirements.
+- [ ] Document evaluation datasets and known gaps.
+- [ ] Document estimated cost characteristics.
+- [ ] Publish one concise system card per AI application.
+
+Acceptance criteria:
+
+- Every AI application has a current, reviewable risk and behavior summary.
+- System-card claims match the implementation and automated evaluations.
+
+---
+
+## Phase 7 — Documentation and repository presentation
+
+Suggested branch: `docs/align-repository-claims`
+
+- [ ] Remove the App 04 ChromaDB claim unless ChromaDB is reintroduced.
+- [ ] Describe App 05 sessions as in-memory until durable persistence exists.
+- [ ] Correct the privacy notice for Apps 04 and 06.
+- [ ] Replace absolute guarantees with verifiable statements.
+- [ ] Update Live, Ready, and In Development status values.
+- [ ] Update App 00 catalog content from the same source of truth.
+- [ ] Add small architecture and data-flow diagrams.
+- [ ] Add repository description, homepage, topics, and social preview.
+- [ ] Prepare and complete the public-release checklist.
+- [ ] Review the personal security contact before making the repository public.
+
+Acceptance criteria:
+
+- README, application docs, portfolio, and runtime behavior agree.
+- Every security or reliability claim points to code, tests, or operational evidence.
+
+---
+
+## Recommended execution order
+
+1. App 06 conversation isolation.
+2. App 06 MCP boundary.
+3. App 05 session lifecycle.
+4. Trusted client identity and persistent quotas.
+5. Private-repository security scans.
+6. Reproducible Python dependencies.
+7. Complete Dependabot coverage and container hardening.
+8. API contracts and E2E smoke tests.
+9. Selective CI/Coolify deployment.
+10. Runtime headers and document-processing isolation.
+11. OpenTelemetry and operational dashboards.
+12. AI evaluation suite.
+13. Portfolio scorecard and AI system cards.
+14. Documentation alignment and public release.
+
+## Definition of done for each pull request
+
+- [ ] The branch starts from the latest `main`.
+- [ ] The pull request addresses one coherent concern.
+- [ ] Tests cover the security or behavioral change.
+- [ ] The smallest relevant builds and tests pass.
+- [ ] No secrets, generated output, caches, or unrelated formatting are included.
+- [ ] Environment examples and documentation are updated when behavior changes.
+- [ ] The PR explains risk, implementation, validation, and rollback considerations.
+- [ ] This roadmap is updated when the stage is completed.
+
+## Decision log
+
+| Date | Decision | Reason | Follow-up |
+| --- | --- | --- | --- |
+| 2026-09-16 | Use this document as the execution backlog for repository hardening. | Keep security, reliability, and portfolio improvements visible and reviewable. | Start with App 06 conversation isolation. |
