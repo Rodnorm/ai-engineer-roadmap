@@ -70,7 +70,7 @@ export interface SystemStats {
   vector_store_type: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api/backend';
+const API_BASE_URL = '/api/backend';
 let accessToken = '';
 
 export function setAccessToken(token: string) {
