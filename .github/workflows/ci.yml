@@ -35,6 +35,7 @@ jobs:
       app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
@@ -56,6 +57,8 @@ jobs:
               - 'apps/03-prompt-forge/**'
             app04:
               - 'apps/04-pocket-rag/**'
+            app05:
+              - 'apps/05-agentic-workflow/**'
             app06:
               - 'apps/06-agent-workspace/**'
             catalog:
@@ -108,6 +111,9 @@ jobs:
           - app: pocketRag
             id: app04
             directory: apps/04-pocket-rag/frontend
+          - app: Agentic Workflow
+            id: app05
+            directory: apps/05-agentic-workflow/frontend
           - app: Agent Workspace
             id: app06
             directory: apps/06-agent-workspace/frontend
@@ -174,6 +180,10 @@ jobs:
             id: app04
             directory: apps/04-pocket-rag/backend
             requirements: requirements-test.txt
+          - app: Agentic Workflow
+            id: app05
+            directory: apps/05-agentic-workflow/backend
+            requirements: requirements.txt
 
     defaults:
       run:
@@ -218,6 +228,21 @@ jobs:
           else
             echo "No Python unit tests found; dependency and syntax checks passed."
           fi
+
+  compose_validation:
+    name: Coolify Compose Validation
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.4.0
+
+      - name: Validate Compose definitions
+        run: |
+          for compose_file in apps/*/compose.coolify.yml; do
+            echo "Validating ${compose_file}"
+            docker compose -f "${compose_file}" config --quiet
+          done
 
   node_backend:
     name: Node Backend — ${{ matrix.app }}

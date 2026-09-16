@@ -2,6 +2,7 @@
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8003";
 
 const nextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [

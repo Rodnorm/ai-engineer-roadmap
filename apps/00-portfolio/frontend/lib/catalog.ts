@@ -37,7 +37,7 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
   let baseApps: AppItem[] = [];
 
   try {
-    const catalogPath = path.join(process.cwd(), "../../../catalog/apps.json");
+    const catalogPath = path.join(process.cwd(), "catalog/apps.json");
     if (fs.existsSync(catalogPath)) {
       const content = fs.readFileSync(catalogPath, "utf-8");
       const parsed = jsonParse(content);
@@ -157,7 +157,7 @@ export function getAppBySlug(slug: string, locale?: Locale): AppItem | undefined
  */
 export function getCaseStudyContent(caseStudyPath: string, locale?: Locale): { content: string; isFallback: boolean } {
   try {
-    const baseDir = path.join(process.cwd(), "../content");
+    const baseDir = path.join(process.cwd(), "content");
 
     // Check localized file if locale is not default English
     if (locale && locale !== "en") {

@@ -1,0 +1,46 @@
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BACKEND_INTERNAL_URL: http://backend:8000
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      BACKEND_INTERNAL_URL: http://backend:8000
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: production
+      PORT: "8000"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AZURE_AGENT_NAME: ${AZURE_AGENT_NAME}
+      AZURE_AGENT_VERSION: ${AZURE_AGENT_VERSION}
+      AZURE_AGENT_ENDPOINT: ${AZURE_AGENT_ENDPOINT}
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+      AZURE_LANGUAGE_ENDPOINT: ${AZURE_LANGUAGE_ENDPOINT}
+      GENERATION_ENABLED: ${GENERATION_ENABLED:-true}
+      MAX_QUERY_LENGTH: ${MAX_QUERY_LENGTH:-2000}
+      AZURE_MAX_OUTPUT_TOKENS: ${AZURE_MAX_OUTPUT_TOKENS:-800}
+      AZURE_REQUEST_TIMEOUT_SECONDS: ${AZURE_REQUEST_TIMEOUT_SECONDS:-30.0}
+      MAX_CONCURRENT_REQUESTS: ${MAX_CONCURRENT_REQUESTS:-2}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      RATE_LIMIT_REQUESTS_PER_MINUTE: ${RATE_LIMIT_REQUESTS_PER_MINUTE:-3}
+      RATE_LIMIT_REQUESTS_PER_DAY_PER_IP: ${RATE_LIMIT_REQUESTS_PER_DAY_PER_IP:-20}
+      RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY: ${RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY:-100}
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-true}
+    expose:
+      - "8000"
+    restart: unless-stopped
