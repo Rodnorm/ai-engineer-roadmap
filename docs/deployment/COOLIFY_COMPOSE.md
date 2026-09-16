@@ -53,6 +53,3 @@ when replacing or redeploying the resource.
 3. Deploy and verify the web page, backend health, and one real user flow.
 4. Move the domain to the Compose resource.
 5. Remove the previous resource only after validation.
-
-Existing Vercel and Netlify configuration remains in the repository until every
-replacement deployment has been validated.

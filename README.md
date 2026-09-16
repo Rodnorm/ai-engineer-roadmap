@@ -125,7 +125,7 @@ NEXT_PUBLIC_APP_03_URL=http://localhost:3003
 NEXT_PUBLIC_APP_06_URL=http://localhost:3006
 ```
 
-- When unset (such as on Vercel production builds), App 00 safely falls back to published live deployment URLs.
+- When unset (such as on production builds), App 00 safely falls back to published live deployment URLs.
 - Never commit `.env` or `.env.local` files containing secrets. Use `.env.example` as reference.
 
 ### ➕ Registering New Applications (App 04+)
@@ -158,8 +158,6 @@ Each roadmap app has a Git-based Docker Compose definition that groups its
 frontend and backend in one Coolify resource while retaining app-level Watch
 Paths. See [the Coolify Compose deployment guide](./docs/deployment/COOLIFY_COMPOSE.md).
 
-Existing Vercel and Netlify configuration stays in place until the replacement
-deployments have been validated.
 
 ---
 

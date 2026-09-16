@@ -31,5 +31,5 @@ This document establishes the mandatory quality, security, and operational stand
 - [ ] Monorepo CI checks pass cleanly on Pull Requests to `main`.
 
 ### 5. Deployment
-- [ ] Vercel/hosting deployment is restricted exclusively to the `main` branch.
-- [ ] Production credentials are isolated from preview deployments.
+- [ ] Coolify/hosting deployment is restricted exclusively to the `main` branch.
+- [ ] Production credentials are configured securely in host environment variables.

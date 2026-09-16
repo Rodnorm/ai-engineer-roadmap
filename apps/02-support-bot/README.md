@@ -56,7 +56,7 @@ The NLP analysis provides additional context to the agent, including the detecte
 │   ├── data/                   # Localized FAQ data
 │   ├── lib/                    # API client and i18n utilities
 │   └── package.json
-├── vercel.json                 # Frontend/backend services and rewrites
+├── compose.coolify.yml         # Coolify Docker Compose deployment definition
 └── README.md
 ```
 
@@ -87,7 +87,7 @@ The NLP analysis provides additional context to the agent, including the detecte
 - Azure AI Foundry
 - Azure AI Language
 - Microsoft Entra ID
-- Vercel
+- Coolify + Hetzner
 
 ## Prerequisites
 
@@ -158,9 +158,9 @@ The backend enables conservative limits by default:
 
 A rejected request returns HTTP `429` with a `Retry-After` header. Invalid or oversized input is rejected with HTTP `422` before any Azure service is called.
 
-The included limiter stores counters in the Python process. It is effective for local testing and basic abuse protection, but Vercel may run multiple isolated serverless instances and may restart them. Therefore, `RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY` is a per-instance safety limit, not a guaranteed deployment-wide spending cap. For a strict production-wide limit, add a shared counter such as Redis/KV or configure rate limiting at the Vercel Firewall, and keep the Azure deployment TPM quota and subscription spending limit low.
+The included limiter stores counters in the Python process. It is effective for local testing and basic abuse protection, but multiple isolated process instances may restart or scale. Therefore, `RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY` is a per-instance safety limit, not a guaranteed deployment-wide spending cap. For a strict production-wide limit, add a shared counter such as Redis/KV, configure edge rate limiting, and keep the Azure deployment TPM quota and subscription spending limit low.
 
-When the backend runs behind Vercel, `TRUST_PROXY_HEADERS=true` allows it to identify the original client from `X-Forwarded-For`. Set it to `false` if Uvicorn is exposed directly to untrusted clients.
+When the backend runs behind a reverse proxy, `TRUST_PROXY_HEADERS=true` allows it to identify the original client from `X-Forwarded-For`. Set it to `false` if Uvicorn is exposed directly to untrusted clients.
 
 ## Running locally
 
@@ -303,14 +303,14 @@ For current setup details, see Microsoft's documentation for [choosing an Azure 
 
 ## Deployment
 
-The included `vercel.json` defines two services:
+The app is deployed using Docker Compose on Coolify (`compose.coolify.yml`):
 
-- `frontend`: the Next.js application
-- `backend`: the FastAPI application using `main:app`
+- `web`: the Next.js frontend
+- `backend`: the FastAPI application
 
-Requests under `/api/backend/*` are routed to the backend, while all other requests are handled by the frontend.
+Frontend requests to `/api/backend/*` are rewritten to the internal backend service.
 
-Configure all required environment variables in the deployment platform. Never store Azure credentials in source control.
+Configure all required environment variables in the Coolify resource. Never store Azure credentials in source control.
 
 ## Security and privacy
 

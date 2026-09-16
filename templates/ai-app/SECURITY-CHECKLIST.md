@@ -11,5 +11,5 @@ Before marking any new application as `live` in `catalog/apps.json`, complete th
 - [ ] **Logs Sanitization:** Ensure operational JSON logs record zero raw user prompts, base64 strings, or unmasked PII.
 - [ ] **Production Docs:** Verify OpenAPI/Swagger/ReDoc docs are hidden when `APP_ENV=production`.
 - [ ] **Security Headers:** Confirm `next.config.mjs` sets security headers and `poweredByHeader: false`.
-- [ ] **Vercel Isolation:** Confirm `vercel.json` restricts deployment strictly to the `main` branch.
+- [ ] **Deployment Isolation:** Confirm Coolify Compose definition restricts deployment strictly to the `main` branch.
 - [ ] **Automated Tests:** Add backend unit tests for input validation, rate limits, and health endpoint exposure.

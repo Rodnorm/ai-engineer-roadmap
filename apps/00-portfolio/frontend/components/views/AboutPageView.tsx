@@ -28,7 +28,7 @@ export function AboutPageView({ locale = "en" }: { locale?: Locale }) {
     },
     {
       category: locale === "pt" ? "Backend & Sistemas" : locale === "de" ? "Backend & Systeme" : "Backend & Systems",
-      skills: ["Python 3.12", "FastAPI", "Pydantic V2", "REST & SSE Streaming", "Asyncio & Concurrency", "Docker & Vercel"],
+      skills: ["Python 3.12", "FastAPI", "Pydantic V2", "REST & SSE Streaming", "Asyncio & Concurrency", "Docker & Coolify"],
     },
     {
       category: locale === "pt" ? "Arquitetura Frontend" : locale === "de" ? "Frontend-Architektur" : "Frontend Architecture",

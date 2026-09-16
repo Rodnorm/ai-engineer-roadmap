@@ -101,7 +101,7 @@ test("getCaseStudyContent returns localized markdown and handles fallback", () =
 });
 
 test("resolveAppUrl resolves from environment variable with fallback to production URL", () => {
-  const defaultUrl = "https://ai-engineer-roadmap-lyart.vercel.app";
+  const defaultUrl = "https://example.com/app01";
 
   delete process.env.NEXT_PUBLIC_APP_01_URL;
   assert.equal(resolveAppUrl("01", defaultUrl), defaultUrl);
