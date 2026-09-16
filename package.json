@@ -9,7 +9,8 @@
     "apps/02-support-bot/frontend",
     "apps/03-prompt-forge/frontend",
     "apps/04-pocket-rag/frontend",
-    "apps/05-agentic-workflow/frontend"
+    "apps/05-agentic-workflow/frontend",
+    "apps/06-agent-workspace/frontend"
   ],
   "scripts": {
     "dev": "node scripts/dev/run.mjs --all",
@@ -20,6 +21,7 @@
     "dev:03": "node scripts/dev/run.mjs --app 03",
     "dev:04": "node scripts/dev/run.mjs --app 04",
     "dev:05": "node scripts/dev/run.mjs --app 05",
-    "test": "node --test scripts/dev/*.test.mjs"
+    "test": "node --test scripts/dev/*.test.mjs",
+    "dev:06": "node scripts/dev/run.mjs --app 06"
   }
 }

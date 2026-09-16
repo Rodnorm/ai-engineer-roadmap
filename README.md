@@ -16,6 +16,7 @@ This repository documents the transition from senior frontend engineering toward
 | [03 — Prompt Forge](./apps/03-prompt-forge) | Structured content generation workbench with Azure Content Safety filtering and SSE streaming | Next.js 16, FastAPI, Azure OpenAI, Azure Content Safety | Live |
 | [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and RAGAS evaluation tooling | Next.js 15, FastAPI, ChromaDB, Azure OpenAI | In development |
 | [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Ready |
+| [06 — Agent Workspace](./apps/06-agent-workspace) | Streaming agent workspace with Foundry, typed MCP tools, approval gates, and durable conversations | Next.js 15, Azure AI Foundry, MCP, Cosmos DB | Ready |
 
 ---
 
@@ -29,7 +30,8 @@ This repository documents the transition from senior frontend engineering toward
 │   ├── 02-support-bot/        # Healthcare NLP & grounded RAG assistant
 │   ├── 03-prompt-forge/       # Structured content & Content Safety studio
 │   ├── 04-pocket-rag/          # Local-first personal RAG knowledge base
-│   └── 05-agentic-workflow/   # Autonomous agent loop & HITL approval
+│   ├── 05-agentic-workflow/   # Autonomous agent loop & HITL approval
+│   └── 06-agent-workspace/    # Foundry agent, MCP tools & durable chat
 ├── catalog/                   # Monorepo catalog registry (apps.json, schema.json)
 ├── templates/                 # Reusable starter application template (templates/ai-app)
 ├── docs/                      # Architectural, security, testing, and deployment standards
@@ -88,6 +90,8 @@ The monorepo includes a cross-platform Node.js development orchestrator (`script
 | | Backend | `8004` | `apps/04-pocket-rag/backend` | |
 | **App 05** (Agentic Workflow) | Frontend | `3005` | `apps/05-agentic-workflow/frontend` | `npm run dev:05` |
 | | Backend | `8005` | `apps/05-agentic-workflow/backend` | |
+| **App 06** (Agent Workspace) | Frontend | `3006` | `apps/06-agent-workspace/frontend` | `npm run dev:06` |
+| | MCP server | `8006` | `apps/06-agent-workspace/mcp-server` | |
 
 ### 🛠️ One-Command Local Startup
 
@@ -103,6 +107,7 @@ npm run dev:02    # Support Bot (3002 & 8002)
 npm run dev:03    # Prompt Forge (3003 & 8003)
 npm run dev:04    # pocketRag (3004 & 8004)
 npm run dev:05    # Agentic Workflow (3005 & 8005)
+npm run dev:06    # Agent Workspace (3006 & 8006)
 npm run dev:00    # Portfolio Catalog (3000)
 ```
 
@@ -117,6 +122,7 @@ App 00's catalog automatically overrides production demo URLs when local URLs ar
 NEXT_PUBLIC_APP_01_URL=http://localhost:3001
 NEXT_PUBLIC_APP_02_URL=http://localhost:3002
 NEXT_PUBLIC_APP_03_URL=http://localhost:3003
+NEXT_PUBLIC_APP_06_URL=http://localhost:3006
 ```
 
 - When unset (such as on Vercel production builds), App 00 safely falls back to published live deployment URLs.

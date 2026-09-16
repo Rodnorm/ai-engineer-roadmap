@@ -35,6 +35,8 @@ jobs:
       app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
       - name: Check out repository
@@ -55,6 +57,10 @@ jobs:
               - 'apps/03-prompt-forge/**'
             app04:
               - 'apps/04-pocket-rag/**'
+            app05:
+              - 'apps/05-agentic-workflow/**'
+            app06:
+              - 'apps/06-agent-workspace/**'
             catalog:
               - 'catalog/**'
             global:
@@ -105,6 +111,12 @@ jobs:
           - app: pocketRag
             id: app04
             directory: apps/04-pocket-rag/frontend
+          - app: Agentic Workflow
+            id: app05
+            directory: apps/05-agentic-workflow/frontend
+          - app: Agent Workspace
+            id: app06
+            directory: apps/06-agent-workspace/frontend
 
     defaults:
       run:
@@ -212,3 +224,49 @@ jobs:
           else
             echo "No Python unit tests found; dependency and syntax checks passed."
           fi
+
+  node_backend:
+    name: Node Backend — ${{ matrix.app }}
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: Agent Workspace MCP
+            id: app06
+            directory: apps/06-agent-workspace/mcp-server
+
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+
+    steps:
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Check out repository
+        uses: actions/checkout@v4.4.0
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Set up Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Install dependencies
+        run: npm ci
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Type-check
+        run: npm run typecheck
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Test
+        run: npm test
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Build
+        run: npm run build

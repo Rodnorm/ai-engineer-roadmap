@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "apps": [
     {
       "id": "01",
@@ -9,7 +9,12 @@
       "description": "Smart Inspector leverages Azure OpenAI Responses API to inspect uploaded images. Built with Pillow-based image validation, EXIF metadata stripping, dimension bounds, and server-enforced rate limits.",
       "category": "Vision & Multi-modal",
       "status": "live",
-      "technologies": ["Next.js 14", "FastAPI", "Azure OpenAI", "Pillow"],
+      "technologies": [
+        "Next.js 14",
+        "FastAPI",
+        "Azure OpenAI",
+        "Pillow"
+      ],
       "liveUrl": "https://ai-engineer-roadmap-lyart.vercel.app",
       "repositoryPath": "apps/01-smart-inspector",
       "caseStudyPath": "smart-inspector.md",
@@ -35,7 +40,12 @@
       "description": "Support Bot connects Azure AI Language (PII detection, sentiment, key phrase extraction) with Azure AI Agents. Includes strict grounding against prompt injection using untrusted input isolation tags.",
       "category": "Conversational AI & RAG",
       "status": "live",
-      "technologies": ["Next.js 16", "FastAPI", "Azure AI Language", "Azure AI Agents"],
+      "technologies": [
+        "Next.js 16",
+        "FastAPI",
+        "Azure AI Language",
+        "Azure AI Agents"
+      ],
       "liveUrl": "https://suport-bot-hazel.vercel.app/",
       "repositoryPath": "apps/02-support-bot",
       "caseStudyPath": "support-bot.md",
@@ -61,7 +71,12 @@
       "description": "Prompt Forge enables marketing teams to generate structured content variations. Integrates Azure Content Safety for pre-generation inspection, streaming SSE responses, and client-side history storage.",
       "category": "Prompt Engineering & Content Gen",
       "status": "live",
-      "technologies": ["Next.js 16", "FastAPI", "Azure OpenAI", "Azure Content Safety"],
+      "technologies": [
+        "Next.js 16",
+        "FastAPI",
+        "Azure OpenAI",
+        "Azure Content Safety"
+      ],
       "liveUrl": "https://prompt-forge-seven-tau.vercel.app/",
       "repositoryPath": "apps/03-prompt-forge",
       "caseStudyPath": "prompt-forge.md",
@@ -87,7 +102,12 @@
       "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       "category": "Knowledge Base & RAG",
       "status": "development",
-      "technologies": ["Next.js 15", "FastAPI", "SQLite Vector", "Azure OpenAI"],
+      "technologies": [
+        "Next.js 15",
+        "FastAPI",
+        "SQLite Vector",
+        "Azure OpenAI"
+      ],
       "liveUrl": "",
       "repositoryPath": "apps/04-pocket-rag",
       "caseStudyPath": "pocket-rag.md",
@@ -113,7 +133,12 @@
       "description": "Agentic Workflow implements a ReAct loop with deterministic tool calling (calculator, knowledge search, and sensitive alerts). Integrates mandatory Human-in-the-Loop authorization before executing critical actions.",
       "category": "Autonomous Agents & Tool Calling",
       "status": "development",
-      "technologies": ["Next.js 15", "FastAPI", "Azure OpenAI", "ReAct Loop"],
+      "technologies": [
+        "Next.js 15",
+        "FastAPI",
+        "Azure OpenAI",
+        "ReAct Loop"
+      ],
       "liveUrl": "",
       "repositoryPath": "apps/05-agentic-workflow",
       "caseStudyPath": "agentic-workflow.md",
@@ -129,6 +154,37 @@
       "backend": {
         "path": "apps/05-agentic-workflow/backend",
         "framework": "FastAPI"
+      }
+    },
+    {
+      "id": "06",
+      "slug": "agent-workspace",
+      "title": "Agent Workspace",
+      "summary": "Streaming AI agent workspace with Foundry Agent Service, typed MCP tools, approval gates, and durable conversations.",
+      "description": "Agent Workspace connects a Next.js streaming chat to Azure AI Foundry Agent Service and a Node.js MCP server. It includes three typed workspace tools, explicit approval for writes, an offline provider for CI, and Cosmos DB conversation persistence.",
+      "category": "AI Agents & MCP",
+      "status": "development",
+      "technologies": [
+        "Next.js 15",
+        "Azure AI Foundry",
+        "MCP",
+        "Cosmos DB"
+      ],
+      "liveUrl": "",
+      "repositoryPath": "apps/06-agent-workspace",
+      "caseStudyPath": "agent-workspace.md",
+      "security": {
+        "publicDemo": false,
+        "rateLimited": true,
+        "storesUserContent": true
+      },
+      "frontend": {
+        "path": "apps/06-agent-workspace/frontend",
+        "framework": "Next.js"
+      },
+      "backend": {
+        "path": "apps/06-agent-workspace/mcp-server",
+        "framework": "Node.js MCP"
       }
     }
   ]
