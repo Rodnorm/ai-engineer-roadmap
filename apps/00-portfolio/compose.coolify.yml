@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/00-portfolio/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_APP_01_URL: ${NEXT_PUBLIC_APP_01_URL:-https://inspector.rodrigodev.de}
+        NEXT_PUBLIC_APP_02_URL: ${NEXT_PUBLIC_APP_02_URL:-https://support.rodrigodev.de}
+        NEXT_PUBLIC_APP_03_URL: ${NEXT_PUBLIC_APP_03_URL:-https://studio.rodrigodev.de}
+        NEXT_PUBLIC_APP_04_URL: ${NEXT_PUBLIC_APP_04_URL:-https://rag.rodrigodev.de}
+        NEXT_PUBLIC_APP_05_URL: ${NEXT_PUBLIC_APP_05_URL:-https://app05.rodrigodev.de}
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    expose:
+      - "3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
