@@ -17,6 +17,7 @@ export interface PendingApproval {
 
 export interface Conversation {
   id: string;
+  ownerId: string;
   title: string;
   messages: ChatMessage[];
   providerConversationId?: string;
