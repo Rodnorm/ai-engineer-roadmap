@@ -5,12 +5,10 @@ services:
       dockerfile: Dockerfile
       args:
         BACKEND_URL: http://backend:8000
-        NEXT_PUBLIC_API_BASE_URL: /api/backend
     environment:
       NODE_ENV: production
       PORT: "3000"
       BACKEND_URL: http://backend:8000
-      NEXT_PUBLIC_API_BASE_URL: /api/backend
     expose:
       - "3000"
     depends_on:

@@ -4,11 +4,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        BACKEND_INTERNAL_URL: http://backend:8000
+        MESSAGE_SERVICE_URL: http://backend:8000/query
     environment:
       NODE_ENV: production
       PORT: "3000"
-      BACKEND_INTERNAL_URL: http://backend:8000
+      MESSAGE_SERVICE_URL: http://backend:8000/query
     expose:
       - "3000"
     depends_on:
