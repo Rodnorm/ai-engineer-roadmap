@@ -1,5 +1,3 @@
-const SERVICE_URL = process.env.NEXT_PUBLIC_MESSAGE_SERVICE_URL;
-
 /**
  * Stable, locale-neutral failure descriptor. The UI translates this via
  * the i18n module so the same error surfaces in whichever language the
@@ -24,7 +22,7 @@ export async function queryMessage(
 ) {
 	let res: Response;
 	try {
-		res = await fetch("/api/backend/query", {
+		res = await fetch("/api", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -34,8 +32,7 @@ export async function queryMessage(
 		});
 	} catch (err) {
 		const reason = err instanceof Error ? err.message : "network error";
-		if (!SERVICE_URL) throw new Error("service URL not configured");
-		throw new MessagingErrror({ kind: "network", url: SERVICE_URL, reason });
+		throw new MessagingErrror({ kind: "network", url: "/api", reason });
 	}
 
 	if (!res.ok) {
