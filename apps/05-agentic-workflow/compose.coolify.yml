@@ -1,0 +1,42 @@
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BACKEND_URL: http://backend:8005
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      BACKEND_URL: http://backend:8005
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: production
+      PORT: "8005"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://app05.rodrigodev.de}
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT:-gpt-4o-mini}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2024-08-01-preview}
+      GENERATION_ENABLED: ${GENERATION_ENABLED:-true}
+      MAX_CONCURRENT_REQUESTS: ${MAX_CONCURRENT_REQUESTS:-2}
+      AZURE_MAX_OUTPUT_TOKENS: ${AZURE_MAX_OUTPUT_TOKENS:-800}
+      AZURE_REQUEST_TIMEOUT_SECONDS: ${AZURE_REQUEST_TIMEOUT_SECONDS:-30.0}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      RATE_LIMIT_REQUESTS_PER_MINUTE: ${RATE_LIMIT_REQUESTS_PER_MINUTE:-10}
+      RATE_LIMIT_REQUESTS_PER_DAY_PER_IP: ${RATE_LIMIT_REQUESTS_PER_DAY_PER_IP:-100}
+      RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY: ${RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY:-500}
+    expose:
+      - "8005"
+    restart: unless-stopped

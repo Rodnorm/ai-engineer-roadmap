@@ -146,6 +146,17 @@ The monorepo uses path-aware GitHub Actions workflows (`.github/workflows/ci.yml
 
 ---
 
+## 🐳 Coolify deployment
+
+Each roadmap app has a Git-based Docker Compose definition that groups its
+frontend and backend in one Coolify resource while retaining app-level Watch
+Paths. See [the Coolify Compose deployment guide](./docs/deployment/COOLIFY_COMPOSE.md).
+
+Existing Vercel and Netlify configuration stays in place until the replacement
+deployments have been validated.
+
+---
+
 ## 📄 License
 
 This repository is licensed under the [MIT License](./LICENSE).

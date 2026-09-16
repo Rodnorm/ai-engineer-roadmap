@@ -72,9 +72,9 @@ test("catalog localization applies localized descriptions per locale", () => {
   const ptApps = getAppCatalog("pt");
   const deApps = getAppCatalog("de");
 
-  assert.equal(enApps.length, 3);
-  assert.equal(ptApps.length, 3);
-  assert.equal(deApps.length, 3);
+  assert.equal(enApps.length, 5);
+  assert.equal(ptApps.length, 5);
+  assert.equal(deApps.length, 5);
 
   // Check category and summary localization
   const enApp1 = enApps.find((a) => a.id === "01");

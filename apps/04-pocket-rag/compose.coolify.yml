@@ -1,0 +1,63 @@
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        BACKEND_URL: http://backend:8000
+        NEXT_PUBLIC_API_BASE_URL: /api/backend
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      BACKEND_URL: http://backend:8000
+      NEXT_PUBLIC_API_BASE_URL: /api/backend
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: production
+      PORT: "8000"
+      HOST: 0.0.0.0
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://rag.rodrigodev.de}
+      UPLOAD_DIR: /app/data/uploads
+      METADATA_DB_PATH: /app/data/metadata.sqlite3
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT}
+      AZURE_OPENAI_EMBEDDING_DEPLOYMENT: ${AZURE_OPENAI_EMBEDDING_DEPLOYMENT:-text-embedding-3-small}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      GENERATION_ENABLED: ${GENERATION_ENABLED:-false}
+      POCKET_RAG_API_KEY: ${POCKET_RAG_API_KEY}
+      PROVIDER_TIMEOUT_SECONDS: ${PROVIDER_TIMEOUT_SECONDS:-30}
+      PROVIDER_MAX_RETRIES: ${PROVIDER_MAX_RETRIES:-1}
+      MAX_OUTPUT_TOKENS: ${MAX_OUTPUT_TOKENS:-700}
+      MAX_CONCURRENT_GENERATIONS: ${MAX_CONCURRENT_GENERATIONS:-2}
+      REQUESTS_PER_MINUTE: ${REQUESTS_PER_MINUTE:-10}
+      DAILY_GENERATION_LIMIT: ${DAILY_GENERATION_LIMIT:-200}
+      MAX_FILE_BYTES: ${MAX_FILE_BYTES:-10485760}
+      MAX_PAGES: ${MAX_PAGES:-200}
+      MAX_TEXT_CHARS: ${MAX_TEXT_CHARS:-2000000}
+      MAX_CHUNKS_PER_DOCUMENT: ${MAX_CHUNKS_PER_DOCUMENT:-1000}
+      MAX_DOCUMENTS: ${MAX_DOCUMENTS:-100}
+      UPLOAD_RETENTION_MINUTES: ${UPLOAD_RETENTION_MINUTES:-30}
+      CLEANUP_INTERVAL_SECONDS: ${CLEANUP_INTERVAL_SECONDS:-60}
+      CHUNK_SIZE_WORDS: ${CHUNK_SIZE_WORDS:-500}
+      CHUNK_OVERLAP_WORDS: ${CHUNK_OVERLAP_WORDS:-50}
+      MIN_RELEVANCE_SCORE: ${MIN_RELEVANCE_SCORE:-0.2}
+      MAX_QUESTION_CHARS: ${MAX_QUESTION_CHARS:-2000}
+      MAX_CONTEXT_CHARS: ${MAX_CONTEXT_CHARS:-16000}
+    expose:
+      - "8000"
+    volumes:
+      - pocket-rag-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  pocket-rag-data:
