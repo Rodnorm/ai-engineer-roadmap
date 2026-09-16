@@ -112,7 +112,7 @@ class CosmosConversationRepository implements ConversationRepository {
   async save(ownerId: string, conversation: Conversation): Promise<void> {
     if (conversation.ownerId !== ownerId) throw new Error("Conversation owner mismatch");
     const container = await this.container();
-    await container.items.upsert(conversation, { partitionKey: ownerId });
+    await container.items.upsert(conversation);
   }
 
   async delete(ownerId: string, id: string): Promise<void> {
