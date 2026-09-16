@@ -15,7 +15,7 @@
         "Azure OpenAI",
         "Pillow"
       ],
-      "liveUrl": "https://ai-engineer-roadmap-lyart.vercel.app",
+      "liveUrl": "",
       "repositoryPath": "apps/01-smart-inspector",
       "caseStudyPath": "smart-inspector.md",
       "security": {
@@ -46,7 +46,7 @@
         "Azure AI Language",
         "Azure AI Agents"
       ],
-      "liveUrl": "https://suport-bot-hazel.vercel.app/",
+      "liveUrl": "",
       "repositoryPath": "apps/02-support-bot",
       "caseStudyPath": "support-bot.md",
       "security": {
@@ -77,7 +77,7 @@
         "Azure OpenAI",
         "Azure Content Safety"
       ],
-      "liveUrl": "https://prompt-forge-seven-tau.vercel.app/",
+      "liveUrl": "",
       "repositoryPath": "apps/03-prompt-forge",
       "caseStudyPath": "prompt-forge.md",
       "security": {
