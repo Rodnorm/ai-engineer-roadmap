@@ -41,7 +41,7 @@ Esta auditoria tem como objetivo verificar o repositório `ai-engineer-roadmap` 
 | Caches e artefatos de build ignorados no `.gitignore` | **APROVADO** | `.gitignore` expandido e atualizado |
 | Remoção de artefatos legados do índice | **APROVADO** | Untracked `smart-inspector.cpython-311.pyc` |
 | Variáveis sensíveis no frontend usando `NEXT_PUBLIC_` | **APROVADO** | Nenhuma credencial exposta via prefixo `NEXT_PUBLIC_` |
-| Credenciais em previews / Vercel | **RECOMENDADO** | Segredos devem ficar restritos ao ambiente Production na Vercel |
+| Credenciais em ambientes de deploy | **APROVADO** | Segredos restritos a variáveis de ambiente no Coolify |
 
 ---
 

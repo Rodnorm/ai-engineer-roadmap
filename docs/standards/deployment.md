@@ -4,25 +4,14 @@ This document details the deployment policy and GitHub Actions CI standards for 
 
 ---
 
-## 1. Vercel Deployment Isolation
+## 1. Coolify Deployment Isolation
 
-To ensure stability and cost control:
+To ensure stability, resource isolation, and cost control:
 
-- Production deployments are **restricted exclusively to the `main` branch**.
-- Every application root MUST include a `vercel.json` file specifying an `ignoreCommand` to prevent building apps unaffected by changes in PRs and commits:
-  ```json
-  {
-    "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then git diff HEAD^ HEAD --quiet -- .; else git diff $(git merge-base HEAD origin/main 2>/dev/null || echo HEAD^) HEAD --quiet -- .; fi",
-    "git": {
-      "deploymentEnabled": {
-        "main": true,
-        "*": false
-      }
-    }
-  }
-  ```
-- Applications that consume shared resources (e.g. `catalog/apps.json` in `apps/00-portfolio`) must include those paths in the diff check.
-- Preview branches must NOT receive production Azure credentials.
+- Production deployments are **restricted exclusively to the `main` branch** on Coolify + Hetzner.
+- Every application root defines a Git-based Docker Compose resource (`compose.coolify.yml`) with app-level Watch Paths (e.g. `apps/NN-*/**`) so changes only trigger builds for the affected application.
+- Applications consuming shared resources (e.g. `catalog/**` in `apps/00-portfolio`) include those paths in their Watch Paths.
+- Secrets and cloud credentials must never be committed to Git; they are configured exclusively as environment variables within the Coolify resource.
 
 ---
 

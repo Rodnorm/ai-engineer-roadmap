@@ -12,7 +12,7 @@ Because these applications interact with paid cloud infrastructure (e.g. Azure O
 
 | Asset | Threat | Defense Strategy |
 | --- | --- | --- |
-| **Azure Credentials & API Keys** | Secret leakage, key theft, financial exploitation | Server-only key handling, `.env` git-ignoring, Gitleaks scanning in CI, Vercel environment separation |
+| **Azure Credentials & API Keys** | Secret leakage, key theft, financial exploitation | Server-only key handling, `.env` git-ignoring, Gitleaks scanning in CI, Coolify environment variable separation |
 | **Cloud Budget / Tokens** | Denial of Wallet (DoW), rate limit exhaustion | Distributed rate limiting, global daily request caps, concurrency controls, timeout limits, kill-switches |
 | **System Prompts & LLM Behavior** | Prompt injection, jailbreaking, context leakage | Strict context isolation, instructions/data separation, defensive prompt design, Content Safety API |
 | **User Data & Privacy** | PII leakage, confidential image logging | No raw prompt/upload logging, PII masking, client-side history storage, explicit user disclaimers |
