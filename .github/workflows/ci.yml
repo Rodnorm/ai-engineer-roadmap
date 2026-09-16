@@ -222,3 +222,18 @@ jobs:
           else
             echo "No Python unit tests found; dependency and syntax checks passed."
           fi
+
+  compose_validation:
+    name: Coolify Compose Validation
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.4.0
+
+      - name: Validate Compose definitions
+        run: |
+          for compose_file in apps/*/compose.coolify.yml; do
+            echo "Validating ${compose_file}"
+            docker compose -f "${compose_file}" config --quiet
+          done
