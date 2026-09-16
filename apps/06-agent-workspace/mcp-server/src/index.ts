@@ -1,10 +1,16 @@
 import { createServer } from "node:http";
 import { z } from "zod/v4";
 import { initializeWorkspace, nodeMcpHandler } from "./server.js";
+import { requiredSecret, secureTokenEquals } from "./security.js";
 import { callWorkspaceTool } from "./tools.js";
 
 const port = Number.parseInt(process.env.PORT ?? "8006", 10);
 const host = process.env.HOST ?? "0.0.0.0";
+const publicMcpEnabled = process.env.ENABLE_PUBLIC_MCP?.trim().toLowerCase() === "true";
+const internalApiToken = requiredSecret("INTERNAL_API_TOKEN", process.env.INTERNAL_API_TOKEN);
+const mcpApiKey = publicMcpEnabled
+  ? requiredSecret("MCP_API_KEY", process.env.MCP_API_KEY)
+  : undefined;
 const allowedHosts = new Set(
   (process.env.ALLOWED_HOSTS ?? "localhost,127.0.0.1,mcp")
     .split(",")
@@ -24,10 +30,6 @@ function requestHost(request: import("node:http").IncomingMessage): string {
   } catch {
     return "";
   }
-}
-
-function hasValidToken(request: import("node:http").IncomingMessage, header: string, expected?: string): boolean {
-  return !expected || request.headers[header] === expected;
 }
 
 async function readJson(request: import("node:http").IncomingMessage): Promise<unknown> {
@@ -59,7 +61,7 @@ const server = createServer(async (request, response) => {
     }
 
     if (url.pathname === "/internal/tools/call" && request.method === "POST") {
-      if (!hasValidToken(request, "x-internal-token", process.env.INTERNAL_API_TOKEN)) {
+      if (!secureTokenEquals(request.headers["x-internal-token"], internalApiToken)) {
         sendJson(response, 401, { error: "Unauthorized" });
         return;
       }
@@ -69,7 +71,11 @@ const server = createServer(async (request, response) => {
     }
 
     if (url.pathname === "/mcp") {
-      if (!hasValidToken(request, "x-mcp-api-key", process.env.MCP_API_KEY)) {
+      if (!publicMcpEnabled || !mcpApiKey) {
+        sendJson(response, 404, { error: "Not found" });
+        return;
+      }
+      if (!secureTokenEquals(request.headers["x-mcp-api-key"], mcpApiKey)) {
         sendJson(response, 401, { error: "Unauthorized" });
         return;
       }

@@ -19,4 +19,6 @@ COPY --from=builder --chown=mcp:nodejs /app/dist ./dist
 USER mcp
 EXPOSE 8006
 VOLUME ["/data"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget -q --spider "http://127.0.0.1:${PORT:-8006}/health" || exit 1
 CMD ["node", "dist/src/index.js"]
