@@ -6,7 +6,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 import main
-from agent import SESSIONS
+from agent import SESSIONS, configure_session_store
 
 
 class TestApp05AgenticWorkflow(unittest.TestCase):
@@ -18,6 +18,7 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         main.rate_limiter._ip_day.clear()
         main.rate_limiter._global_day.clear()
         main.GENERATION_ENABLED = True
+        configure_session_store(ttl_seconds=1800, max_sessions=500)
 
     def test_health_check(self) -> None:
         res = self.client.get("/health")
@@ -64,9 +65,10 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         self.assertIsNotNone(data["pending_approval"])
         self.assertEqual(data["pending_approval"]["tool_name"], "send_alert")
         session_id = data["session_id"]
+        session_token = data["session_token"]
 
         # Step 2: Approve the action
-        approve_payload = {"session_id": session_id, "approved": True}
+        approve_payload = {"session_id": session_id, "session_token": session_token, "approved": True}
         res_app = self.client.post("/api/agent/approve", json=approve_payload)
         self.assertEqual(res_app.status_code, 200)
         data_app = res_app.json()
@@ -80,14 +82,52 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         data = res.json()
         self.assertEqual(data["status"], "waiting_approval")
         session_id = data["session_id"]
+        session_token = data["session_token"]
 
         # User rejects execution
-        reject_payload = {"session_id": session_id, "approved": False, "reason": "Deploy foi normalizado."}
+        reject_payload = {"session_id": session_id, "session_token": session_token, "approved": False, "reason": "Deploy foi normalizado."}
         res_rej = self.client.post("/api/agent/approve", json=reject_payload)
         self.assertEqual(res_rej.status_code, 200)
         data_rej = res_rej.json()
         self.assertEqual(data_rej["status"], "rejected")
         self.assertIn("Action cancelled", data_rej["final_answer"])
+
+    def test_session_token_is_required_for_approval(self) -> None:
+        res = self.client.post(
+            "/api/agent/run",
+            json={"prompt": "Envie um alerta para @ops sobre o servidor"},
+        )
+        data = res.json()
+        response = self.client.post(
+            "/api/agent/approve",
+            json={
+                "session_id": data["session_id"],
+                "session_token": "x" * 32,
+                "approved": True,
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_expired_session_is_not_accessible(self) -> None:
+        res = self.client.post("/api/agent/run", json={"prompt": "Calcule 2 + 2"})
+        data = res.json()
+        SESSIONS[data["session_id"]].expires_at = 0
+        response = self.client.get(
+            f"/api/agent/session/{data['session_id']}",
+            headers={"X-Session-Token": data["session_token"]},
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn(data["session_id"], SESSIONS)
+
+    def test_session_store_is_bounded(self) -> None:
+        configure_session_store(ttl_seconds=1800, max_sessions=2)
+        for value in (2, 3, 4):
+            response = self.client.post(
+                "/api/agent/run",
+                json={"prompt": f"Calcule {value} + {value}"},
+            )
+            self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(SESSIONS), 2)
 
     def test_kill_switch_blocks_execution(self) -> None:
         main.GENERATION_ENABLED = False

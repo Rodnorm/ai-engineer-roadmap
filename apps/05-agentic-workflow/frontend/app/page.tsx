@@ -20,6 +20,7 @@ function AgenticWorkflowContent() {
 
   const [prompt, setPrompt] = useState('');
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
+  const [sessionToken, setSessionToken] = useState<string | undefined>(undefined);
   const [status, setStatus] = useState<'idle' | 'running' | 'waiting_approval' | 'completed' | 'rejected' | 'error'>('idle');
   const [steps, setSteps] = useState<AgentStep[]>([]);
   const [pendingApproval, setPendingApproval] = useState<PendingApproval | undefined>(undefined);
@@ -37,8 +38,9 @@ function AgenticWorkflowContent() {
     setPendingApproval(undefined);
 
     try {
-      const response = await runAgentTask(taskPrompt, sessionId);
+      const response = await runAgentTask(taskPrompt, sessionId, sessionToken);
       setSessionId(response.session_id);
+      setSessionToken(response.session_token);
       setStatus(response.status);
       setSteps(response.steps);
       setFinalAnswer(response.final_answer);
@@ -52,12 +54,12 @@ function AgenticWorkflowContent() {
   };
 
   const handleApprove = async () => {
-    if (!sessionId || isLoading) return;
+    if (!sessionId || !sessionToken || isLoading) return;
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await approveAgentTask(sessionId, true);
+      const response = await approveAgentTask(sessionId, sessionToken, true);
       setStatus(response.status);
       setSteps(response.steps);
       setFinalAnswer(response.final_answer);
@@ -70,12 +72,12 @@ function AgenticWorkflowContent() {
   };
 
   const handleReject = async (reason?: string) => {
-    if (!sessionId || isLoading) return;
+    if (!sessionId || !sessionToken || isLoading) return;
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await approveAgentTask(sessionId, false, reason);
+      const response = await approveAgentTask(sessionId, sessionToken, false, reason);
       setStatus(response.status);
       setSteps(response.steps);
       setFinalAnswer(response.final_answer);
@@ -90,6 +92,7 @@ function AgenticWorkflowContent() {
   const handleReset = () => {
     setPrompt('');
     setSessionId(undefined);
+    setSessionToken(undefined);
     setStatus('idle');
     setSteps([]);
     setPendingApproval(undefined);

@@ -27,16 +27,19 @@ class PendingApproval(BaseModel):
 class RunTaskRequest(BaseModel):
     prompt: str = Field(..., min_length=2, max_length=1000, description="Task prompt for the agent")
     session_id: Optional[str] = None
+    session_token: Optional[str] = Field(default=None, min_length=32, max_length=128)
 
 
 class ApproveTaskRequest(BaseModel):
     session_id: str = Field(..., min_length=1)
+    session_token: str = Field(..., min_length=32, max_length=128)
     approved: bool
     reason: Optional[str] = None
 
 
 class AgentSessionResponse(BaseModel):
     session_id: str
+    session_token: str
     status: str  # "completed" | "waiting_approval" | "rejected" | "error"
     steps: List[AgentStep]
     final_answer: Optional[str] = None
