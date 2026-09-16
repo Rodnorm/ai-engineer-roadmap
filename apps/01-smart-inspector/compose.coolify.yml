@@ -5,12 +5,10 @@ services:
       dockerfile: Dockerfile
       args:
         ANALYZE_SERVICE_URL: http://backend:8000/analyze
-        BACKEND_URL: http://backend:8000
     environment:
       NODE_ENV: production
       PORT: "3000"
       ANALYZE_SERVICE_URL: http://backend:8000/analyze
-      BACKEND_URL: http://backend:8000
     expose:
       - "3000"
     depends_on:
