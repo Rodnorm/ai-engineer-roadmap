@@ -12,7 +12,8 @@
           "NEXT_PUBLIC_APP_02_URL": "http://localhost:3002",
           "NEXT_PUBLIC_APP_03_URL": "http://localhost:3003",
           "NEXT_PUBLIC_APP_04_URL": "http://localhost:3004",
-          "NEXT_PUBLIC_APP_05_URL": "http://localhost:3005"
+          "NEXT_PUBLIC_APP_05_URL": "http://localhost:3005",
+          "NEXT_PUBLIC_APP_06_URL": "http://localhost:3006"
         }
       }
     },
@@ -113,6 +114,27 @@
         "command": "uvicorn main:app --reload --host 127.0.0.1 --port 8005",
         "env": {
           "PORT": "8005"
+        }
+      }
+    },
+    {
+      "id": "06",
+      "name": "Agent Workspace",
+      "frontend": {
+        "dir": "apps/06-agent-workspace/frontend",
+        "port": 3006,
+        "command": "npm run dev",
+        "env": {
+          "MCP_SERVER_URL": "http://localhost:8006",
+          "AGENT_PROVIDER": "offline"
+        }
+      },
+      "backend": {
+        "dir": "apps/06-agent-workspace/mcp-server",
+        "port": 8006,
+        "command": "npm run dev",
+        "env": {
+          "PORT": "8006"
         }
       }
     }
