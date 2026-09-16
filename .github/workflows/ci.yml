@@ -35,6 +35,7 @@ jobs:
       app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
       - name: Check out repository
@@ -55,6 +56,8 @@ jobs:
               - 'apps/03-prompt-forge/**'
             app04:
               - 'apps/04-pocket-rag/**'
+            app05:
+              - 'apps/05-agentic-workflow/**'
             catalog:
               - 'catalog/**'
             global:
@@ -105,6 +108,9 @@ jobs:
           - app: pocketRag
             id: app04
             directory: apps/04-pocket-rag/frontend
+          - app: Agentic Workflow
+            id: app05
+            directory: apps/05-agentic-workflow/frontend
 
     defaults:
       run:
@@ -125,7 +131,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Install dependencies
-        run: npm ci
+        run: npm ci --workspaces=false
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Lint
@@ -168,6 +174,10 @@ jobs:
             id: app04
             directory: apps/04-pocket-rag/backend
             requirements: requirements-test.txt
+          - app: Agentic Workflow
+            id: app05
+            directory: apps/05-agentic-workflow/backend
+            requirements: requirements.txt
 
     defaults:
       run:
