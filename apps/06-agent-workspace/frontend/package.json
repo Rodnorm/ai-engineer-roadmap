@@ -8,7 +8,7 @@
     "start": "next start --port 3006",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test tests/**/*.test.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
     "provision:agent": "tsx scripts/provision-agent.ts"
   },
   "dependencies": {

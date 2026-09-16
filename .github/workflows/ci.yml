@@ -137,7 +137,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Install dependencies
-        run: npm ci
+        run: npm ci --workspaces=false
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Lint
@@ -257,7 +257,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Install dependencies
-        run: npm ci
+        run: npm ci --workspaces=false
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Type-check
