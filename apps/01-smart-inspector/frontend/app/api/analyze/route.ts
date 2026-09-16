@@ -1,4 +1,4 @@
-const SERVICE_URL = process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL;
+const SERVICE_URL = process.env.ANALYZE_SERVICE_URL;
 
 export async function POST(request: Request) {
 	const formData = await request.formData();
