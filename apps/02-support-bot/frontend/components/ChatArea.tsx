@@ -24,6 +24,10 @@ export type ChatAreaHandle = {
 	submit: (text: string) => void;
 };
 
+const createMessageId = () =>
+	globalThis.crypto?.randomUUID?.() ??
+	`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
 	const t = useT("chat");
 
@@ -38,7 +42,7 @@ const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
 
 		if (!trimmed || isLoading) return;
 
-		const userId = crypto.randomUUID();
+		const userId = createMessageId();
 
 		const userMessage: MessageType = {
 			id: userId,
@@ -62,7 +66,7 @@ const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
 			setMessages((prev) => [
 				...prev,
 				{
-					id: crypto.randomUUID(),
+					id: createMessageId(),
 					type: MessageUserType.BOT,
 					text: reply.queryResponse,
 				},
@@ -88,7 +92,7 @@ const ChatArea = forwardRef<ChatAreaHandle>(function ChatArea(_, ref) {
 				setMessages((prev) => [
 					...prev,
 					{
-						id: crypto.randomUUID(),
+						id: createMessageId(),
 						type: MessageUserType.BOT,
 						text: t("errorMessage"),
 					},
