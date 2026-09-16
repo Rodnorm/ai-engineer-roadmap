@@ -47,10 +47,10 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
       title: locale === "pt" ? "Linha de Base & Padrões de Segurança" : locale === "de" ? "Sicherheitsstandards & Baseline" : "Security Baseline & Standards",
       status: "completed",
       description: locale === "pt"
-        ? "Auditoria para release público, varredura de segredos, CI com Gitleaks e CodeQL, templates base e isolamento no Vercel."
+        ? "Auditoria para release público, varredura de segredos, CI com Gitleaks e CodeQL, templates base e isolamento de deploy."
         : locale === "de"
-        ? "Release-Audit, Secrets-Scanning, Gitleaks- und CodeQL-CI, standardisierte Starter-Templates und Vercel-Isolierung."
-        : "Monorepo public release audit, secrets scanning, Gitleaks CI, CodeQL analysis, standard FastAPI & Next.js starter templates, and Vercel isolation.",
+        ? "Release-Audit, Secrets-Scanning, Gitleaks- und CodeQL-CI, standardisierte Starter-Templates und Deploy-Isolierung."
+        : "Monorepo public release audit, secrets scanning, Gitleaks CI, CodeQL analysis, standard FastAPI & Next.js starter templates, and deployment isolation.",
       badge: locale === "pt" ? "Segurança & Padrões" : locale === "de" ? "Sicherheit & Standards" : "Security & Standards",
       link: "/apps",
     },

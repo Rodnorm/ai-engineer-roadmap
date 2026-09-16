@@ -14,15 +14,15 @@ the UI always gets typed, predictable JSON back.
 
 - **Frontend** — Next.js 14 (App Router) + TypeScript + Tailwind CSS + React 18
 - **Backend** — FastAPI + Uvicorn, OpenAI Python SDK pointing at Azure OpenAI (`/openai/v1`)
-- **Infra** — Configured to deploy on Vercel (`vercel.json` routes `/api/backend/*` to the FastAPI service)
+- **Infra** — Docker Compose deployment configured for Coolify and Hetzner
 
 ## Repo layout
 
 ```
 apps/01-smart-inspector/
-├── backend/        # FastAPI app exposing POST /analyze and GET /health
-├── frontend/       # Next.js app (App Router)
-└── vercel.json     # routes /api/backend/* → backend, everything else → frontend
+├── backend/            # FastAPI app exposing POST /analyze and GET /health
+├── frontend/           # Next.js app (App Router)
+└── compose.coolify.yml # Coolify Compose definition
 ```
 
 ## Prerequisites
@@ -171,13 +171,13 @@ Oversized uploads return HTTP `413`, and unsupported media types return HTTP
 `415`. These requests are rejected before an Azure OpenAI call is made.
 
 The included limiter stores counters inside the Python process. It provides
-useful local and basic abuse protection, but Vercel can create multiple isolated
-serverless instances and restart them. Therefore, the global daily setting is a
-per-instance safety limit, not a guaranteed deployment-wide spending cap. A
-strict production cap requires a shared counter such as Redis/KV, an edge or
-firewall limit, and conservative Azure deployment quotas.
+useful local and basic abuse protection, but multiple isolated process instances
+may restart or scale. Therefore, the global daily setting is a per-instance
+safety limit, not a guaranteed deployment-wide spending cap. A strict production
+cap requires a shared counter such as Redis/KV, an edge or firewall limit, and
+conservative Azure deployment quotas.
 
-When deployed behind Vercel, `TRUST_PROXY_HEADERS=true` uses
+When deployed behind a reverse proxy, `TRUST_PROXY_HEADERS=true` uses
 `X-Forwarded-For` to identify the original client. Set it to `false` when
 Uvicorn is exposed directly to untrusted clients.
 

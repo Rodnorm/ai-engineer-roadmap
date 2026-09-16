@@ -164,15 +164,12 @@ paid generation/evaluator calls. Never publish simulated scores as measurements.
 
 ## Deployment
 
-`vercel.json` uses Vercel's experimental multi-service configuration: Next.js at `/`
-and FastAPI at `/api/backend`. Select the **Services** framework preset if evaluating
-that configuration. The frontend sends same-origin API requests.
+The app is deployed using Docker Compose on Coolify (`compose.coolify.yml`): Next.js at `/`
+and FastAPI at `/api/backend`. The frontend sends same-origin API requests.
 
-Vercel's default function filesystem is not evidence of durable SQLite or
-uploaded-file storage. Do not label that deployment production-ready unless the host
-provides a mounted persistent filesystem shared by backend instances and restart tests
-prove all stores survive.
-keep generation disabled in previews, deploy publicly from `main`, and test upload,
+The backend uses a mounted persistent volume (`pocket-rag-data`) at `/app/data`
+to ensure durable SQLite and uploaded-file storage across restarts.
+Keep generation disabled during initial setup, deploy from `main`, and test upload,
 query, delete, restart recovery, model cold start, duration, and kill switch on the
 actual host.
 

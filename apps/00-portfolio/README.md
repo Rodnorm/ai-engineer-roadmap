@@ -67,25 +67,13 @@ npm test
 npm run build
 ```
 
-## Vercel deployment
+## Deployment
 
-The existing `roadmap-portfolio` project uses `apps/00-portfolio` as its Root Directory.
-Its root `vercel.json` declares `frontend` as the Next.js service and routes all requests
-to that service. This matches the deployment structure used by Apps 01–03 and prevents
-Vercel from publishing the repository files as a static directory.
+App 00 is deployed using Docker Compose on Coolify (`compose.coolify.yml`):
 
-The Vercel project Framework Preset must remain **Services**. If the project is recreated
-as a standalone Next.js project instead, use Root Directory
-`apps/00-portfolio/frontend`, Framework Preset **Next.js**, Install Command `npm ci`,
-Build Command `npm run build`, and the default Output Directory. Enable **Include source
-files outside of the Root Directory** so the build can read the shared catalog and case
-studies.
+- **Coolify Base Directory:** `/`
+- **Docker Compose Location:** `/apps/00-portfolio/compose.coolify.yml`
+- **Watch Paths:** `apps/00-portfolio/**` and `catalog/**`
+- **Public service:** `web:3000`
 
-Both configurations allow production deployments from `main` and preview deployments
-from `fix/00-deploy-preview-validation` only. Other branches remain disabled to limit
-deployment usage. The preview has its own URL and does not replace the production domain.
-
-Before merging the deployment fix, check the PR's **Vercel – roadmap-portfolio** status
-and open its preview. `/`, `/pt`, `/de`, `/apps`, and the case studies must render; source
-paths such as `/frontend/package.json` must return 404. A successful deployment status
-alone is insufficient: the previous deployment was successful but served the wrong files.
+The image build incorporates the shared catalog and case studies. Production deployments are triggered from `main`.
