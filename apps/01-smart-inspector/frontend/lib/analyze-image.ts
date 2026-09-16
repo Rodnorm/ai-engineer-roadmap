@@ -1,6 +1,7 @@
 /**
  * Contract with the external analysis service (FastAPI at backend/smart-inspector.py).
- * Endpoint URL is configured via NEXT_PUBLIC_ANALYZE_SERVICE_URL or ANALYZE_SERVICE_URL.
+ * Requests go through the same-origin Next.js route handler, which forwards
+ * them to the server-side ANALYZE_SERVICE_URL.
  */
 export type AnalysisResult = {
 	tags: string[];
@@ -36,8 +37,6 @@ export class AnalyzeError extends Error {
 	}
 }
 
-const SERVICE_URL = process.env.NEXT_PUBLIC_ANALYZE_SERVICE_URL;
-
 /**
  * Sends the image to the analysis service as multipart/form-data and returns
  * its structured output ({ caption, tags, objects, ocr }). The `locale`
@@ -53,11 +52,10 @@ export async function analyzeImage(
 
 	let res: Response;
 	try {
-		res = await fetch("/api/backend/analyze", { method: "POST", body: form });
+		res = await fetch("/api/analyze", { method: "POST", body: form });
 	} catch (err) {
 		const reason = err instanceof Error ? err.message : "network error";
-		if (!SERVICE_URL) throw new Error("service URL not configured");
-		throw new AnalyzeError({ kind: "network", url: SERVICE_URL, reason });
+		throw new AnalyzeError({ kind: "network", url: "/api/analyze", reason });
 	}
 
 	if (!res.ok) {
