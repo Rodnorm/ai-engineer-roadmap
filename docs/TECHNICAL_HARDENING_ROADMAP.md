@@ -416,15 +416,15 @@ Acceptance criteria:
 
 Suggested branch: `docs/ai-system-cards`
 
-- [ ] Document models, providers, regions, and deployment names without secrets.
-- [ ] Document input/output data classes.
-- [ ] Document retention and deletion behavior.
-- [ ] Document model and application limitations.
-- [ ] Document prompt-injection and tool-use boundaries.
-- [ ] Document human-approval requirements.
-- [ ] Document evaluation datasets and known gaps.
-- [ ] Document estimated cost characteristics.
-- [ ] Publish one concise system card per AI application.
+- [x] Document models, providers, regions, and deployment names without secrets.
+- [x] Document input/output data classes.
+- [x] Document retention and deletion behavior.
+- [x] Document model and application limitations.
+- [x] Document prompt-injection and tool-use boundaries.
+- [x] Document human-approval requirements.
+- [x] Document evaluation datasets and known gaps.
+- [x] Document estimated cost characteristics.
+- [x] Publish one concise system card per AI application.
 
 Acceptance criteria:
 
@@ -502,3 +502,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 5.3: OpenTelemetry GenAI tracing, W3C traceparent propagation, zero-PII metrics, and synthetic monitoring standard. | Enable cross-service trace correlation, p50/p95 latency and token monitoring without data leakage. | Proceed to Phase 6.1 AI evaluation corpus. |
 | 2026-09-17 | Complete Phase 6.1: Versioned evaluation corpus, regression runner, and CI quality gates. | Prevent AI regressions in prompt injection, PII masking, RAG groundedness, and agent authorization. | Proceed to Phase 6.2 AI scorecard. |
 | 2026-09-17 | Complete Phase 6.2: AI Reliability & Safety Scorecard in App 00 Portfolio with verifiable links and commit hashes. | Surface reproducible empirical engineering evidence and distinguish measured results from marketing claims. | Proceed to Phase 6.3 AI system cards. |
+| 2026-09-17 | Complete Phase 6.3: Standardized AI System Cards and AIBOM across Applications 01 through 06. | Document models, data governance, safety boundaries, HITL gates, and limitations for review. | Proceed to Phase 7 documentation alignment. |
