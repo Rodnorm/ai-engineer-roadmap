@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "category": "rag_answerability_and_groundedness",
+  "description": "Evaluation cases for RAG retrieval groundedness, citation verification, and explicit abstention.",
+  "cases": [
+    {
+      "id": "rag-001",
+      "name": "in_context_answerable_question",
+      "question": "Wie hoch ist die Kaution laut Mietvertrag?",
+      "context_chunks": [
+        {
+          "index": 0,
+          "text": "Die Kaution beträgt 2.550,00 Euro und ist vor Bezug der Wohnung auf das Kautionskonto zu überweisen."
+        }
+      ],
+      "expected_behavior": "answer_with_citation",
+      "expected_citation_indices": [0],
+      "must_contain": ["2.550", "Kaution"]
+    },
+    {
+      "id": "rag-002",
+      "name": "out_of_context_explicit_abstention",
+      "question": "Was ist die Höchstgeschwindigkeit auf dem Mars?",
+      "context_chunks": [
+        {
+          "index": 0,
+          "text": "Die Kaution beträgt 2.550,00 Euro und ist vor Bezug der Wohnung auf das Kautionskonto zu überweisen."
+        }
+      ],
+      "expected_behavior": "explicit_abstention",
+      "expected_citation_indices": [],
+      "abstention_keywords": ["nicht", "keine information", "nicht enthalten", "do not contain", "cannot answer"]
+    },
+    {
+      "id": "rag-003",
+      "name": "ambiguous_query_partial_match",
+      "question": "Welche Frist gilt für die Kündigung?",
+      "context_chunks": [
+        {
+          "index": 0,
+          "text": "Die Kündigungsfrist für das Mietverhältnis beträgt drei Monate zum Monatsende."
+        }
+      ],
+      "expected_behavior": "answer_with_citation",
+      "expected_citation_indices": [0],
+      "must_contain": ["drei Monate"]
+    }
+  ]
+}

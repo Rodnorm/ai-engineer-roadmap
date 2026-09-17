@@ -377,16 +377,16 @@ Acceptance criteria:
 
 Suggested branch: `evals/cross-app-regression-suite`
 
-- [ ] Create versioned, synthetic evaluation datasets.
-- [ ] Add prompt-injection cases.
-- [ ] Add PII leakage cases.
-- [ ] Add malformed structured-output cases.
-- [ ] Add RAG answerability, citation validity, and abstention cases.
-- [ ] Add agent tool-authorization and approval-bypass cases.
-- [ ] Store expected behavior and scoring rules.
-- [ ] Run deterministic tests on every relevant PR.
-- [ ] Run provider-backed evaluations on a controlled schedule.
-- [ ] Define thresholds that block meaningful regressions.
+- [x] Create versioned, synthetic evaluation datasets.
+- [x] Add prompt-injection cases.
+- [x] Add PII leakage cases.
+- [x] Add malformed structured-output cases.
+- [x] Add RAG answerability, citation validity, and abstention cases.
+- [x] Add agent tool-authorization and approval-bypass cases.
+- [x] Store expected behavior and scoring rules.
+- [x] Run deterministic tests on every relevant PR.
+- [x] Run provider-backed evaluations on a controlled schedule.
+- [x] Define thresholds that block meaningful regressions.
 
 Acceptance criteria:
 
@@ -500,3 +500,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 5.1: Enforce standard CSP, 2-year HSTS preload, frame-ancestors, and automated security header checks. | Protect clients from XSS, clickjacking, MIME-sniffing, and protocol downgrades across all Next.js apps. | Proceed to Phase 5.2 document processing. |
 | 2026-09-17 | Complete Phase 5.2: Timeout/character guards, encrypted/empty PDF rejections, directory containment, and orphan cleanup. | Prevent resource exhaustion, DoS, and orphaned files during untrusted document ingestion. | Proceed to Phase 5.3 OpenTelemetry. |
 | 2026-09-17 | Complete Phase 5.3: OpenTelemetry GenAI tracing, W3C traceparent propagation, zero-PII metrics, and synthetic monitoring standard. | Enable cross-service trace correlation, p50/p95 latency and token monitoring without data leakage. | Proceed to Phase 6.1 AI evaluation corpus. |
+| 2026-09-17 | Complete Phase 6.1: Versioned evaluation corpus, regression runner, and CI quality gates. | Prevent AI regressions in prompt injection, PII masking, RAG groundedness, and agent authorization. | Proceed to Phase 6.2 AI scorecard. |

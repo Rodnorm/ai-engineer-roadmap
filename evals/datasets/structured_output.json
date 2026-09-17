@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "category": "structured_output_conformity",
+  "description": "Evaluation cases verifying JSON schema adherence and validation recovery for structured outputs.",
+  "cases": [
+    {
+      "id": "struct-001",
+      "name": "valid_schema_conformance",
+      "schema_name": "AnalysisResult",
+      "payload": {
+        "title": "Clean living room",
+        "tags": ["interior", "furniture", "couch"],
+        "objects": [{"name": "sofa", "confidence": 0.96}]
+      },
+      "expected_valid": true
+    },
+    {
+      "id": "struct-002",
+      "name": "missing_required_field",
+      "schema_name": "AnalysisResult",
+      "payload": {
+        "tags": ["interior"]
+      },
+      "expected_valid": false,
+      "missing_field": "title"
+    },
+    {
+      "id": "struct-003",
+      "name": "type_mismatch_recovery",
+      "schema_name": "AnalysisResult",
+      "payload": {
+        "title": "Desk setup",
+        "tags": "workspace",
+        "objects": []
+      },
+      "expected_valid": false,
+      "error_type": "type_error"
+    }
+  ]
+}
