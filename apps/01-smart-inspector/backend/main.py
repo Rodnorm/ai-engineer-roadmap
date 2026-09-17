@@ -119,7 +119,7 @@ rate_limiter = PersistentRateLimiter(
         "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100
     ),    database_path=os.getenv(
         "RATE_LIMIT_DB_PATH",
-        "/data/rate-limit.sqlite3" if IS_PRODUCTION else ":memory:",
+        "/data/rate-limit.sqlite3" if IS_PRODUCTION else "./data/rate-limit.sqlite3",
     ),
 )
 

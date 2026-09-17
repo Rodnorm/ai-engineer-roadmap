@@ -146,7 +146,7 @@ rate_limiter = PersistentRateLimiter(
     requests_per_day_per_ip=_env_int("RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 20),
     global_requests_per_day=_env_int("RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100),    database_path=os.getenv(
         "RATE_LIMIT_DB_PATH",
-        "/data/rate-limit.sqlite3" if IS_PRODUCTION else ":memory:",
+        "/data/rate-limit.sqlite3" if IS_PRODUCTION else "./data/rate-limit.sqlite3",
     ),
 )
 
