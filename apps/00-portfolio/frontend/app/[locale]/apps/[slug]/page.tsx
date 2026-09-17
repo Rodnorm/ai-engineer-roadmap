@@ -3,6 +3,10 @@ import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
 import { LOCALES, Locale, isValidLocale, getDictionary } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
+type PageProps = {
+  params: Promise<{ locale: string; slug: string }>;
+};
+
 export function generateStaticParams() {
   const locales = LOCALES.filter((l) => l !== "en");
   const apps = getAppCatalog("en");
@@ -20,11 +24,12 @@ export function generateStaticParams() {
   return params;
 }
 
-export function generateMetadata({ params }: { params: { locale: string; slug: string } }) {
-  if (!isValidLocale(params.locale)) return {};
-  const app = getAppBySlug(params.slug, params.locale as Locale);
+export async function generateMetadata({ params }: PageProps) {
+  const { locale, slug } = await params;
+  if (!isValidLocale(locale)) return {};
+  const app = getAppBySlug(slug, locale as Locale);
   if (!app) return {};
-  const dict = getDictionary(params.locale);
+  const dict = getDictionary(locale);
 
   return {
     title: `${app.title} — ${dict.meta.siteTitle}`,
@@ -32,15 +37,16 @@ export function generateMetadata({ params }: { params: { locale: string; slug: s
   };
 }
 
-export default function LocalizedCaseStudyPage({ params }: { params: { locale: string; slug: string } }) {
-  if (!isValidLocale(params.locale)) {
+export default async function LocalizedCaseStudyPage({ params }: PageProps) {
+  const { locale, slug } = await params;
+  if (!isValidLocale(locale)) {
     notFound();
   }
 
-  const app = getAppBySlug(params.slug, params.locale as Locale);
+  const app = getAppBySlug(slug, locale as Locale);
   if (!app) {
     notFound();
   }
 
-  return <CaseStudyPageView slug={params.slug} locale={params.locale as Locale} />;
+  return <CaseStudyPageView slug={slug} locale={locale as Locale} />;
 }

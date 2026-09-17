@@ -1,5 +1,0 @@
-# Temporary baseline for Apps 00 and 01, which still use Next.js 14.
-# Upgrade both apps to a supported patched Next.js line before these exceptions expire.
-# New critical findings remain blocking.
-CVE-2026-75604 exp:2026-09-24
-GHSA-2xp9-vwfh-vxw4 exp:2026-09-24
