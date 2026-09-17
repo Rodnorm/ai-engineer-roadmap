@@ -41,6 +41,7 @@ from models import (
     Variation,
 )
 from personas import persona_name, system_prompt_for
+from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
 from rate_limit import InMemoryRateLimiter
 
 # ---------------------------------------------------------------------------
@@ -137,7 +138,8 @@ MAX_CONCURRENT_REQUESTS = _env_int("MAX_CONCURRENT_REQUESTS", 2, 1)
 concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
-TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
+TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
+TRUSTED_PROXY_CIDRS = parse_trusted_proxy_cidrs(os.getenv("TRUSTED_PROXY_CIDRS", ""))
 
 rate_limiter = InMemoryRateLimiter(
     requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 3),
@@ -302,11 +304,12 @@ def _complete_variations_from_json(text: str) -> list[Variation]:
 
 
 def _client_ip(request: Request) -> str:
-    if TRUST_PROXY_HEADERS:
-        forwarded_for = request.headers.get("x-forwarded-for")
-        if forwarded_for:
-            return forwarded_for.split(",", maxsplit=1)[0].strip()
-    return request.client.host if request.client else "unknown"
+    return resolve_client_ip(
+        request.client.host if request.client else None,
+        request.headers.get("x-forwarded-for"),
+        TRUST_PROXY_HEADERS,
+        TRUSTED_PROXY_CIDRS,
+    )
 
 
 # ---------------------------------------------------------------------------
