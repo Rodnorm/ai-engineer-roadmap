@@ -3,6 +3,7 @@ import { getAppCatalog } from "@/lib/catalog";
 import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
 import { ArrowRight, Cpu, Zap, Lock, ExternalLink, BookOpen } from "lucide-react";
 import { RotatingSkillBadge } from "@/components/RotatingSkillBadge";
+import { AiSafetyScorecard } from "@/components/AiSafetyScorecard";
 
 export function HomePageView({ locale = "en" }: { locale?: Locale }) {
   const dict = getDictionary(locale);
@@ -130,6 +131,9 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
           ))}
         </div>
       </section>
+
+      {/* AI Reliability & Safety Scorecard */}
+      <AiSafetyScorecard />
     </div>
   );
 }

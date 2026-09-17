@@ -397,15 +397,15 @@ Acceptance criteria:
 
 Suggested branch: `feat/portfolio-ai-scorecard`
 
-- [ ] Define a shared metrics schema.
-- [ ] Display groundedness/citation quality where applicable.
-- [ ] Display prompt-injection resistance results.
-- [ ] Display PII leakage test results.
-- [ ] Display tool approval/bypass results.
-- [ ] Display latency and cost per representative task.
-- [ ] Display last evaluation and security-scan dates.
-- [ ] Link every metric to its methodology and commit.
-- [ ] Clearly distinguish measured results from design claims.
+- [x] Define a shared metrics schema.
+- [x] Display groundedness/citation quality where applicable.
+- [x] Display prompt-injection resistance results.
+- [x] Display PII leakage test results.
+- [x] Display tool approval/bypass results.
+- [x] Display latency and cost per representative task.
+- [x] Display last evaluation and security-scan dates.
+- [x] Link every metric to its methodology and commit.
+- [x] Clearly distinguish measured results from design claims.
 
 Acceptance criteria:
 
@@ -501,3 +501,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 5.2: Timeout/character guards, encrypted/empty PDF rejections, directory containment, and orphan cleanup. | Prevent resource exhaustion, DoS, and orphaned files during untrusted document ingestion. | Proceed to Phase 5.3 OpenTelemetry. |
 | 2026-09-17 | Complete Phase 5.3: OpenTelemetry GenAI tracing, W3C traceparent propagation, zero-PII metrics, and synthetic monitoring standard. | Enable cross-service trace correlation, p50/p95 latency and token monitoring without data leakage. | Proceed to Phase 6.1 AI evaluation corpus. |
 | 2026-09-17 | Complete Phase 6.1: Versioned evaluation corpus, regression runner, and CI quality gates. | Prevent AI regressions in prompt injection, PII masking, RAG groundedness, and agent authorization. | Proceed to Phase 6.2 AI scorecard. |
+| 2026-09-17 | Complete Phase 6.2: AI Reliability & Safety Scorecard in App 00 Portfolio with verifiable links and commit hashes. | Surface reproducible empirical engineering evidence and distinguish measured results from marketing claims. | Proceed to Phase 6.3 AI system cards. |
