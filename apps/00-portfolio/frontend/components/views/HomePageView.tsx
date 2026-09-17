@@ -133,7 +133,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
       </section>
 
       {/* AI Reliability & Safety Scorecard */}
-      <AiSafetyScorecard />
+      <AiSafetyScorecard dict={dict} />
     </div>
   );
 }
