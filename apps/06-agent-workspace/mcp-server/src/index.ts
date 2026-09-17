@@ -4,6 +4,14 @@ import { initializeWorkspace, nodeMcpHandler } from "./server.js";
 import { requiredSecret, secureTokenEquals } from "./security.js";
 import { callWorkspaceTool } from "./tools.js";
 
+if (typeof process.loadEnvFile === "function") {
+  try {
+    process.loadEnvFile();
+  } catch {
+    // Ignore missing .env
+  }
+}
+
 const port = Number.parseInt(process.env.PORT ?? "8006", 10);
 const host = process.env.HOST ?? "0.0.0.0";
 const publicMcpEnabled = process.env.ENABLE_PUBLIC_MCP?.trim().toLowerCase() === "true";
