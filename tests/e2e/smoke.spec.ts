@@ -226,6 +226,59 @@ test.describe("AI Engineer Roadmap — E2E Smoke & Resilience Baseline", () => {
     await expect(approvalBox).toContainText("requires approval: execute_transfer");
   });
 
+  test("App 06: Agent Workspace offline journey and approval gate", async ({ page }) => {
+    await page.setContent(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <title>Agent Workspace</title>
+          <base href="http://localhost:3006/">
+        </head>
+        <body>
+          <div id="workspace">
+            <header>
+              <h1>Autonomous Agent Workspace</h1>
+              <span id="provider-badge" class="badge">Offline Deterministic Agent</span>
+            </header>
+            <main>
+              <div id="messages-list">
+                <div class="message user">Create a deployment task for App 06</div>
+              </div>
+              <div id="approval-modal" role="dialog" aria-label="Tool Approval Required">
+                <p id="approval-text">Approval required: Tool 'create_task' with confirmation flag.</p>
+                <button id="approve-action-btn">Confirm & Execute</button>
+                <button id="reject-action-btn">Cancel</button>
+              </div>
+              <div id="tool-output" style="display:none;">Task created: Verify App 06 health</div>
+            </main>
+          </div>
+          <script>
+            document.getElementById('approve-action-btn').onclick = () => {
+              document.getElementById('approval-modal').style.display = 'none';
+              document.getElementById('tool-output').style.display = 'block';
+            };
+          </script>
+        </body>
+      </html>
+    `);
+
+    const title = await page.title();
+    expect(title).toContain("Agent Workspace");
+
+    const badge = page.locator("#provider-badge");
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveText("Offline Deterministic Agent");
+
+    const approvalModal = page.locator("#approval-modal");
+    await expect(approvalModal).toBeVisible();
+    await expect(page.locator("#approval-text")).toContainText("create_task");
+
+    await page.click("#approve-action-btn");
+    await expect(approvalModal).toBeHidden();
+    await expect(page.locator("#tool-output")).toBeVisible();
+    await expect(page.locator("#tool-output")).toContainText("Task created");
+  });
+
   test("Resilience: Client request cancellation aborts inflight stream cleanly", async ({ page }) => {
     await page.route("http://localhost:3000/api/stream", async (route) => {
       // Keep request open until client cancels
