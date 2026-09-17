@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8003";
-
 const nextConfig = {
   output: "standalone",
   poweredByHeader: false,
@@ -26,14 +24,6 @@ const nextConfig = {
             value: "camera=(), microphone=(), geolocation=()",
           },
         ],
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api/backend/:path*",
-        destination: `${backendUrl}/:path*`,
       },
     ];
   },
