@@ -6,7 +6,8 @@ services:
       HOST: 0.0.0.0
       ALLOWED_HOSTS: localhost,127.0.0.1,mcp
       WORKSPACE_DATA_FILE: /data/workspace.json
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-local-development-token}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
+      ENABLE_PUBLIC_MCP: "false"
     volumes:
       - workspace-data:/data
     healthcheck:
@@ -22,7 +23,7 @@ services:
     environment:
       AGENT_PROVIDER: offline
       MCP_SERVER_URL: http://mcp:8006
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-local-development-token}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
       CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:?CONVERSATION_SESSION_SECRET is required}
       GENERATION_ENABLED: "true"
     depends_on:
