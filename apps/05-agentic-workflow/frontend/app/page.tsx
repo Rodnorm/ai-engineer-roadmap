@@ -51,7 +51,7 @@ function AgenticWorkflowContent() {
         setSteps(allSteps.slice(0, i));
         if (i < allSteps.length) {
           await new Promise<void>((resolve) => {
-            timeoutRef.current = setTimeout(resolve, 400);
+            timeoutRef.current = setTimeout(resolve, 550);
           });
         }
       }

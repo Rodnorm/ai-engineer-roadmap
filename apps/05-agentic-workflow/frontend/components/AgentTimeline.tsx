@@ -65,6 +65,12 @@ export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
         <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-surface text-muted border border-border">
           {steps.length === 1 ? t('step') : t('steps', { count: steps.length })}
         </span>
+        {isThinking && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-normal lowercase tracking-normal text-sky-500 font-mono transition-opacity duration-300">
+            <span className="inline-block size-1.5 rounded-full bg-sky-500 animate-ping" />
+            {t('thinking')}
+          </span>
+        )}
       </h3>
 
       <div className="relative border-l-2 border-border ml-3.5 pl-6 space-y-5">
@@ -72,7 +78,7 @@ export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
           const isFinal = step.type === 'answer';
 
           return (
-            <div key={step.step_index} className="relative group animate-in fade-in slide-in-from-left-2 duration-300">
+            <div key={step.step_index} className="relative group animate-fade-to-light">
               {/* Step indicator circle */}
               <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
                 {getStepIcon(step.type)}
@@ -129,17 +135,6 @@ export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
             </div>
           );
         })}
-
-        {isThinking && (
-          <div className="relative group animate-in fade-in duration-300">
-            <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
-              <div className="w-4 h-4 rounded-full border-2 border-sky-500 border-t-transparent animate-spin" />
-            </div>
-            <div className="rounded-2xl border border-dashed border-sky-500/30 bg-sky-500/5 p-4 flex items-center gap-2.5 text-xs text-sky-600 dark:text-sky-400 font-medium animate-pulse">
-              <span>{t('thinking')}</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
