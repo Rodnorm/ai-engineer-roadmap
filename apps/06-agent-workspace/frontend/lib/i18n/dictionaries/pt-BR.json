@@ -1,0 +1,83 @@
+{
+  "app": {
+    "title": "Agent Workspace",
+    "eyebrow": "Foundry Agent + MCP",
+    "onlineStatus": "Workspace online",
+    "offlineStatus": "Agente pronto offline",
+    "newConversation": "Nova conversa",
+    "deleteConfirm": "Deseja realmente excluir esta conversa?"
+  },
+  "controls": {
+    "language": "Alterar idioma",
+    "theme": "Alternar tema",
+    "lightTheme": "Ativar tema claro",
+    "darkTheme": "Ativar tema escuro",
+    "about": "Sobre este app",
+    "close": "Fechar",
+    "toggleSidebar": "Alternar barra lateral"
+  },
+  "sidebar": {
+    "conversations": "Conversas",
+    "messagesCount": "{count} mensagens",
+    "noConversations": "Nenhuma conversa encontrada"
+  },
+  "welcome": {
+    "eyebrow": "Inteligência de Workspace",
+    "title": "Pergunte. Inspecione. Aja.",
+    "description": "Seu assistente focado em workspace pode consultar notas e tarefas através de um servidor MCP local. Ações de gravação sempre pausam para sua aprovação explícita.",
+    "suggestion1": "Quais tarefas ainda estão em aberto?",
+    "suggestion2": "Pesquise as notas em busca de dados de deploy",
+    "suggestion3": "Crie uma tarefa para validar os health checks do Coolify"
+  },
+  "chat": {
+    "you": "Você",
+    "agent": "Agente Workspace",
+    "usingTool": "Usando {tool}…",
+    "approvalEyebrow": "Aprovação necessária",
+    "approvalTitle": "Permitir execução de {tool}?",
+    "approvalDescription": "O agente pausou antes de executar esta ferramenta. Revise os parâmetros exatos.",
+    "approvalReject": "Rejeitar",
+    "approvalApprove": "Aprovar uma vez",
+    "pendingNotice": "Resolva a aprovação pendente para continuar a conversa."
+  },
+  "composer": {
+    "placeholder": "Pergunte sobre seu workspace…",
+    "placeholderBlocked": "Resolva a aprovação pendente para continuar",
+    "send": "Enviar mensagem",
+    "disclaimer": "As respostas do agente podem conter imprecisões. Revise cada ação antes de aprová-la."
+  },
+  "info": {
+    "description": "Um assistente inteligente de workspace integrado ao Microsoft Foundry Agent Service, ao protocolo MCP (Model Context Protocol) e a mecanismos rigorosos de Human-in-the-Loop.",
+    "categoryLabel": "Categoria",
+    "category": "Agentic Workspace",
+    "statusLabel": "Status de Segurança",
+    "status": "Human-in-the-Loop Ativo",
+    "whatItDoes": "O que este app faz?",
+    "what1": "Responde a perguntas contextuais sobre tarefas e anotações do seu ambiente de trabalho.",
+    "what2": "Utiliza ferramentas MCP para consultar informações estruturadas e gerenciar tarefas com precisão.",
+    "what3": "Bloqueia gravações automáticas, exigindo aprovação humana prévia para criar novas tarefas.",
+    "howToUse": "Como usar o app",
+    "step1": "Escolha uma sugestão ou digite uma dúvida sobre suas tarefas ou notas de projeto.",
+    "step2": "O agente consulta o servidor MCP e processa as informações em streaming em tempo real.",
+    "step3": "Caso uma tarefa precise ser criada, um cartão de aprovação é apresentado. Apenas após a sua confirmação a tarefa é gravada.",
+    "capabilitiesTitle": "Capacidades & Limites de Segurança",
+    "canDoTitle": "O que o agente PODE fazer",
+    "canDo1": "Listar e filtrar tarefas pendentes e concluídas no workspace.",
+    "canDo2": "Pesquisar notas técnicas e de documentação com base em palavras-chave e contexto.",
+    "canDo3": "Formular propostas de novas tarefas com título e descrição completos para revisão humana.",
+    "canDo4": "Transmitir respostas instantâneas via Server-Sent Events (SSE).",
+    "cannotDoTitle": "O que o agente NÃO PODE fazer",
+    "cannotDo1": "Nunca efetua criação de tarefas sem a sua aprovação explícita na tela.",
+    "cannotDo2": "Não inventa tarefas ou anotações inexistentes (proteção contra alucinação).",
+    "cannotDo3": "Não acessa arquivos do sistema operacional ou APIs externas fora do servidor MCP.",
+    "cannotDo4": "Não realiza ações destrutivas ou irreversíveis no seu ambiente.",
+    "mcpToolsTitle": "Ferramentas MCP Disponíveis",
+    "tool1Name": "list_tasks",
+    "tool1Desc": "Lista tarefas do workspace com filtro opcional por status (aberto/concluído).",
+    "tool2Name": "search_notes",
+    "tool2Desc": "Pesquisa anotações de projeto por relevância e termos de busca.",
+    "tool3Name": "create_task",
+    "tool3Desc": "Cria uma nova tarefa no workspace — bloqueada por aprovação humana obrigatória.",
+    "technologies": "Tecnologias"
+  }
+}
