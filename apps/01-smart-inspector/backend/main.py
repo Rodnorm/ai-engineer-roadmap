@@ -342,13 +342,18 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def remove_backend_prefix(request: Request, call_next):
+async def handle_request_id_and_prefix(request: Request, call_next):
     prefix = "/api/backend"
 
     if request.scope["path"].startswith(prefix):
         request.scope["path"] = request.scope["path"][len(prefix):]
 
-    return await call_next(request)
+    request_id = request.headers.get("x-request-id") or request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    request.state.request_id = request_id
+
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
 @app.get("/health")

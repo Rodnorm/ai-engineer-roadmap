@@ -87,6 +87,28 @@ jobs:
       - name: Validate catalog schema
         run: npx --yes ajv-cli@5.0.0 validate -s catalog/schema.json -d catalog/apps.json
 
+  api_contracts:
+    name: API Contract Consistency & Drift Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: python -m pip install --disable-pip-version-check uv
+
+      - name: Verify contract integrity tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Check OpenAPI schema drift
+        run: python scripts/export_openapi.py --check
+
+
   frontend:
     name: Frontend — ${{ matrix.app }}
     needs: changes

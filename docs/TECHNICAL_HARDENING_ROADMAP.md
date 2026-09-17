@@ -251,13 +251,13 @@ Acceptance criteria:
 
 Suggested branch: `test/openapi-contracts`
 
-- [ ] Standardize environment-variable naming for server-side backend endpoints.
-- [ ] Fail builds or startup when required production endpoints are missing.
-- [ ] Store or generate an OpenAPI contract for every FastAPI backend.
-- [ ] Generate TypeScript API types or clients from those contracts.
-- [ ] Add contract drift checks to CI.
-- [ ] Test proxy paths and backend endpoint paths together.
-- [ ] Define a consistent error envelope and request ID.
+- [x] Standardize environment-variable naming for server-side backend endpoints.
+- [x] Fail builds or startup when required production endpoints are missing.
+- [x] Store or generate an OpenAPI contract for every FastAPI backend.
+- [x] Generate TypeScript API types or clients from those contracts.
+- [x] Add contract drift checks to CI.
+- [x] Test proxy paths and backend endpoint paths together.
+- [x] Define a consistent error envelope and request ID.
 
 Acceptance criteria:
 
@@ -493,3 +493,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 3.1 & 3.2: Private CI security scans, pinned action SHAs, complete Dependabot coverage. | Establish automated vulnerability detection and dependency monitoring. | Lock Python environments in Phase 3.3. |
 | 2026-09-17 | Complete Phase 3.3: Use `uv` with reproducible SHA-256 hashes for Apps 01–05, align Python to 3.12. | Ensure deterministic builds across local dev, CI, and production containers. | Proceed to Phase 3.4 container hardening. |
 | 2026-09-17 | Complete Phase 3.4: Pin base images to SHA-256 digests, add App 06 healthcheck, enable no-new-privileges and cap_drop. | Harden container boundaries, prevent privilege escalation, and ensure health observability. | Proceed to Phase 4 contracts and tests. |
+| 2026-09-17 | Complete Phase 4.1: Store OpenAPI schemas, add CI drift check, TypeScript contracts, standard backend URL and X-Request-ID. | Prevent contract drift and align API schemas across frontend and backend services. | Proceed to Phase 4.2 E2E smoke tests. |
