@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { eventStream, clientKey } from "@/lib/http";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getOrCreateOwnerId } from "@/lib/owner-session";
 import { getConversationRepository } from "@/lib/repository";
 import { resolveApproval } from "@/lib/agent/service";
 
@@ -12,8 +13,9 @@ const bodySchema = z.object({ approved: z.boolean() });
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const rate = checkRateLimit(clientKey(request));
   if (!rate.allowed) return Response.json({ error: "Too many requests" }, { status: 429 });
+  const ownerId = await getOrCreateOwnerId();
   const { id } = await params;
-  const conversation = await getConversationRepository().get(id);
+  const conversation = await getConversationRepository().get(ownerId, id);
   if (!conversation) return Response.json({ error: "Conversation not found" }, { status: 404 });
   if (!conversation.pendingApproval) return Response.json({ error: "No approval is pending" }, { status: 409 });
 

@@ -35,11 +35,11 @@ async function* persistAgentStream(
     conversation.messages.push(message);
     conversation.pendingApproval = undefined;
     conversation.updatedAt = message.createdAt;
-    await repository.save(conversation);
+    await repository.save(conversation.ownerId, conversation);
     yield { type: "done", message };
   } else {
     conversation.updatedAt = new Date().toISOString();
-    await repository.save(conversation);
+    await repository.save(conversation.ownerId, conversation);
   }
 }
 
@@ -56,7 +56,7 @@ export async function* sendMessage(conversation: Conversation, prompt: string): 
   conversation.messages.push(userMessage);
   if (conversation.messages.length === 1) conversation.title = prompt.slice(0, 52);
   conversation.updatedAt = userMessage.createdAt;
-  await getConversationRepository().save(conversation);
+  await getConversationRepository().save(conversation.ownerId, conversation);
 
   const factory: AgentStreamFactory = config.AGENT_PROVIDER === "foundry"
     ? (item) => runFoundryAgent(prompt, item)

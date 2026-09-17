@@ -23,6 +23,7 @@ services:
       AGENT_PROVIDER: offline
       MCP_SERVER_URL: http://mcp:8006
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-local-development-token}
+      CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:?CONVERSATION_SESSION_SECRET is required}
       GENERATION_ENABLED: "true"
     depends_on:
       mcp:

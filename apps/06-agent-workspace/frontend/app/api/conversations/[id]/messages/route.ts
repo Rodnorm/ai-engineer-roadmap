@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { eventStream, clientKey } from "@/lib/http";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getOrCreateOwnerId } from "@/lib/owner-session";
 import { getConversationRepository } from "@/lib/repository";
 import { sendMessage } from "@/lib/agent/service";
 import { releaseGeneration, tryAcquireGeneration } from "@/lib/concurrency";
@@ -20,8 +21,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
   }
 
+  const ownerId = await getOrCreateOwnerId();
   const { id } = await params;
-  const conversation = await getConversationRepository().get(id);
+  const conversation = await getConversationRepository().get(ownerId, id);
   if (!conversation) return Response.json({ error: "Conversation not found" }, { status: 404 });
   if (conversation.pendingApproval) {
     return Response.json({ error: "Resolve the pending tool approval first" }, { status: 409 });

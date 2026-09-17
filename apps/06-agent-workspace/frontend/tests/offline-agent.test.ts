@@ -6,6 +6,7 @@ import type { AgentEvent, Conversation } from "../lib/types";
 function conversation(): Conversation {
   return {
     id: "conversation-1",
+    ownerId: "owner-1",
     title: "Test",
     messages: [],
     createdAt: "2026-01-01T00:00:00Z",
