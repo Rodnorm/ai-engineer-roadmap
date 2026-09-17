@@ -13,12 +13,18 @@ import uuid
 from typing import Any, Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from openai import AzureOpenAI, OpenAI
 
-from agent import SESSIONS, resume_agent_approval, run_agent_loop
+from agent import (
+    SessionAccessError,
+    configure_session_store,
+    get_authorized_session,
+    resume_agent_approval,
+    run_agent_loop,
+)
 from models import AgentSessionResponse, ApproveTaskRequest, PendingApproval, RunTaskRequest
 from rate_limit import InMemoryRateLimiter
 
@@ -70,6 +76,10 @@ AZURE_REQUEST_TIMEOUT_SECONDS = _env_float("AZURE_REQUEST_TIMEOUT_SECONDS", 30.0
 
 MAX_CONCURRENT_REQUESTS = _env_int("MAX_CONCURRENT_REQUESTS", 2, 1)
 concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+configure_session_store(
+    ttl_seconds=_env_int("SESSION_TTL_SECONDS", 1800, 60),
+    max_sessions=_env_int("MAX_SESSIONS", 500, 1),
+)
 
 RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
 TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
@@ -136,9 +146,9 @@ allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-Session-Token"],
 )
 
 
@@ -174,9 +184,10 @@ async def run_agent_endpoint(req: RunTaskRequest, request: Request):
 
     try:
         async with concurrency_semaphore:
-            session = run_agent_loop(
+            session, issued_token = run_agent_loop(
                 prompt=req.prompt,
                 session_id=req.session_id,
+                session_token=req.session_token,
                 client=client,
                 deployment=DEPLOYMENT,
                 generation_enabled=GENERATION_ENABLED,
@@ -193,12 +204,18 @@ async def run_agent_endpoint(req: RunTaskRequest, request: Request):
 
             return AgentSessionResponse(
                 session_id=session.session_id,
+                session_token=issued_token or req.session_token or "",
                 status=session.status,
                 steps=session.steps,
                 final_answer=session.final_answer,
                 pending_approval=pending,
                 request_id=request_id,
             )
+    except SessionAccessError:
+        raise HTTPException(
+            status_code=404,
+            detail={"requestId": request_id, "code": "SESSION_NOT_FOUND", "message": "Session not found."},
+        )
     except Exception as exc:
         log.error(f"Error executing agent run [{request_id}]: {exc}", exc_info=True)
         raise HTTPException(
@@ -223,19 +240,21 @@ async def approve_agent_endpoint(req: ApproveTaskRequest, request: Request):
     try:
         session = resume_agent_approval(
             session_id=req.session_id,
+            session_token=req.session_token,
             approved=req.approved,
             reason=req.reason,
         )
 
         return AgentSessionResponse(
             session_id=session.session_id,
+            session_token=req.session_token,
             status=session.status,
             steps=session.steps,
             final_answer=session.final_answer,
             pending_approval=None,
             request_id=request_id,
         )
-    except ValueError as val_err:
+    except SessionAccessError as val_err:
         raise HTTPException(
             status_code=404,
             detail={"requestId": request_id, "code": "SESSION_NOT_FOUND", "message": str(val_err)},
@@ -249,14 +268,19 @@ async def approve_agent_endpoint(req: ApproveTaskRequest, request: Request):
 
 
 @app.get("/api/agent/session/{session_id}", response_model=AgentSessionResponse)
-async def get_session_endpoint(session_id: str):
+async def get_session_endpoint(
+    session_id: str,
+    session_token: str = Header(alias="X-Session-Token"),
+):
     request_id = str(uuid.uuid4())
-    if session_id not in SESSIONS:
+    try:
+        session = get_authorized_session(session_id, session_token)
+    except SessionAccessError:
         raise HTTPException(
             status_code=404,
             detail={"requestId": request_id, "code": "SESSION_NOT_FOUND", "message": "Session not found."},
         )
-    session = SESSIONS[session_id]
+
     pending = None
     if session.status == "waiting_approval" and session.pending_tool_call:
         tc = session.pending_tool_call
@@ -268,6 +292,7 @@ async def get_session_endpoint(session_id: str):
 
     return AgentSessionResponse(
         session_id=session.session_id,
+        session_token=session_token,
         status=session.status,
         steps=session.steps,
         final_answer=session.final_answer,

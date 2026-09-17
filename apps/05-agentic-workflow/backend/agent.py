@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
+import secrets
+import threading
+import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from openai import OpenAI
 
 from models import AgentStep, PendingApproval
@@ -30,9 +34,14 @@ Rules:
 
 
 class AgentSessionState:
-    def __init__(self, session_id: str, prompt: str) -> None:
+    def __init__(self, session_id: str, prompt: str, access_token_hash: str) -> None:
+        now = time.time()
         self.session_id = session_id
         self.prompt = prompt
+        self.access_token_hash = access_token_hash
+        self.created_at = now
+        self.last_accessed_at = now
+        self.expires_at = now + SESSION_TTL_SECONDS
         self.status = "running"  # running, waiting_approval, completed, rejected, error
         self.steps: List[AgentStep] = []
         self.messages: List[Dict[str, Any]] = [
@@ -64,8 +73,77 @@ class AgentSessionState:
         return step
 
 
-# In-memory session registry
+# In-memory session registry. Access is bounded and protected by per-session bearer tokens.
 SESSIONS: Dict[str, AgentSessionState] = {}
+SESSION_TTL_SECONDS = 1800
+MAX_SESSIONS = 500
+_SESSION_LOCK = threading.RLock()
+
+
+class SessionAccessError(ValueError):
+    """Raised when a session is missing, expired, or accessed with an invalid token."""
+
+
+def configure_session_store(ttl_seconds: int, max_sessions: int) -> None:
+    global SESSION_TTL_SECONDS, MAX_SESSIONS
+    if ttl_seconds < 60:
+        raise ValueError("Session TTL must be at least 60 seconds")
+    if max_sessions < 1:
+        raise ValueError("MAX_SESSIONS must be at least 1")
+    SESSION_TTL_SECONDS = ttl_seconds
+    MAX_SESSIONS = max_sessions
+
+
+def _token_hash(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def cleanup_sessions(now: Optional[float] = None) -> int:
+    current = now if now is not None else time.time()
+    with _SESSION_LOCK:
+        expired = [session_id for session_id, session in SESSIONS.items() if session.expires_at <= current]
+        for session_id in expired:
+            SESSIONS.pop(session_id, None)
+        return len(expired)
+
+
+def _evict_for_capacity() -> None:
+    cleanup_sessions()
+    with _SESSION_LOCK:
+        while len(SESSIONS) >= MAX_SESSIONS:
+            evictable = [item for item in SESSIONS.values() if item.status != "running"]
+            candidates = evictable or list(SESSIONS.values())
+            oldest = min(candidates, key=lambda item: item.last_accessed_at)
+            SESSIONS.pop(oldest.session_id, None)
+
+
+def _create_session(prompt: str) -> Tuple[AgentSessionState, str]:
+    _evict_for_capacity()
+    token = secrets.token_urlsafe(32)
+    session = AgentSessionState(str(uuid.uuid4()), prompt, _token_hash(token))
+    with _SESSION_LOCK:
+        SESSIONS[session.session_id] = session
+    return session, token
+
+
+def get_authorized_session(
+    session_id: str,
+    session_token: Optional[str],
+    now: Optional[float] = None,
+) -> AgentSessionState:
+    current = now if now is not None else time.time()
+    cleanup_sessions(current)
+    with _SESSION_LOCK:
+        session = SESSIONS.get(session_id)
+        if (
+            session is None
+            or not session_token
+            or not secrets.compare_digest(session.access_token_hash, _token_hash(session_token))
+        ):
+            raise SessionAccessError("Session not found.")
+        session.last_accessed_at = current
+        session.expires_at = current + SESSION_TTL_SECONDS
+        return session
 
 
 def _mock_planner_step(prompt: str, iteration: int, session: AgentSessionState) -> Dict[str, Any]:
@@ -138,18 +216,18 @@ def _mock_planner_step(prompt: str, iteration: int, session: AgentSessionState) 
 def run_agent_loop(
     prompt: str,
     session_id: Optional[str] = None,
+    session_token: Optional[str] = None,
     client: Optional[OpenAI] = None,
     deployment: str = "",
     generation_enabled: bool = True,
     max_iterations: int = 4,
-) -> AgentSessionState:
+) -> Tuple[AgentSessionState, Optional[str]]:
     """Executes the agent reasoning loop until completion or until pausing for human approval."""
-    if not session_id or session_id not in SESSIONS:
-        session_id = session_id or str(uuid.uuid4())
-        session = AgentSessionState(session_id, prompt)
-        SESSIONS[session_id] = session
+    issued_token: Optional[str] = None
+    if session_id:
+        session = get_authorized_session(session_id, session_token)
     else:
-        session = SESSIONS[session_id]
+        session, issued_token = _create_session(prompt)
 
     iteration = 0
     while iteration < max_iterations:
@@ -231,7 +309,7 @@ def run_agent_loop(
                     tool_args=tool_args,
                 )
                 # Pause loop immediately and return for user decision
-                return session
+                return session, issued_token
 
             # Safe tool execution
             tool_fn = meta["fn"]
@@ -274,7 +352,7 @@ def run_agent_loop(
                 title="Final Answer",
                 content=direct_answer,
             )
-            return session
+            return session, issued_token
 
     # Exceeded max iterations safely
     session.status = "completed"
@@ -284,19 +362,17 @@ def run_agent_loop(
         title="Execution Finished",
         content="Maximum iteration guard limit reached.",
     )
-    return session
+    return session, issued_token
 
 
 def resume_agent_approval(
     session_id: str,
+    session_token: str,
     approved: bool,
     reason: Optional[str] = None,
 ) -> AgentSessionState:
     """Resumes an agent paused in waiting_approval state based on human operator feedback."""
-    if session_id not in SESSIONS:
-        raise ValueError(f"Session '{session_id}' not found.")
-
-    session = SESSIONS[session_id]
+    session = get_authorized_session(session_id, session_token)
     if session.status != "waiting_approval" or not session.pending_tool_call:
         return session
 

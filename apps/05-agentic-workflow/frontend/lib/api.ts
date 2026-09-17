@@ -17,6 +17,7 @@ export interface PendingApproval {
 
 export interface AgentSessionResponse {
   session_id: string;
+  session_token: string;
   status: 'completed' | 'waiting_approval' | 'rejected' | 'error';
   steps: AgentStep[];
   final_answer?: string;
@@ -26,11 +27,15 @@ export interface AgentSessionResponse {
 
 const API_BASE = '/api/backend';
 
-export async function runAgentTask(prompt: string, sessionId?: string): Promise<AgentSessionResponse> {
+export async function runAgentTask(
+  prompt: string,
+  sessionId?: string,
+  sessionToken?: string,
+): Promise<AgentSessionResponse> {
   const res = await fetch(`${API_BASE}/api/agent/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, session_id: sessionId }),
+    body: JSON.stringify({ prompt, session_id: sessionId, session_token: sessionToken }),
   });
 
   if (!res.ok) {
@@ -41,11 +46,16 @@ export async function runAgentTask(prompt: string, sessionId?: string): Promise<
   return res.json();
 }
 
-export async function approveAgentTask(sessionId: string, approved: boolean, reason?: string): Promise<AgentSessionResponse> {
+export async function approveAgentTask(
+  sessionId: string,
+  sessionToken: string,
+  approved: boolean,
+  reason?: string,
+): Promise<AgentSessionResponse> {
   const res = await fetch(`${API_BASE}/api/agent/approve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId, approved, reason }),
+    body: JSON.stringify({ session_id: sessionId, session_token: sessionToken, approved, reason }),
   });
 
   if (!res.ok) {
