@@ -12,15 +12,16 @@ ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=8000 \
+    APP_ENV=production
 
 COPY --chown=user:user requirements.txt requirements.lock ./
 RUN pip install --no-cache-dir -r requirements.lock
 
 COPY --chown=user:user . .
 
-RUN mkdir -p /app/data/uploads /home/user/.cache && \
-    chown -R user:user /app /home/user
+RUN mkdir -p /data /app/data/uploads /home/user/.cache && \
+    chown -R user:user /app /home/user /data
 
 USER user
 
