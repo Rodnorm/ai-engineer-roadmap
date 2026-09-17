@@ -15,9 +15,10 @@ import { useT } from '@/lib/i18n/I18nProvider';
 
 interface AgentTimelineProps {
   steps: AgentStep[];
+  isThinking?: boolean;
 }
 
-export function AgentTimeline({ steps }: AgentTimelineProps) {
+export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
   const t = useT('timeline');
   if (steps.length === 0) return null;
 
@@ -64,6 +65,12 @@ export function AgentTimeline({ steps }: AgentTimelineProps) {
         <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-surface text-muted border border-border">
           {steps.length === 1 ? t('step') : t('steps', { count: steps.length })}
         </span>
+        {isThinking && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-normal lowercase tracking-normal text-sky-500 font-mono transition-opacity duration-300">
+            <span className="inline-block size-1.5 rounded-full bg-sky-500 animate-ping" />
+            {t('thinking')}
+          </span>
+        )}
       </h3>
 
       <div className="relative border-l-2 border-border ml-3.5 pl-6 space-y-5">
@@ -71,7 +78,7 @@ export function AgentTimeline({ steps }: AgentTimelineProps) {
           const isFinal = step.type === 'answer';
 
           return (
-            <div key={step.step_index} className="relative group">
+            <div key={step.step_index} className="relative group animate-fade-to-light">
               {/* Step indicator circle */}
               <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
                 {getStepIcon(step.type)}

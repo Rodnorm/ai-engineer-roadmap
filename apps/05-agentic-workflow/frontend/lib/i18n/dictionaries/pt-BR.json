@@ -58,7 +58,8 @@
     "toolArgs": "Argumentos da Ferramenta:",
     "toolOutput": "Resultado da Ferramenta:",
     "completedTitle": "Missão Concluída",
-    "rejectedTitle": "Execução Cancelada"
+    "rejectedTitle": "Execução Cancelada",
+    "thinking": "Processando próximo passo..."
   },
   "approval": {
     "title": "Human-in-the-Loop: Autorização Necessária",
