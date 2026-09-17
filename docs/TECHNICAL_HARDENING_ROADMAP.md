@@ -356,13 +356,13 @@ Acceptance criteria:
 
 Suggested branch: `observability/otel-ai-tracing`
 
-- [ ] Propagate a correlation ID from browser to Next.js, backend, Azure, and MCP.
-- [ ] Add OpenTelemetry traces to external model/tool calls.
-- [ ] Record latency, status, retry count, tokens, and estimated cost.
-- [ ] Explicitly exclude prompt/document content and PII.
-- [ ] Add p50/p95 latency and error-rate dashboards.
-- [ ] Add Uptime Kuma or an equivalent synthetic health monitor.
-- [ ] Define alerts for error spikes, quota exhaustion, and unavailable providers.
+- [x] Propagate a correlation ID from browser to Next.js, backend, Azure, and MCP.
+- [x] Add OpenTelemetry traces to external model/tool calls.
+- [x] Record latency, status, retry count, tokens, and estimated cost.
+- [x] Explicitly exclude prompt/document content and PII.
+- [x] Add p50/p95 latency and error-rate dashboards.
+- [x] Add Uptime Kuma or an equivalent synthetic health monitor.
+- [x] Define alerts for error spikes, quota exhaustion, and unavailable providers.
 
 Acceptance criteria:
 
@@ -499,3 +499,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 4.4: Path-aware main builds, daily scheduled full runs, and Coolify watch path documentation. | Prevent redundant image rebuilds and deployment churn across monorepo applications. | Proceed to Phase 5 runtime security and observability. |
 | 2026-09-17 | Complete Phase 5.1: Enforce standard CSP, 2-year HSTS preload, frame-ancestors, and automated security header checks. | Protect clients from XSS, clickjacking, MIME-sniffing, and protocol downgrades across all Next.js apps. | Proceed to Phase 5.2 document processing. |
 | 2026-09-17 | Complete Phase 5.2: Timeout/character guards, encrypted/empty PDF rejections, directory containment, and orphan cleanup. | Prevent resource exhaustion, DoS, and orphaned files during untrusted document ingestion. | Proceed to Phase 5.3 OpenTelemetry. |
+| 2026-09-17 | Complete Phase 5.3: OpenTelemetry GenAI tracing, W3C traceparent propagation, zero-PII metrics, and synthetic monitoring standard. | Enable cross-service trace correlation, p50/p95 latency and token monitoring without data leakage. | Proceed to Phase 6.1 AI evaluation corpus. |
