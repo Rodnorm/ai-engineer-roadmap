@@ -28,7 +28,7 @@ services:
       APP_ENV: production
       PORT: "8005"
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://app05.rodrigodev.de}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://agentic.normando.dev,https://app05.rodrigodev.de}
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
       AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
       AZURE_OPENAI_DEPLOYMENT: ${AZURE_OPENAI_DEPLOYMENT:-gpt-4o-mini}

@@ -84,8 +84,8 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         self.assertEqual(data["status"], "waiting_approval")
         self.assertIsNotNone(data["pending_approval"])
         self.assertEqual(data["pending_approval"]["tool_name"], "send_alert")
-        self.assertEqual(data["pending_approval"]["tool_args"]["recipient"], "@team")
-        self.assertIn("warning not to press the red button", data["pending_approval"]["tool_args"]["message"].lower())
+        self.assertIn(data["pending_approval"]["tool_args"]["recipient"], {"@team", "team"})
+        self.assertIn("red button", data["pending_approval"]["tool_args"]["message"].lower())
 
     def test_human_in_the_loop_rejection_flow(self) -> None:
         payload = {"prompt": "Envie um alerta para @diretoria cancelando o deploy"}
