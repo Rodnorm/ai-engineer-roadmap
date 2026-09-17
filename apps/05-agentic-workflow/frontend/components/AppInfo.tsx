@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useId, useRef } from 'react';
-import { Info, X, Cpu, Wrench, ShieldCheck, Layers } from 'lucide-react';
+import { Info, X, Cpu, Wrench, ShieldCheck, Layers, CheckCircle2, Ban } from 'lucide-react';
 import { useT } from '@/lib/i18n/I18nProvider';
 
 export function AppInfo() {
@@ -76,6 +76,41 @@ export function AppInfo() {
             items={[infoT('step1'), infoT('step2'), infoT('step3')]}
             ordered
           />
+
+          {/* Capabilities & Boundaries */}
+          <section className="mt-5 border-t border-border pt-4 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+              <ShieldCheck className="size-4 text-sky-400" />
+              {infoT('capabilitiesTitle')}
+            </h3>
+
+            {/* What it CAN do */}
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 space-y-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle2 className="size-3.5 shrink-0" />
+                {infoT('canDoTitle')}
+              </h4>
+              <ul className="space-y-1.5 pl-4 list-disc text-xs text-muted leading-relaxed">
+                <li>{infoT('canDo1')}</li>
+                <li>{infoT('canDo2')}</li>
+                <li>{infoT('canDo3')}</li>
+              </ul>
+            </div>
+
+            {/* What it CANNOT do */}
+            <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-3.5 space-y-2">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                <Ban className="size-3.5 shrink-0" />
+                {infoT('cannotDoTitle')}
+              </h4>
+              <ul className="space-y-1.5 pl-4 list-disc text-xs text-muted leading-relaxed">
+                <li>{infoT('cannotDo1')}</li>
+                <li>{infoT('cannotDo2')}</li>
+                <li>{infoT('cannotDo3')}</li>
+                <li>{infoT('cannotDo4')}</li>
+              </ul>
+            </div>
+          </section>
 
           <section className="mt-6 border-t border-border pt-4">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">

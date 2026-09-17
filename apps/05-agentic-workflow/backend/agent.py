@@ -195,9 +195,9 @@ def _mock_planner_step(prompt: str, iteration: int, session: AgentSessionState) 
             }
 
         # Check for knowledge intent
-        if any(w in p_lower for w in ["refund", "reembolso", "sla", "oncall", "on-call", "plantão", "server", "servidor", "policy", "política", "politica"]):
+        if any(w in p_lower for w in ["refund", "reembolso", "sla", "oncall", "on-call", "plantão", "server", "servidor", "policy", "política", "politica", "cluster", "kubernetes", "infra", "database", "banco"]):
             query = "policy SLA infrastructure"
-            for k in ["refund", "reembolso", "sla", "oncall", "server", "servidor"]:
+            for k in ["refund", "reembolso", "sla", "oncall", "server", "servidor", "cluster", "kubernetes", "infra"]:
                 if k in p_lower:
                     query = k
                     break
