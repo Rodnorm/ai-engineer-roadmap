@@ -26,7 +26,7 @@ from PIL import Image
 from pydantic import BaseModel, Field
 
 from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
-from rate_limit import InMemoryRateLimiter
+from rate_limit import PersistentRateLimiter
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -110,13 +110,16 @@ ALLOWED_IMAGE_TYPES = {
 }
 UPLOAD_CHUNK_BYTES = 1024 * 1024
 
-rate_limiter = InMemoryRateLimiter(
+rate_limiter = PersistentRateLimiter(
     requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 3),
     requests_per_day_per_ip=_env_int(
         "RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 20
     ),
     global_requests_per_day=_env_int(
         "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100
+    ),    database_path=os.getenv(
+        "RATE_LIMIT_DB_PATH",
+        "/data/rate-limit.sqlite3" if IS_PRODUCTION else ":memory:",
     ),
 )
 

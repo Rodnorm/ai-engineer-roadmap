@@ -27,7 +27,7 @@ from agent import (
 )
 from models import AgentSessionResponse, ApproveTaskRequest, PendingApproval, RunTaskRequest
 from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
-from rate_limit import InMemoryRateLimiter
+from rate_limit import PersistentRateLimiter
 
 load_dotenv()
 
@@ -86,10 +86,13 @@ RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
 TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
 TRUSTED_PROXY_CIDRS = parse_trusted_proxy_cidrs(os.getenv("TRUSTED_PROXY_CIDRS", ""))
 
-rate_limiter = InMemoryRateLimiter(
+rate_limiter = PersistentRateLimiter(
     requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 10),
     requests_per_day_per_ip=_env_int("RATE_LIMIT_REQUESTS_PER_DAY_PER_IP", 100),
-    global_requests_per_day=_env_int("RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 500),
+    global_requests_per_day=_env_int("RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 500),    database_path=os.getenv(
+        "RATE_LIMIT_DB_PATH",
+        "/data/rate-limit.sqlite3" if IS_PRODUCTION else ":memory:",
+    ),
 )
 
 

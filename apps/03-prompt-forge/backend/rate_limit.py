@@ -1,64 +1,146 @@
-import time
+"""SQLite-backed request quotas for single-host public AI demos."""
+
+from __future__ import annotations
+
+import math
+import sqlite3
+import threading
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from pathlib import Path
+from time import time
+from typing import Callable
 
 
 @dataclass(frozen=True)
 class RateLimitDecision:
     allowed: bool
-    scope: Optional[str] = None
+    scope: str | None = None
     retry_after: int = 0
 
 
-class InMemoryRateLimiter:
+class PersistentRateLimiter:
+    """Atomic sliding-window quotas shared by workers using the same SQLite file."""
+
     def __init__(
         self,
         requests_per_minute: int,
         requests_per_day_per_ip: int,
         global_requests_per_day: int,
-        clock: Optional[Callable[[], float]] = None,
+        database_path: str,
+        clock: Callable[[], float] = time,
     ) -> None:
         self.requests_per_minute = requests_per_minute
         self.requests_per_day_per_ip = requests_per_day_per_ip
         self.global_requests_per_day = global_requests_per_day
-        self._clock = clock or time.time
+        self.database_path = database_path
+        self._clock = clock
+        self._setup_lock = threading.Lock()
+        self._initialized = False
+        if database_path != ":memory:":
+            Path(database_path).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
+        self._initialize()
 
-        self._ip_minute: Dict[str, List[float]] = {}
-        self._ip_day: Dict[str, List[float]] = {}
-        self._global_day: List[float] = []
+    def _connect(self) -> sqlite3.Connection:
+        connection = sqlite3.connect(
+            self.database_path,
+            timeout=5,
+            isolation_level=None,
+            check_same_thread=False,
+        )
+        connection.execute("PRAGMA busy_timeout = 5000")
+        if self.database_path != ":memory:":
+            connection.execute("PRAGMA journal_mode = WAL")
+            connection.execute("PRAGMA synchronous = NORMAL")
+        return connection
 
-    def _clean(self, timestamps: List[float], window_seconds: float, now: float) -> List[float]:
-        cutoff = now - window_seconds
-        return [t for t in timestamps if t > cutoff]
+    def _initialize(self) -> None:
+        with self._setup_lock:
+            if self._initialized:
+                return
+            with self._connect() as connection:
+                connection.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS rate_limit_events (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        client_key TEXT NOT NULL,
+                        created_at REAL NOT NULL
+                    )
+                    """
+                )
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_rate_limit_created_at "
+                    "ON rate_limit_events(created_at)"
+                )
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_rate_limit_client_created "
+                    "ON rate_limit_events(client_key, created_at)"
+                )
+            self._initialized = True
 
-    def check_and_record(self, client_ip: str) -> RateLimitDecision:
+    def reset(self) -> None:
+        with self._connect() as connection:
+            connection.execute("DELETE FROM rate_limit_events")
+
+    def check_and_record(self, client_key: str) -> RateLimitDecision:
         now = self._clock()
+        minute_cutoff = now - 60
+        day_cutoff = now - 86400
+        connection = self._connect()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute(
+                "DELETE FROM rate_limit_events WHERE created_at <= ?",
+                (day_cutoff,),
+            )
 
-        # Clean global daily window
-        self._global_day = self._clean(self._global_day, 86400.0, now)
-        if len(self._global_day) >= self.global_requests_per_day:
-            return RateLimitDecision(allowed=False, scope="global_day", retry_after=86400)
+            minute_count, minute_oldest = connection.execute(
+                """
+                SELECT COUNT(*), MIN(created_at)
+                FROM rate_limit_events
+                WHERE client_key = ? AND created_at > ?
+                """,
+                (client_key, minute_cutoff),
+            ).fetchone()
+            if minute_count >= self.requests_per_minute:
+                connection.execute("COMMIT")
+                retry_after = max(1, math.ceil(60 - (now - minute_oldest)))
+                return RateLimitDecision(False, "minute_per_ip", retry_after)
 
-        # Clean IP minute window
-        ip_min = self._clean(self._ip_minute.get(client_ip, []), 60.0, now)
-        if len(ip_min) >= self.requests_per_minute:
-            oldest = ip_min[0]
-            retry_after = max(1, int(60.0 - (now - oldest)))
-            return RateLimitDecision(allowed=False, scope="minute_per_ip", retry_after=retry_after)
+            day_count, day_oldest = connection.execute(
+                """
+                SELECT COUNT(*), MIN(created_at)
+                FROM rate_limit_events
+                WHERE client_key = ? AND created_at > ?
+                """,
+                (client_key, day_cutoff),
+            ).fetchone()
+            if day_count >= self.requests_per_day_per_ip:
+                connection.execute("COMMIT")
+                retry_after = max(1, math.ceil(86400 - (now - day_oldest)))
+                return RateLimitDecision(False, "day_per_ip", retry_after)
 
-        # Clean IP daily window
-        ip_day = self._clean(self._ip_day.get(client_ip, []), 86400.0, now)
-        if len(ip_day) >= self.requests_per_day_per_ip:
-            oldest = ip_day[0]
-            retry_after = max(1, int(86400.0 - (now - oldest)))
-            return RateLimitDecision(allowed=False, scope="day_per_ip", retry_after=retry_after)
+            global_count, global_oldest = connection.execute(
+                """
+                SELECT COUNT(*), MIN(created_at)
+                FROM rate_limit_events
+                WHERE created_at > ?
+                """,
+                (day_cutoff,),
+            ).fetchone()
+            if global_count >= self.global_requests_per_day:
+                connection.execute("COMMIT")
+                retry_after = max(1, math.ceil(86400 - (now - global_oldest)))
+                return RateLimitDecision(False, "global_day", retry_after)
 
-        # Record request
-        ip_min.append(now)
-        ip_day.append(now)
-        self._global_day.append(now)
-
-        self._ip_minute[client_ip] = ip_min
-        self._ip_day[client_ip] = ip_day
-
-        return RateLimitDecision(allowed=True)
+            connection.execute(
+                "INSERT INTO rate_limit_events(client_key, created_at) VALUES (?, ?)",
+                (client_key, now),
+            )
+            connection.execute("COMMIT")
+            return RateLimitDecision(True)
+        except Exception:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+        finally:
+            connection.close()

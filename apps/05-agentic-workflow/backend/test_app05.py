@@ -13,10 +13,11 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
     def setUp(self) -> None:
         self.client = TestClient(main.app)
         SESSIONS.clear()
-        # Reset limiter
-        main.rate_limiter._ip_minute.clear()
-        main.rate_limiter._ip_day.clear()
-        main.rate_limiter._global_day.clear()
+        # Reset persistent limiter state and mutable limits.
+        main.rate_limiter.reset()
+        main.rate_limiter.requests_per_minute = 10
+        main.rate_limiter.requests_per_day_per_ip = 100
+        main.rate_limiter.global_requests_per_day = 500
         main.GENERATION_ENABLED = True
         configure_session_store(ttl_seconds=1800, max_sessions=500)
 
