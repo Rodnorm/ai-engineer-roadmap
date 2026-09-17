@@ -15,9 +15,10 @@ import { useT } from '@/lib/i18n/I18nProvider';
 
 interface AgentTimelineProps {
   steps: AgentStep[];
+  isThinking?: boolean;
 }
 
-export function AgentTimeline({ steps }: AgentTimelineProps) {
+export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
   const t = useT('timeline');
   if (steps.length === 0) return null;
 
@@ -71,7 +72,7 @@ export function AgentTimeline({ steps }: AgentTimelineProps) {
           const isFinal = step.type === 'answer';
 
           return (
-            <div key={step.step_index} className="relative group">
+            <div key={step.step_index} className="relative group animate-in fade-in slide-in-from-left-2 duration-300">
               {/* Step indicator circle */}
               <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
                 {getStepIcon(step.type)}
@@ -128,6 +129,17 @@ export function AgentTimeline({ steps }: AgentTimelineProps) {
             </div>
           );
         })}
+
+        {isThinking && (
+          <div className="relative group animate-in fade-in duration-300">
+            <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
+              <div className="w-4 h-4 rounded-full border-2 border-sky-500 border-t-transparent animate-spin" />
+            </div>
+            <div className="rounded-2xl border border-dashed border-sky-500/30 bg-sky-500/5 p-4 flex items-center gap-2.5 text-xs text-sky-600 dark:text-sky-400 font-medium animate-pulse">
+              <span>{t('thinking')}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

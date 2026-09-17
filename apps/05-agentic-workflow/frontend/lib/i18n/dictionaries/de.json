@@ -58,7 +58,8 @@
     "toolArgs": "Tool-Argumente:",
     "toolOutput": "Tool-Ergebnis:",
     "completedTitle": "Aufgabe Erfolgreich Beendet",
-    "rejectedTitle": "Ausführung Abgebrochen"
+    "rejectedTitle": "Ausführung Abgebrochen",
+    "thinking": "Nächster Schritt wird verarbeitet..."
   },
   "approval": {
     "title": "Human-in-the-Loop: Autorisierung Erforderlich",

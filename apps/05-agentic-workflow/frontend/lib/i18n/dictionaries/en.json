@@ -58,7 +58,8 @@
     "toolArgs": "Tool Arguments:",
     "toolOutput": "Tool Output:",
     "completedTitle": "Mission Accomplished",
-    "rejectedTitle": "Execution Terminated"
+    "rejectedTitle": "Execution Terminated",
+    "thinking": "Processing next step..."
   },
   "approval": {
     "title": "Human-in-the-Loop: Authorization Required",

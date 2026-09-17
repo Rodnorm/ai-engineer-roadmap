@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Send,
   CheckCircle2,
@@ -28,8 +28,46 @@ function AgenticWorkflowContent() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const cancelRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      cancelRef.current = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const staggerRevealSteps = useCallback(
+    async (allSteps: AgentStep[], startIndex: number, onComplete: () => void) => {
+      if (allSteps.length <= startIndex) {
+        setSteps(allSteps);
+        onComplete();
+        return;
+      }
+
+      for (let i = startIndex + 1; i <= allSteps.length; i++) {
+        if (cancelRef.current) return;
+        setSteps(allSteps.slice(0, i));
+        if (i < allSteps.length) {
+          await new Promise<void>((resolve) => {
+            timeoutRef.current = setTimeout(resolve, 400);
+          });
+        }
+      }
+
+      if (!cancelRef.current) {
+        onComplete();
+      }
+    },
+    [],
+  );
+
   const handleRun = async (taskPrompt: string) => {
     if (!taskPrompt.trim() || isLoading) return;
+
+    cancelRef.current = false;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     setError(null);
     setIsLoading(true);
@@ -37,59 +75,81 @@ function AgenticWorkflowContent() {
     setFinalAnswer(undefined);
     setPendingApproval(undefined);
 
+    const prevCount = steps.length;
+
     try {
       const response = await runAgentTask(taskPrompt, sessionId, sessionToken);
       setSessionId(response.session_id);
       setSessionToken(response.session_token);
-      setStatus(response.status);
-      setSteps(response.steps);
-      setFinalAnswer(response.final_answer);
-      setPendingApproval(response.pending_approval);
+
+      await staggerRevealSteps(response.steps, prevCount, () => {
+        setStatus(response.status);
+        setPendingApproval(response.pending_approval);
+        setFinalAnswer(response.final_answer);
+        setIsLoading(false);
+      });
     } catch (err: any) {
       setError(err.message || 'An error occurred while executing the task.');
       setStatus('error');
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleApprove = async () => {
     if (!sessionId || !sessionToken || isLoading) return;
+    cancelRef.current = false;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
     setIsLoading(true);
     setError(null);
+    setPendingApproval(undefined);
+
+    const prevCount = steps.length;
 
     try {
       const response = await approveAgentTask(sessionId, sessionToken, true);
-      setStatus(response.status);
-      setSteps(response.steps);
-      setFinalAnswer(response.final_answer);
-      setPendingApproval(undefined);
+      await staggerRevealSteps(response.steps, prevCount, () => {
+        setStatus(response.status);
+        setSteps(response.steps);
+        setFinalAnswer(response.final_answer);
+        setPendingApproval(undefined);
+        setIsLoading(false);
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to authorize agent action.');
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleReject = async (reason?: string) => {
     if (!sessionId || !sessionToken || isLoading) return;
+    cancelRef.current = false;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
     setIsLoading(true);
     setError(null);
+    setPendingApproval(undefined);
+
+    const prevCount = steps.length;
 
     try {
       const response = await approveAgentTask(sessionId, sessionToken, false, reason);
-      setStatus(response.status);
-      setSteps(response.steps);
-      setFinalAnswer(response.final_answer);
-      setPendingApproval(undefined);
+      await staggerRevealSteps(response.steps, prevCount, () => {
+        setStatus(response.status);
+        setSteps(response.steps);
+        setFinalAnswer(response.final_answer);
+        setPendingApproval(undefined);
+        setIsLoading(false);
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to cancel agent action.');
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleReset = () => {
+    cancelRef.current = true;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setPrompt('');
     setSessionId(undefined);
     setSessionToken(undefined);
@@ -98,6 +158,7 @@ function AgenticWorkflowContent() {
     setPendingApproval(undefined);
     setFinalAnswer(undefined);
     setError(null);
+    setIsLoading(false);
   };
 
   return (
@@ -176,7 +237,7 @@ function AgenticWorkflowContent() {
         {/* Execution Timeline */}
         {steps.length > 0 && (
           <section className="space-y-6 pt-2">
-            <AgentTimeline steps={steps} />
+            <AgentTimeline steps={steps} isThinking={isLoading} />
 
             {/* Final Answer Banner if Completed */}
             {finalAnswer && status === 'completed' && (
