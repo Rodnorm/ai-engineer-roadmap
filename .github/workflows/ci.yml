@@ -167,23 +167,23 @@ jobs:
           - app: Smart Inspector
             id: app01
             directory: apps/01-smart-inspector/backend
-            requirements: requirements.txt
+            requirements: requirements.lock
           - app: Support Bot
             id: app02
             directory: apps/02-support-bot/backend
-            requirements: requirements.txt
+            requirements: requirements.lock
           - app: promptForge
             id: app03
             directory: apps/03-prompt-forge/backend
-            requirements: requirements.txt
+            requirements: requirements.lock
           - app: pocketRag
             id: app04
             directory: apps/04-pocket-rag/backend
-            requirements: requirements-test.txt
+            requirements: requirements-test.lock
           - app: Agentic Workflow
             id: app05
             directory: apps/05-agentic-workflow/backend
-            requirements: requirements.txt
+            requirements: requirements.lock
 
     defaults:
       run:
@@ -201,6 +201,14 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: ${{ matrix.directory }}/${{ matrix.requirements }}
+
+      - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
+        name: Verify lockfile consistency
+        run: |
+          python -m pip install --disable-pip-version-check uv
+          uv pip compile requirements.txt -o requirements.lock.check --generate-hashes --python-version 3.12 --universal
+          diff -u requirements.lock requirements.lock.check
+          rm -f requirements.lock.check
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Install dependencies

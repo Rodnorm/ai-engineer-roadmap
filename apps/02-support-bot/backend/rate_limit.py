@@ -57,7 +57,8 @@ class PersistentRateLimiter:
         with self._setup_lock:
             if self._initialized:
                 return
-            with self._connect() as connection:
+            connection = self._connect()
+            try:
                 connection.execute(
                     """
                     CREATE TABLE IF NOT EXISTS rate_limit_events (
@@ -75,11 +76,16 @@ class PersistentRateLimiter:
                     "CREATE INDEX IF NOT EXISTS idx_rate_limit_client_created "
                     "ON rate_limit_events(client_key, created_at)"
                 )
+            finally:
+                connection.close()
             self._initialized = True
 
     def reset(self) -> None:
-        with self._connect() as connection:
+        connection = self._connect()
+        try:
             connection.execute("DELETE FROM rate_limit_events")
+        finally:
+            connection.close()
 
     def check_and_record(self, client_key: str) -> RateLimitDecision:
         now = self._clock()

@@ -33,3 +33,21 @@ Before merging a dependency pull request:
 
 Dependabot changes are path-scoped, so the repository change detector should
 select only the relevant application jobs.
+
+## Python lockfiles (`requirements.lock`)
+
+Python backend dependencies for Apps 01–05 are locked using `uv` with reproducible SHA-256 hashes targeting Python 3.12:
+
+```bash
+uv pip compile requirements.txt -o requirements.lock --generate-hashes --python-version 3.12 --universal
+```
+
+For App 04 test dependencies:
+```bash
+uv pip compile requirements-test.txt -o requirements-test.lock --generate-hashes --python-version 3.12 --universal
+```
+
+When Dependabot or a developer modifies `requirements.txt`:
+1. Re-compile the corresponding `requirements.lock` using the command above.
+2. Commit both `requirements.txt` and `requirements.lock`.
+3. CI automatically validates that `requirements.lock` matches `requirements.txt`.

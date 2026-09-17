@@ -96,15 +96,15 @@ jobs:
       matrix:
         include:
           - app: smart-inspector
-            requirements: apps/01-smart-inspector/backend/requirements.txt
+            requirements: apps/01-smart-inspector/backend/requirements.lock
           - app: support-bot
-            requirements: apps/02-support-bot/backend/requirements.txt
+            requirements: apps/02-support-bot/backend/requirements.lock
           - app: prompt-forge
-            requirements: apps/03-prompt-forge/backend/requirements.txt
+            requirements: apps/03-prompt-forge/backend/requirements.lock
           - app: pocket-rag
-            requirements: apps/04-pocket-rag/backend/requirements.txt
+            requirements: apps/04-pocket-rag/backend/requirements.lock
           - app: agentic-workflow
-            requirements: apps/05-agentic-workflow/backend/requirements.txt
+            requirements: apps/05-agentic-workflow/backend/requirements.lock
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
