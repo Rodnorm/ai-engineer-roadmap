@@ -34,6 +34,7 @@ service-account*.json
 **/node_modules/
 **/coverage/
 **/dist/
+**/*.tsbuildinfo
 
 # Agents local settings
 apps/**/**/claude.md

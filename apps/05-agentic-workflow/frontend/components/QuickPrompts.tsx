@@ -1,7 +1,18 @@
 'use client';
 
-import React from 'react';
-import { Calculator, BookOpen, ShieldAlert, Server } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  Calculator,
+  Percent,
+  Receipt,
+  BookOpen,
+  Server,
+  PhoneCall,
+  Database,
+  ShieldAlert,
+  Mail,
+  BellOff,
+} from 'lucide-react';
 import { useT } from '@/lib/i18n/I18nProvider';
 
 interface QuickPromptsProps {
@@ -9,11 +20,17 @@ interface QuickPromptsProps {
   disabled?: boolean;
 }
 
+type CategoryType = 'all' | 'math' | 'knowledge' | 'alert';
+
 export function QuickPrompts({ onSelectPrompt, disabled }: QuickPromptsProps) {
   const t = useT('prompts');
+  const [category, setCategory] = useState<CategoryType>('all');
 
   const prompts = [
+    // Math category
     {
+      id: 'math',
+      category: 'math' as const,
       icon: <Calculator className="w-4 h-4 text-sky-400 shrink-0" />,
       title: t('mathTitle'),
       prompt: t('mathPrompt'),
@@ -21,6 +38,28 @@ export function QuickPrompts({ onSelectPrompt, disabled }: QuickPromptsProps) {
       borderHover: 'hover:border-sky-500/50',
     },
     {
+      id: 'tax',
+      category: 'math' as const,
+      icon: <Percent className="w-4 h-4 text-sky-400 shrink-0" />,
+      title: t('taxTitle'),
+      prompt: t('taxPrompt'),
+      tag: t('taxTag'),
+      borderHover: 'hover:border-sky-500/50',
+    },
+    {
+      id: 'reimburse',
+      category: 'math' as const,
+      icon: <Receipt className="w-4 h-4 text-sky-400 shrink-0" />,
+      title: t('reimburseTitle'),
+      prompt: t('reimbursePrompt'),
+      tag: t('reimburseTag'),
+      borderHover: 'hover:border-sky-500/50',
+    },
+
+    // Knowledge & Policies category
+    {
+      id: 'policy',
+      category: 'knowledge' as const,
       icon: <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />,
       title: t('policyTitle'),
       prompt: t('policyPrompt'),
@@ -28,30 +67,127 @@ export function QuickPrompts({ onSelectPrompt, disabled }: QuickPromptsProps) {
       borderHover: 'hover:border-emerald-500/50',
     },
     {
-      icon: <Server className="w-4 h-4 text-indigo-400 shrink-0" />,
+      id: 'sla',
+      category: 'knowledge' as const,
+      icon: <Server className="w-4 h-4 text-emerald-400 shrink-0" />,
       title: t('slaTitle'),
       prompt: t('slaPrompt'),
       tag: t('slaTag'),
+      borderHover: 'hover:border-emerald-500/50',
+    },
+    {
+      id: 'oncall',
+      category: 'knowledge' as const,
+      icon: <PhoneCall className="w-4 h-4 text-indigo-400 shrink-0" />,
+      title: t('oncallTitle'),
+      prompt: t('oncallPrompt'),
+      tag: t('oncallTag'),
       borderHover: 'hover:border-indigo-500/50',
     },
     {
+      id: 'infra',
+      category: 'knowledge' as const,
+      icon: <Database className="w-4 h-4 text-indigo-400 shrink-0" />,
+      title: t('infraTitle'),
+      prompt: t('infraPrompt'),
+      tag: t('infraTag'),
+      borderHover: 'hover:border-indigo-500/50',
+    },
+
+    // Alerts / HITL category
+    {
+      id: 'alert',
+      category: 'alert' as const,
       icon: <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />,
       title: t('alertTitle'),
       prompt: t('alertPrompt'),
       tag: t('alertTag'),
       borderHover: 'hover:border-amber-500/50',
     },
+    {
+      id: 'redButton',
+      category: 'alert' as const,
+      icon: <Mail className="w-4 h-4 text-rose-400 shrink-0" />,
+      title: t('redButtonTitle'),
+      prompt: t('redButtonPrompt'),
+      tag: t('redButtonTag'),
+      borderHover: 'hover:border-rose-500/50',
+    },
+    {
+      id: 'cancel',
+      category: 'alert' as const,
+      icon: <BellOff className="w-4 h-4 text-amber-400 shrink-0" />,
+      title: t('cancelTitle'),
+      prompt: t('cancelPrompt'),
+      tag: t('cancelTag'),
+      borderHover: 'hover:border-amber-500/50',
+    },
+  ];
+
+  const filtered =
+    category === 'all'
+      ? prompts
+      : prompts.filter((item) => item.category === category);
+
+  const filterTabs: { key: CategoryType; label: string; count: number }[] = [
+    { key: 'all', label: t('filterAll'), count: prompts.length },
+    {
+      key: 'math',
+      label: t('filterMath'),
+      count: prompts.filter((p) => p.category === 'math').length,
+    },
+    {
+      key: 'knowledge',
+      label: t('filterKnowledge'),
+      count: prompts.filter((p) => p.category === 'knowledge').length,
+    },
+    {
+      key: 'alert',
+      label: t('filterAlert'),
+      count: prompts.filter((p) => p.category === 'alert').length,
+    },
   ];
 
   return (
-    <div className="space-y-2.5">
-      <div className="text-xs uppercase font-semibold tracking-wider text-muted">
-        {t('sectionTitle')}
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs uppercase font-semibold tracking-wider text-muted">
+          {t('sectionTitle')}
+        </span>
+
+        {/* Category Filter Pills */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {filterTabs.map((tab) => {
+            const isActive = category === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setCategory(tab.key)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-accent text-white shadow-xs'
+                    : 'bg-surface border border-border text-muted hover:text-text'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[10px] px-1 rounded-full ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-panel text-muted'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {prompts.map((item, idx) => (
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {filtered.map((item) => (
           <button
-            key={idx}
+            key={item.id}
             type="button"
             onClick={() => onSelectPrompt(item.prompt)}
             disabled={disabled}
