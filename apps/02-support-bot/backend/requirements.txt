@@ -5,6 +5,6 @@ azure-identity
 fastapi>=0.111
 azure-ai-projects
 azure-ai-textanalytics
-uvicorn[standard]>=0.30
+uvicorn[standard]>=0.53.0
 httpx
 python-multipart
