@@ -76,6 +76,17 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         self.assertEqual(data_app["status"], "completed")
         self.assertIn("ALERT DISPATCHED", data_app["final_answer"])
 
+    def test_email_warning_triggers_hitl_approval(self) -> None:
+        prompt = "Send an email to every member of the team with a warning not to press the red button in the conference room"
+        res = self.client.post("/api/agent/run", json={"prompt": prompt})
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data["status"], "waiting_approval")
+        self.assertIsNotNone(data["pending_approval"])
+        self.assertEqual(data["pending_approval"]["tool_name"], "send_alert")
+        self.assertEqual(data["pending_approval"]["tool_args"]["recipient"], "@team")
+        self.assertIn("warning not to press the red button", data["pending_approval"]["tool_args"]["message"].lower())
+
     def test_human_in_the_loop_rejection_flow(self) -> None:
         payload = {"prompt": "Envie um alerta para @diretoria cancelando o deploy"}
         res = self.client.post("/api/agent/run", json=payload)

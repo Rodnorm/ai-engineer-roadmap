@@ -41,9 +41,6 @@ export function AppInfo() {
         <div className="flex h-full flex-col overflow-y-auto border-l border-border bg-panel p-6 text-text shadow-2xl sm:p-8">
           <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-sky-500/10 border border-sky-500/30 px-2.5 py-0.5 text-xs font-mono font-medium text-sky-400">
-                {appT('badge')}
-              </span>
               <h2 id={titleId} className="text-xl font-bold tracking-tight text-text">
                 {appT('title')}
               </h2>

@@ -24,15 +24,7 @@ export function Header({ hasSteps, onReset }: HeaderProps) {
             <Bot className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-semibold bg-accent-soft text-accent-strong border border-accent/20">
-                {t('badge')}
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-surface text-muted border border-border">
-                {t('port')}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text">
               {t('title')}
             </h1>
           </div>

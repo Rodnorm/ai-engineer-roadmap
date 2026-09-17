@@ -25,10 +25,11 @@ Your goal is to solve the user's task step-by-step.
 Available tools:
 1. calculator(expression): Safely computes mathematical formulas.
 2. knowledge_search(query): Searches internal policies, SLAs, and infrastructure specs.
-3. send_alert(recipient, message): Sends operational alerts. NOTE: this tool requires explicit human confirmation before execution.
+3. send_alert(recipient, message): Sends operational alerts, warnings, emails, or notifications. NOTE: this tool pauses execution for explicit human confirmation.
 
 Rules:
 - If a calculation or internal lookup is needed, invoke the corresponding tool.
+- If the user asks to send an alert, notification, warning, email, or message, always invoke send_alert. Use the mentioned target or team (e.g. '@team', 'team', or recipient from context) as recipient. Do not ask the user for confirmation in chat first, because calling send_alert automatically presents an approval card to the human operator.
 - Think step by step before invoking tools.
 - When all tool results are obtained, provide a concise, high-quality final answer.
 """
@@ -153,17 +154,25 @@ def _mock_planner_step(prompt: str, iteration: int, session: AgentSessionState) 
 
     # Step 1: determine tool need
     if iteration == 1:
-        # Check for alert intent
-        if any(w in p_lower for w in ["alert", "alerta", "avise", "notifique", "notifiquem", "send alert", "envie"]):
+        # Check for alert / warning / notification / email intent
+        alert_keywords = [
+            "alert", "alerta", "avise", "aviso", "notifique", "notifiquem", "notificar",
+            "notificação", "notificacao", "send alert", "envie", "enviar", "email", "e-mail",
+            "warning", "warn", "message", "mensagem", "notify", "broadcast", "informe",
+            "send an email", "send email"
+        ]
+        if any(w in p_lower for w in alert_keywords):
             recipient = "@ops-channel"
-            if "@" in prompt:
+            if any(term in p_lower for term in ["team", "equipe", "time", "everyone", "todos", "all member", "members"]):
+                recipient = "@team"
+            elif "@" in prompt:
                 words = prompt.split()
                 for w in words:
                     if w.startswith("@"):
                         recipient = w
                         break
             return {
-                "thought": "The user requested an operational alert notification. This triggers a sensitive action requiring human approval.",
+                "thought": "The user requested an operational alert or notification. This triggers a sensitive action requiring human approval.",
                 "tool_call": {
                     "name": "send_alert",
                     "arguments": {"recipient": recipient, "message": f"Operational notification: {prompt}"},

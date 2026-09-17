@@ -1,7 +1,7 @@
 {
   "app": {
-    "badge": "APP 05",
-    "port": "PORTA 3005",
+    "badge": "Agente Autônomo",
+    "port": "",
     "title": "Fluxo de Trabalho de Agente (Agentic Workflow)",
     "subtitle": "Loop autônomo ReAct executando raciocínio em múltiplos passos, chamadas determinísticas de ferramentas, persistência de estado e autorização humana obrigatória (Human-in-the-Loop).",
     "loopBadge": "Loop ReAct (Máx. 4 Passos)",
@@ -11,13 +11,13 @@
     "runButton": "Executar Agente",
     "runningButton": "Executando...",
     "resetButton": "Reiniciar Sessão",
-    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+    "footer": "Agentic Workflow • Next.js 15 & FastAPI"
   },
   "controls": {
     "language": "Alterar idioma",
     "lightTheme": "Mudar para tema claro",
     "darkTheme": "Mudar para tema escuro",
-    "about": "Sobre o App 05",
+    "about": "Sobre o Agente",
     "close": "Fechar diálogo"
   },
   "info": {

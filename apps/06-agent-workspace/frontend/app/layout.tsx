@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "App 06: Agent Workspace",
+  title: "Agent Workspace",
   description: "Streaming Microsoft Foundry agent with MCP tools and durable conversations.",
 };
 
