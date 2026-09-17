@@ -77,6 +77,39 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
       badge: "Autonomous Agents",
       link: "/apps/agentic-workflow",
     },
+    {
+      id: "06",
+      title: "App 06: AI Observability",
+      status: "completed",
+      description: locale === "pt"
+        ? "Observabilidade de ponta a ponta para pipelines de IA com OpenTelemetry, traces de spans GenAI, dashboards de latência e custo por requisição."
+        : locale === "de"
+        ? "End-to-End-Observability für KI-Pipelines mit OpenTelemetry, GenAI-Span-Tracing und Latenz- und Kosten-Dashboards pro Anfrage."
+        : "End-to-end observability for AI pipelines with OpenTelemetry, GenAI span tracing, and per-request latency and cost dashboards.",
+      badge: locale === "pt" ? "Observabilidade" : locale === "de" ? "Observability" : "Observability & Tracing",
+    },
+    {
+      id: "07",
+      title: "App 07: Fine-Tuning & Evals",
+      status: "planned",
+      description: locale === "pt"
+        ? "Pipeline de fine-tuning supervisionado, curadoria de dataset, avaliações offline e comparação de modelos base vs. ajustados."
+        : locale === "de"
+        ? "Supervised-Fine-Tuning-Pipeline, Dataset-Kuratierung, Offline-Evaluierungen und Vergleich von Basis- und angepassten Modellen."
+        : "Supervised fine-tuning pipeline, dataset curation, offline evaluations, and base vs. fine-tuned model comparison.",
+      badge: locale === "pt" ? "Fine-Tuning & Avaliações" : locale === "de" ? "Fine-Tuning & Evals" : "Fine-Tuning & Evals",
+    },
+    {
+      id: "08",
+      title: "App 08: Production Deployment",
+      status: "planned",
+      description: locale === "pt"
+        ? "Estratégias avançadas de deploy: blue-green, canary releases, rollback automatizado e monitoramento de SLA em produção."
+        : locale === "de"
+        ? "Erweiterte Deployment-Strategien: Blue-Green, Canary-Releases, automatisiertes Rollback und SLA-Monitoring in der Produktion."
+        : "Advanced deployment strategies: blue-green, canary releases, automated rollback, and production SLA monitoring.",
+      badge: locale === "pt" ? "Deploy & SLA" : locale === "de" ? "Deployment & SLA" : "Deployment & SLA",
+    },
   ];
 
   const getStatusLabel = (status: string) => {
