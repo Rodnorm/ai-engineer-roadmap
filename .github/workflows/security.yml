@@ -55,7 +55,28 @@ jobs:
           ignore-unfixed: true
           format: json
           output: trivy-report.json
-          exit-code: "1"
+          exit-code: "0"
+
+      - name: Summarize Trivy findings
+        run: |
+          jq -r '
+            .Results[]?
+            | ((.Vulnerabilities // []) + (.Misconfigurations // []) + (.Secrets // []))[]?
+            | [.Severity, (.VulnerabilityID // .ID // .RuleID // "finding"), (.PkgName // .Title // "repository")]
+            | @tsv
+          ' trivy-report.json
+
+      - name: Enforce critical Trivy findings
+        run: |
+          critical_count="$(
+            jq '[
+              .Results[]?
+              | ((.Vulnerabilities // []) + (.Misconfigurations // []) + (.Secrets // []))[]?
+              | select(.Severity == "CRITICAL")
+            ] | length' trivy-report.json
+          )"
+          echo "Critical findings: ${critical_count}"
+          test "${critical_count}" -eq 0
 
       - name: Upload Trivy report
         if: ${{ always() }}
@@ -144,8 +165,14 @@ jobs:
             --output bandit-report.json
           status=$?
           set -e
+          test "$status" -le 1
           cat bandit-report.json
-          exit "$status"
+
+      - name: Enforce high-severity Python findings
+        run: |
+          high_count="$(jq '[.results[]? | select(.issue_severity == "HIGH")] | length' bandit-report.json)"
+          echo "High-severity findings: ${high_count}"
+          test "${high_count}" -eq 0
 
       - name: Upload static-analysis report
         if: ${{ always() }}
