@@ -76,7 +76,7 @@ function Sidebar({
           <div className="brand-mark"><Sparkles aria-hidden="true" /></div>
           <div>
             <strong>Agent Workspace</strong>
-            <span>App 06 · MCP</span>
+            <span>Workspace · MCP</span>
           </div>
           <button className="icon-button ml-auto lg:hidden" onClick={onClose} aria-label="Close sidebar"><X /></button>
         </div>

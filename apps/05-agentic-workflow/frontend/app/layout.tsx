@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'App 05: Agentic Workflow | Autonomous Tool Calling & HITL',
+  title: 'Agentic Workflow | Autonomous Tool Calling & HITL',
   description: 'Autonomous AI agent execution loop with multi-tool calling and Human-in-the-Loop authorization.',
 };
 

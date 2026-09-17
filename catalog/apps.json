@@ -163,7 +163,7 @@
       "summary": "Streaming AI agent workspace with Foundry Agent Service, typed MCP tools, approval gates, and durable conversations.",
       "description": "Agent Workspace connects a Next.js streaming chat to Azure AI Foundry Agent Service and a Node.js MCP server. It includes three typed workspace tools, explicit approval for writes, an offline provider for CI, and Cosmos DB conversation persistence.",
       "category": "AI Agents & MCP",
-      "status": "development",
+      "status": "ready",
       "technologies": [
         "Next.js 15",
         "Azure AI Foundry",

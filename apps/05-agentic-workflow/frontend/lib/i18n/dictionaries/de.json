@@ -1,23 +1,23 @@
 {
   "app": {
-    "badge": "APP 05",
-    "port": "PORT 3005",
-    "title": "Agentic Workflow",
-    "subtitle": "Autonome ReAct-Agentenschleife mit mehrstufiger Aufgabenbegründung, deterministischen Tool-Aufrufen, Zustandspersistenz und obligatorischer Human-in-the-Loop-Autorisierung.",
+    "badge": "Autonomer Agent",
+    "port": "",
+    "title": "Agenten-Workflow (Agentic Workflow)",
+    "subtitle": "Autonome ReAct-Schleife mit mehrstufigem Denken, deterministischen Tool-Aufrufen, Zustandsspeicherung und obligatorischer Human-in-the-Loop-Freigabe.",
     "loopBadge": "ReAct-Schleife (Max. 4 Schritte)",
     "toolsBadge": "Tools: Rechner & Wissenssuche",
     "hitlBadge": "Human-in-the-Loop (send_alert)",
-    "inputPlaceholder": "Weisen Sie den Agenten an (z. B. 'Berechne (25 * 40) + 150', 'Wie lautet die Rückerstattungsrichtlinie?', 'Sende Warnung an @ops-team')...",
-    "runButton": "Agent Ausführen",
+    "inputPlaceholder": "Weisen Sie den Agenten an (z.b. 'Berechne (25 * 40) + 150', 'Wie lautet die Rückerstattungsrichtlinie?', 'Sende einen Alarm an @ops-team')...",
+    "runButton": "Agent starten",
     "runningButton": "Wird ausgeführt...",
-    "resetButton": "Sitzung Zurücksetzen",
-    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+    "resetButton": "Sitzung zurücksetzen",
+    "footer": "Agentic Workflow • Next.js 15 & FastAPI"
   },
   "controls": {
     "language": "Sprache ändern",
-    "lightTheme": "Zum hellen Design wechseln",
-    "darkTheme": "Zum dunklen Design wechseln",
-    "about": "Über App 05",
+    "lightTheme": "Zu hellem Thema wechseln",
+    "darkTheme": "Zu dunklem Thema wechseln",
+    "about": "Über den Agenten",
     "close": "Dialog schließen"
   },
   "info": {

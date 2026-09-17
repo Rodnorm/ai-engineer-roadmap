@@ -1,23 +1,23 @@
 {
   "app": {
-    "badge": "APP 05",
-    "port": "PORT 3005",
+    "badge": "Autonomous Agent",
+    "port": "",
     "title": "Agentic Workflow",
-    "subtitle": "Autonomous ReAct agent loop executing multi-step task reasoning, deterministic tool calls, state persistence, and mandatory Human-in-the-Loop authorization.",
+    "subtitle": "Autonomous ReAct loop executing multi-step reasoning, deterministic tool execution, stateful session memory, and mandatory Human-in-the-Loop authorization.",
     "loopBadge": "ReAct Loop (Max 4 Steps)",
     "toolsBadge": "Tools: Calculator & Knowledge Search",
     "hitlBadge": "Human-in-the-Loop (send_alert)",
-    "inputPlaceholder": "Instruct the agent (e.g. 'Calculate (25 * 40) + 150', 'What is the refund policy?', 'Send an alert to @ops-team')...",
-    "runButton": "Run Agent",
+    "inputPlaceholder": "Instruct the agent (e.g. 'Calculate (25 * 40) + 150', 'What is our refund policy?', 'Send an alert to @ops-team')...",
+    "runButton": "Run Agent Task",
     "runningButton": "Executing...",
     "resetButton": "Reset Session",
-    "footer": "AI Engineer Roadmap • App 05: Agentic Workflow • Next.js 15 & FastAPI"
+    "footer": "Agentic Workflow • Next.js 15 & FastAPI"
   },
   "controls": {
     "language": "Change language",
     "lightTheme": "Switch to light theme",
     "darkTheme": "Switch to dark theme",
-    "about": "About App 05",
+    "about": "About the Agent",
     "close": "Close dialog"
   },
   "info": {
