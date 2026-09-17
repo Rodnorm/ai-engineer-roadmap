@@ -2,7 +2,7 @@
 
 > Living execution plan for improving the AI Engineer Roadmap monorepo.
 >
-> Baseline reviewed: `main@00a2889` — 2026-09-16.
+> Baseline reviewed: `main@6a1f03a` — 2026-09-17.
 
 ## Purpose
 
@@ -45,15 +45,15 @@ The goal is not to implement every possible platform feature. Each stage should 
 
 ### Known gaps
 
-- [ ] App 06 conversations are not isolated by user or tenant.
-- [ ] App 06 internal tokens are optional and local Compose has a predictable fallback token.
-- [ ] App 05 sessions have no owner binding, TTL, or bounded storage.
-- [ ] Several services trust client-controlled forwarded-IP headers by default.
-- [ ] AI request quotas are stored in process memory and reset with deployments.
-- [ ] CodeQL and Dependency Review are skipped while the repository is private.
-- [ ] GitHub Actions use version tags although the security policy claims SHA pinning.
-- [ ] Dependabot does not cover every maintained package manifest.
-- [ ] Most Python dependency sets are not reproducibly locked.
+- [x] App 06 conversations are not isolated by user or tenant.
+- [x] App 06 internal tokens are optional and local Compose has a predictable fallback token.
+- [x] App 05 sessions have no owner binding, TTL, or bounded storage.
+- [x] Several services trust client-controlled forwarded-IP headers by default.
+- [x] AI request quotas are stored in process memory and reset with deployments.
+- [x] CodeQL and Dependency Review are skipped while the repository is private.
+- [x] GitHub Actions use version tags although the security policy claims SHA pinning.
+- [x] Dependabot does not cover every maintained package manifest.
+- [x] Most Python dependency sets are not reproducibly locked.
 - [ ] Frontend-to-backend flows are not covered by browser E2E tests.
 - [ ] Security headers are inconsistent across applications.
 - [ ] Documentation contains statements that no longer match implementation.
@@ -66,17 +66,17 @@ The goal is not to implement every possible platform feature. Each stage should 
 
 Suggested branch: `security/06-conversation-isolation`
 
-- [ ] Choose the initial identity model:
+- [x] Choose the initial identity model:
   - authenticated user identity; or
   - signed anonymous browser session for the public demo.
-- [ ] Add an immutable `ownerId` or `tenantId` to every conversation.
-- [ ] Scope list, read, update, delete, message, and approval operations to the owner.
-- [ ] Prevent cross-owner access even when a valid conversation UUID is known.
-- [ ] Update Cosmos DB partitioning/query strategy to include the owner boundary.
-- [ ] Add a migration or explicit disposable-demo-data strategy.
-- [ ] Add tests for allowed same-owner access.
-- [ ] Add tests for rejected cross-owner read, delete, message, and approval operations.
-- [ ] Ensure API errors do not reveal whether another owner's conversation exists.
+- [x] Add an immutable `ownerId` or `tenantId` to every conversation.
+- [x] Scope list, read, update, delete, message, and approval operations to the owner.
+- [x] Prevent cross-owner access even when a valid conversation UUID is known.
+- [x] Update Cosmos DB partitioning/query strategy to include the owner boundary.
+- [x] Add a migration or explicit disposable-demo-data strategy.
+- [x] Add tests for allowed same-owner access.
+- [x] Add tests for rejected cross-owner read, delete, message, and approval operations.
+- [x] Ensure API errors do not reveal whether another owner's conversation exists.
 
 Acceptance criteria:
 
@@ -88,16 +88,16 @@ Acceptance criteria:
 
 Suggested branch: `security/06-mcp-boundary`
 
-- [ ] Make `INTERNAL_API_TOKEN` mandatory in production.
-- [ ] Make `MCP_API_KEY` mandatory whenever the public MCP endpoint is enabled.
-- [ ] Remove `local-development-token` from production-capable Compose configuration.
-- [ ] Keep development defaults in a clearly local-only override or example.
-- [ ] Compare secrets using a timing-safe implementation.
-- [ ] Confirm the MCP container is not routed publicly by Coolify.
-- [ ] Restrict allowed hosts to the actual internal service names.
-- [ ] Add startup validation that fails closed on invalid production configuration.
-- [ ] Add authentication and missing-configuration tests.
-- [ ] Document key generation and rotation without committing values.
+- [x] Make `INTERNAL_API_TOKEN` mandatory in production.
+- [x] Make `MCP_API_KEY` mandatory whenever the public MCP endpoint is enabled.
+- [x] Remove `local-development-token` from production-capable Compose configuration.
+- [x] Keep development defaults in a clearly local-only override or example.
+- [x] Compare secrets using a timing-safe implementation.
+- [x] Confirm the MCP container is not routed publicly by Coolify.
+- [x] Restrict allowed hosts to the actual internal service names.
+- [x] Add startup validation that fails closed on invalid production configuration.
+- [x] Add authentication and missing-configuration tests.
+- [x] Document key generation and rotation without committing values.
 
 Acceptance criteria:
 
@@ -109,13 +109,13 @@ Acceptance criteria:
 
 Suggested branch: `security/05-session-lifecycle`
 
-- [ ] Bind each session to an owner/session secret.
-- [ ] Require that binding for session read and approval operations.
-- [ ] Add session TTL.
-- [ ] Add a maximum session count and deterministic eviction policy.
-- [ ] Remove completed/expired sessions safely.
-- [ ] Restrict CORS methods, headers, origins, and credential usage.
-- [ ] Add tests for expiry, unauthorized access, eviction, and approval ownership.
+- [x] Bind each session to an owner/session secret.
+- [x] Require that binding for session read and approval operations.
+- [x] Add session TTL.
+- [x] Add a maximum session count and deterministic eviction policy.
+- [x] Remove completed/expired sessions safely.
+- [x] Restrict CORS methods, headers, origins, and credential usage.
+- [x] Add tests for expiry, unauthorized access, eviction, and approval ownership.
 
 Acceptance criteria:
 
@@ -131,12 +131,12 @@ Acceptance criteria:
 
 Suggested branch: `security/trusted-client-addresses`
 
-- [ ] Document the exact Coolify/Traefik forwarded-header behavior.
-- [ ] Stop trusting arbitrary first-hop `X-Forwarded-For` values.
-- [ ] Accept proxy headers only from trusted proxy addresses or use a sanitized edge header.
-- [ ] Share one tested client-address helper across equivalent backends where practical.
-- [ ] Add tests for forged and multi-hop forwarded headers.
-- [ ] Apply the same policy to Next.js App 06 routes.
+- [x] Document the exact Coolify/Traefik forwarded-header behavior.
+- [x] Stop trusting arbitrary first-hop `X-Forwarded-For` values.
+- [x] Accept proxy headers only from trusted proxy addresses or use a sanitized edge header.
+- [x] Share one tested client-address helper across equivalent backends where practical.
+- [x] Add tests for forged and multi-hop forwarded headers.
+- [x] Apply the same policy to Next.js App 06 routes.
 
 Acceptance criteria:
 
@@ -147,16 +147,16 @@ Acceptance criteria:
 
 Suggested branch: `security/persistent-ai-quotas`
 
-- [ ] Select SQLite for the single-node deployment or Redis for multi-instance deployment.
-- [ ] Persist per-minute, per-client daily, and global daily counters.
-- [ ] Make counter updates atomic.
-- [ ] Define behavior when the quota store is unavailable.
-- [ ] Record token usage and estimated cost without recording request content.
-- [ ] Add per-app and global daily cost ceilings.
-- [ ] Add an automatic circuit breaker.
-- [ ] Preserve the manual `GENERATION_ENABLED` kill switch.
-- [ ] Add tests covering restart persistence and concurrent updates.
-- [ ] Document matching Azure budgets, quotas, and alerts.
+- [x] Select SQLite for the single-node deployment or Redis for multi-instance deployment.
+- [x] Persist per-minute, per-client daily, and global daily counters.
+- [x] Make counter updates atomic.
+- [x] Define behavior when the quota store is unavailable.
+- [x] Record token usage and estimated cost without recording request content.
+- [x] Add per-app and global daily cost ceilings.
+- [x] Add an automatic circuit breaker.
+- [x] Preserve the manual `GENERATION_ENABLED` kill switch.
+- [x] Add tests covering restart persistence and concurrent updates.
+- [x] Document matching Azure budgets, quotas, and alerts.
 
 Acceptance criteria:
 
@@ -172,16 +172,16 @@ Acceptance criteria:
 
 Suggested branch: `ci/private-security-scans`
 
-- [ ] Pin every third-party GitHub Action to a full commit SHA.
-- [ ] Keep the human-readable release version in a comment.
-- [ ] Add OSV-Scanner or Trivy filesystem dependency scanning.
-- [ ] Add `pip-audit` for every Python backend.
-- [ ] Add Bandit or a focused Semgrep ruleset for Python.
-- [ ] Scan Docker images for OS and application vulnerabilities.
-- [ ] Define severity thresholds and documented exception handling.
-- [ ] Upload machine-readable reports as CI artifacts.
-- [ ] Correct `SECURITY.md` so its claims match active controls.
-- [ ] Keep CodeQL and Dependency Review ready for public-repository activation.
+- [x] Pin every third-party GitHub Action to a full commit SHA.
+- [x] Keep the human-readable release version in a comment.
+- [x] Add OSV-Scanner or Trivy filesystem dependency scanning.
+- [x] Add `pip-audit` for every Python backend.
+- [x] Add Bandit or a focused Semgrep ruleset for Python.
+- [x] Scan Docker images for OS and application vulnerabilities.
+- [x] Define severity thresholds and documented exception handling.
+- [x] Upload machine-readable reports as CI artifacts.
+- [x] Correct `SECURITY.md` so its claims match active controls.
+- [x] Keep CodeQL and Dependency Review ready for public-repository activation.
 
 Acceptance criteria:
 
@@ -193,13 +193,13 @@ Acceptance criteria:
 
 Suggested branch: `ci/complete-dependabot-coverage`
 
-- [ ] Add App 00 frontend.
-- [ ] Add App 05 frontend and backend.
-- [ ] Add App 06 frontend and MCP server.
-- [ ] Review whether root workspace and template manifests should be monitored.
-- [ ] Keep updates grouped by application to avoid oversized PRs.
-- [ ] Preserve explicit manual review for major updates.
-- [ ] Document the expected validation before merging dependency PRs.
+- [x] Add App 00 frontend.
+- [x] Add App 05 frontend and backend.
+- [x] Add App 06 frontend and MCP server.
+- [x] Review whether root workspace and template manifests should be monitored.
+- [x] Keep updates grouped by application to avoid oversized PRs.
+- [x] Preserve explicit manual review for major updates.
+- [x] Document the expected validation before merging dependency PRs.
 
 Acceptance criteria:
 
@@ -210,13 +210,13 @@ Acceptance criteria:
 
 Suggested branch: `build/reproducible-python-dependencies`
 
-- [ ] Choose `uv` or `pip-tools` as the repository standard.
-- [ ] Lock direct and transitive dependencies for Apps 01–05.
-- [ ] Include hashes where the chosen workflow supports them.
-- [ ] Align the supported Python version across CI and containers.
-- [ ] Update Docker and CI installation commands.
-- [ ] Configure dependency update automation for lock files.
-- [ ] Document the update procedure.
+- [x] Choose `uv` or `pip-tools` as the repository standard.
+- [x] Lock direct and transitive dependencies for Apps 01–05.
+- [x] Include hashes where the chosen workflow supports them.
+- [x] Align the supported Python version across CI and containers.
+- [x] Update Docker and CI installation commands.
+- [x] Configure dependency update automation for lock files.
+- [x] Document the update procedure.
 
 Acceptance criteria:
 
@@ -488,3 +488,7 @@ Acceptance criteria:
 | Date | Decision | Reason | Follow-up |
 | --- | --- | --- | --- |
 | 2026-09-16 | Use this document as the execution backlog for repository hardening. | Keep security, reliability, and portfolio improvements visible and reviewable. | Start with App 06 conversation isolation. |
+| 2026-09-16 | Complete Phase 1: Conversation isolation, MCP token enforcement, App 05 session lifecycle. | Block cross-tenant access, unauthorized MCP tool calls, and session starvation. | Proceed to Phase 2 client identity and quotas. |
+| 2026-09-17 | Complete Phase 2: Trusted client IP resolution and SQLite persistent request quotas. | Prevent rate limit evasion and cost spikes across container restarts. | Proceed to Phase 3 security scans and supply chain. |
+| 2026-09-17 | Complete Phase 3.1 & 3.2: Private CI security scans, pinned action SHAs, complete Dependabot coverage. | Establish automated vulnerability detection and dependency monitoring. | Lock Python environments in Phase 3.3. |
+| 2026-09-17 | Complete Phase 3.3: Use `uv` with reproducible SHA-256 hashes for Apps 01–05, align Python to 3.12. | Ensure deterministic builds across local dev, CI, and production containers. | Proceed to Phase 3.4 container hardening. |
