@@ -227,15 +227,15 @@ Acceptance criteria:
 
 Suggested branch: `security/container-hardening`
 
-- [ ] Pin base images to immutable digests.
-- [ ] Add missing App 06 Dockerfile healthchecks.
-- [ ] Drop unnecessary Linux capabilities.
-- [ ] Enable `no-new-privileges`.
-- [ ] Use read-only root filesystems where application behavior permits.
-- [ ] Define explicit writable temporary/data mounts.
-- [ ] Add sensible CPU and memory limits in deployment documentation.
-- [ ] Generate a CycloneDX or SPDX SBOM for each deployed image.
-- [ ] Define a base-image update process.
+- [x] Pin base images to immutable digests.
+- [x] Add missing App 06 Dockerfile healthchecks.
+- [x] Drop unnecessary Linux capabilities.
+- [x] Enable `no-new-privileges`.
+- [x] Use read-only root filesystems where application behavior permits.
+- [x] Define explicit writable temporary/data mounts.
+- [x] Add sensible CPU and memory limits in deployment documentation.
+- [x] Generate a CycloneDX or SPDX SBOM for each deployed image.
+- [x] Define a base-image update process.
 
 Acceptance criteria:
 
@@ -492,3 +492,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 2: Trusted client IP resolution and SQLite persistent request quotas. | Prevent rate limit evasion and cost spikes across container restarts. | Proceed to Phase 3 security scans and supply chain. |
 | 2026-09-17 | Complete Phase 3.1 & 3.2: Private CI security scans, pinned action SHAs, complete Dependabot coverage. | Establish automated vulnerability detection and dependency monitoring. | Lock Python environments in Phase 3.3. |
 | 2026-09-17 | Complete Phase 3.3: Use `uv` with reproducible SHA-256 hashes for Apps 01–05, align Python to 3.12. | Ensure deterministic builds across local dev, CI, and production containers. | Proceed to Phase 3.4 container hardening. |
+| 2026-09-17 | Complete Phase 3.4: Pin base images to SHA-256 digests, add App 06 healthcheck, enable no-new-privileges and cap_drop. | Harden container boundaries, prevent privilege escalation, and ensure health observability. | Proceed to Phase 4 contracts and tests. |

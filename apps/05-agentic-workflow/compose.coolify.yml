@@ -11,6 +11,10 @@ services:
       BACKEND_URL: http://backend:8005
     expose:
       - "3000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     depends_on:
       backend:
         condition: service_healthy
@@ -42,6 +46,10 @@ services:
       RATE_LIMIT_DB_PATH: /data/rate-limit.sqlite3
     expose:
       - "8005"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     volumes:
       - rate-limit-data:/data
     restart: unless-stopped

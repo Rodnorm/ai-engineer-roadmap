@@ -10,6 +10,10 @@ services:
       ENABLE_PUBLIC_MCP: "false"
     volumes:
       - workspace-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8006/health"]
       interval: 15s
@@ -26,6 +30,10 @@ services:
       INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
       CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:?CONVERSATION_SESSION_SECRET is required}
       GENERATION_ENABLED: "true"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     depends_on:
       mcp:
         condition: service_healthy
