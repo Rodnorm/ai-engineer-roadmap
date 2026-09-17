@@ -3,6 +3,10 @@ import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
 import { getDictionary } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
+type PageProps = {
+  params: Promise<{ slug: string }>;
+};
+
 export function generateStaticParams() {
   const apps = getAppCatalog("en");
   return apps.map((app) => ({
@@ -10,8 +14,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const app = getAppBySlug(params.slug, "en");
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const app = getAppBySlug(slug, "en");
   if (!app) return {};
 
   return {
@@ -20,11 +25,12 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function CaseStudyPage({ params }: { params: { slug: string } }) {
-  const app = getAppBySlug(params.slug, "en");
+export default async function CaseStudyPage({ params }: PageProps) {
+  const { slug } = await params;
+  const app = getAppBySlug(slug, "en");
   if (!app) {
     notFound();
   }
 
-  return <CaseStudyPageView slug={params.slug} locale="en" />;
+  return <CaseStudyPageView slug={slug} locale="en" />;
 }
