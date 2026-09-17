@@ -40,11 +40,11 @@ jobs:
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Filter changed paths
         id: filter
-        uses: dorny/paths-filter@v3.0.4
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
         with:
           filters: |
             app00:
@@ -77,15 +77,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
 
       - name: Validate catalog schema
-        run: npx --yes ajv-cli validate -s catalog/schema.json -d catalog/apps.json
+        run: npx --yes ajv-cli@5.0.0 validate -s catalog/schema.json -d catalog/apps.json
 
   frontend:
     name: Frontend — ${{ matrix.app }}
@@ -125,11 +125,11 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
@@ -192,11 +192,11 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Python
-        uses: actions/setup-python@v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
           cache: pip
@@ -235,7 +235,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Validate Compose definitions
         run: |
@@ -264,11 +264,11 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check out repository
-        uses: actions/checkout@v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Set up Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 20
           cache: npm
