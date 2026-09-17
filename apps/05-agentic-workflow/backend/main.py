@@ -26,6 +26,7 @@ from agent import (
     run_agent_loop,
 )
 from models import AgentSessionResponse, ApproveTaskRequest, PendingApproval, RunTaskRequest
+from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
 from rate_limit import InMemoryRateLimiter
 
 load_dotenv()
@@ -82,7 +83,8 @@ configure_session_store(
 )
 
 RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
-TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", True)
+TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
+TRUSTED_PROXY_CIDRS = parse_trusted_proxy_cidrs(os.getenv("TRUSTED_PROXY_CIDRS", ""))
 
 rate_limiter = InMemoryRateLimiter(
     requests_per_minute=_env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 10),
@@ -126,11 +128,12 @@ client: Optional[Any] = _build_client()
 
 
 def _get_client_ip(request: Request) -> str:
-    if TRUST_PROXY_HEADERS:
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-    return request.client.host if request.client else "127.0.0.1"
+    return resolve_client_ip(
+        request.client.host if request.client else None,
+        request.headers.get("x-forwarded-for"),
+        TRUST_PROXY_HEADERS,
+        TRUSTED_PROXY_CIDRS,
+    )
 
 
 app = FastAPI(
