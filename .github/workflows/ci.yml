@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "0 3 * * *" # Daily full cross-project drift validation at 03:00 UTC
   workflow_dispatch:
     inputs:
       run_all:
@@ -30,14 +32,15 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      app00: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app01: ${{ steps.filter.outputs.app01 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
-      catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || inputs.run_all == true || github.event_name == 'push' }}
+      run_all: ${{ github.event_name == 'schedule' || inputs.run_all == true }}
+      app00: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app01: ${{ steps.filter.outputs.app01 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app02: ${{ steps.filter.outputs.app02 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app03: ${{ steps.filter.outputs.app03 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0

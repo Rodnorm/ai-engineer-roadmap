@@ -302,13 +302,13 @@ Acceptance criteria:
 
 Suggested branch: `ci/selective-main-builds`
 
-- [ ] Keep path-aware jobs for pull requests.
-- [ ] Make normal `main` pushes path-aware.
-- [ ] Add a scheduled full validation run.
-- [ ] Preserve manual `run_all`.
-- [ ] Configure a Watch Path for every separate Coolify resource.
-- [ ] Document frontends and backends as independent resources.
-- [ ] Verify that changing App 01 does not redeploy Apps 02–06.
+- [x] Keep path-aware jobs for pull requests.
+- [x] Make normal `main` pushes path-aware.
+- [x] Add a scheduled full validation run.
+- [x] Preserve manual `run_all`.
+- [x] Configure a Watch Path for every separate Coolify resource.
+- [x] Document frontends and backends as independent resources.
+- [x] Verify that changing App 01 does not redeploy Apps 02–06.
 
 Acceptance criteria:
 
@@ -496,3 +496,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 4.1: Store OpenAPI schemas, add CI drift check, TypeScript contracts, standard backend URL and X-Request-ID. | Prevent contract drift and align API schemas across frontend and backend services. | Proceed to Phase 4.2 E2E smoke tests. |
 | 2026-09-17 | Complete Phase 4.2: Add Playwright E2E smoke suite with offline mocking, axe-core a11y, resilience and failure artifact capture. | Guarantee critical journeys and resilience against 400, 413, 429, 503 and streaming aborts. | Proceed to Phase 4.3 quality gates. |
 | 2026-09-17 | Complete Phase 4.3: Add Ruff formatting and linting, incremental Mypy type-checking, backend test coverage, and frontend component tests. | Enforce static code quality, prevent runtime regressions, and ensure measurable test coverage. | Proceed to Phase 4.4 selective CI. |
+| 2026-09-17 | Complete Phase 4.4: Path-aware main builds, daily scheduled full runs, and Coolify watch path documentation. | Prevent redundant image rebuilds and deployment churn across monorepo applications. | Proceed to Phase 5 runtime security and observability. |
