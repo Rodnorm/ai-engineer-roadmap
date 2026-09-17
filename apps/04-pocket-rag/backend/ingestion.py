@@ -2,7 +2,6 @@ import io
 import re
 import zipfile
 from dataclasses import dataclass
-from pathlib import Path
 from xml.etree import ElementTree
 
 

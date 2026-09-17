@@ -13,7 +13,7 @@ import uuid
 from typing import Any, Dict, List, Optional, Tuple
 from openai import OpenAI
 
-from models import AgentStep, PendingApproval
+from models import AgentStep
 from tools import TOOLS_METADATA, TOOLS_SCHEMA
 
 log = logging.getLogger("agentic-workflow")

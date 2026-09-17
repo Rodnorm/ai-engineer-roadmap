@@ -286,12 +286,12 @@ Acceptance criteria:
 
 Suggested branch: `test/quality-gates`
 
-- [ ] Add Ruff formatting/linting for Python.
-- [ ] Add Python type checking incrementally.
-- [ ] Add backend coverage reports.
-- [ ] Add focused component tests for complex frontend interactions.
-- [ ] Define realistic initial thresholds per app.
-- [ ] Raise thresholds gradually instead of enforcing an artificial global target.
+- [x] Add Ruff formatting/linting for Python.
+- [x] Add Python type checking incrementally.
+- [x] Add backend coverage reports.
+- [x] Add focused component tests for complex frontend interactions.
+- [x] Define realistic initial thresholds per app.
+- [x] Raise thresholds gradually instead of enforcing an artificial global target.
 
 Acceptance criteria:
 
@@ -495,3 +495,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 3.4: Pin base images to SHA-256 digests, add App 06 healthcheck, enable no-new-privileges and cap_drop. | Harden container boundaries, prevent privilege escalation, and ensure health observability. | Proceed to Phase 4 contracts and tests. |
 | 2026-09-17 | Complete Phase 4.1: Store OpenAPI schemas, add CI drift check, TypeScript contracts, standard backend URL and X-Request-ID. | Prevent contract drift and align API schemas across frontend and backend services. | Proceed to Phase 4.2 E2E smoke tests. |
 | 2026-09-17 | Complete Phase 4.2: Add Playwright E2E smoke suite with offline mocking, axe-core a11y, resilience and failure artifact capture. | Guarantee critical journeys and resilience against 400, 413, 429, 503 and streaming aborts. | Proceed to Phase 4.3 quality gates. |
+| 2026-09-17 | Complete Phase 4.3: Add Ruff formatting and linting, incremental Mypy type-checking, backend test coverage, and frontend component tests. | Enforce static code quality, prevent runtime regressions, and ensure measurable test coverage. | Proceed to Phase 4.4 selective CI. |

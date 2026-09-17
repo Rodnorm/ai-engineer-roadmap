@@ -8,14 +8,12 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import time
 import uuid
 from typing import Any, Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from openai import AzureOpenAI, OpenAI
 
 from agent import (
