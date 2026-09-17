@@ -19,11 +19,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=user:user . .
 
-RUN chown -R user:user /app /home/user
+RUN mkdir -p /data && chown -R user:user /app /home/user /data
 
 USER user
 
 EXPOSE 8005
+VOLUME ["/data"]
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD curl --fail --silent --show-error "http://127.0.0.1:${PORT:-8005}/health" > /dev/null || exit 1
