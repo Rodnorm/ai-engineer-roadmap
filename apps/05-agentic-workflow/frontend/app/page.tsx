@@ -72,17 +72,18 @@ function AgenticWorkflowContent() {
     setError(null);
     setIsLoading(true);
     setStatus('running');
+    setSteps([]);
     setFinalAnswer(undefined);
     setPendingApproval(undefined);
-
-    const prevCount = steps.length;
+    setSessionId(undefined);
+    setSessionToken(undefined);
 
     try {
-      const response = await runAgentTask(taskPrompt, sessionId, sessionToken);
+      const response = await runAgentTask(taskPrompt);
       setSessionId(response.session_id);
       setSessionToken(response.session_token);
 
-      await staggerRevealSteps(response.steps, prevCount, () => {
+      await staggerRevealSteps(response.steps, 0, () => {
         setStatus(response.status);
         setPendingApproval(response.pending_approval);
         setFinalAnswer(response.final_answer);
