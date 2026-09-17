@@ -108,6 +108,36 @@ jobs:
       - name: Check OpenAPI schema drift
         run: python scripts/export_openapi.py --check
 
+  e2e_smoke:
+    name: E2E Smoke & Resilience Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+
+      - name: Install E2E test dependencies
+        run: npm --prefix tests/e2e install
+
+      - name: Install Playwright browsers
+        run: npx --prefix tests/e2e playwright install --with-deps chromium
+
+      - name: Run E2E smoke tests
+        run: npm run test:e2e
+
+      - name: Upload artifacts on failure
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        if: failure()
+        with:
+          name: playwright-failure-artifacts
+          path: tests/e2e/test-results/artifacts
+          retention-days: 7
+
+
 
   frontend:
     name: Frontend — ${{ matrix.app }}

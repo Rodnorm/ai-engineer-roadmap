@@ -1,0 +1,11 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.51.1"
+  },
+  "dependencies": {
+    "axe-core": "^4.13.0"
+  }
+}

@@ -268,14 +268,14 @@ Acceptance criteria:
 
 Suggested branch: `test/e2e-smoke-baseline`
 
-- [ ] Add Playwright infrastructure.
-- [ ] Cover one critical user journey per app.
-- [ ] Exercise browser → Next.js proxy → backend.
-- [ ] Use deterministic/offline provider modes in CI.
-- [ ] Test successful responses and representative 400, 413, 429, and 503 responses.
-- [ ] Test streaming cancellation and interrupted requests where applicable.
-- [ ] Add `axe-core` accessibility checks.
-- [ ] Capture useful artifacts only on failure.
+- [x] Add Playwright infrastructure.
+- [x] Cover one critical user journey per app.
+- [x] Exercise browser → Next.js proxy → backend.
+- [x] Use deterministic/offline provider modes in CI.
+- [x] Test successful responses and representative 400, 413, 429, and 503 responses.
+- [x] Test streaming cancellation and interrupted requests where applicable.
+- [x] Add `axe-core` accessibility checks.
+- [x] Capture useful artifacts only on failure.
 
 Acceptance criteria:
 
@@ -494,3 +494,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 3.3: Use `uv` with reproducible SHA-256 hashes for Apps 01–05, align Python to 3.12. | Ensure deterministic builds across local dev, CI, and production containers. | Proceed to Phase 3.4 container hardening. |
 | 2026-09-17 | Complete Phase 3.4: Pin base images to SHA-256 digests, add App 06 healthcheck, enable no-new-privileges and cap_drop. | Harden container boundaries, prevent privilege escalation, and ensure health observability. | Proceed to Phase 4 contracts and tests. |
 | 2026-09-17 | Complete Phase 4.1: Store OpenAPI schemas, add CI drift check, TypeScript contracts, standard backend URL and X-Request-ID. | Prevent contract drift and align API schemas across frontend and backend services. | Proceed to Phase 4.2 E2E smoke tests. |
+| 2026-09-17 | Complete Phase 4.2: Add Playwright E2E smoke suite with offline mocking, axe-core a11y, resilience and failure artifact capture. | Guarantee critical journeys and resilience against 400, 413, 429, 503 and streaming aborts. | Proceed to Phase 4.3 quality gates. |
