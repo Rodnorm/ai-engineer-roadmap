@@ -323,13 +323,13 @@ Acceptance criteria:
 
 Suggested branch: `security/browser-edge-headers`
 
-- [ ] Inspect actual production response headers through the Coolify proxy.
-- [ ] Decide whether HSTS is owned by Next.js or Traefik.
-- [ ] Standardize CSP across applications.
-- [ ] Move report-only policies to enforcement after resolving violations.
-- [ ] Remove `unsafe-inline` where practical.
-- [ ] Standardize frame, referrer, MIME-sniffing, and permissions policies.
-- [ ] Add automated header checks.
+- [x] Inspect actual production response headers through the Coolify proxy.
+- [x] Decide whether HSTS is owned by Next.js or Traefik.
+- [x] Standardize CSP across applications.
+- [x] Move report-only policies to enforcement after resolving violations.
+- [x] Remove `unsafe-inline` where practical.
+- [x] Standardize frame, referrer, MIME-sniffing, and permissions policies.
+- [x] Add automated header checks.
 
 Acceptance criteria:
 
@@ -497,3 +497,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 4.2: Add Playwright E2E smoke suite with offline mocking, axe-core a11y, resilience and failure artifact capture. | Guarantee critical journeys and resilience against 400, 413, 429, 503 and streaming aborts. | Proceed to Phase 4.3 quality gates. |
 | 2026-09-17 | Complete Phase 4.3: Add Ruff formatting and linting, incremental Mypy type-checking, backend test coverage, and frontend component tests. | Enforce static code quality, prevent runtime regressions, and ensure measurable test coverage. | Proceed to Phase 4.4 selective CI. |
 | 2026-09-17 | Complete Phase 4.4: Path-aware main builds, daily scheduled full runs, and Coolify watch path documentation. | Prevent redundant image rebuilds and deployment churn across monorepo applications. | Proceed to Phase 5 runtime security and observability. |
+| 2026-09-17 | Complete Phase 5.1: Enforce standard CSP, 2-year HSTS preload, frame-ancestors, and automated security header checks. | Protect clients from XSS, clickjacking, MIME-sniffing, and protocol downgrades across all Next.js apps. | Proceed to Phase 5.2 document processing. |
