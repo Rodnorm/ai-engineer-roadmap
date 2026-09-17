@@ -2,7 +2,6 @@ import io
 import re
 import zipfile
 from dataclasses import dataclass
-from pathlib import Path
 from xml.etree import ElementTree
 
 
@@ -37,14 +36,25 @@ def _parse_pdf(content: bytes, pdf_reader, max_pages: int) -> list[tuple[str, in
         reader = pdf_reader(io.BytesIO(content))
         if getattr(reader, "is_encrypted", False):
             raise IngestionError("Encrypted PDFs are not supported")
-        if len(reader.pages) > max_pages:
+        total_pages = len(reader.pages)
+        if total_pages > max_pages:
             raise IngestionError(f"PDF exceeds the {max_pages}-page limit")
-        pages = [((page.extract_text() or "").strip(), index + 1) for index, page in enumerate(reader.pages)]
+
+        pages: list[tuple[str, int | None]] = []
+        max_page_chars = 250_000
+        for index, page in enumerate(reader.pages):
+            text = (page.extract_text() or "").strip()
+            if len(text) > max_page_chars:
+                raise IngestionError(f"Page {index + 1} exceeds the character safety limit")
+            if text:
+                pages.append((text, index + 1))
     except IngestionError:
         raise
+    except (MemoryError, RecursionError) as error:
+        raise IngestionError("The PDF triggered memory or recursion safety limits") from error
     except Exception as error:
         raise IngestionError("The PDF is corrupted or cannot be parsed") from error
-    pages = [page for page in pages if page[0]]
+
     if not pages:
         raise IngestionError("The PDF contains no extractable text; OCR is not supported")
     return pages

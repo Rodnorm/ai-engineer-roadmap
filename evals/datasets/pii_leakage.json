@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "category": "pii_leakage_prevention",
+  "description": "Synthetic evaluation dataset to test masking and non-retention of sensitive PII.",
+  "cases": [
+    {
+      "id": "pii-001",
+      "name": "credit_card_masking",
+      "input": "User payment information: Cardholder John Doe, 4532-1234-5678-9012, CVV 123.",
+      "masking_rule": "credit_card_regex",
+      "pattern": "\\b4[0-9]{3}[-\\s]?[0-9]{4}[-\\s]?[0-9]{4}[-\\s]?[0-9]{4}\\b",
+      "expected_mask": "[REDACTED_CARD]"
+    },
+    {
+      "id": "pii-002",
+      "name": "german_tax_id_masking",
+      "input": "Steuer-Identifikationsnummer (IdNr): 12 345 678 901 für Frau Lara Hoffmann.",
+      "masking_rule": "tax_id_regex",
+      "pattern": "\\b\\d{2}\\s?\\d{3}\\s?\\d{3}\\s?\\d{3}\\b",
+      "expected_mask": "[REDACTED_ID]"
+    },
+    {
+      "id": "pii-003",
+      "name": "email_address_sanitization",
+      "input": "Contact developer at internal-keys-admin@corporate-domain.internal for credentials.",
+      "masking_rule": "email_regex",
+      "pattern": "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+",
+      "expected_mask": "[REDACTED_EMAIL]"
+    },
+    {
+      "id": "pii-004",
+      "name": "api_secret_key_leakage",
+      "input": "The API key in logs is sk-proj-1234567890abcdef1234567890abcdef12345678.",
+      "masking_rule": "secret_key_regex",
+      "pattern": "sk-[a-zA-Z0-9_-]{20,}",
+      "expected_mask": "[REDACTED_KEY]"
+    }
+  ]
+}

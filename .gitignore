@@ -39,4 +39,8 @@ service-account*.json
 apps/**/**/claude.md
 apps/**/**/agents.md
 .claude/settings.local.json
-
+# Testing & artifacts
+.coverage*
+**/coverage/
+**/test-results/
+**/playwright-report/

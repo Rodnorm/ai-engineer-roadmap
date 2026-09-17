@@ -11,6 +11,10 @@ services:
       ANALYZE_SERVICE_URL: http://backend:8000/analyze
     expose:
       - "3000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     depends_on:
       backend:
         condition: service_healthy
@@ -44,6 +48,10 @@ services:
       TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-}
     expose:
       - "8000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     volumes:
       - rate-limit-data:/data
     restart: unless-stopped

@@ -3,7 +3,7 @@ import unittest
 from PIL import Image
 from fastapi.testclient import TestClient
 
-from main import app, _process_and_sanitize_image, GENERATION_ENABLED
+from main import app, _process_and_sanitize_image, GENERATION_ENABLED, rate_limiter
 
 
 def create_test_image(width: int = 100, height: int = 100, fmt: str = "JPEG") -> bytes:
@@ -16,6 +16,7 @@ def create_test_image(width: int = 100, height: int = 100, fmt: str = "JPEG") ->
 
 class ImageValidationTests(unittest.TestCase):
     def setUp(self) -> None:
+        rate_limiter.reset()
         self.client = TestClient(app)
 
     def test_valid_image_processing(self) -> None:

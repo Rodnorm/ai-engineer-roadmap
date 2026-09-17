@@ -1,6 +1,6 @@
 # App 05 — Agentic Workflow
 
-Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization.
+Autonomous agent execution loop with multi-tool calling, in-memory stateful session lifecycle, and Human-in-the-Loop authorization.
 
 ---
 

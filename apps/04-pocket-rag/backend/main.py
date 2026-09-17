@@ -10,7 +10,6 @@ import time
 import uuid
 from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timedelta, timezone
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -320,14 +319,15 @@ def _cleanup_expired_uploads(now: datetime | None = None) -> int:
         for document in store.list_documents("upload")
         if (record := store.get_record(document.id)) is not None
     }
+    uploading_cutoff = (current_time - timedelta(minutes=1)).timestamp()
     for path in settings.upload_dir.iterdir():
         try:
-            if (
-                path.is_file()
-                and path.name not in active_filenames
-                and path.stat().st_mtime <= cutoff.timestamp()
-            ):
-                path.unlink()
+            if not path.is_file():
+                continue
+            if path.name.endswith((".uploading", ".deleting")) and path.stat().st_mtime <= uploading_cutoff:
+                path.unlink(missing_ok=True)
+            elif path.name not in active_filenames and path.stat().st_mtime <= cutoff.timestamp():
+                path.unlink(missing_ok=True)
         except OSError as error:
             logger.error("orphan_upload_cleanup_failed", extra={"error_type": type(error).__name__})
 
@@ -392,7 +392,10 @@ async def load_example_documents():
             raise HTTPException(status_code=503, detail="Example documents are unavailable")
         content = await asyncio.to_thread(path.read_bytes)
         try:
-            chunks = await asyncio.to_thread(_parse, content, "pdf")
+            chunks = await asyncio.wait_for(
+                asyncio.to_thread(_parse, content, "pdf"),
+                timeout=settings.parsing_timeout_seconds,
+            )
             item = DocumentItem(
                 id=definition["id"],
                 filename=definition["filename"],
@@ -442,7 +445,8 @@ def download_example_document(filename: str):
 async def upload_document(file: UploadFile = File(...)):
     if store.count_documents("upload") >= settings.max_documents:
         raise HTTPException(status_code=429, detail="Document limit reached")
-    filename = Path(file.filename or "document.txt").name
+    raw_filename = Path(file.filename or "document.txt").name
+    filename = re.sub(r"[^\w.\-]", "_", raw_filename).strip("._") or "document.txt"
     extension = Path(filename).suffix.lower().lstrip(".")
     content = await _read_limited(file)
     digest = hashlib.sha256(content).hexdigest()
@@ -450,13 +454,24 @@ async def upload_document(file: UploadFile = File(...)):
     if duplicate:
         raise HTTPException(status_code=409, detail="This file has already been uploaded")
     try:
-        chunks = await asyncio.to_thread(_parse, content, extension)
+        chunks = await asyncio.wait_for(
+            asyncio.to_thread(_parse, content, extension),
+            timeout=settings.parsing_timeout_seconds,
+        )
+    except asyncio.TimeoutError:
+        logger.warning("document_parsing_timeout", extra={"document_name": filename, "extension": extension})
+        raise HTTPException(status_code=422, detail="Document parsing exceeded processing time limit")
     except IngestionError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 
     document_id = uuid.uuid4().hex
     stored_filename = f"{document_id}.{extension}"
     original_path = store.original_path(stored_filename)
+    try:
+        if not original_path.resolve().is_relative_to(settings.upload_dir.resolve()):
+            raise HTTPException(status_code=400, detail="Invalid target file path")
+    except (ValueError, RuntimeError):
+        raise HTTPException(status_code=400, detail="Invalid target file path")
     temporary_path = original_path.with_suffix(original_path.suffix + ".uploading")
     item = DocumentItem(
         id=document_id,

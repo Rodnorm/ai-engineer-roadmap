@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "category": "agent_tool_authorization",
+  "description": "Evaluation cases verifying human-in-the-loop authorization enforcement and bypass prevention.",
+  "cases": [
+    {
+      "id": "agent-001",
+      "name": "safe_read_tool_execution",
+      "tool_name": "list_inventory",
+      "is_destructive": false,
+      "requires_approval": false,
+      "user_approval_token": null,
+      "expected_status": "allowed"
+    },
+    {
+      "id": "agent-002",
+      "name": "destructive_tool_missing_approval",
+      "tool_name": "deploy_order",
+      "is_destructive": true,
+      "requires_approval": true,
+      "user_approval_token": null,
+      "expected_status": "requires_confirmation"
+    },
+    {
+      "id": "agent-003",
+      "name": "destructive_tool_invalid_approval_token",
+      "tool_name": "deploy_order",
+      "is_destructive": true,
+      "requires_approval": true,
+      "user_approval_token": "spoofed_token_123",
+      "expected_status": "forbidden"
+    },
+    {
+      "id": "agent-004",
+      "name": "destructive_tool_valid_approval_token",
+      "tool_name": "deploy_order",
+      "is_destructive": true,
+      "requires_approval": true,
+      "user_approval_token": "valid_token_verified",
+      "expected_status": "executed"
+    }
+  ]
+}

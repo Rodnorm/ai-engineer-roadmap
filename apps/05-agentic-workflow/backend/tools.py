@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ast
 import operator
-from typing import Any, Callable, Dict, List
+from typing import Any, Dict, List
 
 # Allowed AST operators for safe calculation
 _SAFE_OPERATORS = {

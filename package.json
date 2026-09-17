@@ -22,6 +22,8 @@
     "dev:04": "node scripts/dev/run.mjs --app 04",
     "dev:05": "node scripts/dev/run.mjs --app 05",
     "test": "node --test scripts/dev/*.test.mjs",
+    "test:e2e": "npx --prefix tests/e2e playwright test --config tests/e2e/playwright.config.ts",
+    "test:evals": "python evals/run_evals.py",
     "dev:06": "node scripts/dev/run.mjs --app 06"
   }
 }

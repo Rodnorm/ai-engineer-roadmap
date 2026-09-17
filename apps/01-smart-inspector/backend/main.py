@@ -27,6 +27,7 @@ from pydantic import BaseModel, Field
 
 from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
 from rate_limit import PersistentRateLimiter
+from telemetry import format_traceparent, metrics_collector, trace_ai_call
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -342,13 +343,18 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def remove_backend_prefix(request: Request, call_next):
+async def handle_request_id_and_prefix(request: Request, call_next):
     prefix = "/api/backend"
 
     if request.scope["path"].startswith(prefix):
         request.scope["path"] = request.scope["path"][len(prefix):]
 
-    return await call_next(request)
+    request_id = request.headers.get("x-request-id") or request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    request.state.request_id = request_id
+
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
 @app.get("/health")
@@ -445,18 +451,32 @@ async def analyze(
         }
     ]
 
+    traceparent = format_traceparent(request_id)
     async with concurrency_semaphore:
         try:
-            response = client.with_options(
-                timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
-                max_retries=0,
-            ).responses.parse(
+            with trace_ai_call(
+                operation_name="chat",
+                system="azure_openai",
                 model=DEPLOYMENT,
-                instructions=SYSTEM_PROMPT,
-                input=input_payload,
-                text_format=AnalysisResult,
-                max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
-            )
+                request_id=request_id,
+            ) as span:
+                response = client.with_options(
+                    timeout=AZURE_REQUEST_TIMEOUT_SECONDS,
+                    max_retries=0,
+                    default_headers={
+                        "X-Request-ID": request_id,
+                        "traceparent": traceparent,
+                    },
+                ).responses.parse(
+                    model=DEPLOYMENT,
+                    instructions=SYSTEM_PROMPT,
+                    input=input_payload,
+                    text_format=AnalysisResult,
+                    max_output_tokens=AZURE_MAX_OUTPUT_TOKENS,
+                )
+                if hasattr(response, "usage") and response.usage:
+                    span["prompt_tokens"] = getattr(response.usage, "input_tokens", 0) or getattr(response.usage, "prompt_tokens", 0)
+                    span["completion_tokens"] = getattr(response.usage, "output_tokens", 0) or getattr(response.usage, "completion_tokens", 0)
         except Exception:
             log.exception("[%s] Azure OpenAI request failed.", request_id)
             raise HTTPException(
@@ -480,6 +500,13 @@ async def analyze(
         len(result.objects),
     )
     return result
+
+
+@app.get("/api/metrics")
+@app.get("/metrics")
+def get_metrics():
+    """Operational metrics: request count, error rate, p50/p95 latency, token totals."""
+    return metrics_collector.get_summary()
 
 
 if __name__ == "__main__":

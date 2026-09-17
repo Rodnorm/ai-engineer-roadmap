@@ -101,7 +101,7 @@
       "summary": "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
       "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       "category": "Knowledge Base & RAG",
-      "status": "development",
+      "status": "ready",
       "technologies": [
         "Next.js 15",
         "FastAPI",
@@ -129,10 +129,10 @@
       "id": "05",
       "slug": "agentic-workflow",
       "title": "Agentic Workflow",
-      "summary": "Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization.",
+      "summary": "Autonomous agent execution loop with multi-tool calling, in-memory stateful session lifecycle, and Human-in-the-Loop authorization.",
       "description": "Agentic Workflow implements a ReAct loop with deterministic tool calling (calculator, knowledge search, and sensitive alerts). Integrates mandatory Human-in-the-Loop authorization before executing critical actions.",
       "category": "Autonomous Agents & Tool Calling",
-      "status": "development",
+      "status": "ready",
       "technologies": [
         "Next.js 15",
         "FastAPI",
