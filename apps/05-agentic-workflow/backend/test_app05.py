@@ -18,6 +18,9 @@ class TestApp05AgenticWorkflow(unittest.TestCase):
         main.rate_limiter._ip_day.clear()
         main.rate_limiter._global_day.clear()
         main.GENERATION_ENABLED = True
+        main.rate_limiter.requests_per_minute = 10
+        main.rate_limiter.requests_per_day_per_ip = 100
+        main.rate_limiter.global_requests_per_day = 500
         configure_session_store(ttl_seconds=1800, max_sessions=500)
 
     def test_health_check(self) -> None:
