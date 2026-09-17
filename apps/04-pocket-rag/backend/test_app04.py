@@ -287,6 +287,61 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertIn("Retry-After", second.headers)
         self.assertNotIn("private", str(second.json()).lower())
 
+    def test_adversarial_encrypted_and_corrupted_pdf_rejections(self):
+        mock_encrypted = Mock()
+        mock_encrypted.is_encrypted = True
+        with patch.object(self.backend, "PdfReader", return_value=mock_encrypted):
+            response = self.upload("secret.pdf", b"%PDF-1.4 encrypted data")
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Encrypted PDFs are not supported", response.json()["error"]["message"])
+
+        mock_empty_pdf = Mock()
+        mock_empty_pdf.is_encrypted = False
+        mock_page = Mock()
+        mock_page.extract_text.return_value = "   "
+        mock_empty_pdf.pages = [mock_page]
+        with patch.object(self.backend, "PdfReader", return_value=mock_empty_pdf):
+            response = self.upload("blank.pdf", b"%PDF-1.4 empty visual data")
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("no extractable text", response.json()["error"]["message"])
+
+    def test_document_parsing_timeout_enforced(self):
+        import time
+
+        def slow_parse(*args, **kwargs):
+            time.sleep(0.05)
+            return []
+
+        limited = replace(self.backend.settings, parsing_timeout_seconds=0.01)
+        with patch.object(self.backend, "settings", limited), patch.object(self.backend, "_parse", side_effect=slow_parse):
+            response = self.upload("timeout.txt", b"Long text content")
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("exceeded processing time limit", response.json()["error"]["message"])
+        self.assertEqual(list((self.data_path / "uploads").iterdir()), [])
+
+    def test_filename_sanitization_and_traversal_prevention(self):
+        response = self.upload("../../../sneaky.txt", b"Safe payload content")
+        self.assertEqual(response.status_code, 201)
+        files = list((self.data_path / "uploads").iterdir())
+        self.assertEqual(len(files), 1)
+        self.assertTrue(files[0].resolve().is_relative_to((self.data_path / "uploads").resolve()))
+
+    def test_orphan_and_dangling_uploading_cleanup(self):
+        uploads_dir = self.data_path / "uploads"
+        uploads_dir.mkdir(parents=True, exist_ok=True)
+        stale_uploading = uploads_dir / "temp_id.pdf.uploading"
+        stale_uploading.write_bytes(b"unfinished upload")
+        stale_deleting = uploads_dir / "temp_id2.pdf.deleting"
+        stale_deleting.write_bytes(b"unfinished delete")
+
+        past_mtime = (datetime.now(timezone.utc) - timedelta(minutes=10)).timestamp()
+        os.utime(stale_uploading, (past_mtime, past_mtime))
+        os.utime(stale_deleting, (past_mtime, past_mtime))
+
+        self.backend._cleanup_expired_uploads(datetime.now(timezone.utc))
+        self.assertFalse(stale_uploading.exists())
+        self.assertFalse(stale_deleting.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

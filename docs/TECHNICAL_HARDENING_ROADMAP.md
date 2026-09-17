@@ -340,12 +340,12 @@ Acceptance criteria:
 
 Suggested branch: `security/04-document-processing`
 
-- [ ] Add CPU/time limits around PDF parsing and embedding.
-- [ ] Reject encrypted, malformed, or pathological PDFs safely.
-- [ ] Consider a separate worker/process for untrusted parsing.
-- [ ] Ensure temporary files cannot escape configured directories.
-- [ ] Verify cleanup after parsing failure and process interruption.
-- [ ] Add adversarial PDF fixtures with safe synthetic content.
+- [x] Add CPU/time limits around PDF parsing and embedding.
+- [x] Reject encrypted, malformed, or pathological PDFs safely.
+- [x] Consider a separate worker/process for untrusted parsing.
+- [x] Ensure temporary files cannot escape configured directories.
+- [x] Verify cleanup after parsing failure and process interruption.
+- [x] Add adversarial PDF fixtures with safe synthetic content.
 
 Acceptance criteria:
 
@@ -498,3 +498,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 4.3: Add Ruff formatting and linting, incremental Mypy type-checking, backend test coverage, and frontend component tests. | Enforce static code quality, prevent runtime regressions, and ensure measurable test coverage. | Proceed to Phase 4.4 selective CI. |
 | 2026-09-17 | Complete Phase 4.4: Path-aware main builds, daily scheduled full runs, and Coolify watch path documentation. | Prevent redundant image rebuilds and deployment churn across monorepo applications. | Proceed to Phase 5 runtime security and observability. |
 | 2026-09-17 | Complete Phase 5.1: Enforce standard CSP, 2-year HSTS preload, frame-ancestors, and automated security header checks. | Protect clients from XSS, clickjacking, MIME-sniffing, and protocol downgrades across all Next.js apps. | Proceed to Phase 5.2 document processing. |
+| 2026-09-17 | Complete Phase 5.2: Timeout/character guards, encrypted/empty PDF rejections, directory containment, and orphan cleanup. | Prevent resource exhaustion, DoS, and orphaned files during untrusted document ingestion. | Proceed to Phase 5.3 OpenTelemetry. |

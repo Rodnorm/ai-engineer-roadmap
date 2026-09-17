@@ -49,6 +49,7 @@ class Settings:
     cors_origins: tuple[str, ...]
     provider_timeout_seconds: float
     provider_max_retries: int
+    parsing_timeout_seconds: float
     max_concurrent_generations: int
     requests_per_minute: int
     daily_generation_limit: int
@@ -106,6 +107,7 @@ def load_settings() -> Settings:
         cors_origins=origins,
         provider_timeout_seconds=_float_from_env("PROVIDER_TIMEOUT_SECONDS", 30.0, 1.0),
         provider_max_retries=_int_from_env("PROVIDER_MAX_RETRIES", 1, minimum=0),
+        parsing_timeout_seconds=_float_from_env("PARSING_TIMEOUT_SECONDS", 15.0, 1.0),
         max_concurrent_generations=_int_from_env("MAX_CONCURRENT_GENERATIONS", 2),
         requests_per_minute=_int_from_env("REQUESTS_PER_MINUTE", 10),
         daily_generation_limit=_int_from_env("DAILY_GENERATION_LIMIT", 200),
