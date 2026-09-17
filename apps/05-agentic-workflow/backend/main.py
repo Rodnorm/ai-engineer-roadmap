@@ -26,6 +26,7 @@ from agent import (
 from models import AgentSessionResponse, ApproveTaskRequest, PendingApproval, RunTaskRequest
 from client_ip import parse_trusted_proxy_cidrs, resolve_client_ip
 from rate_limit import PersistentRateLimiter
+from telemetry import metrics_collector
 
 load_dotenv()
 
@@ -195,6 +196,7 @@ async def run_agent_endpoint(req: RunTaskRequest, request: Request):
                 client=client,
                 deployment=DEPLOYMENT,
                 generation_enabled=GENERATION_ENABLED,
+                request_id=request_id,
             )
 
             pending = None
@@ -303,3 +305,11 @@ async def get_session_endpoint(
         pending_approval=pending,
         request_id=request_id,
     )
+
+
+@app.get("/api/metrics")
+@app.get("/metrics")
+def get_metrics():
+    """Operational metrics: request count, error rate, p50/p95 latency, token totals."""
+    return metrics_collector.get_summary()
+

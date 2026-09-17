@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from openai import OpenAI
 
 from models import AgentStep
+from telemetry import format_traceparent, trace_ai_call
 from tools import TOOLS_METADATA, TOOLS_SCHEMA
 
 log = logging.getLogger("agentic-workflow")
@@ -221,6 +222,7 @@ def run_agent_loop(
     deployment: str = "",
     generation_enabled: bool = True,
     max_iterations: int = 4,
+    request_id: str = "",
 ) -> Tuple[AgentSessionState, Optional[str]]:
     """Executes the agent reasoning loop until completion or until pausing for human approval."""
     issued_token: Optional[str] = None
@@ -242,14 +244,30 @@ def run_agent_loop(
 
         if use_real_llm:
             try:
-                resp = client.chat.completions.create(
+                corr_id = request_id or session.session_id
+                traceparent = format_traceparent(corr_id)
+                with trace_ai_call(
+                    operation_name="chat.completions",
+                    system="azure_openai",
                     model=deployment,
-                    messages=session.messages,
-                    tools=TOOLS_SCHEMA,
-                    tool_choice="auto",
-                    max_tokens=800,
-                    temperature=0.2,
-                )
+                    request_id=corr_id,
+                ) as span:
+                    resp = client.chat.completions.create(
+                        model=deployment,
+                        messages=session.messages,
+                        tools=TOOLS_SCHEMA,
+                        tool_choice="auto",
+                        max_tokens=800,
+                        temperature=0.2,
+                        extra_headers={
+                            "X-Request-ID": corr_id,
+                            "traceparent": traceparent,
+                        },
+                    )
+                    if hasattr(resp, "usage") and resp.usage:
+                        span["prompt_tokens"] = getattr(resp.usage, "prompt_tokens", 0) or 0
+                        span["completion_tokens"] = getattr(resp.usage, "completion_tokens", 0) or 0
+
                 msg = resp.choices[0].message
                 if msg.content:
                     thought = msg.content
