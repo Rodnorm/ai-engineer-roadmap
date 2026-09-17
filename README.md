@@ -10,17 +10,54 @@ This repository documents the transition from senior frontend engineering toward
 
 | App | Focus & Capabilities | Technologies | Status |
 | --- | --- | --- | --- |
-| [00 — Portfolio](./apps/00-portfolio) | Central showcase, interactive catalog, visual roadmap timeline & case studies | Next.js 14, Tailwind CSS, TypeScript | Live |
+| [00 — Portfolio](./apps/00-portfolio) | Central showcase, interactive catalog, visual roadmap timeline & AI safety scorecard | Next.js 14, Tailwind CSS, TypeScript | Live |
 | [01 — Smart Inspector](./apps/01-smart-inspector) | Multi-modal vision analysis, image tags, captions, object detection, and OCR transcription | Next.js 14, FastAPI, Azure OpenAI, Pillow | Live |
 | [02 — Support Bot](./apps/02-support-bot) | Healthcare billing assistant with Azure AI Language NLP, PII data masking, and grounded retrieval | Next.js 16, FastAPI, Azure AI Language, Azure AI Agents | Live |
 | [03 — Prompt Forge](./apps/03-prompt-forge) | Structured content generation workbench with Azure Content Safety filtering and SSE streaming | Next.js 16, FastAPI, Azure OpenAI, Azure Content Safety | Live |
-| [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and RAGAS evaluation tooling | Next.js 15, FastAPI, ChromaDB, Azure OpenAI | In development |
-| [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, state machine persistence, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Ready |
+| [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and evaluation tooling | Next.js 15, FastAPI, SQLite Vector, Azure OpenAI | Ready |
+| [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, in-memory stateful session lifecycle, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Ready |
 | [06 — Agent Workspace](./apps/06-agent-workspace) | Streaming agent workspace with Foundry, typed MCP tools, approval gates, and durable conversations | Next.js 15, Azure AI Foundry, MCP, Cosmos DB | Ready |
 
 ---
 
 ## 📐 Architecture & Monorepo Layout
+
+```mermaid
+flowchart TD
+    subgraph Client["Client Tier"]
+        Browser["Modern Browser / Web Client"]
+    end
+
+    subgraph Edge["Frontend & Edge Proxy Tier (Next.js)"]
+        HSTS["HSTS Preload & Security Headers"]
+        ReqID["X-Request-ID Stamping"]
+        Catalog["Catalog & Interactive Demos"]
+    end
+
+    subgraph Backend["API & Guardrail Tier (FastAPI)"]
+        RateLimit["Persistent SQLite Rate Limiter & Client IP"]
+        Sanitizer["Payload Validation & PII Sanitizer"]
+        Otel["OpenTelemetry GenAI Tracing & Metrics"]
+        Safety["Human-in-the-Loop Approval Gates"]
+    end
+
+    subgraph AI["External AI & Tool Tier"]
+        AzureAI["Azure OpenAI (gpt-4o-mini, text-embedding-3-small)"]
+        MCP["Model Context Protocol (MCP) Tool Servers"]
+        VectorDB["SQLite Vector Embeddings Store"]
+    end
+
+    Browser -->|HTTPS / W3C Traceparent| HSTS
+    HSTS --> ReqID
+    ReqID --> Catalog
+    Catalog -->|Internal Proxy / Rewrite| RateLimit
+    RateLimit --> Sanitizer
+    Sanitizer --> Otel
+    Otel --> Safety
+    Safety -->|Filtered Prompts| AzureAI
+    Safety -->|Authorized Calls| MCP
+    Otel --> VectorDB
+```
 
 ```text
 .
@@ -33,10 +70,13 @@ This repository documents the transition from senior frontend engineering toward
 │   ├── 05-agentic-workflow/   # Autonomous agent loop & HITL approval
 │   └── 06-agent-workspace/    # Foundry agent, MCP tools & durable chat
 ├── catalog/                   # Monorepo catalog registry (apps.json, schema.json)
+├── contracts/                 # Shared OpenAPI specs and TypeScript contracts
+├── evals/                     # Cross-app synthetic AI evaluation suite & regression runner
 ├── templates/                 # Reusable starter application template (templates/ai-app)
 ├── docs/                      # Architectural, security, testing, and deployment standards
 │   ├── security/              # Threat model, public release checklist
-│   └── standards/             # Backend, Frontend, Security, Testing, Deployment, Selective Builds
+│   ├── standards/             # Observability, quality gates, security headers, watch paths
+│   └── system-cards/          # Formal AI System Cards and AIBOM across Apps 01-06
 ├── .github/workflows/         # Path-aware CI, Gitleaks, CodeQL, Dependency Review
 ├── SECURITY.md                # Vulnerability disclosure policy
 ├── CONTRIBUTING.md            # Git branching and conventional commit guidelines
@@ -47,10 +87,10 @@ This repository documents the transition from senior frontend engineering toward
 
 ## 🔒 Security & Financial Abuse Controls
 
-Every public demo backend enforces a 4-layer defense model to guarantee data privacy and cloud cost protection:
+Every public demo backend enforces multi-layer defense controls to protect user data and prevent financial exhaustion:
 
 1. **Input Size Validation:** Strict character, byte, and image dimension limits (`MAX_IMAGE_PIXELS`, Pydantic min/max bounds).
-2. **Pre-flight Rate Limiting:** `InMemoryRateLimiter` enforces minute-level, per-client IP daily, and global daily limits **before** calling Azure AI services.
+2. **Pre-flight Rate Limiting:** Persistent SQLite token buckets enforce minute-level, per-client IP daily, and global daily limits **before** calling Azure AI services.
 3. **Concurrency Semaphore:** `MAX_CONCURRENT_REQUESTS=2` via `asyncio.Semaphore` restricts parallel expensive cloud API calls.
 4. **Master Kill Switch:** `GENERATION_ENABLED=true/false` flag allowing immediate service maintenance shutdown.
 5. **PII & Privacy Protections:** EXIF camera metadata stripping, raw entity PII masking (`[REDACTED_SSN]`), zero input prompt logging, and Next.js security headers.
@@ -62,7 +102,12 @@ Every public demo backend enforces a 4-layer defense model to guarantee data pri
 > [!IMPORTANT]  
 > **Demo Quotas:** Public demo deployments operate under daily request quotas and concurrency limits. If a quota limit is reached, backends safely return HTTP `429 Too Many Requests` or `503 Service Unavailable` with sanitized retry instructions.
 >
-> **Privacy Notice:** Demos do NOT persist user prompt Briefs or uploaded images on backend disk storage. Do NOT submit real medical, financial, or sensitive personal identification numbers.
+> **Privacy Notice:**
+> - **Apps 01, 02, 03, 05:** Process requests in-memory without persistent disk retention of prompt texts, user messages, or uploaded images.
+> - **App 04 (Pocket RAG):** Uploaded user documents and vector embeddings are stored in a quarantined local directory with an automatic 30-minute expiration TTL and background garbage collection.
+> - **App 06 (Agent Workspace):** Workspace sessions and conversations are strictly isolated per tenant.
+> - **Operational Telemetry:** OpenTelemetry spans and metrics record latency, token counts, and cost, while **strictly omitting** prompt content, document bodies, and user PII.
+> - **Sensitive Data Warning:** Do NOT submit real medical, financial, or sensitive personal identification numbers.
 
 ---
 

@@ -437,16 +437,16 @@ Acceptance criteria:
 
 Suggested branch: `docs/align-repository-claims`
 
-- [ ] Remove the App 04 ChromaDB claim unless ChromaDB is reintroduced.
-- [ ] Describe App 05 sessions as in-memory until durable persistence exists.
-- [ ] Correct the privacy notice for Apps 04 and 06.
-- [ ] Replace absolute guarantees with verifiable statements.
-- [ ] Update Live, Ready, and In Development status values.
-- [ ] Update App 00 catalog content from the same source of truth.
-- [ ] Add small architecture and data-flow diagrams.
-- [ ] Add repository description, homepage, topics, and social preview.
-- [ ] Prepare and complete the public-release checklist.
-- [ ] Review the personal security contact before making the repository public.
+- [x] Remove the App 04 ChromaDB claim unless ChromaDB is reintroduced.
+- [x] Describe App 05 sessions as in-memory until durable persistence exists.
+- [x] Correct the privacy notice for Apps 04 and 06.
+- [x] Replace absolute guarantees with verifiable statements.
+- [x] Update Live, Ready, and In Development status values.
+- [x] Update App 00 catalog content from the same source of truth.
+- [x] Add small architecture and data-flow diagrams.
+- [x] Add repository description, homepage, topics, and social preview.
+- [x] Prepare and complete the public-release checklist.
+- [x] Review the personal security contact before making the repository public.
 
 Acceptance criteria:
 
@@ -503,3 +503,4 @@ Acceptance criteria:
 | 2026-09-17 | Complete Phase 6.1: Versioned evaluation corpus, regression runner, and CI quality gates. | Prevent AI regressions in prompt injection, PII masking, RAG groundedness, and agent authorization. | Proceed to Phase 6.2 AI scorecard. |
 | 2026-09-17 | Complete Phase 6.2: AI Reliability & Safety Scorecard in App 00 Portfolio with verifiable links and commit hashes. | Surface reproducible empirical engineering evidence and distinguish measured results from marketing claims. | Proceed to Phase 6.3 AI system cards. |
 | 2026-09-17 | Complete Phase 6.3: Standardized AI System Cards and AIBOM across Applications 01 through 06. | Document models, data governance, safety boundaries, HITL gates, and limitations for review. | Proceed to Phase 7 documentation alignment. |
+| 2026-09-17 | Complete Phase 7: Align repository claims, Mermaid architecture data-flow, accurate privacy disclosures, and public release audit. | Guarantee documentation, portfolio, and runtime behavior fully agree with zero unsupported claims. | Roadmap execution completed. |
