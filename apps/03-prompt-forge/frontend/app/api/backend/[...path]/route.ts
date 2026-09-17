@@ -22,14 +22,15 @@ async function proxy(request: Request, context: RouteContext) {
   headers.delete("content-length");
 
   const method = request.method.toUpperCase();
-  const body = method === "GET" || method === "HEAD" ? undefined : request.body;
+  const body = method === "GET" || method === "HEAD"
+    ? undefined
+    : await request.arrayBuffer();
 
   const response = await fetch(targetUrl, {
     method,
     headers,
     body,
     redirect: "manual",
-    ...(body ? { duplex: "half" as const } : {}),
   });
 
   const responseHeaders = new Headers(response.headers);
