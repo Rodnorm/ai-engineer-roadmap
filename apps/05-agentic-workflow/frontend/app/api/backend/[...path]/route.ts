@@ -5,41 +5,42 @@ function getBackendBaseUrl(): string {
   return backendUrl.replace(/\/+$/, "");
 }
 
-async function forwardRequest(
-  request: NextRequest,
-  context: { params: Promise<{ path?: string[] }> }
-) {
+type RouteContext = {
+  params: Promise<{ path?: string[] }>;
+};
+
+async function forwardRequest(request: NextRequest, context: RouteContext) {
   const { path = [] } = await context.params;
   const backendBase = getBackendBaseUrl();
   const subPath = path.join("/");
   const search = request.nextUrl.search;
   const targetUrl = `${backendBase}/${subPath}${search}`;
 
-  const headers = new Headers();
-  request.headers.forEach((value, key) => {
-    const lowerKey = key.toLowerCase();
-    if (
-      lowerKey !== "host" &&
-      lowerKey !== "connection" &&
-      lowerKey !== "content-length"
-    ) {
-      headers.set(key, value);
-    }
-  });
+  const headers = new Headers(request.headers);
+  headers.delete("host");
+  headers.delete("connection");
+  headers.delete("content-length");
+  headers.delete("accept-encoding");
 
+  const method = request.method.toUpperCase();
   const body =
-    request.method !== "GET" && request.method !== "HEAD"
-      ? await request.text()
-      : undefined;
+    method === "GET" || method === "HEAD"
+      ? undefined
+      : await request.arrayBuffer();
 
   try {
     const response = await fetch(targetUrl, {
-      method: request.method,
+      method,
       headers,
       body,
+      redirect: "manual",
     });
 
     const responseHeaders = new Headers(response.headers);
+    responseHeaders.delete("content-encoding");
+    responseHeaders.delete("content-length");
+    responseHeaders.delete("transfer-encoding");
+    responseHeaders.delete("connection");
 
     const responseData = await response.arrayBuffer();
 
@@ -62,16 +63,12 @@ async function forwardRequest(
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ path?: string[] }> }
-) {
-  return forwardRequest(request, context);
-}
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-export async function POST(
-  request: NextRequest,
-  context: { params: Promise<{ path?: string[] }> }
-) {
-  return forwardRequest(request, context);
-}
+export const GET = forwardRequest;
+export const POST = forwardRequest;
+export const PUT = forwardRequest;
+export const PATCH = forwardRequest;
+export const DELETE = forwardRequest;
+export const OPTIONS = forwardRequest;
