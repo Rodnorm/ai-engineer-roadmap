@@ -2,6 +2,26 @@ version: 2
 
 updates:
   - package-ecosystem: npm
+    directory: /apps/00-portfolio/frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      app-00-frontend:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
     directory: /apps/01-smart-inspector/frontend
     schedule:
       interval: weekly
@@ -70,6 +90,66 @@ updates:
       timezone: Europe/Berlin
     groups:
       frontend-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /apps/05-agentic-workflow/frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      app-05-frontend:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /apps/06-agent-workspace/frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      app-06-frontend:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /apps/06-agent-workspace/mcp-server
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      app-06-mcp-server:
         patterns:
           - "*"
         update-types:
@@ -150,6 +230,26 @@ updates:
       timezone: Europe/Berlin
     groups:
       backend-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pip
+    directory: /apps/05-agentic-workflow/backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      app-05-backend:
         patterns:
           - "*"
         update-types:
