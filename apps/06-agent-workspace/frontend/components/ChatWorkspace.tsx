@@ -254,6 +254,15 @@ export function ChatWorkspace() {
     welcomeT("suggestion1"),
     welcomeT("suggestion2"),
     welcomeT("suggestion3"),
+    welcomeT("suggestion4"),
+    welcomeT("suggestion5"),
+    welcomeT("suggestion6"),
+    welcomeT("suggestion7"),
+    welcomeT("suggestion8"),
+    welcomeT("suggestion9"),
+    welcomeT("suggestion10"),
+    welcomeT("suggestion11"),
+    welcomeT("suggestion12"),
   ];
 
   const refreshList = useCallback(async () => {
@@ -477,7 +486,7 @@ export function ChatWorkspace() {
                     disabled={busy}
                     onClick={() => void send(suggestion)}
                   >
-                    <span>0{index + 1}</span>
+                    <span>{index < 9 ? `0${index + 1}` : index + 1}</span>
                     {suggestion}
                     <ChevronRight />
                   </button>

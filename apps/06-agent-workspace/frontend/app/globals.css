@@ -338,6 +338,11 @@ button:disabled { cursor: not-allowed; }
     background: rgba(0,0,0,.58);
     backdrop-filter: blur(3px);
   }
+  .suggestions { grid-template-columns: repeat(2, 1fr); }
+  .suggestions button { min-height: 88px; }
+}
+
+@media (max-width: 639px) {
   .suggestions { grid-template-columns: 1fr; }
   .suggestions button { min-height: 74px; }
 }

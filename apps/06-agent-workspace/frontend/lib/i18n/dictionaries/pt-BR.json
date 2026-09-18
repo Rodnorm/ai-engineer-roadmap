@@ -27,7 +27,16 @@
     "description": "Seu assistente focado em workspace pode consultar notas e tarefas através de um servidor MCP local. Ações de gravação sempre pausam para sua aprovação explícita.",
     "suggestion1": "Quais tarefas ainda estão em aberto?",
     "suggestion2": "Pesquise as notas em busca de dados de deploy",
-    "suggestion3": "Crie uma tarefa para validar os health checks do Coolify"
+    "suggestion3": "Crie uma tarefa para validar os health checks do Coolify",
+    "suggestion4": "Quais tarefas já foram concluídas no workspace?",
+    "suggestion5": "Procure notas sobre diretrizes de segurança e guardrails",
+    "suggestion6": "Crie uma tarefa para configurar monitoramento de logs no servidor",
+    "suggestion7": "Quais tecnologias e ferramentas estão descritas no escopo do app?",
+    "suggestion8": "Liste todas as notas com a tag architecture",
+    "suggestion9": "Crie uma tarefa para revisar a documentação dos endpoints MCP",
+    "suggestion10": "Pesquise orientações sobre subdomínios HTTPS e Hetzner",
+    "suggestion11": "Como funciona a confirmação obrigatória para ações de escrita?",
+    "suggestion12": "Crie uma tarefa para testar o fluxo de aprovação de ferramentas"
   },
   "chat": {
     "you": "Você",

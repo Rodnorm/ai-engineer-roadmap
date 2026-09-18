@@ -27,7 +27,16 @@
     "description": "Ihr fokussierter Workspace-Assistent kann Notizen und Aufgaben über einen lokalen MCP-Server analysieren. Schreibaktionen pausieren stets für Ihre explizite Freigabe.",
     "suggestion1": "Welche Aufgaben sind aktuell noch offen?",
     "suggestion2": "Durchsuche die Notizen nach Bereitstellungsinformationen",
-    "suggestion3": "Erstelle eine Aufgabe zur Überprüfung der Coolify-Health-Checks"
+    "suggestion3": "Erstelle eine Aufgabe zur Überprüfung der Coolify-Health-Checks",
+    "suggestion4": "Welche Aufgaben wurden im Workspace bereits abgeschlossen?",
+    "suggestion5": "Suche in den Notizen nach Sicherheitsrichtlinien und Guardrails",
+    "suggestion6": "Erstelle eine Aufgabe zur Konfiguration der Protokollüberwachung auf dem Server",
+    "suggestion7": "Welche Technologien und Tools sind im App-Umfang beschrieben?",
+    "suggestion8": "Liste alle Notizen mit dem Tag architecture auf",
+    "suggestion9": "Erstelle eine Aufgabe zur Überprüfung der MCP-Endpunktdokumentation",
+    "suggestion10": "Suche nach Richtlinien zu HTTPS-Subdomains und Hetzner",
+    "suggestion11": "Wie funktioniert die erforderliche Bestätigung für Schreibaktionen?",
+    "suggestion12": "Erstelle eine Aufgabe zum Testen des Tool-Genehmigungsworkflows"
   },
   "chat": {
     "you": "Sie",

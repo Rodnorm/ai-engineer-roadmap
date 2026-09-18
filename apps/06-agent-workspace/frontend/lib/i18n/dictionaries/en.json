@@ -27,7 +27,16 @@
     "description": "Your focused assistant can inspect notes and tasks through a local MCP server. Write actions always pause for your explicit approval.",
     "suggestion1": "Which tasks are still open?",
     "suggestion2": "Search the notes for deployment information",
-    "suggestion3": "Create a task to verify the Coolify health checks"
+    "suggestion3": "Create a task to verify the Coolify health checks",
+    "suggestion4": "Which tasks have already been completed in the workspace?",
+    "suggestion5": "Search notes for safety guidelines and guardrails",
+    "suggestion6": "Create a task to configure log monitoring on the server",
+    "suggestion7": "Which technologies and tools are described in the app scope?",
+    "suggestion8": "List all notes tagged with architecture",
+    "suggestion9": "Create a task to review the MCP endpoint documentation",
+    "suggestion10": "Search for guidelines on HTTPS subdomains and Hetzner",
+    "suggestion11": "How does the required confirmation for write actions work?",
+    "suggestion12": "Create a task to test the tool approval workflow"
   },
   "chat": {
     "you": "You",
