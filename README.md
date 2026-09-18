@@ -15,8 +15,8 @@ This repository documents the transition from senior frontend engineering toward
 | [02 — Support Bot](./apps/02-support-bot) | Healthcare billing assistant with Azure AI Language NLP, PII data masking, and grounded retrieval | Next.js 16, FastAPI, Azure AI Language, Azure AI Agents | Live |
 | [03 — Prompt Forge](./apps/03-prompt-forge) | Structured content generation workbench with Azure Content Safety filtering and SSE streaming | Next.js 16, FastAPI, Azure OpenAI, Azure Content Safety | Live |
 | [04 — pocketRag](./apps/04-pocket-rag) | Local-first personal RAG with persistent documents, multilingual retrieval, citations, and evaluation tooling | Next.js 15, FastAPI, SQLite Vector, Azure OpenAI | Ready |
-| [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, in-memory stateful session lifecycle, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Ready |
-| [06 — Agent Workspace](./apps/06-agent-workspace) | Streaming agent workspace with Foundry, typed MCP tools, approval gates, and durable conversations | Next.js 15, Azure AI Foundry, MCP, Cosmos DB | Ready |
+| [05 — Agentic Workflow](./apps/05-agentic-workflow) | Autonomous agent execution loop with multi-tool calling, in-memory stateful session lifecycle, and Human-in-the-Loop authorization | Next.js 15, FastAPI, Azure OpenAI, ReAct Loop | Live |
+| [06 — Agent Workspace](./apps/06-agent-workspace) | Streaming agent workspace with Foundry, typed MCP tools, approval gates, and durable conversations | Next.js 15, Azure AI Foundry, MCP, Cosmos DB | Live |
 
 ---
 

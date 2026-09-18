@@ -7,7 +7,7 @@ App 00 serves as the central showcase and global catalog for the `ai-engineer-ro
 ## 🏛️ Architectural Principles
 
 1. **Isolation:** App 00 displays and organizes project metadata, but does NOT execute other apps' backends or hold their Azure credentials.
-2. **Static & Fast:** Pure Next.js static generation reading directly from `catalog/apps.json` and `apps/00-portfolio/content/`.
+2. **Static & Fast:** Pure Next.js static generation reading directly from `catalog/apps.json` and `apps/00-portfolio/frontend/content/`.
 3. **No Iframes:** Links direct users to external public demo deployments (`liveUrl`).
 
 ---
@@ -41,7 +41,7 @@ App 00 supports multi-language navigation with static page generation:
 - The HTML `lang` attribute dynamically synchronizes via `<HtmlLangSync />`.
 
 ### Case Study Fallback Strategy
-- Localized case studies are stored in `apps/00-portfolio/content/<slug>.<locale>.md` (e.g., `smart-inspector.pt.md`).
+- Localized case studies are stored in `apps/00-portfolio/frontend/content/<slug>.<locale>.md` (e.g., `smart-inspector.pt.md`).
 - If a localized markdown file is absent, the system falls back explicitly to the base English version (`<slug>.md`) and renders an informative fallback notice.
 
 ---
