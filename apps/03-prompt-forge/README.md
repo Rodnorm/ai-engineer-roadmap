@@ -21,8 +21,8 @@ The Next.js frontend is connected to a FastAPI backend with Azure OpenAI structu
 
 ```text
 03-prompt-forge/
-├── backend/      # API scaffold; integration pending
-├── frontend/     # Complete interactive frontend preview
+├── backend/      # FastAPI service with Azure OpenAI & Content Safety
+├── frontend/     # Interactive Next.js content studio
 ├── README.md
 └── compose.coolify.yml
 ```
