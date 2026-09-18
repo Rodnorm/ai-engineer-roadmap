@@ -84,22 +84,22 @@ function Sidebar({
         aria-label={sidebarT("conversations")}
       >
         <div className="brand-row">
+          <button
+            type="button"
+            className="control-button size-9 p-0 shrink-0 cursor-pointer"
+            onClick={onClose}
+            aria-label={controlsT("toggleSidebar")}
+            title={controlsT("toggleSidebar")}
+          >
+            <Menu className="size-4 text-muted hover:text-text transition-colors" />
+          </button>
           <div className="brand-mark">
             <Sparkles aria-hidden="true" />
           </div>
-          <div>
+          <div className="min-w-0">
             <strong>{appT("title")}</strong>
             <span>Workspace · MCP</span>
           </div>
-          {/* Close button inside sidebar on mobile */}
-          <button
-            type="button"
-            className="control-button size-8 p-0 ml-auto lg:hidden cursor-pointer"
-            onClick={onClose}
-            aria-label={controlsT("close")}
-          >
-            <X className="size-4" />
-          </button>
         </div>
 
         <button type="button" className="new-chat-button" onClick={onCreate}>
@@ -241,6 +241,15 @@ export function ChatWorkspace() {
       setSidebarOpen(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sidebarOpen]);
 
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -425,16 +434,18 @@ export function ChatWorkspace() {
       <section className="chat-panel">
         <header className="topbar">
           <div className="flex items-center gap-3">
-            {/* Unified Hamburger Menu Button for both desktop and mobile */}
-            <button
-              type="button"
-              className="control-button size-9 p-0 shrink-0 cursor-pointer"
-              onClick={() => setSidebarOpen((curr) => !curr)}
-              aria-label={controlsT("toggleSidebar")}
-              title={controlsT("toggleSidebar")}
-            >
-              <Menu className="size-4 text-muted hover:text-text transition-colors" />
-            </button>
+            {/* Hamburger button visible in topbar whenever the sidebar is closed */}
+            {!sidebarOpen && (
+              <button
+                type="button"
+                className="control-button size-9 p-0 shrink-0 cursor-pointer"
+                onClick={() => setSidebarOpen(true)}
+                aria-label={controlsT("toggleSidebar")}
+                title={controlsT("toggleSidebar")}
+              >
+                <Menu className="size-4 text-muted hover:text-text transition-colors" />
+              </button>
+            )}
             <div>
               <p className="eyebrow">{appT("eyebrow")}</p>
               <h1>{active?.title ?? appT("title")}</h1>

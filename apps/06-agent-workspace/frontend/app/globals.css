@@ -149,7 +149,7 @@ button:disabled { cursor: not-allowed; }
 .brand-row strong, .brand-row span { display: block; }
 .brand-row strong { font-size: 14px; letter-spacing: -.01em; }
 .brand-row span { margin-top: 2px; color: var(--theme-muted); font-size: 11px; }
-.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; color: white; background: linear-gradient(145deg, var(--theme-accent), #4431a8); box-shadow: 0 8px 26px rgba(124, 92, 255, .25); }
+.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 38px; border-radius: 13px; color: white; background: linear-gradient(145deg, var(--theme-accent), #4431a8); box-shadow: 0 8px 26px rgba(124, 92, 255, .25); }
 .brand-mark svg { width: 18px; }
 
 .new-chat-button {
