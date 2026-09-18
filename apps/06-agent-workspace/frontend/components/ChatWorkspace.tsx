@@ -52,6 +52,7 @@ function Sidebar({
   conversations,
   activeId,
   open,
+  provider = "offline",
   onClose,
   onCreate,
   onSelect,
@@ -60,6 +61,7 @@ function Sidebar({
   conversations: Conversation[];
   activeId?: string;
   open: boolean;
+  provider?: "offline" | "foundry";
   onClose: () => void;
   onCreate: () => void;
   onSelect: (id: string) => void;
@@ -143,7 +145,7 @@ function Sidebar({
           <span className="status-dot" />
           <div>
             <strong>{appT("onlineStatus")}</strong>
-            <small>{appT("offlineStatus")}</small>
+            <small>{provider === "foundry" ? (appT("foundryStatus") || "Azure Foundry conectado") : appT("offlineStatus")}</small>
           </div>
         </div>
       </aside>
@@ -215,7 +217,11 @@ function ApprovalCard({
   );
 }
 
-export function ChatWorkspace() {
+export function ChatWorkspace({
+  provider = "offline",
+}: {
+  provider?: "offline" | "foundry";
+} = {}) {
   const appT = useT("app");
   const controlsT = useT("controls");
   const welcomeT = useT("welcome");
@@ -460,6 +466,7 @@ export function ChatWorkspace() {
           conversations={conversations}
           activeId={active?.id}
           open={sidebarOpen}
+          provider={provider}
           onClose={() => setSidebarOpen(false)}
           onCreate={() => void createConversation()}
           onSelect={(id) => void selectConversation(id)}

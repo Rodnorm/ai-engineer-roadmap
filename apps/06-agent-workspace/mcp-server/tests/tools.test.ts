@@ -10,7 +10,7 @@ function store(): WorkspaceStore {
       { id: "1", title: "Open item", description: "", status: "open", createdAt: "2026-01-01T00:00:00Z" },
       { id: "2", title: "Done item", description: "", status: "done", createdAt: "2026-01-01T00:00:00Z" },
     ],
-    notes: [{ id: "1", title: "Coolify", content: "Deploy with Docker", tags: ["hosting"] }],
+    notes: [{ id: "1", title: "Onboarding", content: "Roteiro de integracao de novos colaboradores", tags: ["rh", "onboarding"] }],
   };
   return new WorkspaceStore(undefined, data);
 }
@@ -21,7 +21,7 @@ test("list_tasks filters by status", async () => {
 });
 
 test("search_notes matches note content", async () => {
-  const result = await callWorkspaceTool("search_notes", { query: "docker" }, store()) as { count: number };
+  const result = await callWorkspaceTool("search_notes", { query: "integracao" }, store()) as { count: number };
   assert.equal(result.count, 1);
 });
 
@@ -32,4 +32,20 @@ test("create_task requires explicit confirmation", async () => {
 test("create_task creates a confirmed task", async () => {
   const result = await callWorkspaceTool("create_task", { title: "Ship App 06", confirmed: true }, store()) as { created: boolean };
   assert.equal(result.created, true);
+});
+
+test("update_task requires explicit confirmation", async () => {
+  await assert.rejects(() => callWorkspaceTool("update_task", { id: "1", status: "done" }, store()));
+});
+
+test("update_task updates a confirmed task", async () => {
+  const currentStore = store();
+  const result = await callWorkspaceTool(
+    "update_task",
+    { id: "1", status: "done", title: "Updated open item", confirmed: true },
+    currentStore,
+  ) as { updated: boolean; task: { id: string; status: string; title: string } };
+  assert.equal(result.updated, true);
+  assert.equal(result.task.status, "done");
+  assert.equal(result.task.title, "Updated open item");
 });

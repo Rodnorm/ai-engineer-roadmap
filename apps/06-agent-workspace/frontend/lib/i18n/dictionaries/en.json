@@ -3,7 +3,8 @@
     "title": "Agent Workspace",
     "eyebrow": "Foundry Agent + MCP",
     "onlineStatus": "Workspace online",
-    "offlineStatus": "Offline-ready agent",
+    "offlineStatus": "Agent ready offline",
+    "foundryStatus": "Azure Foundry connected",
     "newConversation": "New conversation",
     "deleteConfirm": "Do you really want to delete this conversation?"
   },
@@ -25,18 +26,18 @@
     "eyebrow": "Workspace intelligence",
     "title": "Ask. Inspect. Act.",
     "description": "Your focused assistant can inspect notes and tasks through a local MCP server. Write actions always pause for your explicit approval.",
-    "suggestion1": "Which tasks are still open?",
-    "suggestion2": "Search the notes for deployment information",
-    "suggestion3": "Create a task to verify the Coolify health checks",
+    "suggestion1": "Which HR tasks are still open?",
+    "suggestion2": "Search notes for the benefits and health insurance policy",
+    "suggestion3": "Create a task to organize onboarding for the new hires",
     "suggestion4": "Which tasks have already been completed in the workspace?",
-    "suggestion5": "Search notes for safety guidelines and guardrails",
-    "suggestion6": "Create a task to configure log monitoring on the server",
-    "suggestion7": "Which technologies and tools are described in the app scope?",
-    "suggestion8": "List all notes tagged with architecture",
-    "suggestion9": "Create a task to review the MCP endpoint documentation",
-    "suggestion10": "Search for guidelines on HTTPS subdomains and Hetzner",
-    "suggestion11": "How does the required confirmation for write actions work?",
-    "suggestion12": "Create a task to test the tool approval workflow"
+    "suggestion5": "Search notes for employee data protection and privacy guidelines",
+    "suggestion6": "Create a task to distribute 360 performance review forms",
+    "suggestion7": "How does the 30-60-90 day onboarding roadmap work?",
+    "suggestion8": "List all notes tagged with recrutamento",
+    "suggestion9": "Create a task to align the remote work and ergonomic allowance policy",
+    "suggestion10": "Search for guidelines in the structured interview guide",
+    "suggestion11": "Mark the technical screening task as completed",
+    "suggestion12": "What are the phases of the semiannual performance review cycle?"
   },
   "chat": {
     "you": "You",
@@ -87,6 +88,8 @@
     "tool2Desc": "Searches project notes by keyword matching and content relevance.",
     "tool3Name": "create_task",
     "tool3Desc": "Creates a task in the workspace — strictly gated by Human-in-the-Loop approval.",
+    "tool4Name": "update_task",
+    "tool4Desc": "Updates or completes an existing task — strictly gated by Human-in-the-Loop approval.",
     "technologies": "Technologies"
   }
 }

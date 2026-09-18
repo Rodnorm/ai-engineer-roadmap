@@ -1,12 +1,16 @@
 services:
   mcp:
     build: ./mcp-server
+    env_file:
+      - path: ./mcp-server/.env
+        required: false
+      - path: ./frontend/.env
+        required: false
     environment:
       PORT: 8006
       HOST: 0.0.0.0
       ALLOWED_HOSTS: localhost,127.0.0.1,mcp
       WORKSPACE_DATA_FILE: /data/workspace.json
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
       ENABLE_PUBLIC_MCP: "false"
     volumes:
       - workspace-data:/data
@@ -24,12 +28,11 @@ services:
     build: ./frontend
     ports:
       - "3006:3006"
+    env_file:
+      - path: ./frontend/.env
+        required: false
     environment:
-      AGENT_PROVIDER: offline
       MCP_SERVER_URL: http://mcp:8006
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
-      CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:?CONVERSATION_SESSION_SECRET is required}
-      GENERATION_ENABLED: "true"
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -45,3 +48,4 @@ services:
 
 volumes:
   workspace-data:
+

@@ -4,6 +4,7 @@
     "eyebrow": "Foundry Agent + MCP",
     "onlineStatus": "Workspace online",
     "offlineStatus": "Agente pronto offline",
+    "foundryStatus": "Azure Foundry conectado",
     "newConversation": "Nova conversa",
     "deleteConfirm": "Deseja realmente excluir esta conversa?"
   },
@@ -25,18 +26,18 @@
     "eyebrow": "Inteligência de Workspace",
     "title": "Pergunte. Inspecione. Aja.",
     "description": "Seu assistente focado em workspace pode consultar notas e tarefas através de um servidor MCP local. Ações de gravação sempre pausam para sua aprovação explícita.",
-    "suggestion1": "Quais tarefas ainda estão em aberto?",
-    "suggestion2": "Pesquise as notas em busca de dados de deploy",
-    "suggestion3": "Crie uma tarefa para validar os health checks do Coolify",
+    "suggestion1": "Quais tarefas de RH ainda estão em aberto?",
+    "suggestion2": "Pesquise as notas sobre política de benefícios e convênios",
+    "suggestion3": "Crie uma tarefa para organizar o onboarding dos novos contratados",
     "suggestion4": "Quais tarefas já foram concluídas no workspace?",
-    "suggestion5": "Procure notas sobre diretrizes de segurança e guardrails",
-    "suggestion6": "Crie uma tarefa para configurar monitoramento de logs no servidor",
-    "suggestion7": "Quais tecnologias e ferramentas estão descritas no escopo do app?",
-    "suggestion8": "Liste todas as notas com a tag architecture",
-    "suggestion9": "Crie uma tarefa para revisar a documentação dos endpoints MCP",
-    "suggestion10": "Pesquise orientações sobre subdomínios HTTPS e Hetzner",
-    "suggestion11": "Como funciona a confirmação obrigatória para ações de escrita?",
-    "suggestion12": "Crie uma tarefa para testar o fluxo de aprovação de ferramentas"
+    "suggestion5": "Procure notas sobre diretrizes de proteção de dados e LGPD",
+    "suggestion6": "Crie uma tarefa para enviar formulários de avaliação 360°",
+    "suggestion7": "Como funciona o roteiro de integração de 30-60-90 dias?",
+    "suggestion8": "Liste todas as notas com a tag recrutamento",
+    "suggestion9": "Crie uma tarefa para alinhar a política de auxílio home office",
+    "suggestion10": "Pesquise as orientações do guia de entrevistas estruturadas",
+    "suggestion11": "Concluir a tarefa de triagem técnica de candidatos",
+    "suggestion12": "Quais são as fases do ciclo semestral de avaliação de desempenho?"
   },
   "chat": {
     "you": "Você",
@@ -87,6 +88,8 @@
     "tool2Desc": "Pesquisa anotações de projeto por relevância e termos de busca.",
     "tool3Name": "create_task",
     "tool3Desc": "Cria uma nova tarefa no workspace — bloqueada por aprovação humana obrigatória.",
+    "tool4Name": "update_task",
+    "tool4Desc": "Atualiza ou conclui uma tarefa existente — bloqueada por aprovação humana obrigatória.",
     "technologies": "Tecnologias"
   }
 }
