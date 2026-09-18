@@ -109,3 +109,23 @@ test("task question in Portuguese formats status as aberta and Portuguese header
     globalThis.fetch = originalFetch;
   }
 });
+
+test("detectPromptLanguage identifies English, German, and Portuguese accurately", async () => {
+  const { detectPromptLanguage, formatFoundryPrompt } = await import("../lib/agent/foundry");
+
+  assert.equal(detectPromptLanguage("Which HR tasks are still open?"), "en");
+  assert.equal(detectPromptLanguage("What is the status of the onboarding task?"), "en");
+  assert.equal(detectPromptLanguage("Welche HR-Aufgaben sind noch offen?"), "de");
+  assert.equal(detectPromptLanguage("Quais tarefas de RH ainda estão em aberto?"), "pt");
+
+  const enPrompt = formatFoundryPrompt("Which HR tasks are still open?");
+  assert.ok(enPrompt.includes("[SYSTEM MANDATE - LANGUAGE: ENGLISH]"));
+  assert.ok(enPrompt.includes("NEVER switch to Portuguese"));
+  assert.ok(enPrompt.includes("User query: Which HR tasks are still open?"));
+
+  const dePrompt = formatFoundryPrompt("Welche HR-Aufgaben sind noch offen?");
+  assert.ok(dePrompt.includes("[SYSTEMMANDAT - SPRACHE: DEUTSCH]"));
+
+  const ptPrompt = formatFoundryPrompt("Quais tarefas de RH ainda estão em aberto?");
+  assert.ok(ptPrompt.includes("[DIRETRIZ DE IDIOMA: PORTUGUÊS]"));
+});
