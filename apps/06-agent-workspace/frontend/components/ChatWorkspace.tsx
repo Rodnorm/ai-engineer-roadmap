@@ -83,23 +83,20 @@ function Sidebar({
         className={`sidebar ${open ? "sidebar-open" : ""}`}
         aria-label={sidebarT("conversations")}
       >
-        <div className="brand-row">
+        <div className="flex items-center justify-between pb-3 mb-2 border-b border-border/60">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">
+            {sidebarT("conversations")}
+          </span>
+          {/* Close button inside drawer for mobile */}
           <button
             type="button"
-            className="control-button size-9 p-0 shrink-0 cursor-pointer"
+            className="control-button size-8 p-0 lg:hidden cursor-pointer"
             onClick={onClose}
-            aria-label={controlsT("toggleSidebar")}
-            title={controlsT("toggleSidebar")}
+            aria-label={controlsT("close")}
+            title={controlsT("close")}
           >
-            <Menu className="size-4 text-muted hover:text-text transition-colors" />
+            <X className="size-4" />
           </button>
-          <div className="brand-mark">
-            <Sparkles aria-hidden="true" />
-          </div>
-          <div className="min-w-0">
-            <strong>{appT("title")}</strong>
-            <span>Workspace · MCP</span>
-          </div>
         </div>
 
         <button type="button" className="new-chat-button" onClick={onCreate}>
@@ -421,45 +418,47 @@ export function ChatWorkspace() {
 
   return (
     <main className="workspace-shell">
-      <Sidebar
-        conversations={conversations}
-        activeId={active?.id}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onCreate={() => void createConversation()}
-        onSelect={(id) => void selectConversation(id)}
-        onDelete={(id) => void deleteConversation(id)}
-      />
-
-      <section className="chat-panel">
-        <header className="topbar">
-          <div className="flex items-center gap-3">
-            {/* Hamburger button visible in topbar whenever the sidebar is closed */}
-            {!sidebarOpen && (
-              <button
-                type="button"
-                className="control-button size-9 p-0 shrink-0 cursor-pointer"
-                onClick={() => setSidebarOpen(true)}
-                aria-label={controlsT("toggleSidebar")}
-                title={controlsT("toggleSidebar")}
-              >
-                <Menu className="size-4 text-muted hover:text-text transition-colors" />
-              </button>
-            )}
-            <div>
-              <p className="eyebrow">{appT("eyebrow")}</p>
-              <h1>{active?.title ?? appT("title")}</h1>
-            </div>
+      <header className="topbar">
+        <div className="flex items-center gap-3">
+          {/* Permanent hamburger toggle button */}
+          <button
+            type="button"
+            className="control-button size-9 p-0 shrink-0 cursor-pointer"
+            onClick={() => setSidebarOpen((curr) => !curr)}
+            aria-label={controlsT("toggleSidebar")}
+            title={controlsT("toggleSidebar")}
+          >
+            <Menu className="size-4 text-muted hover:text-text transition-colors" />
+          </button>
+          <div className="brand-mark hidden sm:grid">
+            <Sparkles aria-hidden="true" />
           </div>
-
-          <div className="topbar-controls">
-            <LangSwitcher />
-            <ThemeToggle />
-            <AppInfo />
+          <div>
+            <p className="eyebrow">{appT("eyebrow")}</p>
+            <h1>{active?.title ?? appT("title")}</h1>
           </div>
-        </header>
+        </div>
 
-        <div className="messages" aria-live="polite">
+        <div className="topbar-controls">
+          <LangSwitcher />
+          <ThemeToggle />
+          <AppInfo />
+        </div>
+      </header>
+
+      <div className="workspace-body">
+        <Sidebar
+          conversations={conversations}
+          activeId={active?.id}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onCreate={() => void createConversation()}
+          onSelect={(id) => void selectConversation(id)}
+          onDelete={(id) => void deleteConversation(id)}
+        />
+
+        <section className="chat-panel">
+          <div className="messages" aria-live="polite">
           {empty ? (
             <section className="welcome">
               <div className="welcome-orbit">
@@ -565,6 +564,7 @@ export function ChatWorkspace() {
           <p>{composerT("disclaimer")}</p>
         </div>
       </section>
-    </main>
+    </div>
+  </main>
   );
 }
