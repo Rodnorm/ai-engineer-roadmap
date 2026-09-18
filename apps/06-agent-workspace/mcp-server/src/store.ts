@@ -58,6 +58,19 @@ export class WorkspaceStore {
     return task;
   }
 
+  async updateTask(
+    id: string,
+    updates: { title?: string; description?: string; status?: TaskStatus },
+  ): Promise<WorkspaceTask | null> {
+    const task = this.data.tasks.find((item) => item.id === id);
+    if (!task) return null;
+    if (updates.title !== undefined) task.title = updates.title.trim();
+    if (updates.description !== undefined) task.description = updates.description.trim();
+    if (updates.status !== undefined) task.status = updates.status;
+    await this.persist();
+    return task;
+  }
+
   private async persist(): Promise<void> {
     if (!this.filePath) return;
     await mkdir(dirname(this.filePath), { recursive: true });

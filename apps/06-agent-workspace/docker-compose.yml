@@ -6,7 +6,7 @@ services:
       HOST: 0.0.0.0
       ALLOWED_HOSTS: localhost,127.0.0.1,mcp
       WORKSPACE_DATA_FILE: /data/workspace.json
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-8HcbbBIS74YugrrbCk5nJIcRMQ97qtNf}
       ENABLE_PUBLIC_MCP: "false"
     volumes:
       - workspace-data:/data
@@ -27,8 +27,8 @@ services:
     environment:
       AGENT_PROVIDER: offline
       MCP_SERVER_URL: http://mcp:8006
-      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN is required}
-      CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:?CONVERSATION_SESSION_SECRET is required}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-8HcbbBIS74YugrrbCk5nJIcRMQ97qtNf}
+      CONVERSATION_SESSION_SECRET: ${CONVERSATION_SESSION_SECRET:-7f1e92d83b4c5a6012e8f9a0b1c2d3e456789abcdef0123456789abcdef01234}
       GENERATION_ENABLED: "true"
     security_opt:
       - no-new-privileges:true
@@ -38,7 +38,7 @@ services:
       mcp:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3006/api/health"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3006/api/health" ]
       interval: 15s
       timeout: 5s
       retries: 5

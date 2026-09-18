@@ -16,6 +16,14 @@ export const createTaskInput = z.object({
   confirmed: z.literal(true).describe("Must be true only after the user explicitly confirms the write action"),
 });
 
+export const updateTaskInput = z.object({
+  id: z.string().trim().min(1).describe("The unique ID of the task to update"),
+  title: z.string().trim().min(1).max(120).optional().describe("New title for the task"),
+  description: z.string().trim().max(500).optional().describe("New description for the task"),
+  status: z.enum(["open", "done"]).optional().describe("Updated status for the task"),
+  confirmed: z.literal(true).describe("Must be true only after the user explicitly confirms the write action"),
+});
+
 export async function callWorkspaceTool(
   name: string,
   rawArguments: unknown,
@@ -33,6 +41,12 @@ export async function callWorkspaceTool(
   if (name === "create_task") {
     const { title, description } = createTaskInput.parse(rawArguments);
     return { task: await store.createTask(title, description), created: true };
+  }
+  if (name === "update_task") {
+    const { id, title, description, status } = updateTaskInput.parse(rawArguments);
+    const task = await store.updateTask(id, { title, description, status });
+    if (!task) throw new Error(`Task '${id}' not found`);
+    return { task, updated: true };
   }
   throw new Error(`Unknown tool: ${name}`);
 }
@@ -76,5 +90,16 @@ export function registerWorkspaceTools(server: McpServer, store: WorkspaceStore 
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
     },
     async (args) => toolResult(await callWorkspaceTool("create_task", args, store)),
+  );
+
+  server.registerTool(
+    "update_task",
+    {
+      title: "Update a workspace task",
+      description: "Update a task's title, description, or status (e.g. mark done) only after the user has explicitly confirmed the changes.",
+      inputSchema: updateTaskInput,
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+    },
+    async (args) => toolResult(await callWorkspaceTool("update_task", args, store)),
   );
 }

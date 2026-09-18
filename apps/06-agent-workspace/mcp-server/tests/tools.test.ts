@@ -33,3 +33,19 @@ test("create_task creates a confirmed task", async () => {
   const result = await callWorkspaceTool("create_task", { title: "Ship App 06", confirmed: true }, store()) as { created: boolean };
   assert.equal(result.created, true);
 });
+
+test("update_task requires explicit confirmation", async () => {
+  await assert.rejects(() => callWorkspaceTool("update_task", { id: "1", status: "done" }, store()));
+});
+
+test("update_task updates a confirmed task", async () => {
+  const currentStore = store();
+  const result = await callWorkspaceTool(
+    "update_task",
+    { id: "1", status: "done", title: "Updated open item", confirmed: true },
+    currentStore,
+  ) as { updated: boolean; task: { id: string; status: string; title: string } };
+  assert.equal(result.updated, true);
+  assert.equal(result.task.status, "done");
+  assert.equal(result.task.title, "Updated open item");
+});
