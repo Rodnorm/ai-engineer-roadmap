@@ -6,7 +6,11 @@
     "offlineStatus": "Agente pronto offline",
     "foundryStatus": "Azure Foundry conectado",
     "newConversation": "Nova conversa",
-    "deleteConfirm": "Deseja realmente excluir esta conversa?"
+    "deleteConfirm": "Deseja realmente excluir esta conversa?",
+    "deleteModalTitle": "Excluir conversa",
+    "deleteModalDescription": "Tem certeza de que deseja excluir esta conversa? Todas as mensagens serão apagadas permanentemente e esta ação não pode ser desfeita.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirmButton": "Excluir"
   },
   "controls": {
     "language": "Alterar idioma",
@@ -20,7 +24,8 @@
   "sidebar": {
     "conversations": "Conversas",
     "messagesCount": "{count} mensagens",
-    "noConversations": "Nenhuma conversa encontrada"
+    "noConversations": "Nenhuma conversa encontrada",
+    "privacyNotice": "Suas conversas são privadas e visíveis apenas neste navegador, protegidas por sessão segura e isolamento de usuário."
   },
   "welcome": {
     "eyebrow": "Inteligência de Workspace",

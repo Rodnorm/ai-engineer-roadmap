@@ -9,6 +9,7 @@ import {
   MessageSquareText,
   Search,
   Send,
+  ShieldCheck,
   Sparkles,
   Trash2,
   User,
@@ -107,6 +108,10 @@ function Sidebar({
         </button>
 
         <div className="conversation-label">{sidebarT("conversations")}</div>
+        <div className="sidebar-privacy-badge">
+          <ShieldCheck className="size-3.5 shrink-0 text-emerald-400 mt-0.5" />
+          <span>{sidebarT("privacyNotice")}</span>
+        </div>
         <nav className="conversation-list">
           {conversations.length === 0 ? (
             <div className="px-3 py-6 text-center text-xs text-muted">
@@ -239,6 +244,7 @@ export function ChatWorkspace({
 
   // Responsive sidebar open state: opens on desktop, closes on mobile initially
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth >= 1024) {
@@ -254,6 +260,15 @@ export function ChatWorkspace({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [sidebarOpen]);
+
+  useEffect(() => {
+    if (!deletingId) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDeletingId(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [deletingId]);
 
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -334,13 +349,23 @@ export function ChatWorkspace({
     }
   };
 
-  const deleteConversation = async (id: string) => {
-    if (!window.confirm(appT("deleteConfirm"))) return;
-    await fetch(`/api/conversations/${id}`, { method: "DELETE" });
-    const items = await refreshList();
-    if (active?.id === id) {
-      if (items[0]) await selectConversation(items[0].id);
-      else await createConversation();
+  const requestDelete = (id: string) => {
+    setDeletingId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    const id = deletingId;
+    setDeletingId(null);
+    try {
+      await fetch(`/api/conversations/${id}`, { method: "DELETE" });
+      const items = await refreshList();
+      if (active?.id === id) {
+        if (items[0]) await selectConversation(items[0].id);
+        else await createConversation();
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Could not delete conversation");
     }
   };
 
@@ -472,7 +497,7 @@ export function ChatWorkspace({
           onClose={() => setSidebarOpen(false)}
           onCreate={() => void createConversation()}
           onSelect={(id) => void selectConversation(id)}
-          onDelete={(id) => void deleteConversation(id)}
+          onDelete={(id) => requestDelete(id)}
         />
 
         <section className="chat-panel">
@@ -583,6 +608,46 @@ export function ChatWorkspace({
         </div>
       </section>
     </div>
+
+    {deletingId && (
+      <div
+        className="modal-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-dialog-title"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) setDeletingId(null);
+        }}
+      >
+        <div className="modal-panel">
+          <div className="modal-icon-danger">
+            <Trash2 className="size-5" />
+          </div>
+          <h3 id="delete-dialog-title" className="modal-title">
+            {appT("deleteModalTitle")}
+          </h3>
+          <p className="modal-description">
+            {appT("deleteModalDescription")}
+          </p>
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="modal-button-secondary"
+              onClick={() => setDeletingId(null)}
+            >
+              {appT("deleteCancel")}
+            </button>
+            <button
+              type="button"
+              className="modal-button-danger"
+              onClick={() => void confirmDelete()}
+            >
+              {appT("deleteConfirmButton")}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </main>
   );
 }

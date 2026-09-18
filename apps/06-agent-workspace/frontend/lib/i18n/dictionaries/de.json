@@ -6,7 +6,11 @@
     "offlineStatus": "Offline-bereiter Agent",
     "foundryStatus": "Verbunden mit Azure Foundry",
     "newConversation": "Neue Konversation",
-    "deleteConfirm": "Möchten Sie diese Unterhaltung wirklich löschen?"
+    "deleteConfirm": "Möchten Sie diese Unterhaltung wirklich löschen?",
+    "deleteModalTitle": "Unterhaltung löschen",
+    "deleteModalDescription": "Sind Sie sicher, dass Sie diese Unterhaltung löschen möchten? Alle Nachrichten werden dauerhaft entfernt und dies kann nicht rückgängig gemacht werden.",
+    "deleteCancel": "Abbrechen",
+    "deleteConfirmButton": "Löschen"
   },
   "controls": {
     "language": "Sprache auswählen",
@@ -20,7 +24,8 @@
   "sidebar": {
     "conversations": "Unterhaltungen",
     "messagesCount": "{count} Nachrichten",
-    "noConversations": "Keine Unterhaltungen vorhanden"
+    "noConversations": "Keine Unterhaltungen vorhanden",
+    "privacyNotice": "Ihre Unterhaltungen sind privat für diesen Browser, geschützt durch sichere Sitzung und isolierte Speicherung."
   },
   "welcome": {
     "eyebrow": "Workspace-Intelligenz",

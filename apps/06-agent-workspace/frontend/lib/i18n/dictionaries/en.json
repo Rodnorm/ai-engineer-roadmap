@@ -6,7 +6,11 @@
     "offlineStatus": "Agent ready offline",
     "foundryStatus": "Azure Foundry connected",
     "newConversation": "New conversation",
-    "deleteConfirm": "Do you really want to delete this conversation?"
+    "deleteConfirm": "Do you really want to delete this conversation?",
+    "deleteModalTitle": "Delete conversation",
+    "deleteModalDescription": "Are you sure you want to delete this conversation? All messages will be permanently removed and this cannot be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirmButton": "Delete"
   },
   "controls": {
     "language": "Select language",
@@ -20,7 +24,8 @@
   "sidebar": {
     "conversations": "Conversations",
     "messagesCount": "{count} messages",
-    "noConversations": "No conversations found"
+    "noConversations": "No conversations found",
+    "privacyNotice": "Your conversations are private to this browser, protected by secure session and isolated storage."
   },
   "welcome": {
     "eyebrow": "Workspace intelligence",
