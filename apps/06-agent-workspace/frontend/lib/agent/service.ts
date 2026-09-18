@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { getConfig } from "../config";
 import { getConversationRepository } from "../repository";
-import type { AgentEvent, ChatMessage, Conversation } from "../types";
+import type { AgentEvent, ChatMessage, Conversation, PendingApproval } from "../types";
 import { approveFoundryTool, runFoundryAgent } from "./foundry";
 import { approveOfflineTool, runOfflineAgent } from "./offline";
 
@@ -14,16 +14,16 @@ async function* persistAgentStream(
   const repository = getConversationRepository();
   let answer = "";
   let lastTool: string | undefined;
-  let pendingApproval = conversation.pendingApproval;
+  let newPendingApproval: PendingApproval | undefined = undefined;
 
   for await (const event of createStream(conversation)) {
     if (event.type === "delta") answer += event.text;
     if (event.type === "tool") lastTool = event.name;
-    if (event.type === "approval") pendingApproval = event.approval;
+    if (event.type === "approval") newPendingApproval = event.approval;
     yield event;
   }
 
-  conversation.pendingApproval = pendingApproval;
+  conversation.pendingApproval = newPendingApproval;
   if (answer.trim()) {
     const message: ChatMessage = {
       id: randomUUID(),
@@ -33,7 +33,6 @@ async function* persistAgentStream(
       toolName: lastTool,
     };
     conversation.messages.push(message);
-    conversation.pendingApproval = undefined;
     conversation.updatedAt = message.createdAt;
     await repository.save(conversation.ownerId, conversation);
     yield { type: "done", message };
