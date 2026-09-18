@@ -101,7 +101,7 @@
       "summary": "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
       "description": "pocketRag indexes PDF, Markdown, TXT, and DOCX files with Azure OpenAI embeddings and SQLite/NumPy cosine retrieval, then generates grounded answers with inline citations, private access, cost controls, and automatic upload expiry.",
       "category": "Knowledge Base & RAG",
-      "status": "ready",
+      "status": "live",
       "technologies": [
         "Next.js 15",
         "FastAPI",
