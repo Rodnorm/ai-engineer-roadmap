@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 const DEVELOPMENT_SESSION_SECRET = "development-only-session-secret-change-me";
+const emptyToUndefined = (value: unknown) => (typeof value === "string" && value.trim() === "" ? undefined : value);
 const optionalSecret = z.preprocess(
-  (value) => value === "" ? undefined : value,
+  emptyToUndefined,
   z.string().min(32).optional(),
 );
 
@@ -12,13 +13,13 @@ const envSchema = z.object({
   MCP_SERVER_URL: z.string().url().default("http://localhost:8006"),
   INTERNAL_API_TOKEN: optionalSecret,
   CONVERSATION_SESSION_SECRET: z.preprocess(
-    (value) => value === "" ? undefined : value,
+    emptyToUndefined,
     z.string().min(32).default(DEVELOPMENT_SESSION_SECRET),
   ),
-  AZURE_AI_PROJECT_ENDPOINT: z.string().url().optional(),
-  AZURE_AI_AGENT_NAME: z.string().optional(),
-  COSMOS_ENDPOINT: z.string().url().optional(),
-  COSMOS_KEY: z.string().optional(),
+  AZURE_AI_PROJECT_ENDPOINT: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  AZURE_AI_AGENT_NAME: z.preprocess(emptyToUndefined, z.string().optional()),
+  COSMOS_ENDPOINT: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  COSMOS_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
   COSMOS_DATABASE_NAME: z.string().default("agent-workspace"),
   COSMOS_CONTAINER_NAME: z.string().default("conversations-v2"),
 });
