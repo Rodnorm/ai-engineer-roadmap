@@ -124,6 +124,7 @@ export function AppInfo() {
               <ToolCard name={infoT("tool1Name")} desc={infoT("tool1Desc")} />
               <ToolCard name={infoT("tool2Name")} desc={infoT("tool2Desc")} />
               <ToolCard name={infoT("tool3Name")} desc={infoT("tool3Desc")} requiresApproval />
+              <ToolCard name={infoT("tool4Name")} desc={infoT("tool4Desc")} requiresApproval />
             </div>
           </section>
 
