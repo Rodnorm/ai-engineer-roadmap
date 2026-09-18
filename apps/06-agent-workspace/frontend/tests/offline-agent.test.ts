@@ -46,12 +46,12 @@ test("task question calls list_tasks and streams an answer", async () => {
 });
 
 test("Portuguese create task requests approval with cleaned title", async () => {
-  const events = await collect(runOfflineAgent("Crie uma tarefa para validar os health checks do Coolify", conversation()));
+  const events = await collect(runOfflineAgent("Crie uma tarefa para organizar o onboarding dos novos contratados", conversation()));
   assert.equal(events.length, 1);
   assert.equal(events[0]?.type, "approval");
   if (events[0]?.type === "approval") {
     assert.equal(events[0].approval.toolName, "create_task");
-    assert.equal(events[0].approval.arguments.title, "Validar os health checks do Coolify");
+    assert.equal(events[0].approval.arguments.title, "Organizar o onboarding dos novos contratados");
     assert.equal(events[0].approval.arguments.confirmed, true);
   }
 });

@@ -115,13 +115,12 @@ export async function* runOfflineAgent(
   }
 
   if (
-    /note|search|find|documentation|deployment|security/.test(normalized) ||
+    /note|search|find|documentation|security/.test(normalized) ||
     /nota|pesquis|procur|busc|consult|documenta|beneficio|onboarding|clima|lgpd|politica/.test(normalized)
   ) {
     yield { type: "tool", name: "search_notes", status: "running" };
     let query = "rh";
-    if (normalized.includes("deploy")) query = "deployment";
-    else if (normalized.includes("secur") || normalized.includes("segur") || normalized.includes("lgpd")) query = "segurança";
+    if (normalized.includes("secur") || normalized.includes("segur") || normalized.includes("lgpd")) query = "segurança";
     else if (normalized.includes("onboard")) query = "onboarding";
     else if (normalized.includes("benefic")) query = "beneficios";
     else if (normalized.includes("recrut") || normalized.includes("vaga") || normalized.includes("entrevist")) query = "recrutamento";

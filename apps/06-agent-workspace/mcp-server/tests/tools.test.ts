@@ -10,7 +10,7 @@ function store(): WorkspaceStore {
       { id: "1", title: "Open item", description: "", status: "open", createdAt: "2026-01-01T00:00:00Z" },
       { id: "2", title: "Done item", description: "", status: "done", createdAt: "2026-01-01T00:00:00Z" },
     ],
-    notes: [{ id: "1", title: "Coolify", content: "Deploy with Docker", tags: ["hosting"] }],
+    notes: [{ id: "1", title: "Onboarding", content: "Roteiro de integracao de novos colaboradores", tags: ["rh", "onboarding"] }],
   };
   return new WorkspaceStore(undefined, data);
 }
@@ -21,7 +21,7 @@ test("list_tasks filters by status", async () => {
 });
 
 test("search_notes matches note content", async () => {
-  const result = await callWorkspaceTool("search_notes", { query: "docker" }, store()) as { count: number };
+  const result = await callWorkspaceTool("search_notes", { query: "integracao" }, store()) as { count: number };
   assert.equal(result.count, 1);
 });
 
