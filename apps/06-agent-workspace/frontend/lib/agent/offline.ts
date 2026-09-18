@@ -38,6 +38,126 @@ function isListTasksIntent(normalized: string): boolean {
   );
 }
 
+type Language = "pt" | "en" | "de";
+
+function detectLanguage(prompt: string): Language {
+  const lower = prompt.toLowerCase();
+  if (/\b(welche|aufgaben|offen|erledigt|suche|notizen|bitte|erstellen|hallo|guten|zeigen)\b/.test(lower)) {
+    return "de";
+  }
+  if (
+    /\b(which|tasks?|open|done|closed|search|find|please|notes?|what|show|list|completed)\b/.test(lower) &&
+    !/\b(tarefa|aberta|conclu|quais|quaisquer|pesquise|procure|favor|mostrar|listar|notas?)\b/.test(lower)
+  ) {
+    return "en";
+  }
+  return "pt";
+}
+
+interface TranslatedTaskInfo {
+  title: string;
+  description?: string;
+}
+
+const TASK_TRANSLATIONS: Record<string, Record<Language, TranslatedTaskInfo>> = {
+  "Concluir triagem técnica de candidatos para vaga de Tech Lead": {
+    pt: {
+      title: "Concluir triagem técnica de candidatos para vaga de Tech Lead",
+      description: "Avaliar os 8 currículos finalistas com o time de engenharia e encaminhar os 3 mais aderentes para entrevista com o CTO.",
+    },
+    en: {
+      title: "Complete technical candidate screening for Tech Lead role",
+      description: "Evaluate the 8 finalist resumes with engineering and forward the 3 most qualified for interview with the CTO.",
+    },
+    de: {
+      title: "Technisches Kandidaten-Screening für Tech-Lead-Position abschließen",
+      description: "Die 8 Finalisten-Lebensläufe mit dem Engineering-Team bewerten und die 3 am besten geeigneten an den CTO weiterleiten.",
+    },
+  },
+  "Organizar onboarding dos 4 novos colaboradores de outubro": {
+    pt: {
+      title: "Organizar onboarding dos 4 novos colaboradores de outubro",
+      description: "Verificar liberação de notebooks e acessos com TI, agendar sessões de boas-vindas e despachar kits institucionais.",
+    },
+    en: {
+      title: "Organize onboarding for the 4 new October hires",
+      description: "Verify notebook and access provisioning with IT, schedule welcome sessions, and dispatch welcome kits.",
+    },
+    de: {
+      title: "Onboarding für die 4 neuen Oktober-Mitarbeiter organisieren",
+      description: "Notebook- und Zugangsfreigabe mit der IT prüfen, Willkommenssitzungen planen und Willkommenspakete versenden.",
+    },
+  },
+  "Consolidar resultados da Pesquisa de Clima Organizacional (Q3)": {
+    pt: {
+      title: "Consolidar resultados da Pesquisa de Clima Organizacional (Q3)",
+      description: "Montar apresentação executiva com os indicadores de eNPS, principais pontos de atenção e plano de ação por departamento.",
+    },
+    en: {
+      title: "Consolidate Q3 Organizational Climate Survey results",
+      description: "Prepare executive presentation with eNPS metrics, main attention points, and action plan by department.",
+    },
+    de: {
+      title: "Ergebnisse der Mitarbeiterbefragung (Q3) konsolidieren",
+      description: "Vorstandspräsentation mit eNPS-Kennzahlen, wichtigsten Schwerpunkten und Aktionsplan pro Abteilung erstellen.",
+    },
+  },
+  "Revisar proposta de reajuste de benefícios flexíveis": {
+    pt: {
+      title: "Revisar proposta de reajuste de benefícios flexíveis",
+      description: "Analisar cotações de convênios de saúde e opções de cartão multibenefícios para apresentação à diretoria.",
+    },
+    en: {
+      title: "Review flexible benefits adjustment proposal",
+      description: "Analyze health insurance quotes and multi-benefit card options for board presentation.",
+    },
+    de: {
+      title: "Vorschlag zur Anpassung der flexiblen Zusatzleistungen prüfen",
+      description: "Angebote für Krankenversicherungen und Mehrfach-Leistungskarten für die Geschäftsleitung analysieren.",
+    },
+  },
+  "Agendar exames médicos periódicos pendentes (PCMSO)": {
+    pt: {
+      title: "Agendar exames médicos periódicos pendentes (PCMSO)",
+      description: "Notificar colaboradores do setor de operações com exames admissionais/periódicos a vencer no final do mês.",
+    },
+    en: {
+      title: "Schedule pending periodic medical examinations (PCMSO)",
+      description: "Notify operations department employees with periodic medical examinations expiring at the end of the month.",
+    },
+    de: {
+      title: "Ausstehende arbeitsmedizinische Vorsorgeuntersuchungen planen (PCMSO)",
+      description: "Mitarbeiter im operativen Bereich mit ausstehenden Vorsorgeuntersuchungen zum Monatsende benachrichtigen.",
+    },
+  },
+  "Divulgar comunicados internos sobre o novo canal de Ouvidoria": {
+    pt: {
+      title: "Divulgar comunicados internos sobre o novo canal de Ouvidoria",
+      description: "Publicar guia no portal interno e disparar newsletter explicando as diretrizes de sigilo e acolhimento.",
+    },
+    en: {
+      title: "Publish internal communications regarding the new Ombudsman channel",
+      description: "Publish guide on the internal portal and dispatch newsletter detailing confidentiality and support guidelines.",
+    },
+    de: {
+      title: "Interne Mitteilung über den neuen Beschwerdekanal veröffentlichen",
+      description: "Leitfaden im internen Portal veröffentlichen und Newsletter mit Vertraulichkeits- und Richtlinien versenden.",
+    },
+  },
+};
+
+function translateStatus(status: string, lang: Language): string {
+  if (lang === "pt") return status === "done" ? "concluída" : "aberta";
+  if (lang === "de") return status === "done" ? "erledigt" : "offen";
+  return status === "done" ? "done" : "open";
+}
+
+function translateTask(task: { title: string; description?: string }, lang: Language): { title: string; description?: string } {
+  const match = TASK_TRANSLATIONS[task.title]?.[lang];
+  if (match) return match;
+  return task;
+}
+
 async function* streamText(text: string): AsyncGenerator<AgentEvent> {
   for (const textChunk of chunks(text)) {
     yield { type: "delta", text: textChunk };
@@ -161,21 +281,59 @@ export async function* runOfflineAgent(
       tasks?: Array<{ title: string; description: string; status: string }>;
     };
     yield { type: "tool", name: "list_tasks", status: "completed" };
+    const lang = detectLanguage(prompt);
     const answer = result.tasks?.length
-      ? `Here are the matching tasks:\n\n${result.tasks.map((task) => `• [${task.status}] ${task.title}${task.description ? ` — ${task.description}` : ""}`).join("\n")}`
-      : "There are no matching tasks.";
+      ? (lang === "pt"
+          ? `Aqui estão as tarefas encontradas no workspace:\n\n${result.tasks.map((task) => {
+              const translated = translateTask(task, lang);
+              return `• [${translateStatus(task.status, lang)}] ${translated.title}${translated.description ? ` — ${translated.description}` : ""}`;
+            }).join("\n")}`
+          : lang === "de"
+          ? `Hier sind die passenden Aufgaben im Workspace:\n\n${result.tasks.map((task) => {
+              const translated = translateTask(task, lang);
+              return `• [${translateStatus(task.status, lang)}] ${translated.title}${translated.description ? ` — ${translated.description}` : ""}`;
+            }).join("\n")}`
+          : `Here are the matching tasks in the workspace:\n\n${result.tasks.map((task) => {
+              const translated = translateTask(task, lang);
+              return `• [${translateStatus(task.status, lang)}] ${translated.title}${translated.description ? ` — ${translated.description}` : ""}`;
+            }).join("\n")}`)
+      : (lang === "pt"
+          ? "Nenhuma tarefa correspondente foi encontrada no workspace."
+          : lang === "de"
+          ? "Es wurden keine passenden Aufgaben im Workspace gefunden."
+          : "There are no matching tasks in the workspace.");
     yield* streamText(answer);
     return;
   }
 
-  yield* streamText(
-    "Olá! Estou no modo offline do Agent Workspace. Posso ajudar você a consultar notas e gerenciar tarefas de RH.\n\n" +
-    "Experimente pedir:\n" +
-    "• \"Quais tarefas de RH ainda estão em aberto?\"\n" +
-    "• \"Pesquise as notas sobre política de benefícios e convênios\"\n" +
-    "• \"Crie uma tarefa para organizar o onboarding dos novos contratados\"\n" +
-    "• \"Concluir a tarefa de triagem técnica de candidatos\""
-  );
+  const lang = detectLanguage(prompt);
+  if (lang === "de") {
+    yield* streamText(
+      "Hallo! Ich bin im Offline-Modus des Agent Workspace. Ich kann Ihnen bei Notizen und HR-Aufgaben helfen.\n\n" +
+      "Versuchen Sie zu fragen:\n" +
+      "• \"Welche Aufgaben sind noch offen?\"\n" +
+      "• \"Suche Notizen über Zusatzleistungen und Richtlinien\"\n" +
+      "• \"Erstelle eine Aufgabe für das Onboarding neuer Mitarbeiter\""
+    );
+  } else if (lang === "en") {
+    yield* streamText(
+      "Hello! I am running in Agent Workspace offline mode. I can assist you with workspace notes and HR tasks.\n\n" +
+      "Try asking:\n" +
+      "• \"Which HR tasks are still open?\"\n" +
+      "• \"Search notes about flexible benefits policy\"\n" +
+      "• \"Create a task to organize onboarding for new hires\"\n" +
+      "• \"Complete the technical candidate screening task\""
+    );
+  } else {
+    yield* streamText(
+      "Olá! Estou no modo offline do Agent Workspace. Posso ajudar você a consultar notas e gerenciar tarefas de RH.\n\n" +
+      "Experimente pedir:\n" +
+      "• \"Quais tarefas de RH ainda estão em aberto?\"\n" +
+      "• \"Pesquise as notas sobre política de benefícios e convênios\"\n" +
+      "• \"Crie uma tarefa para organizar o onboarding dos novos contratados\"\n" +
+      "• \"Concluir a tarefa de triagem técnica de candidatos\""
+    );
+  }
 }
 
 export async function* approveOfflineTool(
@@ -185,7 +343,7 @@ export async function* approveOfflineTool(
   const pending = conversation.pendingApproval;
   if (!pending) throw new Error("There is no pending approval");
   if (!approved) {
-    yield* streamText("The action was cancelled. No workspace data was changed.");
+    yield* streamText("Ação cancelada. Nenhum dado do workspace foi alterado.");
     return;
   }
 
@@ -195,8 +353,8 @@ export async function* approveOfflineTool(
   };
   yield { type: "tool", name: pending.toolName, status: "completed" };
   if (pending.toolName === "update_task") {
-    yield* streamText(`Task updated: "${result.task?.title ?? "Untitled task"}" (status: ${result.task?.status ?? "updated"}).`);
+    yield* streamText(`Tarefa atualizada com sucesso: "${result.task?.title ?? "Tarefa"}" (status: ${result.task?.status === "done" ? "concluída" : "aberta"}).`);
   } else {
-    yield* streamText(`Task created: "${result.task?.title ?? "Untitled task"}".`);
+    yield* streamText(`Tarefa criada com sucesso: "${result.task?.title ?? "Nova tarefa"}".`);
   }
 }

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { getConfig } from "../config";
 import { getConversationRepository } from "../repository";
-import type { AgentEvent, ChatMessage, Conversation } from "../types";
+import type { AgentEvent, ChatMessage, Conversation, PendingApproval } from "../types";
 import { approveFoundryTool, runFoundryAgent } from "./foundry";
 import { approveOfflineTool, runOfflineAgent } from "./offline";
 

@@ -312,6 +312,8 @@ button:disabled { cursor: not-allowed; }
   color: var(--theme-text);
   padding: 24px;
   box-shadow: -12px 0 36px rgba(0, 0, 0, 0.25);
+}
+
 /* Center Confirmation Modal */
 .modal-backdrop {
   position: fixed;

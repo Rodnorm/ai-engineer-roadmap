@@ -93,3 +93,19 @@ test("casual message returns friendly help without invoking list_tasks", async (
   const text = events.filter((e) => e.type === "delta").map((e) => e.type === "delta" ? e.text : "").join("");
   assert.ok(text.includes("modo offline"));
 });
+
+test("task question in Portuguese formats status as aberta and Portuguese header", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    result: { tasks: [{ title: "Concluir triagem técnica de candidatos para vaga de Tech Lead", description: "Avaliar os currículos", status: "open" }] },
+  }), { status: 200, headers: { "content-type": "application/json" } });
+
+  try {
+    const events = await collect(runOfflineAgent("Quais tarefas de RH estão abertas?", conversation()));
+    const text = events.filter((e) => e.type === "delta").map((e) => e.type === "delta" ? e.text : "").join("");
+    assert.ok(text.includes("[aberta]"));
+    assert.ok(text.includes("Aqui estão as tarefas encontradas"));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

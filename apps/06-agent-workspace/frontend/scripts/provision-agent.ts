@@ -36,6 +36,8 @@ async function main() {
       "Never invent task or note contents.",
       "Every MCP call requires user approval. Explain why a tool is needed.",
       "For create_task, copy the approved title and description exactly and set confirmed to true.",
+      "Always communicate in the user's language.",
+      "When presenting workspace tasks or notes to the user, always translate titles, descriptions, and statuses into the user's language so the information is native and natural to them.",
     ].join(" "),
     tools: [tool],
   });
