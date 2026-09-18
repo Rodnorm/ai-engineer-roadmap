@@ -1,0 +1,92 @@
+{
+  "app": {
+    "title": "Agent Workspace",
+    "eyebrow": "Foundry Agent + MCP",
+    "onlineStatus": "Workspace online",
+    "offlineStatus": "Offline-ready agent",
+    "newConversation": "New conversation",
+    "deleteConfirm": "Do you really want to delete this conversation?"
+  },
+  "controls": {
+    "language": "Select language",
+    "theme": "Toggle theme",
+    "lightTheme": "Switch to light theme",
+    "darkTheme": "Switch to dark theme",
+    "about": "About this app",
+    "close": "Close",
+    "toggleSidebar": "Toggle sidebar"
+  },
+  "sidebar": {
+    "conversations": "Conversations",
+    "messagesCount": "{count} messages",
+    "noConversations": "No conversations found"
+  },
+  "welcome": {
+    "eyebrow": "Workspace intelligence",
+    "title": "Ask. Inspect. Act.",
+    "description": "Your focused assistant can inspect notes and tasks through a local MCP server. Write actions always pause for your explicit approval.",
+    "suggestion1": "Which tasks are still open?",
+    "suggestion2": "Search the notes for deployment information",
+    "suggestion3": "Create a task to verify the Coolify health checks",
+    "suggestion4": "Which tasks have already been completed in the workspace?",
+    "suggestion5": "Search notes for safety guidelines and guardrails",
+    "suggestion6": "Create a task to configure log monitoring on the server",
+    "suggestion7": "Which technologies and tools are described in the app scope?",
+    "suggestion8": "List all notes tagged with architecture",
+    "suggestion9": "Create a task to review the MCP endpoint documentation",
+    "suggestion10": "Search for guidelines on HTTPS subdomains and Hetzner",
+    "suggestion11": "How does the required confirmation for write actions work?",
+    "suggestion12": "Create a task to test the tool approval workflow"
+  },
+  "chat": {
+    "you": "You",
+    "agent": "Workspace agent",
+    "usingTool": "Using {tool}…",
+    "approvalEyebrow": "Approval required",
+    "approvalTitle": "Allow {tool}?",
+    "approvalDescription": "The agent paused before calling this tool. Review the exact arguments first.",
+    "approvalReject": "Reject",
+    "approvalApprove": "Approve once",
+    "pendingNotice": "Resolve the pending approval to continue the conversation."
+  },
+  "composer": {
+    "placeholder": "Ask about your workspace…",
+    "placeholderBlocked": "Resolve the pending approval to continue",
+    "send": "Send message",
+    "disclaimer": "Agent responses may be inaccurate. Review every tool action before approval."
+  },
+  "info": {
+    "description": "A stateful workspace assistant powered by Microsoft Foundry Agent Service, Model Context Protocol (MCP), and strict Human-in-the-Loop approval gates.",
+    "categoryLabel": "Category",
+    "category": "Agentic Workspace",
+    "statusLabel": "Safety Status",
+    "status": "Human-in-the-Loop Active",
+    "whatItDoes": "What does this app do?",
+    "what1": "Answers contextual questions about tasks and project notes in your workspace.",
+    "what2": "Uses Model Context Protocol (MCP) tools for structured queries and task administration.",
+    "what3": "Enforces human verification before creating tasks or committing permanent changes.",
+    "howToUse": "How to use the app",
+    "step1": "Pick a starter suggestion or ask a question regarding your workspace tasks and documentation.",
+    "step2": "The agent inspects notes and tasks through the connected MCP server in real-time.",
+    "step3": "If a task creation is proposed, an approval card appears. The write only executes after your explicit approval.",
+    "capabilitiesTitle": "Capabilities & Safety Boundaries",
+    "canDoTitle": "What the agent CAN do",
+    "canDo1": "Filter and list open and completed tasks within the workspace.",
+    "canDo2": "Search documentation and technical notes using keywords and semantic context.",
+    "canDo3": "Prepare full task creation requests with title and description for human review.",
+    "canDo4": "Stream real-time tokens and tool activity via Server-Sent Events (SSE).",
+    "cannotDoTitle": "What the agent CANNOT do",
+    "cannotDo1": "Never create or commit tasks without your explicit interactive approval.",
+    "cannotDo2": "Never hallucinate or invent fake tasks or notes without evidence.",
+    "cannotDo3": "Cannot access system files or arbitrary external APIs outside the MCP boundary.",
+    "cannotDo4": "Cannot perform destructive or irreversible actions in your environment.",
+    "mcpToolsTitle": "Available MCP Tools",
+    "tool1Name": "list_tasks",
+    "tool1Desc": "Lists workspace tasks with an optional status filter (open/completed).",
+    "tool2Name": "search_notes",
+    "tool2Desc": "Searches project notes by keyword matching and content relevance.",
+    "tool3Name": "create_task",
+    "tool3Desc": "Creates a task in the workspace — strictly gated by Human-in-the-Loop approval.",
+    "technologies": "Technologies"
+  }
+}

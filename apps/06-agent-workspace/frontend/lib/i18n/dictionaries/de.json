@@ -1,0 +1,92 @@
+{
+  "app": {
+    "title": "Agent Workspace",
+    "eyebrow": "Foundry Agent + MCP",
+    "onlineStatus": "Workspace online",
+    "offlineStatus": "Offline-bereiter Agent",
+    "newConversation": "Neue Unterhaltung",
+    "deleteConfirm": "Möchten Sie diese Unterhaltung wirklich löschen?"
+  },
+  "controls": {
+    "language": "Sprache auswählen",
+    "theme": "Design wechseln",
+    "lightTheme": "Helles Design aktivieren",
+    "darkTheme": "Dunkles Design aktivieren",
+    "about": "Über diese App",
+    "close": "Schließen",
+    "toggleSidebar": "Seitenleiste umschalten"
+  },
+  "sidebar": {
+    "conversations": "Unterhaltungen",
+    "messagesCount": "{count} Nachrichten",
+    "noConversations": "Keine Unterhaltungen vorhanden"
+  },
+  "welcome": {
+    "eyebrow": "Workspace-Intelligenz",
+    "title": "Fragen. Prüfen. Handeln.",
+    "description": "Ihr fokussierter Workspace-Assistent kann Notizen und Aufgaben über einen lokalen MCP-Server analysieren. Schreibaktionen pausieren stets für Ihre explizite Freigabe.",
+    "suggestion1": "Welche Aufgaben sind aktuell noch offen?",
+    "suggestion2": "Durchsuche die Notizen nach Bereitstellungsinformationen",
+    "suggestion3": "Erstelle eine Aufgabe zur Überprüfung der Coolify-Health-Checks",
+    "suggestion4": "Welche Aufgaben wurden im Workspace bereits abgeschlossen?",
+    "suggestion5": "Suche in den Notizen nach Sicherheitsrichtlinien und Guardrails",
+    "suggestion6": "Erstelle eine Aufgabe zur Konfiguration der Protokollüberwachung auf dem Server",
+    "suggestion7": "Welche Technologien und Tools sind im App-Umfang beschrieben?",
+    "suggestion8": "Liste alle Notizen mit dem Tag architecture auf",
+    "suggestion9": "Erstelle eine Aufgabe zur Überprüfung der MCP-Endpunktdokumentation",
+    "suggestion10": "Suche nach Richtlinien zu HTTPS-Subdomains und Hetzner",
+    "suggestion11": "Wie funktioniert die erforderliche Bestätigung für Schreibaktionen?",
+    "suggestion12": "Erstelle eine Aufgabe zum Testen des Tool-Genehmigungsworkflows"
+  },
+  "chat": {
+    "you": "Sie",
+    "agent": "Workspace-Agent",
+    "usingTool": "Verwendet {tool}…",
+    "approvalEyebrow": "Freigabe erforderlich",
+    "approvalTitle": "Aufruf von {tool} erlauben?",
+    "approvalDescription": "Der Agent hat vor dem Ausführen dieses Werkzeugs pausiert. Bitte prüfen Sie die genauen Parameter.",
+    "approvalReject": "Ablehnen",
+    "approvalApprove": "Einmalig freigeben",
+    "pendingNotice": "Bitte bestätigen oder lehnen Sie die ausstehende Aktion ab, um fortzufahren."
+  },
+  "composer": {
+    "placeholder": "Fragen Sie etwas zu Ihrem Workspace…",
+    "placeholderBlocked": "Entscheiden Sie über die ausstehende Freigabe, um fortzufahren",
+    "send": "Nachricht senden",
+    "disclaimer": "Antworten des Agenten können ungenau sein. Prüfen Sie jede Werkzeugaktion vor der Freigabe."
+  },
+  "info": {
+    "description": "Ein zustandsbehafteter KI-Arbeitsplatzassistent mit Microsoft Foundry Agent Service, integriertem Model Context Protocol (MCP) und Human-in-the-Loop-Sicherheitsmechanismen.",
+    "categoryLabel": "Kategorie",
+    "category": "Agentic Workspace",
+    "statusLabel": "Sicherheitsstatus",
+    "status": "Human-in-the-Loop Aktiv",
+    "whatItDoes": "Was macht diese App?",
+    "what1": "Beantwortet kontextbezogene Fragen zu Aufgaben und Notizen in Ihrem Arbeitsbereich.",
+    "what2": "Nutzt MCP-Tools (Model Context Protocol) zur strukturierten Datenabfrage und Aufgabenverwaltung.",
+    "what3": "Erzwingt eine menschliche Freigabe (Approval Gate), bevor Daten dauerhaft geändert oder neue Aufgaben angelegt werden.",
+    "howToUse": "So verwenden Sie die App",
+    "step1": "Wählen Sie eine Schnellfrage oder tippen Sie eine Frage zu Ihren Projektaufgaben ein.",
+    "step2": "Der Agent prüft Notizen und Aufgaben über den angebundenen MCP-Server.",
+    "step3": "Möchte der Agent eine Aufgabe erstellen, erscheint eine Freigabekarte. Erst nach Ihrem Klick wird die Aktion final ausgeführt.",
+    "capabilitiesTitle": "Fähigkeiten & Sicherheitsgrenzen",
+    "canDoTitle": "Was der Agent KANN",
+    "canDo1": "Offene und abgeschlossene Aufgaben im Arbeitsbereich filtern und auflisten.",
+    "canDo2": "Projektnotizen semantisch und schlüsselwortbasiert nach Informationen durchsuchen.",
+    "canDo3": "Vollständige neue Aufgaben mit Titel und Beschreibung zur Freigabe vorbereiten.",
+    "canDo4": "Streaming-Antworten in Echtzeit via Server-Sent Events (SSE) bereitstellen.",
+    "cannotDoTitle": "Was der Agent NICHT KANN",
+    "cannotDo1": "Niemals eigenständig Schreiboperationen ohne Ihre ausdrückliche Bestätigung ausführen.",
+    "cannotDo2": "Keine falschen Aufgaben oder Notizen ohne Grundlage erfinden (Halluzinationsschutz).",
+    "cannotDo3": "Keinen Zugriff auf das Dateisystem oder externe APIs außerhalb des definierten MCP-Servers nehmen.",
+    "cannotDo4": "Keine zerstörerischen Aktionen an Ihrem Produktivsystem durchführen.",
+    "mcpToolsTitle": "Verfügbare MCP-Werkzeuge",
+    "tool1Name": "list_tasks",
+    "tool1Desc": "Listet Aufgaben im Arbeitsbereich auf, optional gefiltert nach Status (open/completed).",
+    "tool2Name": "search_notes",
+    "tool2Desc": "Durchsucht Workspace-Notizen nach Schlüsselwörtern und Relevanz.",
+    "tool3Name": "create_task",
+    "tool3Desc": "Erstellt eine neue Aufgabe im Workspace – zwingend schreibgeschützt durch Human-in-the-Loop.",
+    "technologies": "Technologien"
+  }
+}
