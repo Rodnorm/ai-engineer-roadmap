@@ -79,14 +79,15 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
     },
     {
       id: "06",
-      title: "App 06: AI Observability",
+      title: "App 06: Agent Workspace",
       status: "completed",
       description: locale === "pt"
-        ? "Observabilidade de ponta a ponta para pipelines de IA com OpenTelemetry, traces de spans GenAI, dashboards de latência e custo por requisição."
+        ? "Workspace de agentes com streaming SSE, Azure AI Foundry Agent Service, ferramentas tipadas via MCP e persistência de conversas."
         : locale === "de"
-        ? "End-to-End-Observability für KI-Pipelines mit OpenTelemetry, GenAI-Span-Tracing und Latenz- und Kosten-Dashboards pro Anfrage."
-        : "End-to-end observability for AI pipelines with OpenTelemetry, GenAI span tracing, and per-request latency and cost dashboards.",
-      badge: locale === "pt" ? "Observabilidade" : locale === "de" ? "Observability" : "Observability & Tracing",
+        ? "Streaming-Agenten-Workspace mit Azure AI Foundry Agent Service, typisierten MCP-Tools und Konversationspersistenz."
+        : "Streaming agent workspace with Azure AI Foundry Agent Service, typed MCP tools, approval gates, and durable conversations.",
+      badge: "AI Agents & MCP",
+      link: "/apps/agent-workspace",
     },
     {
       id: "07",
