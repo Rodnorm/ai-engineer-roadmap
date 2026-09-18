@@ -7,8 +7,6 @@ import {
   CirclePlus,
   Menu,
   MessageSquareText,
-  PanelLeftClose,
-  PanelLeftOpen,
   Search,
   Send,
   Sparkles,
@@ -53,20 +51,16 @@ async function consumeEvents(response: Response, onEvent: (event: AgentEvent) =>
 function Sidebar({
   conversations,
   activeId,
-  openMobile,
-  collapsedDesktop,
-  onCloseMobile,
-  onToggleDesktop,
+  open,
+  onClose,
   onCreate,
   onSelect,
   onDelete,
 }: {
   conversations: Conversation[];
   activeId?: string;
-  openMobile: boolean;
-  collapsedDesktop: boolean;
-  onCloseMobile: () => void;
-  onToggleDesktop: () => void;
+  open: boolean;
+  onClose: () => void;
   onCreate: () => void;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
@@ -77,16 +71,16 @@ function Sidebar({
 
   return (
     <>
-      {openMobile && (
+      {open && (
         <button
           type="button"
           className="sidebar-scrim"
           aria-label={controlsT("close")}
-          onClick={onCloseMobile}
+          onClick={onClose}
         />
       )}
       <aside
-        className={`sidebar ${openMobile ? "sidebar-open" : ""} ${collapsedDesktop ? "sidebar-collapsed" : ""}`}
+        className={`sidebar ${open ? "sidebar-open" : ""}`}
         aria-label={sidebarT("conversations")}
       >
         <div className="brand-row">
@@ -97,24 +91,14 @@ function Sidebar({
             <strong>{appT("title")}</strong>
             <span>Workspace · MCP</span>
           </div>
-          {/* Mobile close button */}
+          {/* Close button inside sidebar on mobile */}
           <button
             type="button"
-            className="icon-button ml-auto lg:hidden"
-            onClick={onCloseMobile}
+            className="control-button size-8 p-0 ml-auto lg:hidden cursor-pointer"
+            onClick={onClose}
             aria-label={controlsT("close")}
           >
             <X className="size-4" />
-          </button>
-          {/* Desktop collapse button */}
-          <button
-            type="button"
-            className="icon-button ml-auto hidden lg:inline-grid"
-            onClick={onToggleDesktop}
-            aria-label={controlsT("toggleSidebar")}
-            title={controlsT("toggleSidebar")}
-          >
-            <PanelLeftClose className="size-4" />
           </button>
         </div>
 
@@ -249,9 +233,14 @@ export function ChatWorkspace() {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState<string>();
 
-  // Responsive sidebar states
-  const [sidebarOpenMobile, setSidebarOpenMobile] = useState(false);
-  const [sidebarCollapsedDesktop, setSidebarCollapsedDesktop] = useState(false);
+  // Responsive sidebar open state: opens on desktop, closes on mobile initially
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setSidebarOpen(true);
+    }
+  }, []);
 
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -278,7 +267,9 @@ export function ChatWorkspace() {
       );
       setActive(conversation);
       setConversations((current) => [conversation, ...current]);
-      setSidebarOpenMobile(false);
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not create a conversation");
     } finally {
@@ -311,7 +302,9 @@ export function ChatWorkspace() {
         await fetch(`/api/conversations/${id}`, { cache: "no-store" })
       );
       setActive(conversation);
-      setSidebarOpenMobile(false);
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not load the conversation");
     } finally {
@@ -422,10 +415,8 @@ export function ChatWorkspace() {
       <Sidebar
         conversations={conversations}
         activeId={active?.id}
-        openMobile={sidebarOpenMobile}
-        collapsedDesktop={sidebarCollapsedDesktop}
-        onCloseMobile={() => setSidebarOpenMobile(false)}
-        onToggleDesktop={() => setSidebarCollapsedDesktop((curr) => !curr)}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         onCreate={() => void createConversation()}
         onSelect={(id) => void selectConversation(id)}
         onDelete={(id) => void deleteConversation(id)}
@@ -433,29 +424,17 @@ export function ChatWorkspace() {
 
       <section className="chat-panel">
         <header className="topbar">
-          <div className="flex items-center gap-2">
-            {/* Mobile hamburger button */}
+          <div className="flex items-center gap-3">
+            {/* Unified Hamburger Menu Button for both desktop and mobile */}
             <button
               type="button"
-              className="icon-button lg:hidden"
-              onClick={() => setSidebarOpenMobile(true)}
+              className="control-button size-9 p-0 shrink-0 cursor-pointer"
+              onClick={() => setSidebarOpen((curr) => !curr)}
               aria-label={controlsT("toggleSidebar")}
               title={controlsT("toggleSidebar")}
             >
-              <Menu className="size-4" />
+              <Menu className="size-4 text-muted hover:text-text transition-colors" />
             </button>
-            {/* Desktop sidebar expand button (only visible when sidebar is collapsed) */}
-            {sidebarCollapsedDesktop && (
-              <button
-                type="button"
-                className="icon-button hidden lg:inline-grid"
-                onClick={() => setSidebarCollapsedDesktop(false)}
-                aria-label={controlsT("toggleSidebar")}
-                title={controlsT("toggleSidebar")}
-              >
-                <PanelLeftOpen className="size-4" />
-              </button>
-            )}
             <div>
               <p className="eyebrow">{appT("eyebrow")}</p>
               <h1>{active?.title ?? appT("title")}</h1>

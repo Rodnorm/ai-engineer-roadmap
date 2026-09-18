@@ -36,7 +36,7 @@ export function ThemeToggle() {
       aria-label={isDark ? t("lightTheme") : t("darkTheme")}
       title={isDark ? t("lightTheme") : t("darkTheme")}
       onClick={toggleTheme}
-      className="icon-button"
+      className="control-button size-9 p-0 cursor-pointer"
     >
       {isDark ? (
         <Sun className="size-4 text-amber-400 hover:text-amber-300 transition-colors" />

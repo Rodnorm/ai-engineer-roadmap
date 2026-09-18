@@ -39,25 +39,25 @@ export function LangSwitcher() {
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative inline-flex items-center">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("language")}
-        className="icon-button w-auto px-2.5 gap-1.5 text-xs font-medium"
+        className="control-button gap-1.5 px-2.5 sm:px-3 text-xs font-medium cursor-pointer"
       >
         <Globe className="size-4 text-sky-400 shrink-0" />
-        <span className="hidden sm:inline text-xs">{LOCALE_LABELS[locale]}</span>
-        <ChevronDown className={`size-3 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="hidden sm:inline text-xs font-medium text-text">{LOCALE_LABELS[locale]}</span>
+        <ChevronDown className={`size-3 transition-transform text-muted shrink-0 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
         <ul
           role="listbox"
           aria-label={t("language")}
-          className="absolute right-0 z-50 mt-2 min-w-36 overflow-hidden rounded-xl border border-border bg-panel py-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-150"
+          className="absolute right-0 top-full z-50 mt-1.5 min-w-36 overflow-hidden rounded-xl border border-border bg-panel py-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-150"
         >
           {LOCALES.map((option) => (
             <li key={option} role="presentation">

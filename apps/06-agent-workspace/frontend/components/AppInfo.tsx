@@ -23,9 +23,9 @@ export function AppInfo() {
         onClick={() => dialogRef.current?.showModal()}
         aria-label={controlsT("about")}
         title={controlsT("about")}
-        className="icon-button"
+        className="control-button size-9 p-0 cursor-pointer"
       >
-        <Info className="size-4" />
+        <Info className="size-4 text-muted hover:text-text transition-colors" />
       </button>
 
       <dialog
