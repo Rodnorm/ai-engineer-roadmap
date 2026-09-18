@@ -356,7 +356,7 @@ export function ChatWorkspace({
           ? {
               ...current,
               messages: [...current.messages, event.message],
-              pendingApproval: undefined,
+              pendingApproval: current.pendingApproval,
               updatedAt: event.message.createdAt,
             }
           : current
@@ -404,6 +404,7 @@ export function ChatWorkspace({
 
   const decideApproval = async (approved: boolean) => {
     if (!active || busy) return;
+    setActive((current) => (current ? { ...current, pendingApproval: undefined } : current));
     setBusy(true);
     setError(undefined);
     setStreamedText("");
