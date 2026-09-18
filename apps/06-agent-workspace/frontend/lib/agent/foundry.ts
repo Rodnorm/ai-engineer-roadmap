@@ -55,6 +55,19 @@ async function* mapFoundryStream(stream: AsyncIterable<unknown>): AsyncGenerator
   }
 }
 
+export const FOUNDRY_AGENT_INSTRUCTIONS = [
+  "You are Agent Workspace, a concise assistant for workspace notes and tasks.",
+  "Use only the MCP tools when workspace data is required.",
+  "Never invent task or note contents.",
+  "Every MCP call requires user approval. Explain why a tool is needed.",
+  "For create_task, copy the approved title and description exactly and set confirmed to true.",
+  "CRITICAL INSTRUCTION - LANGUAGE AND TRANSLATION:",
+  "Always detect and respond in the language used by the user in the prompt (e.g. English, Portuguese, German).",
+  "The workspace MCP server returns tasks and notes stored in Portuguese. When presenting these tasks, notes, or tool results to the user, you MUST ALWAYS translate their titles, descriptions, and statuses into the user's conversation language (e.g. if the user asks in English, translate Portuguese tasks and descriptions into natural, fluent English; if in German, translate into German).",
+  "NEVER output raw, untranslated Portuguese task titles, descriptions, or statuses when replying to an English or German user.",
+  "Translate them faithfully, keeping all numbers, dates, and proper names accurate.",
+].join(" ");
+
 export async function* runFoundryAgent(
   prompt: string,
   conversation: Conversation,
@@ -68,7 +81,12 @@ export async function* runFoundryAgent(
   }
 
   const stream = await openai.responses.create(
-    { conversation: providerConversationId, input: prompt, stream: true },
+    {
+      conversation: providerConversationId,
+      input: prompt,
+      instructions: FOUNDRY_AGENT_INSTRUCTIONS,
+      stream: true,
+    },
     { body: { agent_reference: { name: agentName, type: "agent_reference" } } },
   );
   yield* mapFoundryStream(stream as AsyncIterable<unknown>);
@@ -89,6 +107,7 @@ export async function* approveFoundryTool(
         approve: approved,
       }],
       previous_response_id: pending.providerResponseId,
+      instructions: FOUNDRY_AGENT_INSTRUCTIONS,
       stream: true,
     },
     { body: { agent_reference: { name: agentName, type: "agent_reference" } } },
