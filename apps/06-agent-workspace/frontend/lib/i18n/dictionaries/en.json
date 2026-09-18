@@ -3,7 +3,8 @@
     "title": "Agent Workspace",
     "eyebrow": "Foundry Agent + MCP",
     "onlineStatus": "Workspace online",
-    "offlineStatus": "Offline-ready agent",
+    "offlineStatus": "Agent ready offline",
+    "foundryStatus": "Azure Foundry connected",
     "newConversation": "New conversation",
     "deleteConfirm": "Do you really want to delete this conversation?"
   },

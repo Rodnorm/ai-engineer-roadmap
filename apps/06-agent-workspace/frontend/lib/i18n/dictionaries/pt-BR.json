@@ -4,6 +4,7 @@
     "eyebrow": "Foundry Agent + MCP",
     "onlineStatus": "Workspace online",
     "offlineStatus": "Agente pronto offline",
+    "foundryStatus": "Azure Foundry conectado",
     "newConversation": "Nova conversa",
     "deleteConfirm": "Deseja realmente excluir esta conversa?"
   },
