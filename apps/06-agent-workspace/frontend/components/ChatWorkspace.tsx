@@ -11,6 +11,7 @@ import {
   Send,
   Sparkles,
   Trash2,
+  User,
   Wrench,
   X,
 } from "lucide-react";
@@ -158,7 +159,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   const assistant = message.role === "assistant";
   return (
     <article className={`message ${assistant ? "assistant-message" : "user-message"}`}>
-      <div className="message-avatar">{assistant ? <Bot /> : "R"}</div>
+      <div className="message-avatar">{assistant ? <Bot /> : <User />}</div>
       <div className="message-body">
         <div className="message-meta">
           <strong>{assistant ? chatT("agent") : chatT("you")}</strong>

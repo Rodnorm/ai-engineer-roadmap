@@ -224,7 +224,7 @@ button:disabled { cursor: not-allowed; }
 .welcome-orbit span { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--theme-teal); box-shadow: 0 0 12px var(--theme-teal); }
 .welcome-orbit span:nth-child(2) { right: -7px; top: 13px; }
 .welcome-orbit span:nth-child(3) { left: -5px; bottom: 10px; width: 5px; height: 5px; background: var(--theme-accent-bright); }
-.welcome h2 { margin: 8px 0 12px; font-size: clamp(34px, 5vw, 56px); line-height: 1; letter-spacing: -.055em; background: linear-gradient(100deg, var(--theme-text) 25%, var(--theme-accent-bright) 70%, var(--theme-teal)); color: transparent; background-clip: text; }
+.welcome h2 { margin: 8px 0 16px; font-size: clamp(34px, 5vw, 56px); line-height: 1.25; padding-bottom: 8px; letter-spacing: -.04em; background: linear-gradient(100deg, var(--theme-text) 25%, var(--theme-accent-bright) 70%, var(--theme-teal)); color: transparent; background-clip: text; -webkit-background-clip: text; }
 .welcome > p:not(.eyebrow) { max-width: 580px; margin: 0 auto; color: var(--theme-muted); font-size: 14px; line-height: 1.7; }
 
 .suggestions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 34px; text-align: left; }
@@ -352,7 +352,7 @@ button:disabled { cursor: not-allowed; }
   .topbar h1 { max-width: 180px; font-size: 14px; }
   .messages { padding: 20px 14px 34px; }
   .welcome { margin-top: 32px; }
-  .welcome h2 { font-size: 36px; }
+  .welcome h2 { font-size: 34px; line-height: 1.25; padding-bottom: 6px; }
   .composer-wrap { padding: 10px 12px 13px; }
   .approval-card { margin-left: 0; }
   .message { gap: 10px; }
