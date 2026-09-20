@@ -8,10 +8,10 @@ the credentialed evaluation are validated.
 ## Data flow
 
 ```text
-browser -> authenticated FastAPI API -> private original file
-                                  |--> SQLite document catalog & chunks (embeddings)
-question -> SQLite vector top-k -> relevance gate -> bounded context -> Azure OpenAI
-                                                        -> answer + inline citations
+browser -> signed HttpOnly owner session -> Next.js BFF -> authenticated FastAPI API
+                                                       |-> private original file
+                                                       |-> owner-scoped SQLite chunks
+question -> owner-scoped vector top-k -> relevance gate -> Azure OpenAI -> cited answer
 ```
 
 Supported uploads are PDF, Markdown, UTF-8 TXT, and DOCX. Defaults are 10 MB,
@@ -50,11 +50,13 @@ Frontend:
 ```bash
 cd apps/04-pocket-rag/frontend
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`. Next.js rewrites `/api/backend` to the local FastAPI
-server. On Windows, use `npm.cmd` when PowerShell blocks `npm.ps1`.
+Open `http://localhost:3000`. The Next.js route handler proxies `/api/backend` to
+FastAPI, creates a signed anonymous owner cookie, and adds the internal API key and
+owner ID server-side. On Windows, use `npm.cmd` when PowerShell blocks `npm.ps1`.
 
 The multilingual embedding model downloads on first use. Pre-download and retain its
 cache on a production host to avoid unpredictable cold starts.
@@ -69,6 +71,11 @@ grounded answers. Bundled examples keep their static suggestions and incur no ex
 Copy `backend/.env.example` and review every limit. Important controls:
 
 - `APP_ENV=production` disables Swagger/OpenAPI and requires `POCKET_RAG_API_KEY`.
+  Configure the same value only on the FastAPI and Next.js servers.
+- `POCKET_RAG_SESSION_SECRET` belongs only to Next.js, must contain at least 32
+  characters, and signs the anonymous `HttpOnly` owner cookie.
+- `BACKEND_URL` is server-only. The browser calls the same-origin Next.js BFF and
+  never receives the backend URL, API key, session secret, or owner ID.
 - Local development enables generation by default when `GENERATION_ENABLED` is
   omitted. Test and production environments default to the safe `false` kill switch;
   set it to `true` only after configuring Azure credentials, limits, and a budget.
@@ -80,10 +87,16 @@ Copy `backend/.env.example` and review every limit. Important controls:
   chunk limits are all server-side settings.
 - Token prices are configurable assumptions. The UI does not claim fixed savings.
 
-Production is a single-user/private-server mode. The frontend asks for the API key
-and keeps it only in memory for the current tab. Every document, stats, query, and
-delete endpoint validates the bearer token. `/health` remains public and returns only
-app/status/version. This is not multi-tenant isolation.
+Production uses anonymous owner sessions rather than accounts or a shared password.
+Next.js stores a signed owner token in a `Secure`, `HttpOnly`, `SameSite=Lax`
+cookie. FastAPI accepts owner identity only from the authenticated BFF and scopes
+upload listing, duplicate detection, suggestions, retrieval, statistics, and deletion
+to that owner. Bundled examples remain global and read-only. `/health` remains public
+and returns only app/status/version.
+
+This provides browser-session isolation, not durable identity: clearing cookies or
+using another browser creates a new owner. A real login would still be required for
+cross-device access or account recovery.
 
 The API returns sanitized errors with a stable code and request ID. Logs include
 request method/path/status/duration and error type, never prompt or document content.
@@ -113,8 +126,9 @@ mounted volume is empty.
 
 ## API
 
-All `/api/*` examples need `Authorization: Bearer <POCKET_RAG_API_KEY>` when a key is
-configured.
+The browser calls the same-origin `/api/backend/*` BFF. Direct FastAPI `/api/*`
+requests are internal and require both `Authorization: Bearer <POCKET_RAG_API_KEY>`
+and the BFF-provided `X-Owner-ID`; clients must not choose their own owner ID.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
@@ -168,7 +182,9 @@ The app is deployed using Docker Compose on Coolify (`compose.coolify.yml`): Nex
 and FastAPI at `/api/backend`. The frontend sends same-origin API requests.
 
 The backend uses a mounted persistent volume (`pocket-rag-data`) at `/app/data`
-to ensure durable SQLite and uploaded-file storage across restarts.
+to ensure durable SQLite and uploaded-file storage across restarts. Configure
+`BACKEND_URL`, `POCKET_RAG_API_KEY`, and `POCKET_RAG_SESSION_SECRET` on the
+Next.js resource; configure the same `POCKET_RAG_API_KEY` on FastAPI.
 Keep generation disabled during initial setup, deploy from `main`, and test upload,
 query, delete, restart recovery, model cold start, duration, and kill switch on the
 actual host.
