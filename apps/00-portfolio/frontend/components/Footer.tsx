@@ -27,6 +27,14 @@ export function Footer() {
             {dict.footer.about}
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
+          <Link href="/datenschutz" className="hover:text-primary transition-colors">
+            Datenschutz
+          </Link>
+          <span className="text-border" aria-hidden="true">•</span>
+          <Link href="/impressum" className="hover:text-primary transition-colors">
+            Impressum
+          </Link>
+          <span className="text-border" aria-hidden="true">•</span>
           <a
             href="https://github.com/Rodnorm/ai-engineer-roadmap"
             target="_blank"
