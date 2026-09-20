@@ -100,6 +100,11 @@ MAX_CONCURRENT_REQUESTS = _env_int("MAX_CONCURRENT_REQUESTS", 2, 1)
 concurrency_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 RATE_LIMIT_ENABLED = _env_bool("RATE_LIMIT_ENABLED", True)
+RATE_LIMIT_HASH_KEY = os.getenv("RATE_LIMIT_HASH_KEY", "")
+if IS_PRODUCTION and RATE_LIMIT_ENABLED and len(RATE_LIMIT_HASH_KEY) < 32:
+    raise RuntimeError(
+        "RATE_LIMIT_HASH_KEY must contain at least 32 characters in production."
+    )
 TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
 TRUSTED_PROXY_CIDRS = parse_trusted_proxy_cidrs(os.getenv("TRUSTED_PROXY_CIDRS", ""))
 
@@ -118,10 +123,12 @@ rate_limiter = PersistentRateLimiter(
     ),
     global_requests_per_day=_env_int(
         "RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY", 100
-    ),    database_path=os.getenv(
+    ),
+    database_path=os.getenv(
         "RATE_LIMIT_DB_PATH",
         "/data/rate-limit.sqlite3" if IS_PRODUCTION else "./data/rate-limit.sqlite3",
     ),
+    key_secret=RATE_LIMIT_HASH_KEY or "development-only-rate-limit-key",
 )
 
 
