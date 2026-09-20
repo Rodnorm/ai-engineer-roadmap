@@ -9,7 +9,9 @@ Multi-Agent Brief Generator demonstrates heterogeneous multi-agent collaboration
 - **Framework**: Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS v4.
 - **AI Engine**: Azure OpenAI Service (`gpt-4o` / `gpt-4o-mini`) or deterministic Offline Mock Engine.
 - **Handoff Protocol**: Real-time SSE streaming of agent trace steps, telemetry, dossier extraction, and finalized markdown brief.
-- **Security & Reliability**: In-memory rate limiting, master kill-switch (`GENERATION_ENABLED`), context isolation, and security headers.
+- **User Session Isolation**: HMAC-SHA256 signed browser cookies (`app07-owner`), session-isolated brief history storage, and instant historical retrieval (padrão App 06).
+- **Interactive Scenarios**: 12 pre-configured architectural, security, and FinOps scenarios for immediate evaluation.
+- **Security & Reliability**: In-memory rate limiting (10 req/min), concurrency semaphore, master kill-switch (`GENERATION_ENABLED`), and security headers.
 
 ## Getting Started
 
