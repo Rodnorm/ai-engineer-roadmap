@@ -150,7 +150,7 @@ const CONTENT = {
     date: "Stand: 20. September 2026",
     s1Title: "1. Verantwortlicher",
     controllerName: "Rodrigo Normando",
-    address: "Düsseldorf, Deutschland (Postanschrift auf Anfrage)",
+    address: "Essen, Deutschland (Postanschrift auf Anfrage)",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Grundsatz und Zweck",
     s2Text:
@@ -185,7 +185,7 @@ const CONTENT = {
     date: "Effective Date: September 20, 2026",
     s1Title: "1. Data Controller",
     controllerName: "Rodrigo Normando",
-    address: "Düsseldorf, Germany (Postal address available upon request)",
+    address: "Essen, Germany (Postal address available upon request)",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Principles and Purpose",
     s2Text:
@@ -220,7 +220,7 @@ const CONTENT = {
     date: "Data de Vigência: 20 de Setembro de 2026",
     s1Title: "1. Responsável pelo Tratamento (Controlador)",
     controllerName: "Rodrigo Normando",
-    address: "Düsseldorf, Alemanha (Endereço postal disponível mediante solicitação)",
+    address: "Essen, Alemanha (Endereço postal disponível mediante solicitação)",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Princípios e Finalidade",
     s2Text:
