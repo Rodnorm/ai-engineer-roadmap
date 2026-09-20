@@ -1,9 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { HandoffVisualizer } from "@/components/trace/HandoffVisualizer";
 import { BriefViewer } from "@/components/brief/BriefViewer";
+import { AppInfoDrawer } from "@/components/info/AppInfoDrawer";
+import { SessionHistoryDrawer } from "@/components/session/SessionHistoryDrawer";
+import {
+  COMPLETE_SCENARIOS,
+  QuickScenarios,
+  ScenarioItem,
+} from "@/components/suggestions/QuickScenarios";
+import { StoredBrief } from "@/lib/session/brief-repository";
 import {
   AgentTraceStep,
   BriefTone,
@@ -14,53 +22,58 @@ import {
 } from "@/types/agent";
 import {
   AlertCircle,
-  ArrowRight,
-  Layers,
-  Play,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
   RotateCcw,
   Sliders,
   Sparkles,
   Zap,
 } from "lucide-react";
 
-const SAMPLE_SCENARIOS = [
-  {
-    title: "Monólito Modular vs Microsserviços",
-    topic: "Avaliação comparativa de transição de um e-commerce em monólito para monólito modular vs microsserviços orientados a eventos.",
-    scope: "Arquitetura e Latência de Rede",
-    tone: "technical" as BriefTone,
-  },
-  {
-    title: "Zero Trust em Nuvem Híbrida",
-    topic: "Estratégia de modernização de segurança para uma empresa financeira migrando para modelo Zero Trust em nuvem híbrida (Azure e On-Premises).",
-    scope: "Segurança e Conformidade LGPD/BACEN",
-    tone: "executive" as BriefTone,
-  },
-  {
-    title: "RAG Privado vs Fine-Tuning de SLM",
-    topic: "Trade-offs técnicos e de custo entre arquitetura RAG com Azure AI Search vs Fine-Tuning de SLMs para análise de contratos jurídicos.",
-    scope: "Inteligência Artificial e FinOps",
-    tone: "critical" as BriefTone,
-  },
-];
-
 export default function HomePage() {
-  const [topic, setTopic] = useState(SAMPLE_SCENARIOS[0].topic);
-  const [scope, setScope] = useState(SAMPLE_SCENARIOS[0].scope);
+  const [topic, setTopic] = useState(COMPLETE_SCENARIOS[0].topic);
+  const [scope, setScope] = useState(COMPLETE_SCENARIOS[0].scope);
   const [tone, setTone] = useState<BriefTone>("executive");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Drawers state
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isScenariosOpen, setIsScenariosOpen] = useState(false);
 
   // Execution state
   const [steps, setSteps] = useState<AgentTraceStep[]>([]);
   const [dossier, setDossier] = useState<ResearchDossier | null>(null);
   const [brief, setBrief] = useState<ExecutiveBrief | null>(null);
   const [result, setResult] = useState<PipelineExecutionResult | null>(null);
+  const [briefsCount, setBriefsCount] = useState(0);
 
-  const handleSelectScenario = (scenario: (typeof SAMPLE_SCENARIOS)[0]) => {
+  // Load initial briefs count
+  useEffect(() => {
+    fetch("/api/session")
+      .then((res) => res.json())
+      .then((d) => setBriefsCount(d.briefsCount || 0))
+      .catch(() => {});
+  }, []);
+
+  const handleSelectScenario = (scenario: ScenarioItem) => {
     setTopic(scenario.topic);
     setScope(scenario.scope);
     setTone(scenario.tone);
+    setIsScenariosOpen(false);
+  };
+
+  const handleSelectHistoricalBrief = (historical: StoredBrief) => {
+    setTopic(historical.topic);
+    setScope(historical.scope);
+    setTone(historical.tone);
+    setBrief(historical.result.brief);
+    setDossier(historical.result.dossier);
+    setSteps(historical.result.trace);
+    setResult(historical.result);
+    setError(null);
   };
 
   const handleGenerate = async (e?: React.FormEvent) => {
@@ -118,6 +131,7 @@ export default function HomePage() {
                 setBrief(event.result.brief);
                 setDossier(event.result.dossier);
                 setSteps(event.result.trace);
+                setBriefsCount((prev) => prev + 1);
               } else if (event.type === "error") {
                 setError(event.error || "Erro durante a execução do pipeline.");
               }
@@ -138,7 +152,11 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--bg-primary)]">
-      <Header />
+      <Header
+        onOpenInfo={() => setIsInfoOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        briefsCount={briefsCount}
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
         {/* Top Control Panel */}
@@ -150,23 +168,37 @@ export default function HomePage() {
                 Parâmetros da Investigação & Síntese
               </h2>
             </div>
-            {/* Scenarios chips */}
-            <div className="hidden lg:flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-                <Zap className="w-3.5 h-3.5 text-amber-400" /> Cenários Rápidos:
-              </span>
-              {SAMPLE_SCENARIOS.map((sc, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSelectScenario(sc)}
-                  className="px-2.5 py-1 rounded-md text-[11px] font-medium border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-all"
-                >
-                  {sc.title}
-                </button>
-              ))}
-            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsScenariosOpen(!isScenariosOpen)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--accent-agent-research)] hover:border-[var(--card-hover-border)] transition-colors"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>12 Cenários Prontos</span>
+              {isScenariosOpen ? (
+                <ChevronUp className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </button>
           </div>
+
+          {/* Collapsible 12-scenario catalogue */}
+          {isScenariosOpen && (
+            <div className="mb-5 p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]/40 transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <BookOpen className="w-4 h-4 text-[var(--accent-agent-research)]" />
+                <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
+                  Catálogo de 12 Cenários de Engenharia & Arquitetura
+                </h3>
+              </div>
+              <QuickScenarios
+                onSelect={handleSelectScenario}
+                activeTopic={topic}
+              />
+            </div>
+          )}
 
           <form onSubmit={handleGenerate} className="space-y-4">
             <div>
@@ -267,6 +299,19 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
+      {/* Info Slide-over Drawer */}
+      <AppInfoDrawer
+        isOpen={isInfoOpen}
+        onClose={() => setIsInfoOpen(false)}
+      />
+
+      {/* Session History Drawer */}
+      <SessionHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelectBrief={handleSelectHistoricalBrief}
+      />
     </div>
   );
 }
