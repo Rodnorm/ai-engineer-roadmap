@@ -3,12 +3,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        BACKEND_URL: http://backend:8000
     environment:
       NODE_ENV: production
       PORT: "3000"
       BACKEND_URL: http://backend:8000
+      POCKET_RAG_API_KEY: ${POCKET_RAG_API_KEY}
+      POCKET_RAG_SESSION_SECRET: ${POCKET_RAG_SESSION_SECRET}
     expose:
       - "3000"
     security_opt:
