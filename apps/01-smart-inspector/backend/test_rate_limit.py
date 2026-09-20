@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -33,6 +34,7 @@ class PersistentRateLimiterTests(unittest.TestCase):
             global_daily,
             database_path=self.database_path,
             clock=self.clock,
+            key_secret="test-rate-limit-key",
         )
 
     def test_blocks_ip_after_minute_limit(self) -> None:
@@ -66,6 +68,18 @@ class PersistentRateLimiterTests(unittest.TestCase):
         self.assertTrue(limiter.check_and_record("client-a").allowed)
         self.assertTrue(limiter.check_and_record("client-b").allowed)
         self.assertEqual(limiter.check_and_record("client-c").scope, "global_day")
+
+    def test_persists_pseudonym_instead_of_client_address(self) -> None:
+        limiter = self.limiter()
+        limiter.check_and_record("203.0.113.42")
+
+        with sqlite3.connect(self.database_path) as connection:
+            stored_key = connection.execute(
+                "SELECT client_key FROM rate_limit_events"
+            ).fetchone()[0]
+
+        self.assertNotEqual(stored_key, "203.0.113.42")
+        self.assertEqual(len(stored_key), 64)
 
     def test_quota_survives_limiter_recreation(self) -> None:
         first = self.limiter(minute=1)
