@@ -94,7 +94,9 @@ class TestPocketRagBackend(unittest.TestCase):
         self.llm.embeddings.create.side_effect = mock_embeddings_create
         self.real_build_client = self.backend._build_client
         self.enterContext(patch.object(self.backend, "_build_client", return_value=self.llm))
+        self.owner_id = str(uuid.uuid4())
         self.client = self.enterContext(TestClient(self.backend.app))
+        self.client.headers.update({"X-Owner-ID": self.owner_id})
 
     def upload(self, name="knowledge.txt", content=b"PocketRAG is a local knowledge base with grounded retrieval."):
         return self.client.post("/api/documents/upload", files={"file": (name, content)})
@@ -245,6 +247,46 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertEqual(query.status_code, 200)
         self.assertTrue(query.json()["retrieved_chunks"])
         self.assertTrue(all(chunk["source"] == "example" for chunk in query.json()["retrieved_chunks"]))
+
+    def test_sessions_isolate_uploads_queries_and_deletes(self):
+        upload = self.upload("private.txt", b"Owner A private knowledge")
+        self.assertEqual(upload.status_code, 201)
+        document_id = upload.json()["document_id"]
+        owner_b = str(uuid.uuid4())
+        owner_b_headers = {"X-Owner-ID": owner_b}
+
+        self.assertEqual(
+            self.client.get("/api/documents", headers=owner_b_headers).json(), []
+        )
+        query = self.client.post(
+            "/api/query",
+            headers=owner_b_headers,
+            json={"question": "What is private?", "language": "en"},
+        )
+        self.assertEqual(query.status_code, 200)
+        self.assertEqual(query.json()["generation_status"], "not_needed")
+        denied_delete = self.client.delete(
+            f"/api/documents/{document_id}", headers=owner_b_headers
+        )
+        self.assertEqual(denied_delete.status_code, 404)
+        self.assertIsNotNone(
+            self.backend.store.get_record(document_id, owner_id=self.owner_id)
+        )
+
+        owner_b_upload = self.client.post(
+            "/api/documents/upload",
+            headers=owner_b_headers,
+            files={"file": ("private.txt", b"Owner A private knowledge")},
+        )
+        self.assertEqual(owner_b_upload.status_code, 201)
+
+    def test_owner_session_header_is_required_and_validated(self):
+        missing = self.client.get("/api/documents", headers={"X-Owner-ID": ""})
+        invalid = self.client.get(
+            "/api/documents", headers={"X-Owner-ID": "not-a-session"}
+        )
+        self.assertEqual(missing.status_code, 401)
+        self.assertEqual(invalid.status_code, 401)
 
     def test_private_mode_requires_bearer_key(self):
         with patch.object(self.backend, "settings", replace(self.backend.settings, api_key="private-key")):

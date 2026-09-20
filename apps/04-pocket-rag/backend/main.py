@@ -180,15 +180,23 @@ async def validation_error(request: Request, error: RequestValidationError):
     return _error_response(request, 422, "invalid_input", "Request validation failed")
 
 
-def require_access(authorization: str | None = Header(default=None)) -> None:
-    if not settings.api_key:
-        return
-    expected = f"Bearer {settings.api_key}"
-    if authorization is None or not secrets.compare_digest(authorization, expected):
-        raise HTTPException(status_code=401, detail="Valid access credentials are required")
-
-
-protected = [Depends(require_access)]
+def require_owner_access(
+    authorization: str | None = Header(default=None),
+    owner_header: str | None = Header(default=None, alias="X-Owner-ID"),
+) -> str:
+    if settings.api_key:
+        expected = f"Bearer {settings.api_key}"
+        if authorization is None or not secrets.compare_digest(authorization, expected):
+            raise HTTPException(status_code=401, detail="Valid access credentials are required")
+    if not owner_header:
+        raise HTTPException(status_code=401, detail="A valid owner session is required")
+    try:
+        owner_id = uuid.UUID(owner_header)
+    except ValueError as error:
+        raise HTTPException(status_code=401, detail="A valid owner session is required") from error
+    if owner_id.version != 4:
+        raise HTTPException(status_code=401, detail="A valid owner session is required")
+    return str(owner_id)
 
 
 def _build_client():
@@ -241,6 +249,7 @@ def _build_chunk_records(
     chunks: list[ParsedChunk],
     embeddings: list[list[float]],
     source: str = "upload",
+    owner_id: str = "",
 ) -> list[dict[str, Any]]:
     records = []
     for chunk, emb in zip(chunks, embeddings):
@@ -254,6 +263,7 @@ def _build_chunk_records(
                 "embedding": emb,
                 "source": source,
                 "page_number": chunk.page_number,
+                "owner_id": owner_id,
             }
         )
     return records
@@ -347,31 +357,33 @@ def health_check():
     return {"status": "healthy", "app": "pocketRag", "version": "0.2.0"}
 
 
-@app.get("/api/stats", response_model=SystemStats, dependencies=protected)
-def get_stats():
+@app.get("/api/stats", response_model=SystemStats)
+def get_stats(owner_id: str = Depends(require_owner_access)):
     try:
-        chunks = store.count_chunks()
+        chunks = store.count_chunks(owner_id=owner_id)
         vector_store = "SQLite Vector (Local)"
     except Exception:
         chunks = 0
         vector_store = "Unavailable"
     return SystemStats(
-        total_documents=store.count_documents(),
+        total_documents=store.count_documents(owner_id=owner_id),
         total_chunks=chunks,
         vector_store_type=vector_store,
     )
 
 
-@app.get("/api/documents", response_model=list[DocumentItem], dependencies=protected)
-def list_documents(scope: str = "uploads"):
+@app.get("/api/documents", response_model=list[DocumentItem])
+def list_documents(
+    scope: str = "uploads", owner_id: str = Depends(require_owner_access)
+):
     if scope not in {"uploads", "examples", "all"}:
         raise HTTPException(status_code=422, detail="Invalid document scope")
     source = None if scope == "all" else ("example" if scope == "examples" else "upload")
-    return store.list_documents(source)
+    return store.list_documents(source, owner_id=owner_id)
 
 
-@app.get("/api/examples", dependencies=protected)
-def list_example_documents():
+@app.get("/api/examples")
+def list_example_documents(_owner_id: str = Depends(require_owner_access)):
     return [
         {
             **item,
@@ -382,8 +394,8 @@ def list_example_documents():
     ]
 
 
-@app.post("/api/examples/load", response_model=list[DocumentItem], dependencies=protected)
-async def load_example_documents():
+@app.post("/api/examples/load", response_model=list[DocumentItem])
+async def load_example_documents(_owner_id: str = Depends(require_owner_access)):
     for definition in EXAMPLE_DOCUMENTS:
         if store.get_record(definition["id"]) is not None:
             continue
@@ -426,8 +438,10 @@ async def load_example_documents():
     return store.list_documents("example")
 
 
-@app.get("/api/examples/{filename}", dependencies=protected)
-def download_example_document(filename: str):
+@app.get("/api/examples/{filename}")
+def download_example_document(
+    filename: str, _owner_id: str = Depends(require_owner_access)
+):
     if filename not in EXAMPLE_FILENAMES:
         raise HTTPException(status_code=404, detail="Example document not found")
     path = EXAMPLE_DOCUMENTS_DIR / filename
@@ -440,17 +454,19 @@ def download_example_document(filename: str):
     "/api/documents/upload",
     response_model=DocumentUploadResponse,
     status_code=201,
-    dependencies=protected,
 )
-async def upload_document(file: UploadFile = File(...)):
-    if store.count_documents("upload") >= settings.max_documents:
+async def upload_document(
+    file: UploadFile = File(...),
+    owner_id: str = Depends(require_owner_access),
+):
+    if store.count_documents("upload", owner_id=owner_id) >= settings.max_documents:
         raise HTTPException(status_code=429, detail="Document limit reached")
     raw_filename = Path(file.filename or "document.txt").name
     filename = re.sub(r"[^\w.\-]", "_", raw_filename).strip("._") or "document.txt"
     extension = Path(filename).suffix.lower().lstrip(".")
     content = await _read_limited(file)
     digest = hashlib.sha256(content).hexdigest()
-    duplicate = store.find_by_hash(digest)
+    duplicate = store.find_by_hash(digest, owner_id)
     if duplicate:
         raise HTTPException(status_code=409, detail="This file has already been uploaded")
     try:
@@ -487,10 +503,15 @@ async def upload_document(file: UploadFile = File(...)):
         chunk_texts = [c.content for c in chunks]
         embeddings = await asyncio.to_thread(_generate_embeddings, chunk_texts)
         chunk_records = _build_chunk_records(
-            document_id, filename, chunks, embeddings, source="upload"
+            document_id,
+            filename,
+            chunks,
+            embeddings,
+            source="upload",
+            owner_id=owner_id,
         )
         temporary_path.replace(original_path)
-        store.add(item, stored_filename, digest)
+        store.add(item, stored_filename, digest, owner_id=owner_id)
         store.add_chunks(chunk_records)
         indexed = True
     except Exception as error:
@@ -513,9 +534,11 @@ async def upload_document(file: UploadFile = File(...)):
     )
 
 
-@app.delete("/api/documents/{document_id}", dependencies=protected)
-def delete_document(document_id: str):
-    record = store.get_record(document_id)
+@app.delete("/api/documents/{document_id}")
+def delete_document(
+    document_id: str, owner_id: str = Depends(require_owner_access)
+):
+    record = store.get_record(document_id, owner_id=owner_id)
     if record is None:
         raise HTTPException(status_code=404, detail="Document not found")
     if record["source"] != "upload":
@@ -528,11 +551,14 @@ def delete_document(document_id: str):
     return {"message": "Document deleted successfully", "status": "success"}
 
 
-@app.delete("/api/documents", dependencies=protected)
-def clear_documents():
-    records = [store.get_record(item.id) for item in store.list_documents("upload")]
+@app.delete("/api/documents")
+def clear_documents(owner_id: str = Depends(require_owner_access)):
+    records = [
+        store.get_record(item.id, owner_id=owner_id)
+        for item in store.list_documents("upload", owner_id=owner_id)
+    ]
     try:
-        store.clear_metadata("upload")
+        store.clear_metadata("upload", owner_id=owner_id)
         for record in records:
             if record:
                 store.original_path(record["stored_filename"]).unlink(missing_ok=True)
@@ -571,9 +597,12 @@ def _parse_suggestions(content: str) -> list[str]:
     return questions[:5]
 
 
-@app.post("/api/suggestions", response_model=SuggestionResponse, dependencies=protected)
-def suggest_questions(request: SuggestionRequest):
-    if store.count_documents("upload") == 0:
+@app.post("/api/suggestions", response_model=SuggestionResponse)
+def suggest_questions(
+    request: SuggestionRequest,
+    owner_id: str = Depends(require_owner_access),
+):
+    if store.count_documents("upload", owner_id=owner_id) == 0:
         return SuggestionResponse(questions=[], generation_status="not_needed")
 
     client = _build_client()
@@ -581,7 +610,9 @@ def suggest_questions(request: SuggestionRequest):
         return SuggestionResponse(questions=[], generation_status="disabled")
 
     try:
-        context = store.get_chunks_for_suggestions(max_chars=settings.max_context_chars)
+        context = store.get_chunks_for_suggestions(
+            owner_id, max_chars=settings.max_context_chars
+        )
     except Exception as error:
         raise HTTPException(status_code=503, detail="Suggestion context is temporarily unavailable") from error
     if not context:
@@ -639,15 +670,18 @@ def suggest_questions(request: SuggestionRequest):
     return SuggestionResponse(questions=questions, generation_status="generated")
 
 
-@app.post("/api/query", response_model=QueryResponse, dependencies=protected)
-def query_rag(request: QueryRequest):
+@app.post("/api/query", response_model=QueryResponse)
+def query_rag(
+    request: QueryRequest,
+    owner_id: str = Depends(require_owner_access),
+):
     start = time.perf_counter()
     if len(request.question) > settings.max_question_chars:
         raise HTTPException(status_code=422, detail="Question exceeds the configured limit")
     requested_source = None if request.scope == "all" else (
         "example" if request.scope == "examples" else "upload"
     )
-    count = store.count_chunks(requested_source)
+    count = store.count_chunks(requested_source, owner_id=owner_id)
     if count == 0:
         return QueryResponse.empty(_abstention(request.language), start)
 
@@ -658,6 +692,7 @@ def query_rag(request: QueryRequest):
             top_k=request.top_k,
             min_score=settings.min_relevance_score,
             source=requested_source,
+            owner_id=owner_id,
         )
     except Exception as error:
         logger.error("vector_search_failed", extra={"error_type": type(error).__name__})
