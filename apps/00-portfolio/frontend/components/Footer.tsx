@@ -27,12 +27,18 @@ export function Footer() {
             {dict.footer.about}
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
-          <Link href="/datenschutz" className="hover:text-primary transition-colors">
-            Datenschutz
+          <Link
+            href={getLocalizedPath("/datenschutz", locale)}
+            className="hover:text-primary transition-colors"
+          >
+            {locale === "de" ? "Datenschutz" : locale === "pt" ? "Privacidade" : "Privacy"}
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
-          <Link href="/impressum" className="hover:text-primary transition-colors">
-            Impressum
+          <Link
+            href={getLocalizedPath("/impressum", locale)}
+            className="hover:text-primary transition-colors"
+          >
+            {locale === "de" ? "Impressum" : locale === "pt" ? "Aviso Legal" : "Legal Notice"}
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
           <a
