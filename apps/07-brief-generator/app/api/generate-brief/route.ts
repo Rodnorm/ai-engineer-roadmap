@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { executeMultiAgentPipeline } from "@/lib/orchestrator/pipeline";
+import { getOrCreateOwnerId } from "@/lib/session/user-session";
+import { briefRepository } from "@/lib/session/brief-repository";
 import { AgentTraceStep, PipelineEvent } from "@/types/agent";
 
 const RequestSchema = z.object({
@@ -60,6 +62,20 @@ export async function POST(req: NextRequest) {
             sendEvent({ type: "step", step });
           },
         });
+
+        // Save generated brief to current user session repository
+        try {
+          const ownerId = await getOrCreateOwnerId();
+          await briefRepository.save(
+            ownerId,
+            topic,
+            scope || "Geral",
+            tone,
+            result
+          );
+        } catch (saveErr) {
+          console.warn("Falha ao persistir briefing na sessão:", saveErr);
+        }
 
         // Send completed dossier and brief
         sendEvent({
