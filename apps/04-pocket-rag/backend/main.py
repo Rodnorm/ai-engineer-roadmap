@@ -459,7 +459,7 @@ async def upload_document(file: UploadFile = File(...)):
             timeout=settings.parsing_timeout_seconds,
         )
     except asyncio.TimeoutError:
-        logger.warning("document_parsing_timeout", extra={"document_name": filename, "extension": extension})
+        logger.warning("document_parsing_timeout", extra={"extension": extension})
         raise HTTPException(status_code=422, detail="Document parsing exceeded processing time limit")
     except IngestionError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
