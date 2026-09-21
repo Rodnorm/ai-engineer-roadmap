@@ -135,7 +135,7 @@ const CONTENT = {
     date: "Stand: 20. September 2026",
     s1Title: "1. Verantwortlicher",
     controllerName: "Rodrigo Normando Horácio da Silva",
-    address: "[VOLLSTÄNDIGE POSTANSCHRIFT VOR VERÖFFENTLICHUNG EINTRAGEN]",
+    address: "Essen, Deutschland",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Grundsatz und Zweck",
     s2Text:
@@ -170,7 +170,7 @@ const CONTENT = {
     date: "Effective Date: September 20, 2026",
     s1Title: "1. Data Controller",
     controllerName: "Rodrigo Normando Horácio da Silva",
-    address: "[ENTER FULL POSTAL ADDRESS BEFORE PUBLICATION]",
+    address: "Essen, Deutschland",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Principles and Purpose",
     s2Text:
@@ -205,7 +205,7 @@ const CONTENT = {
     date: "Data de Vigência: 20 de Setembro de 2026",
     s1Title: "1. Responsável pelo Tratamento (Controlador)",
     controllerName: "Rodrigo Normando Horácio da Silva",
-    address: "[INSERIR ENDEREÇO POSTAL COMPLETO ANTES DA PUBLICAÇÃO]",
+    address: "Essen, Deutschland",
     email: "rodrigo.normando.silva@gmail.com",
     s2Title: "2. Princípios e Finalidade",
     s2Text:
