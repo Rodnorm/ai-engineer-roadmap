@@ -26,6 +26,7 @@ export async function runResearcher(
   const { topic, scope, tone, maxRounds = 3, onStep } = options;
   const steps: AgentTraceStep[] = [];
   const appMode = process.env.APP_MODE || "offline";
+  const effectiveMaxRounds = Math.max(1, Math.min(maxRounds, 5));
 
   const emitStep = (step: AgentTraceStep) => {
     steps.push(step);
@@ -40,12 +41,13 @@ export async function runResearcher(
     id: `step-research-init-${Date.now()}`,
     agent: "researcher",
     action: "Plan Strategic Research Inquiry",
-    input: { topic, scope, tone, maxRounds },
+    input: { topic, scope, tone, maxRounds: effectiveMaxRounds },
     output: {
+      maxRounds: effectiveMaxRounds,
       investigationPlan: [
         "Query factual architecture documentation & benchmarks",
-        "Verify critical claims & trade-offs",
-        "Extract quantitative metrics and latency profiles",
+        ...(effectiveMaxRounds >= 2 ? ["Verify critical claims & trade-offs"] : []),
+        ...(effectiveMaxRounds >= 3 ? ["Extract quantitative metrics and latency profiles"] : []),
       ],
     },
     latencyMs: Date.now() - initStartTime,
@@ -53,6 +55,8 @@ export async function runResearcher(
     timestamp: new Date().toISOString(),
   };
   emitStep(initStep);
+
+  const boundedOptions = { ...options, maxRounds: effectiveMaxRounds };
 
   // If online mode with valid Azure OpenAI credentials
   const hasAzure =
@@ -62,14 +66,14 @@ export async function runResearcher(
 
   if (hasAzure) {
     try {
-      return await runOnlineResearcher(options, steps, emitStep);
+      return await runOnlineResearcher(boundedOptions, steps, emitStep);
     } catch (err) {
       console.warn("Online researcher encountered error, falling back to deterministic engine:", err);
     }
   }
 
   // Deterministic execution engine (Offline mode / CI / Resilience fallback)
-  return await runDeterministicResearcher(options, steps, emitStep);
+  return await runDeterministicResearcher(boundedOptions, steps, emitStep);
 }
 
 async function runDeterministicResearcher(
@@ -77,7 +81,8 @@ async function runDeterministicResearcher(
   steps: AgentTraceStep[],
   emitStep: (step: AgentTraceStep) => void
 ): Promise<{ dossier: ResearchDossier; steps: AgentTraceStep[] }> {
-  const { topic, scope, tone } = options;
+  const { topic, scope, tone, maxRounds = 3 } = options;
+  const effectiveRounds = Math.max(1, Math.min(maxRounds, 5));
 
   // Round 1: Search facts
   const t1Start = Date.now();
@@ -94,36 +99,49 @@ async function runDeterministicResearcher(
   };
   emitStep(t1Step);
 
-  // Round 2: Verify primary claim
-  const t2Start = Date.now();
-  const primaryClaim = facts[0]?.claim || topic;
-  const verification = await executeVerifyClaim(primaryClaim);
-  const t2Step: AgentTraceStep = {
-    id: `step-tool-verify-${Date.now()}`,
-    agent: "researcher",
-    action: "Tool Call: verify_claim",
-    input: { claim: primaryClaim },
-    output: verification,
-    latencyMs: Math.max(10, Date.now() - t2Start),
-    status: "completed",
-    timestamp: new Date().toISOString(),
-  };
-  emitStep(t2Step);
+  // Round 2: Verify primary claim (executed if maxRounds >= 2)
+  if (effectiveRounds >= 2) {
+    const t2Start = Date.now();
+    const primaryClaim = facts[0]?.claim || topic;
+    const verification = await executeVerifyClaim(primaryClaim);
+    const t2Step: AgentTraceStep = {
+      id: `step-tool-verify-${Date.now()}`,
+      agent: "researcher",
+      action: "Tool Call: verify_claim",
+      input: { claim: primaryClaim },
+      output: verification,
+      latencyMs: Math.max(10, Date.now() - t2Start),
+      status: "completed",
+      timestamp: new Date().toISOString(),
+    };
+    emitStep(t2Step);
+  }
 
-  // Round 3: Extract quantitative metrics
-  const t3Start = Date.now();
-  const metrics = await executeExtractMetrics(topic);
-  const t3Step: AgentTraceStep = {
-    id: `step-tool-metrics-${Date.now()}`,
-    agent: "researcher",
-    action: "Tool Call: extract_metrics",
-    input: { context: topic },
-    output: { extractedMetrics: metrics },
-    latencyMs: Math.max(15, Date.now() - t3Start),
-    status: "completed",
-    timestamp: new Date().toISOString(),
-  };
-  emitStep(t3Step);
+  // Round 3: Extract quantitative metrics (executed if maxRounds >= 3)
+  let metrics: Array<{ label: string; value: string; context: string }> = [];
+  if (effectiveRounds >= 3) {
+    const t3Start = Date.now();
+    metrics = await executeExtractMetrics(topic);
+    const t3Step: AgentTraceStep = {
+      id: `step-tool-metrics-${Date.now()}`,
+      agent: "researcher",
+      action: "Tool Call: extract_metrics",
+      input: { context: topic },
+      output: { extractedMetrics: metrics },
+      latencyMs: Math.max(15, Date.now() - t3Start),
+      status: "completed",
+      timestamp: new Date().toISOString(),
+    };
+    emitStep(t3Step);
+  } else {
+    metrics = [
+      {
+        label: "Escopo de Investigação",
+        value: `${effectiveRounds} rodada(s)`,
+        context: "Execução limitada pela política MAX_RESEARCH_ROUNDS",
+      },
+    ];
+  }
 
   const frictionPoints = getFrictionPointsForTopic(topic);
 
@@ -166,7 +184,8 @@ async function runOnlineResearcher(
   steps: AgentTraceStep[],
   emitStep: (step: AgentTraceStep) => void
 ): Promise<{ dossier: ResearchDossier; steps: AgentTraceStep[] }> {
-  const { topic, scope, tone } = options;
+  const { topic, scope, tone, maxRounds = 3 } = options;
+  const effectiveRounds = Math.max(1, Math.min(maxRounds, 5));
 
   const endpoint = process.env.AZURE_OPENAI_ENDPOINT || "";
   const apiKey = process.env.AZURE_OPENAI_API_KEY || "";
@@ -184,9 +203,10 @@ async function runOnlineResearcher(
 Tópico: "${topic}"
 Escopo: "${scope}"
 Tom: "${tone}"
+Limite de rodadas de investigação permitidas: ${effectiveRounds} rodada(s).
 
 Gere um dossiê técnico estruturado em JSON estrito contendo:
-- investigatedTopics (array de strings)
+- investigatedTopics (array de no máximo ${effectiveRounds} strings)
 - verifiedFacts (array de { claim, source, confidence, verified })
 - frictionPoints (array de strings com trade-offs e riscos)
 - metrics (array de { label, value, context })

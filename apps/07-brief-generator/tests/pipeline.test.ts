@@ -72,4 +72,31 @@ describe("App 07: Multi-Agent Core Engine & Handoff Pipeline", () => {
       process.env.GENERATION_ENABLED = original;
     }
   });
+
+  it("should strictly enforce maxRounds and limit tool calls accordingly", async () => {
+    // Test explicit option maxRounds = 1
+    const result1 = await executeMultiAgentPipeline({
+      topic: "Event-Driven vs REST",
+      maxRounds: 1,
+      clientIp: "test-ip-maxrounds-1",
+    });
+
+    const toolCalls1 = result1.trace.filter((s) => s.action.startsWith("Tool Call:"));
+    assert.strictEqual(toolCalls1.length, 1, "Only 1 tool call should be made when maxRounds=1");
+
+    // Test environment variable MAX_RESEARCH_ROUNDS = 2
+    const originalEnv = process.env.MAX_RESEARCH_ROUNDS;
+    try {
+      process.env.MAX_RESEARCH_ROUNDS = "2";
+      const result2 = await executeMultiAgentPipeline({
+        topic: "Event-Driven vs REST",
+        clientIp: "test-ip-maxrounds-2",
+      });
+
+      const toolCalls2 = result2.trace.filter((s) => s.action.startsWith("Tool Call:"));
+      assert.strictEqual(toolCalls2.length, 2, "Exactly 2 tool calls should be made when MAX_RESEARCH_ROUNDS=2");
+    } finally {
+      process.env.MAX_RESEARCH_ROUNDS = originalEnv;
+    }
+  });
 });

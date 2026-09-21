@@ -17,7 +17,16 @@ export interface PipelineOptions {
   scope?: string;
   tone?: BriefTone;
   clientIp?: string;
+  maxRounds?: number;
   onStep?: (step: AgentTraceStep) => void;
+}
+
+export function getMaxResearchRounds(): number {
+  const raw = process.env.MAX_RESEARCH_ROUNDS;
+  if (!raw) return 3;
+  const parsed = parseInt(raw, 10);
+  if (isNaN(parsed) || parsed < 1) return 1;
+  return Math.min(parsed, 5);
 }
 
 export async function executeMultiAgentPipeline(
@@ -78,10 +87,16 @@ export async function executeMultiAgentPipeline(
 
     // 5. Stage 1: Researcher Agent
     const researchStartTime = Date.now();
+    const effectiveMaxRounds =
+      typeof options.maxRounds === "number" && options.maxRounds > 0
+        ? Math.min(options.maxRounds, 5)
+        : getMaxResearchRounds();
+
     const { dossier, steps: researchSteps } = await runResearcher({
       topic,
       scope,
       tone,
+      maxRounds: effectiveMaxRounds,
       onStep: recordStep,
     });
     const researchLatencyMs = Date.now() - researchStartTime;
