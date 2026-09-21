@@ -27,6 +27,20 @@ export function Footer() {
             {dict.footer.about}
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
+          <Link
+            href={getLocalizedPath("/datenschutz", locale)}
+            className="hover:text-primary transition-colors"
+          >
+            {locale === "de" ? "Datenschutz" : locale === "pt" ? "Privacidade" : "Privacy"}
+          </Link>
+          <span className="text-border" aria-hidden="true">•</span>
+          <Link
+            href={getLocalizedPath("/impressum", locale)}
+            className="hover:text-primary transition-colors"
+          >
+            {locale === "de" ? "Impressum" : locale === "pt" ? "Aviso Legal" : "Legal Notice"}
+          </Link>
+          <span className="text-border" aria-hidden="true">•</span>
           <a
             href="https://github.com/Rodnorm/ai-engineer-roadmap"
             target="_blank"
