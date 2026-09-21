@@ -20,10 +20,16 @@ describe("App 07: User Session Isolation & Brief Storage", () => {
     const ownerId = randomUUID();
     const token = createOwnerToken(ownerId, secret);
 
-    // Tamper with payload
-    const forgedToken = token.replace("a", "b");
-    const verifiedTampered = verifyOwnerToken(forgedToken, secret);
-    assert.strictEqual(verifiedTampered, undefined);
+    // Tamper with payload deterministically
+    const [payload, signature] = token.split(".");
+    const forgedPayloadToken = `${payload}tampered.${signature}`;
+    const verifiedTamperedPayload = verifyOwnerToken(forgedPayloadToken, secret);
+    assert.strictEqual(verifiedTamperedPayload, undefined);
+
+    // Tamper with signature deterministically
+    const forgedSigToken = `${payload}.${signature}tampered`;
+    const verifiedTamperedSig = verifyOwnerToken(forgedSigToken, secret);
+    assert.strictEqual(verifiedTamperedSig, undefined);
 
     // Verify with different secret
     const verifiedWrongSecret = verifyOwnerToken(token, "different-secret-key-32chars-long");
