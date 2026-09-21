@@ -55,7 +55,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      <div style={{ visibility: mounted ? "visible" : "hidden" }}>
+      <div
+        style={{ visibility: mounted ? "visible" : "hidden" }}
+        className="flex min-h-screen flex-col"
+      >
         {children}
       </div>
     </ThemeContext.Provider>

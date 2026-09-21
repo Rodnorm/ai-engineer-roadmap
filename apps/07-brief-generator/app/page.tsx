@@ -151,7 +151,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--bg-primary)]">
+    <div className="flex flex-col flex-1 bg-[var(--bg-primary)]">
       <Header
         onOpenInfo={() => setIsInfoOpen(true)}
         onOpenHistory={() => setIsHistoryOpen(true)}

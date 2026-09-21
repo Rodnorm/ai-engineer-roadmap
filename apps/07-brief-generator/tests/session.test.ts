@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { createOwnerToken, verifyOwnerToken } from "../lib/session/user-session";
 import { briefRepository } from "../lib/session/brief-repository";
 
-describe("App 07: User Session Isolation & Brief Storage", () => {
+describe("User Session Isolation & Brief Storage", () => {
   const secret = "test-secret-must-be-at-least-32-chars-long";
 
   it("should create and verify valid owner token", () => {

@@ -4,7 +4,7 @@ import { executeMultiAgentPipeline } from "../lib/orchestrator/pipeline";
 import { isGenerationEnabled, rateLimiter } from "../lib/security/rate-limiter";
 import { ResearchDossierSchema } from "../types/agent";
 
-describe("App 07: Multi-Agent Core Engine & Handoff Pipeline", () => {
+describe("Multi-Agent Core Engine & Handoff Pipeline", () => {
   it("should execute end-to-end multi-agent pipeline deterministically", async () => {
     const result = await executeMultiAgentPipeline({
       topic: "Monólito Modular vs Microsserviços",

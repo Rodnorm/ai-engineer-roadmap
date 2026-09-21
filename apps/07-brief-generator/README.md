@@ -1,4 +1,4 @@
-# App 07 — Multi-Agent Brief Generator
+# Multi-Agent Brief Generator
 
 Multi-Agent Brief Generator demonstrates heterogeneous multi-agent collaboration by decoupling information discovery and executive synthesis into two specialized, cooperating agents:
 1. **Researcher Agent**: Equipped with specialized tools (`search_facts`, `verify_claim`, `extract_metrics`) to gather facts and build a structured `ResearchDossier`.
