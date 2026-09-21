@@ -161,9 +161,14 @@ async function runOnlineWriter(
   const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-4o";
   const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
 
+  const cleanEndpoint = endpoint.replace(/\/$/, "");
+  const baseURL = cleanEndpoint.includes("/openai/v1")
+    ? cleanEndpoint
+    : `${cleanEndpoint}/openai/deployments/${deployment}`;
+
   const client = new OpenAI({
     apiKey,
-    baseURL: `${endpoint.replace(/\/$/, "")}/openai/deployments/${deployment}`,
+    baseURL,
     defaultQuery: { "api-version": apiVersion },
     defaultHeaders: { "api-key": apiKey },
   });
