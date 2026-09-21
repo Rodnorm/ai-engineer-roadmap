@@ -459,8 +459,15 @@ async def upload_document(
     file: UploadFile = File(...),
     owner_id: str = Depends(require_owner_access),
 ):
-    if store.count_documents("upload", owner_id=owner_id) >= settings.max_documents:
-        raise HTTPException(status_code=429, detail="Document limit reached")
+    if store.count_documents("upload") >= settings.max_documents:
+        raise HTTPException(
+            status_code=429, detail="Deployment document limit reached"
+        )
+    if (
+        store.count_documents("upload", owner_id=owner_id)
+        >= settings.max_documents_per_owner
+    ):
+        raise HTTPException(status_code=429, detail="Owner document limit reached")
     raw_filename = Path(file.filename or "document.txt").name
     filename = re.sub(r"[^\w.\-]", "_", raw_filename).strip("._") or "document.txt"
     extension = Path(filename).suffix.lower().lstrip(".")
@@ -829,3 +836,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+

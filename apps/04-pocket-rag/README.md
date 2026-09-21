@@ -15,8 +15,9 @@ question -> owner-scoped vector top-k -> relevance gate -> Azure OpenAI -> cited
 ```
 
 Supported uploads are PDF, Markdown, UTF-8 TXT, and DOCX. Defaults are 10 MB,
-200 PDF pages, 2,000,000 extracted characters, 1,000 chunks per document, 500 words
-per chunk, and 50 overlapping words. Scanned PDFs need OCR and are rejected. DOCX
+200 PDF pages, 2,000,000 extracted characters, 1,000 chunks per document, 100
+deployment-wide documents, 10 documents per anonymous owner, 500 words per chunk,
+and 50 overlapping words. Scanned PDFs need OCR and are rejected. DOCX
 archives have expansion and entry-count limits.
 
 The repository also includes five fictional German PDF documents covering housing,
@@ -83,6 +84,8 @@ Copy `backend/.env.example` and review every limit. Important controls:
 - `REQUESTS_PER_MINUTE` and `DAILY_GENERATION_LIMIT` are enforced through SQLite,
   shared by processes using the same volume. `MAX_CONCURRENT_GENERATIONS` bounds
   concurrent provider calls in each process.
+- `MAX_DOCUMENTS` retains the deployment-wide storage/embedding cap, while
+  `MAX_DOCUMENTS_PER_OWNER` prevents one anonymous session from consuming it.
 - Provider timeout, retry count, context, output, question, file, document, page, and
   chunk limits are all server-side settings.
 - Token prices are configurable assumptions. The UI does not claim fixed savings.
@@ -196,3 +199,4 @@ reviewing real reports.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the implementation decisions and outstanding
 release evidence.
+

@@ -248,6 +248,45 @@ class TestPocketRagBackend(unittest.TestCase):
         self.assertTrue(query.json()["retrieved_chunks"])
         self.assertTrue(all(chunk["source"] == "example" for chunk in query.json()["retrieved_chunks"]))
 
+    def test_deployment_document_limit_cannot_be_bypassed_with_new_owner(self):
+        limited = replace(
+            self.backend.settings,
+            max_documents=1,
+            max_documents_per_owner=10,
+        )
+        with patch.object(self.backend, "settings", limited):
+            first = self.upload("owner-a.txt", b"Owner A document")
+            second = self.client.post(
+                "/api/documents/upload",
+                headers={"X-Owner-ID": str(uuid.uuid4())},
+                files={"file": ("owner-b.txt", b"Owner B document")},
+            )
+
+        self.assertEqual(first.status_code, 201)
+        self.assertEqual(second.status_code, 429)
+        self.assertIn("Deployment document limit", second.json()["error"]["message"])
+
+    def test_owner_document_limit_is_scoped_to_one_session(self):
+        owner_b = str(uuid.uuid4())
+        limited = replace(
+            self.backend.settings,
+            max_documents=10,
+            max_documents_per_owner=1,
+        )
+        with patch.object(self.backend, "settings", limited):
+            first = self.upload("first.txt", b"First owner document")
+            same_owner = self.upload("second.txt", b"Second owner document")
+            other_owner = self.client.post(
+                "/api/documents/upload",
+                headers={"X-Owner-ID": owner_b},
+                files={"file": ("other.txt", b"Other owner document")},
+            )
+
+        self.assertEqual(first.status_code, 201)
+        self.assertEqual(same_owner.status_code, 429)
+        self.assertIn("Owner document limit", same_owner.json()["error"]["message"])
+        self.assertEqual(other_owner.status_code, 201)
+
     def test_sessions_isolate_uploads_queries_and_deletes(self):
         upload = self.upload("private.txt", b"Owner A private knowledge")
         self.assertEqual(upload.status_code, 201)
@@ -387,3 +426,4 @@ class TestPocketRagBackend(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
