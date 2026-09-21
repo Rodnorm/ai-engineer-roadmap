@@ -12,11 +12,10 @@ const CONTENT = {
   de: {
     badge: "Rechtliches",
     title: "Impressum",
-    subtitle: "Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)",
+    subtitle: "Kontaktinformationen",
     providerTitle: "Diensteanbieter",
     providerName: "Rodrigo Normando Horácio da Silva",
-    address: "[VOLLSTÄNDIGE POSTANSCHRIFT VOR VERÖFFENTLICHUNG EINTRAGEN]",
-    addressNotice: "",
+    address: "Essen, Deutschland",
     contactTitle: "Kontakt",
     emailLabel: "E-Mail",
     email: "rodrigo.normando.silva@gmail.com",
@@ -28,11 +27,10 @@ const CONTENT = {
   en: {
     badge: "Legal",
     title: "Legal Notice (Imprint)",
-    subtitle: "Information pursuant to § 5 DDG (German Digital Services Act)",
+    subtitle: "Contact information",
     providerTitle: "Service Provider",
     providerName: "Rodrigo Normando Horácio da Silva",
-    address: "[ENTER FULL POSTAL ADDRESS BEFORE PUBLICATION]",
-    addressNotice: "",
+    address: "Essen, Deutschland",
     contactTitle: "Contact",
     emailLabel: "Email",
     email: "rodrigo.normando.silva@gmail.com",
@@ -44,11 +42,10 @@ const CONTENT = {
   pt: {
     badge: "Informações Legais",
     title: "Aviso Legal (Impressum)",
-    subtitle: "Informações em conformidade com o § 5 da Lei de Serviços Digitais (DDG)",
+    subtitle: "Informações de contato",
     providerTitle: "Prestador do Serviço",
     providerName: "Rodrigo Normando Horácio da Silva",
-    address: "[INSERIR ENDEREÇO POSTAL COMPLETO ANTES DA PUBLICAÇÃO]",
-    addressNotice: "",
+    address: "Essen, Deutschland",
     contactTitle: "Contato",
     emailLabel: "E-mail",
     email: "rodrigo.normando.silva@gmail.com",
@@ -100,8 +97,6 @@ export function ImpressumPageView({ initialLocale = "en" }: ImpressumPageViewPro
           <strong className="text-foreground">{t.providerName}</strong>
           <br />
           {t.address}
-          <br />
-          <span className="text-xs text-text-muted">{t.addressNotice}</span>
         </address>
       </section>
 
