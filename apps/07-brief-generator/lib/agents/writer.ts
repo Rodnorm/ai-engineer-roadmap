@@ -162,29 +162,42 @@ async function runOnlineWriter(
   const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
 
   const cleanEndpoint = endpoint.replace(/\/$/, "");
-  const baseURL = cleanEndpoint.includes("/openai/v1")
+  const isOpenAIV1 = cleanEndpoint.includes("/openai/v1");
+  const baseURL = isOpenAIV1
     ? cleanEndpoint
     : `${cleanEndpoint}/openai/deployments/${deployment}`;
 
   const client = new OpenAI({
     apiKey,
     baseURL,
-    defaultQuery: { "api-version": apiVersion },
+    defaultQuery: isOpenAIV1 ? undefined : { "api-version": apiVersion },
     defaultHeaders: { "api-key": apiKey },
   });
 
-  const prompt = `Você é o Writer Agent especializado em redação executiva e sumários de alta gestão (McKinsey / Amazon PR/FAQ).
-Você NÃO possui ferramentas de busca. Seu trabalho é redigir um briefing impecável com base EXCLUSIVAMENTE no Research Dossier abaixo:
+  const prompt = `Você é o Writer Agent especializado em redação executiva para CTOs, VPs de Engenharia e Arquitetos Corporativos (no padrão McKinsey / Amazon PR/FAQ).
+Você NÃO possui ferramentas de busca externa. Seu trabalho é transformar o Research Dossier técnico abaixo em um documento executivo aprofundado, estratégico e acionável.
 
+Pesquisa Técnica (Research Dossier):
 ${JSON.stringify(dossier, null, 2)}
 
-Retorne um JSON estrito com as chaves:
-- title (string)
-- executiveSummary (string)
-- keyInsights (array de strings)
-- risksAndTradeoffs (array de strings)
-- actionRecommendations (array de strings)
-- fullMarkdown (string formatada em markdown com títulos, tabela de métricas e alertas)`;
+DIRETRIZES DE QUALIDADE (CRÍTICO):
+1. Seja incisivo, analítico e específico ao contexto de "${dossier.topic}".
+2. PROIBIDO gerar texto genérico, abstrato ou clichês corporativos. Crie argumentos com números, nomes de tecnologias, arquiteturas e métricas reais do dossiê.
+3. No campo "fullMarkdown", produza um relatório executivo completo estruturado rigorosamente com:
+   # [Título Estratégico e Preciso]
+   ## 1. Sumário Executivo & Tese de Engenharia
+   ## 2. Evidências Técnicas & Análise Comparativa
+   ## 3. Métricas Operacionais & Benchmarks (inclua Tabela Markdown comparando latência, custos e complexidade)
+   ## 4. Matriz de Riscos, Restrições & Trade-offs Críticos
+   ## 5. Recomendações Estratégicas Acionáveis (Plano de ação prioritário em 4-5 passos com justificativa técnica)
+
+Retorne EXCLUSIVAMENTE um objeto JSON estrito com as chaves:
+- title: string com título executivo forte
+- executiveSummary: string com resumo conciso e de alto impacto (2 a 3 parágrafos densos)
+- keyInsights: array de 3 a 5 strings com os principais aprendizados técnicos comprovados
+- risksAndTradeoffs: array de 3 a 5 strings detalhando riscos reais e custos ocultos
+- actionRecommendations: array de 3 a 5 recomendações práticas com o que fazer e o que evitar
+- fullMarkdown: string longa e rica em Markdown com títulos (# e ##), tabelas completas, negritos e listas`;
 
   const callStart = Date.now();
   const response = await client.chat.completions.create({

@@ -193,29 +193,32 @@ async function runOnlineResearcher(
   const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
 
   const cleanEndpoint = endpoint.replace(/\/$/, "");
-  const baseURL = cleanEndpoint.includes("/openai/v1")
+  const isOpenAIV1 = cleanEndpoint.includes("/openai/v1");
+  const baseURL = isOpenAIV1
     ? cleanEndpoint
     : `${cleanEndpoint}/openai/deployments/${deployment}`;
 
   const client = new OpenAI({
     apiKey,
     baseURL,
-    defaultQuery: { "api-version": apiVersion },
+    defaultQuery: isOpenAIV1 ? undefined : { "api-version": apiVersion },
     defaultHeaders: { "api-key": apiKey },
   });
 
-  const prompt = `Você é o Researcher Agent especializado em investigação técnica, coleta de fatos verificáveis e levantamento de evidências para arquitetura e liderança de engenharia.
+  const prompt = `Você é o Researcher Agent especializado em investigação técnica rigorosa, coleta de evidências factuais e análise aprofundada de arquitetura de software para liderança técnica.
 Tópico: "${topic}"
 Escopo: "${scope}"
 Tom: "${tone}"
 Limite de rodadas de investigação permitidas: ${effectiveRounds} rodada(s).
 
+IMPORTANTE: Forneça dados técnicos específicos, nomes de padrões, trade-offs quantificáveis e detalhes operacionais concretos. NUNCA use clichês genéricos ou respostas vagas.
+
 Gere um dossiê técnico estruturado em JSON estrito contendo:
-- investigatedTopics (array de no máximo ${effectiveRounds} strings)
-- verifiedFacts (array de { claim, source, confidence, verified })
-- frictionPoints (array de strings com trade-offs e riscos)
-- metrics (array de { label, value, context })
-- summary (string consolidando as evidências)`;
+- investigatedTopics: array de no máximo ${effectiveRounds} strings com temas técnicos específicos investigados
+- verifiedFacts: array de objetos { claim: string detalhada com fato técnico específico, source: string com publicação técnica, benchmark ou documentação real, confidence: number de 0 a 1, verified: true }
+- frictionPoints: array de strings detalhando riscos arquiteturais reais, complexidades de integração e gargalos operacionais
+- metrics: array de objetos { label: string com nome do indicador/benchmark, value: string com número/ordem de grandeza com unidade, context: string explicando o cenário }
+- summary: string consolidando a investigação com densidade técnica e conclusões claras`;
 
   const callStart = Date.now();
   const response = await client.chat.completions.create({
