@@ -40,6 +40,7 @@ jobs:
       app04: ${{ steps.filter.outputs.app04 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app07: ${{ steps.filter.outputs.app07 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
     steps:
       - name: Check out repository
@@ -64,6 +65,8 @@ jobs:
               - 'apps/05-agentic-workflow/**'
             app06:
               - 'apps/06-agent-workspace/**'
+            app07:
+              - 'apps/07-brief-generator/**'
             catalog:
               - 'catalog/**'
             global:
@@ -185,6 +188,9 @@ jobs:
           - app: Agent Workspace
             id: app06
             directory: apps/06-agent-workspace/frontend
+          - app: Brief Generator
+            id: app07
+            directory: apps/07-brief-generator
 
     defaults:
       run:
@@ -209,7 +215,7 @@ jobs:
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Lint
-        run: npm run lint
+        run: npm run lint --if-present
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Type-check
