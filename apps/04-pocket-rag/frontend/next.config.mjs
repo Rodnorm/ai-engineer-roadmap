@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -24,14 +23,6 @@ const nextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/api/backend/:path*",
-        destination: `${backendUrl}/:path*`,
       },
     ];
   },
