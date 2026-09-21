@@ -6,8 +6,16 @@ import { briefRepository } from "@/lib/session/brief-repository";
 import { AgentTraceStep, PipelineEvent } from "@/types/agent";
 
 const RequestSchema = z.object({
-  topic: z.string().min(3, "O tópico deve ter no mínimo 3 caracteres."),
-  scope: z.string().optional(),
+  topic: z
+    .string()
+    .trim()
+    .min(3, "O tópico deve ter no mínimo 3 caracteres.")
+    .max(300, "O tópico deve ter no máximo 300 caracteres."),
+  scope: z
+    .string()
+    .trim()
+    .max(1000, "O escopo deve ter no máximo 1000 caracteres.")
+    .optional(),
   tone: z.enum(["executive", "technical", "critical"]).default("executive"),
 });
 
