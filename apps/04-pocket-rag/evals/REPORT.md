@@ -15,11 +15,14 @@ python -m pip install -r evals/requirements-eval.txt
 python evals/run_evaluation.py --include-regressions
 ```
 
-The command clears only the configured pocketRag instance, uploads the evaluation
-corpus, queries the API, and writes untracked `evals/results.json`. Review per-question
+The command uses one stable, dedicated owner UUID for clear, upload, and query
+requests, so it removes only its own prior evaluation documents. Override it with a
+UUIDv4 in `POCKET_RAG_EVALUATION_OWNER_ID` when needed. It then uploads the corpus,
+queries the API, and writes untracked `evals/results.json`. Review per-question
 scores, aggregates, failures, token usage, and Azure cost before replacing this status.
 
 SQLite vector search keeps the demo architecture simple and lightweight, avoiding
 multi-gigabyte local embedding models and native vector databases. Azure OpenAI
 embeddings provide fast, high-quality multilingual retrieval while allowing the application
 to deploy easily on serverless environments.
+

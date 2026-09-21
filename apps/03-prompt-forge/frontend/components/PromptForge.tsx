@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import AppInfo from "@/components/AppInfo";
 import GenerationResults from "@/components/GenerationResults";
@@ -43,7 +43,6 @@ type GenerateResponse = {
   meta: { tokens: { total: number }; cost: number };
 };
 
-type LogResponse = { data: RequestEntry[] };
 
 const TYPEWRITER_INTERVAL_MS = 12;
 const TYPEWRITER_CHARACTERS_PER_TICK = 1;
@@ -101,28 +100,18 @@ async function readGenerationStream(
   return result;
 }
 
-const CLIENT_ID_STORAGE_KEY = "promptforge_client_id";
-
-function getClientId(): string {
-  if (typeof window === "undefined") return "anonymous";
-  try {
-    let clientId = window.localStorage.getItem(CLIENT_ID_STORAGE_KEY);
-    if (!clientId) {
-      clientId = typeof window.crypto?.randomUUID === "function"
-        ? window.crypto.randomUUID()
-        : `client-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, clientId);
-    }
-    return clientId;
-  } catch {
-    return "anonymous";
-  }
+function createLocalRequestId(): string {
+  return typeof window.crypto?.randomUUID === "function"
+    ? window.crypto.randomUUID()
+    : `request-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-const formatLogEntries = (entries: RequestEntry[]) => entries.map((entry) => ({
-  ...entry,
-  createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date(entry.createdAt)),
-}));
+function formatRequestTime(): string {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+}
 
 export default function PromptForge() {
   const { locale } = useI18n();
@@ -152,58 +141,16 @@ export default function PromptForge() {
     ...suggestion.translations[locale],
   }));
 
-  const loadRequests = useCallback(async () => {
-    try {
-      const response = await fetch("/api/backend/log?limit=20", {
-        headers: { "X-Client-ID": getClientId() },
-      });
-      if (!response.ok) return;
-      const payload = (await response.json()) as LogResponse;
-      setRequests(formatLogEntries(payload.data));
-    } catch {
-      // The studio remains usable when the process-local log is unavailable.
-    }
-  }, []);
-
-  const handleDeleteRequest = async (id: string) => {
+  const handleDeleteRequest = (id: string) => {
     setRequests((current) => current.filter((item) => item.id !== id));
-    try {
-      await fetch(`/api/backend/log/${id}`, {
-        method: "DELETE",
-        headers: { "X-Client-ID": getClientId() },
-      });
-    } catch {
-      await loadRequests();
-    }
   };
 
-  const handleClearRequests = async () => {
+  const handleClearRequests = () => {
     setRequests([]);
-    try {
-      await fetch("/api/backend/log", {
-        method: "DELETE",
-        headers: { "X-Client-ID": getClientId() },
-      });
-    } catch {
-      await loadRequests();
-    }
   };
 
-  useEffect(() => {
-    let active = true;
-    fetch("/api/backend/log?limit=20", {
-      headers: { "X-Client-ID": getClientId() },
-    })
-      .then((response) => (response.ok ? (response.json() as Promise<LogResponse>) : null))
-      .then((payload) => {
-        if (active && payload) setRequests(formatLogEntries(payload.data));
-      })
-      .catch(() => undefined);
-
-    return () => {
-      active = false;
-      abortRef.current?.abort();
-    };
+  useEffect(() => () => {
+    abortRef.current?.abort();
   }, []);
 
   const personaName = (id: PersonaId) => {
@@ -292,7 +239,6 @@ export default function PromptForge() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Client-ID": getClientId(),
         },
         body: JSON.stringify({ brief: trimmedBrief, audience: audience.trim() || null, format, persona, language: locale, temperature, topP, maxTokens }),
         signal: controller.signal,
@@ -327,11 +273,33 @@ export default function PromptForge() {
         cost: payload.meta.cost / variationCount,
       })));
       setProgress(3);
-      await loadRequests();
+      setRequests((current) => [
+        {
+          id: createLocalRequestId(),
+          brief: trimmedBrief,
+          persona,
+          tokens: payload.meta.tokens.total,
+          cost: payload.meta.cost,
+          status: "complete",
+          createdAt: formatRequestTime(),
+        },
+        ...current,
+      ].slice(0, 20));
     } catch (requestError) {
       if (!(requestError instanceof DOMException && requestError.name === "AbortError")) {
         setError("api");
-        await loadRequests();
+        setRequests((current) => [
+          {
+            id: createLocalRequestId(),
+            brief: trimmedBrief,
+            persona,
+            tokens: 0,
+            cost: 0,
+            status: "error",
+            createdAt: formatRequestTime(),
+          },
+          ...current,
+        ].slice(0, 20));
       }
     } finally {
       if (abortRef.current === controller) abortRef.current = null;
@@ -346,13 +314,13 @@ export default function PromptForge() {
 
     setRequests((current) => [
       {
-        id: crypto.randomUUID(),
+        id: createLocalRequestId(),
         brief: brief.trim(),
         persona,
         tokens,
         cost,
         status: "cancelled",
-        createdAt: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(new Date()),
+        createdAt: formatRequestTime(),
       },
       ...current,
     ]);

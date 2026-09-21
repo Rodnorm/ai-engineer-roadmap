@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import math
 import sqlite3
 import threading
@@ -28,12 +30,14 @@ class PersistentRateLimiter:
         global_requests_per_day: int,
         database_path: str,
         clock: Callable[[], float] = time,
+        key_secret: str = "development-only-rate-limit-key",
     ) -> None:
         self.requests_per_minute = requests_per_minute
         self.requests_per_day_per_ip = requests_per_day_per_ip
         self.global_requests_per_day = global_requests_per_day
         self.database_path = database_path
         self._clock = clock
+        self._key_secret = key_secret.encode("utf-8")
         self._setup_lock = threading.Lock()
         self._initialized = False
         if database_path != ":memory:":
@@ -87,7 +91,16 @@ class PersistentRateLimiter:
         finally:
             connection.close()
 
+    def _storage_key(self, client_key: str) -> str:
+        """Return a stable pseudonym without retaining the original client address."""
+        return hmac.new(
+            self._key_secret,
+            client_key.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+
     def check_and_record(self, client_key: str) -> RateLimitDecision:
+        client_key = self._storage_key(client_key)
         now = self._clock()
         minute_cutoff = now - 60
         day_cutoff = now - 86400

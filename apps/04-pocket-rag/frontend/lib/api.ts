@@ -71,15 +71,6 @@ export interface SystemStats {
 }
 
 const API_BASE_URL = '/api/backend';
-let accessToken = '';
-
-export function setAccessToken(token: string) {
-  accessToken = token;
-}
-
-function authHeaders(): Record<string, string> {
-  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
-}
 
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number, public readonly requestId?: string) {
@@ -100,26 +91,24 @@ export async function fetchHealth() {
 }
 
 export async function fetchDocuments(scope: 'uploads' | 'examples' | 'all' = 'uploads'): Promise<DocumentItem[]> {
-  const res = await fetch(`${API_BASE_URL}/api/documents?scope=${scope}`, { headers: authHeaders() });
+  const res = await fetch(`${API_BASE_URL}/api/documents?scope=${scope}`);
   return (await checked(res)).json();
 }
 
 export async function fetchExampleDocuments(): Promise<ExampleDocument[]> {
-  const res = await fetch(`${API_BASE_URL}/api/examples`, { headers: authHeaders() });
+  const res = await fetch(`${API_BASE_URL}/api/examples`);
   return (await checked(res)).json();
 }
 
 export async function loadExampleDocuments(): Promise<DocumentItem[]> {
   const res = await fetch(`${API_BASE_URL}/api/examples/load`, {
     method: 'POST',
-    headers: authHeaders(),
   });
   return (await checked(res)).json();
 }
 
 export async function downloadExampleDocument(filename: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/examples/${encodeURIComponent(filename)}`, {
-    headers: authHeaders(),
   });
   const blob = await (await checked(res)).blob();
   const url = URL.createObjectURL(blob);
@@ -136,7 +125,6 @@ export async function uploadDocument(file: File): Promise<DocumentUploadResponse
 
   const res = await fetch(`${API_BASE_URL}/api/documents/upload`, {
     method: 'POST',
-    headers: authHeaders(),
     body: formData,
   });
 
@@ -146,7 +134,6 @@ export async function uploadDocument(file: File): Promise<DocumentUploadResponse
 export async function deleteDocument(docId: string) {
   const res = await fetch(`${API_BASE_URL}/api/documents/${docId}`, {
     method: 'DELETE',
-    headers: authHeaders(),
   });
   return (await checked(res)).json();
 }
@@ -154,7 +141,6 @@ export async function deleteDocument(docId: string) {
 export async function clearAllDocuments() {
   const res = await fetch(`${API_BASE_URL}/api/documents`, {
     method: 'DELETE',
-    headers: authHeaders(),
   });
   return (await checked(res)).json();
 }
@@ -169,7 +155,7 @@ export async function queryRAG(
 ): Promise<QueryResponse> {
   const res = await fetch(`${API_BASE_URL}/api/query`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       question,
       top_k: topK,
@@ -188,7 +174,7 @@ export async function fetchSuggestedQuestions(
 ): Promise<SuggestionResponse> {
   const res = await fetch(`${API_BASE_URL}/api/suggestions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ language }),
     signal,
   });
@@ -196,6 +182,6 @@ export async function fetchSuggestedQuestions(
 }
 
 export async function fetchStats(): Promise<SystemStats> {
-  const res = await fetch(`${API_BASE_URL}/api/stats`, { headers: authHeaders() });
+  const res = await fetch(`${API_BASE_URL}/api/stats`);
   return (await checked(res)).json();
 }

@@ -3,12 +3,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        BACKEND_URL: http://backend:8000
     environment:
       NODE_ENV: production
       PORT: "3000"
       BACKEND_URL: http://backend:8000
+      POCKET_RAG_API_KEY: ${POCKET_RAG_API_KEY}
+      POCKET_RAG_SESSION_SECRET: ${POCKET_RAG_SESSION_SECRET}
     expose:
       - "3000"
     security_opt:
@@ -48,6 +48,7 @@ services:
       MAX_TEXT_CHARS: ${MAX_TEXT_CHARS:-2000000}
       MAX_CHUNKS_PER_DOCUMENT: ${MAX_CHUNKS_PER_DOCUMENT:-1000}
       MAX_DOCUMENTS: ${MAX_DOCUMENTS:-100}
+      MAX_DOCUMENTS_PER_OWNER: ${MAX_DOCUMENTS_PER_OWNER:-10}
       UPLOAD_RETENTION_MINUTES: ${UPLOAD_RETENTION_MINUTES:-30}
       CLEANUP_INTERVAL_SECONDS: ${CLEANUP_INTERVAL_SECONDS:-60}
       CHUNK_SIZE_WORDS: ${CHUNK_SIZE_WORDS:-500}
@@ -67,3 +68,4 @@ services:
 
 volumes:
   pocket-rag-data:
+

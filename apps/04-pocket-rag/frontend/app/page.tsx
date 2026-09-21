@@ -21,7 +21,6 @@ import {
   Citation,
   SystemStats,
   ApiError,
-  setAccessToken,
   ExampleDocument,
 } from '../lib/api';
 
@@ -46,9 +45,6 @@ export default function Home() {
   const queryController = useRef<AbortController | null>(null);
   const suggestionController = useRef<AbortController | null>(null);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
-  const [needsAccess, setNeedsAccess] = useState(false);
-  const [accessKey, setAccessKey] = useState('');
-  const [accessError, setAccessError] = useState('');
   const uploadDocumentSignature = documentMode === 'uploads'
     ? documents.map((document) => document.id).join('|')
     : '';
@@ -59,7 +55,6 @@ export default function Home() {
       setDocuments(docs);
       setStats(currentStats);
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) setNeedsAccess(true);
       console.warn('Backend connection pending or offline:', e);
     }
   }, []);
@@ -67,7 +62,7 @@ export default function Home() {
   useEffect(() => {
     void loadData('uploads');
     void fetchExampleDocuments().then(setExamples).catch((error) => {
-      if (error instanceof ApiError && error.status === 401) setNeedsAccess(true);
+      console.warn('Example documents are unavailable:', error);
     });
     return () => queryController.current?.abort();
   }, [loadData]);
@@ -86,7 +81,6 @@ export default function Home() {
       .then((response) => setSuggestedQuestions(response.questions))
       .catch((error) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
-        if (error instanceof ApiError && error.status === 401) setNeedsAccess(true);
         console.warn('Question suggestions are unavailable:', error);
       })
       .finally(() => {
@@ -197,42 +191,9 @@ export default function Home() {
     }
   };
 
-  const handleUnlock = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setAccessToken(accessKey.trim());
-    setAccessError('');
-    try {
-      const [docs, currentStats, availableExamples] = await Promise.all([
-        fetchDocuments('uploads'),
-        fetchStats(),
-        fetchExampleDocuments(),
-      ]);
-      setDocuments(docs);
-      setStats(currentStats);
-      setExamples(availableExamples);
-      setNeedsAccess(false);
-      setAccessKey('');
-    } catch {
-      setAccessError(labels.invalidAccess);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-bg text-text flex flex-col font-sans">
       <Header />
-
-      {needsAccess && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
-          <form onSubmit={handleUnlock} className="w-full max-w-sm rounded-2xl border border-border bg-panel p-6 shadow-2xl" aria-labelledby="access-title">
-            <h2 id="access-title" className="text-lg font-semibold">{labels.accessTitle}</h2>
-            <p className="mt-2 text-sm text-muted">{labels.accessDescription}</p>
-            <label className="mt-4 block text-xs font-medium" htmlFor="access-key">{labels.accessKey}</label>
-            <input id="access-key" type="password" autoComplete="current-password" required value={accessKey} onChange={(event) => setAccessKey(event.target.value)} className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm" />
-            {accessError && <p role="alert" className="mt-2 text-xs text-red-500">{accessError}</p>}
-            <button type="submit" className="mt-4 w-full rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white">{labels.unlock}</button>
-          </form>
-        </div>
-      )}
 
       <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 space-y-5">
         <TelemetryPanel

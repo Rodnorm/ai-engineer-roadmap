@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import uuid
 
 import httpx
 from datasets import Dataset
@@ -14,6 +15,7 @@ from ragas.metrics import answer_relevancy, context_precision, faithfulness
 
 
 ROOT = Path(__file__).resolve().parent
+DEFAULT_EVALUATION_OWNER_ID = "6f3ad8f4-78c1-4e42-9f8d-3b73c2e5d904"
 
 
 def load_golden() -> list[dict]:
@@ -27,6 +29,17 @@ def require_environment(name: str) -> str:
     return value
 
 
+def evaluation_owner_id() -> str:
+    configured = os.getenv("POCKET_RAG_EVALUATION_OWNER_ID", DEFAULT_EVALUATION_OWNER_ID)
+    try:
+        owner_id = uuid.UUID(configured)
+    except ValueError as error:
+        raise SystemExit("POCKET_RAG_EVALUATION_OWNER_ID must be a valid UUID") from error
+    if owner_id.version != 4:
+        raise SystemExit("POCKET_RAG_EVALUATION_OWNER_ID must be a UUIDv4")
+    return str(owner_id)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--api-url", default="http://localhost:8000")
@@ -35,7 +48,9 @@ def main() -> None:
     args = parser.parse_args()
 
     access_key = os.getenv("POCKET_RAG_API_KEY", "")
-    headers = {"Authorization": f"Bearer {access_key}"} if access_key else {}
+    headers = {"X-Owner-ID": evaluation_owner_id()}
+    if access_key:
+        headers["Authorization"] = f"Bearer {access_key}"
     rows = load_golden()
     if not args.include_regressions:
         rows = [row for row in rows if "regression" not in row]
@@ -105,3 +120,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

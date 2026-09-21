@@ -44,7 +44,8 @@ class DocumentStore:
                     created_at TEXT NOT NULL,
                     stored_filename TEXT NOT NULL UNIQUE,
                     content_sha256 TEXT NOT NULL,
-                    source TEXT NOT NULL DEFAULT 'upload'
+                    source TEXT NOT NULL DEFAULT 'upload',
+                    owner_id TEXT NOT NULL DEFAULT ''
                 );
                 CREATE INDEX IF NOT EXISTS idx_documents_sha256
                     ON documents(content_sha256);
@@ -56,7 +57,8 @@ class DocumentStore:
                     content TEXT NOT NULL,
                     embedding TEXT NOT NULL,
                     source TEXT NOT NULL DEFAULT 'upload',
-                    page_number INTEGER
+                    page_number INTEGER,
+                    owner_id TEXT NOT NULL DEFAULT ''
                 );
                 CREATE INDEX IF NOT EXISTS idx_chunks_document_id
                     ON document_chunks(document_id);
@@ -71,15 +73,56 @@ class DocumentStore:
                 );
                 """
             )
-            columns = {row[1] for row in connection.execute("PRAGMA table_info(documents)")}
-            if "source" not in columns:
+            document_columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(documents)")
+            }
+            if "source" not in document_columns:
                 connection.execute(
                     "ALTER TABLE documents ADD COLUMN source TEXT NOT NULL DEFAULT 'upload'"
                 )
+            if "owner_id" not in document_columns:
+                connection.execute(
+                    "ALTER TABLE documents ADD COLUMN owner_id TEXT NOT NULL DEFAULT ''"
+                )
 
-    def list_documents(self, source: str | None = None) -> list[DocumentItem]:
-        where = " WHERE source = ?" if source else ""
-        parameters = (source,) if source else ()
+            chunk_columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(document_chunks)")
+            }
+            if "owner_id" not in chunk_columns:
+                connection.execute(
+                    "ALTER TABLE document_chunks ADD COLUMN owner_id TEXT NOT NULL DEFAULT ''"
+                )
+
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_documents_owner_source "
+                "ON documents(owner_id, source)"
+            )
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_chunks_owner_source "
+                "ON document_chunks(owner_id, source)"
+            )
+
+    @staticmethod
+    def _scope_filter(
+        source: str | None, owner_id: str | None
+    ) -> tuple[str, tuple[str, ...]]:
+        if source == "example":
+            return " WHERE source = 'example'", ()
+        if source == "upload" and owner_id:
+            return " WHERE source = 'upload' AND owner_id = ?", (owner_id,)
+        if source == "upload":
+            return " WHERE source = 'upload'", ()
+        if owner_id:
+            return (
+                " WHERE source = 'example' OR (source = 'upload' AND owner_id = ?)",
+                (owner_id,),
+            )
+        return "", ()
+
+    def list_documents(
+        self, source: str | None = None, owner_id: str | None = None
+    ) -> list[DocumentItem]:
+        where, parameters = self._scope_filter(source, owner_id)
         with self.connection() as connection:
             rows = connection.execute(
                 "SELECT id, filename, file_type, file_size_bytes, chunks_count, created_at, source "
@@ -88,16 +131,25 @@ class DocumentStore:
             ).fetchall()
         return [DocumentItem(**dict(row)) for row in rows]
 
-    def count_documents(self, source: str | None = None) -> int:
-        where = " WHERE source = ?" if source else ""
-        parameters = (source,) if source else ()
+    def count_documents(
+        self, source: str | None = None, owner_id: str | None = None
+    ) -> int:
+        where, parameters = self._scope_filter(source, owner_id)
         with self.connection() as connection:
-            return int(connection.execute(f"SELECT COUNT(*) FROM documents{where}", parameters).fetchone()[0])
+            return int(
+                connection.execute(
+                    f"SELECT COUNT(*) FROM documents{where}", parameters
+                ).fetchone()[0]
+            )
 
-    def get_record(self, document_id: str) -> sqlite3.Row | None:
+    def get_record(
+        self, document_id: str, owner_id: str | None = None
+    ) -> sqlite3.Row | None:
+        where = " AND (source = 'example' OR owner_id = ?)" if owner_id else ""
+        parameters = (document_id, owner_id) if owner_id else (document_id,)
         with self.connection() as connection:
             return connection.execute(
-                "SELECT * FROM documents WHERE id = ?", (document_id,)
+                f"SELECT * FROM documents WHERE id = ?{where}", parameters
             ).fetchone()
 
     def list_expired_upload_records(self, cutoff: str) -> list[sqlite3.Row]:
@@ -108,18 +160,26 @@ class DocumentStore:
                 (cutoff,),
             ).fetchall()
 
-    def find_by_hash(self, content_sha256: str) -> sqlite3.Row | None:
+    def find_by_hash(self, content_sha256: str, owner_id: str) -> sqlite3.Row | None:
         with self.connection() as connection:
             return connection.execute(
-                "SELECT * FROM documents WHERE content_sha256 = ?", (content_sha256,)
+                "SELECT * FROM documents "
+                "WHERE content_sha256 = ? AND source = 'upload' AND owner_id = ?",
+                (content_sha256, owner_id),
             ).fetchone()
 
-    def add(self, item: DocumentItem, stored_filename: str, content_sha256: str) -> None:
+    def add(
+        self,
+        item: DocumentItem,
+        stored_filename: str,
+        content_sha256: str,
+        owner_id: str = "",
+    ) -> None:
         with self._lock, self.connection() as connection:
             connection.execute(
                 "INSERT INTO documents "
-                "(id, filename, file_type, file_size_bytes, chunks_count, created_at, stored_filename, content_sha256, source) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "(id, filename, file_type, file_size_bytes, chunks_count, created_at, stored_filename, content_sha256, source, owner_id) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     item.id,
                     item.filename,
@@ -130,6 +190,7 @@ class DocumentStore:
                     stored_filename,
                     content_sha256,
                     item.source,
+                    owner_id,
                 ),
             )
 
@@ -140,8 +201,8 @@ class DocumentStore:
             connection.executemany(
                 """
                 INSERT OR REPLACE INTO document_chunks
-                (id, document_id, filename, chunk_index, content, embedding, source, page_number)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (id, document_id, filename, chunk_index, content, embedding, source, page_number, owner_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
                     (
@@ -155,14 +216,16 @@ class DocumentStore:
                         else chunk["embedding"],
                         chunk.get("source", "upload"),
                         chunk.get("page_number"),
+                        chunk.get("owner_id", ""),
                     )
                     for chunk in chunks
                 ],
             )
 
-    def count_chunks(self, source: str | None = None) -> int:
-        where = " WHERE source = ?" if source else ""
-        parameters = (source,) if source else ()
+    def count_chunks(
+        self, source: str | None = None, owner_id: str | None = None
+    ) -> int:
+        where, parameters = self._scope_filter(source, owner_id)
         with self.connection() as connection:
             return int(
                 connection.execute(f"SELECT COUNT(*) FROM document_chunks{where}", parameters).fetchone()[0]
@@ -172,36 +235,60 @@ class DocumentStore:
         with self._lock, self.connection() as connection:
             connection.execute("DELETE FROM document_chunks WHERE document_id = ?", (document_id,))
 
-    def delete_metadata(self, document_id: str) -> None:
+    def delete_metadata(
+        self, document_id: str, owner_id: str | None = None
+    ) -> None:
         with self._lock, self.connection() as connection:
-            connection.execute("DELETE FROM document_chunks WHERE document_id = ?", (document_id,))
-            cursor = connection.execute("DELETE FROM documents WHERE id = ?", (document_id,))
+            if owner_id:
+                connection.execute(
+                    "DELETE FROM document_chunks WHERE document_id = ? AND owner_id = ?",
+                    (document_id, owner_id),
+                )
+                cursor = connection.execute(
+                    "DELETE FROM documents "
+                    "WHERE id = ? AND source = 'upload' AND owner_id = ?",
+                    (document_id, owner_id),
+                )
+            else:
+                connection.execute(
+                    "DELETE FROM document_chunks WHERE document_id = ?", (document_id,)
+                )
+                cursor = connection.execute(
+                    "DELETE FROM documents WHERE id = ?", (document_id,)
+                )
             if cursor.rowcount != 1:
                 raise KeyError(document_id)
 
-    def clear_metadata(self, source: str | None = None) -> None:
+    def clear_metadata(
+        self, source: str | None = None, owner_id: str | None = None
+    ) -> None:
         with self._lock, self.connection() as connection:
-            if source:
-                connection.execute("DELETE FROM document_chunks WHERE source = ?", (source,))
-                connection.execute("DELETE FROM documents WHERE source = ?", (source,))
-            else:
-                connection.execute("DELETE FROM document_chunks")
-                connection.execute("DELETE FROM documents")
+            where, parameters = self._scope_filter(source, owner_id)
+            connection.execute(f"DELETE FROM document_chunks{where}", parameters)
+            connection.execute(f"DELETE FROM documents{where}", parameters)
 
     def get_chunks_for_suggestions(
-        self, limit_docs: int = 5, chunks_per_doc: int = 3, max_chars: int = 16000
+        self,
+        owner_id: str,
+        limit_docs: int = 5,
+        chunks_per_doc: int = 3,
+        max_chars: int = 16000,
     ) -> str:
         with self.connection() as connection:
             recent_docs = connection.execute(
-                "SELECT id, filename FROM documents WHERE source = 'upload' ORDER BY created_at DESC LIMIT ?",
-                (limit_docs,),
+                "SELECT id, filename FROM documents "
+                "WHERE source = 'upload' AND owner_id = ? "
+                "ORDER BY created_at DESC LIMIT ?",
+                (owner_id, limit_docs),
             ).fetchall()
             parts: list[str] = []
             context_length = 0
             for doc in recent_docs:
                 chunks = connection.execute(
-                    "SELECT content FROM document_chunks WHERE document_id = ? ORDER BY chunk_index ASC LIMIT ?",
-                    (doc["id"], chunks_per_doc),
+                    "SELECT content FROM document_chunks "
+                    "WHERE document_id = ? AND owner_id = ? "
+                    "ORDER BY chunk_index ASC LIMIT ?",
+                    (doc["id"], owner_id, chunks_per_doc),
                 ).fetchall()
                 for chunk in chunks:
                     part = f"[DOCUMENT: {doc['filename']}]\n{chunk['content']}\n[/DOCUMENT]"
@@ -217,9 +304,9 @@ class DocumentStore:
         top_k: int = 4,
         min_score: float = 0.2,
         source: str | None = None,
+        owner_id: str | None = None,
     ) -> list[tuple[float, dict[str, Any]]]:
-        where = " WHERE source = ?" if source else ""
-        parameters = (source,) if source else ()
+        where, parameters = self._scope_filter(source, owner_id)
         with self.connection() as connection:
             rows = connection.execute(
                 "SELECT id, document_id, filename, chunk_index, content, embedding, source, page_number "

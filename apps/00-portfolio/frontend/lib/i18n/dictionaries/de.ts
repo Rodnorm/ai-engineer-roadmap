@@ -157,11 +157,6 @@ export const de: Dictionary = {
       summary: "Autonomer ReAct-Agent mit mehreren Werkzeugen, Offline-Ausführung und menschlicher Freigabe vor sensiblen Aktionen.",
       description: "Agentic Workflow orchestriert Rechner-, Wissenssuch- und Alarmierungswerkzeuge über Azure-OpenAI-Function-Calling oder einen deterministischen Offline-Planer – mit Iterationsgrenzen, Rate Limiting und verpflichtender Human-in-the-Loop-Freigabe.",
       category: "Autonome Agenten & Tool Calling",
-    },
-    "brief-generator": {
-      summary: "Heterogene Multi-Agenten-Pipeline mit Recherche-Spezialist (Researcher) und Executive-Synthese-Autor (Writer), Echtzeit-Handoff-Tracing und Browser-Session-Isolation.",
-      description: "Multi-Agent Brief Generator trennt Tiefenrecherche und Management-Synthese in spezialisierte Agenten. Mit deterministischem Tool-Calling, strukturierten Dossier-Schemas, werkzeugloser Executive-Synthese, Dark/Light-Theme, HMAC-signierter Session-Isolation, 12 Testszenarien und SSE-Streaming-Telemetrie.",
-      category: "Multi-Agenten-Systeme & Orchestrierung",
     }
   },
 };

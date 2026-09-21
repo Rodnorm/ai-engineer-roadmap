@@ -133,20 +133,6 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
         caseStudyPath: "agent-workspace.md",
         security: { publicDemo: false, rateLimited: true, storesUserContent: true },
       },
-      {
-        id: "07",
-        slug: "brief-generator",
-        title: "Multi-Agent Brief Generator",
-        summary: "Heterogeneous multi-agent pipeline orchestrating an investigation specialist (Researcher) and executive synthesis author (Writer) with real-time handoff tracing and browser session isolation.",
-        description: "Multi-Agent Brief Generator decouples deep research and executive drafting into specialized agents. Features deterministic tool calling, structured research dossier schemas, zero-tool executive synthesis, dark/light theme, HMAC-signed browser session isolation, 12 test scenarios, and streaming SSE handoff telemetries.",
-        category: "Multi-Agent Systems & Orchestration",
-        status: "live",
-        technologies: ["Next.js 15", "TypeScript", "Tailwind CSS", "Azure OpenAI", "Server-Sent Events", "HMAC Session Auth"],
-        liveUrl: "",
-        repositoryPath: "apps/07-brief-generator",
-        caseStudyPath: "brief-generator.md",
-        security: { publicDemo: true, rateLimited: true, storesUserContent: true },
-      },
     ];
   }
 

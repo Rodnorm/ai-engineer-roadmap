@@ -50,13 +50,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 					}}
 				/>
 			</head>
-			<body className="min-h-full flex flex-col">
+			<body className="flex min-h-full flex-col">
 				<I18nProvider initialLocale={locale} dictionaries={dictionaries}>
 					<LangSwitcher />
 					<ThemeToggle />
 					{children}
 				</I18nProvider>
-			</body>
+			<footer className="mt-auto border-t border-white/10 px-4 py-4 text-center text-xs text-slate-500">
+          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/datenschutz">Datenschutz</a>
+          <span className="px-2" aria-hidden="true">·</span>
+          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/impressum">Impressum</a>
+        </footer>
+        </body>
 		</html>
 	);
 }

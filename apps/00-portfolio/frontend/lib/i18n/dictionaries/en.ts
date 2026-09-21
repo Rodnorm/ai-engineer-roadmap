@@ -155,11 +155,6 @@ export const en = {
       summary: "Autonomous ReAct agent with multi-tool calling, offline execution, and human approval before sensitive actions.",
       description: "Agentic Workflow orchestrates calculator, knowledge-search, and alert tools through Azure OpenAI function calling or a deterministic offline planner, with iteration limits, rate limits, and mandatory Human-in-the-Loop authorization.",
       category: "Autonomous Agents & Tool Calling",
-    },
-    "brief-generator": {
-      summary: "Heterogeneous multi-agent pipeline orchestrating an investigation specialist (Researcher) and executive synthesis author (Writer) with real-time handoff tracing and browser session isolation.",
-      description: "Multi-Agent Brief Generator decouples deep research and executive drafting into specialized agents. Features deterministic tool calling, structured research dossier schemas, zero-tool executive synthesis, dark/light theme, HMAC-signed browser session isolation, 12 test scenarios, and streaming SSE handoff telemetries.",
-      category: "Multi-Agent Systems & Orchestration",
     }
   },
 };
