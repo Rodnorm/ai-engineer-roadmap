@@ -16,12 +16,16 @@ import {
   Zap,
 } from "lucide-react";
 
+import { useI18n } from "@/lib/i18n/context";
+
 interface AppInfoDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
+  const { t } = useI18n();
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -59,17 +63,17 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                  Como Funciona o Brief Generator
+                  {t.appInfo.title}
                 </h3>
                 <span className="text-[11px] text-[var(--text-muted)]">
-                  Arquitetura Multi-Agente & Governança
+                  {t.appInfo.subtitle}
                 </span>
               </div>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -81,19 +85,19 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
             <section className="space-y-2.5">
               <div className="flex items-center gap-2 text-sky-400 font-bold uppercase tracking-wider text-[11px]">
                 <Bot className="w-4 h-4" />
-                <h4>1. Por que Arquitetura Multi-Agente?</h4>
+                <h4>{t.appInfo.section1Title}</h4>
               </div>
               <p className="text-[var(--text-muted)]">
-                Pedir ao mesmo modelo que pesquise evidências extensas e redija uma síntese executiva gera sobrecarga de atenção, alucinações e perda de rastreabilidade (Audit Trail).
+                {t.appInfo.section1Text}
               </p>
               <div className="p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] space-y-1.5">
                 <div className="flex items-start gap-2">
                   <CheckCircle className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Isolamento de Tarefas:</strong> Quem investiga foca em fatos e métricas; quem redige foca em clareza executiva e síntese estratégica.</span>
+                  <span><strong>{t.appInfo.section1Point1Title}</strong> {t.appInfo.section1Point1Text}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle className="w-3.5 h-3.5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Dossiê Auditável:</strong> Todo dado contido no sumário final possui fonte explícita e nível de confiabilidade mensurável.</span>
+                  <span><strong>{t.appInfo.section1Point2Title}</strong> {t.appInfo.section1Point2Text}</span>
                 </div>
               </div>
             </section>
@@ -102,7 +106,7 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
             <section className="space-y-3">
               <div className="flex items-center gap-2 text-violet-400 font-bold uppercase tracking-wider text-[11px]">
                 <Cpu className="w-4 h-4" />
-                <h4>2. Quem São os Agentes</h4>
+                <h4>{t.appInfo.section2Title}</h4>
               </div>
 
               {/* Researcher Card */}
@@ -116,7 +120,7 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
                   </span>
                 </div>
                 <p className="text-[var(--text-muted)]">
-                  Equipado com 3 ferramentas determinísticas: <code>search_facts</code>, <code>verify_claim</code> e <code>extract_metrics</code>. Constrói o <code>ResearchDossier</code> estruturado com schema validado.
+                  {t.appInfo.section2ResearcherDesc}
                 </p>
               </div>
 
@@ -131,7 +135,7 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
                   </span>
                 </div>
                 <p className="text-[var(--text-muted)]">
-                  Sem acesso a ferramentas de rede/execução. Consome estritamente o dossiê entregue no handoff e sintetiza um briefing executivo estilo McKinsey / Amazon PR-FAQ.
+                  {t.appInfo.section2WriterDesc}
                 </p>
               </div>
             </section>
@@ -165,26 +169,33 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
             <section className="space-y-2.5">
               <div className="flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider text-[11px]">
                 <Shield className="w-4 h-4" />
-                <h4>4. Governança & Segurança</h4>
+                <h4>{t.appInfo.section3Title}</h4>
               </div>
               <ul className="space-y-2 text-[var(--text-muted)]">
                 <li className="flex items-start gap-2">
                   <Lock className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Sessão Privada com HMAC:</strong> Cada usuário possui identificador isolado via cookie assinado (<code>app07-owner</code>). Briefings são visíveis apenas para o seu navegador.</span>
+                  <span><strong>{t.appInfo.section3PrivacyTitle}</strong> {t.appInfo.section3PrivacyDesc}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Zap className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Rate Limit em Memória:</strong> Máximo de 10 requisições por IP a cada minuto para contenção de custos de API.</span>
+                  <span><strong>{t.appInfo.section3RateLimitTitle}</strong> {t.appInfo.section3RateLimitDesc}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Semáforo de Concorrência:</strong> Limita o pipeline a 2 execuções simultâneas para prevenir exaustão de TPM da Azure.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Kill-Switch Mestre:</strong> Trava global via <code>GENERATION_ENABLED=false</code> para interrupção emergencial de custos.</span>
+                  <span><strong>{t.appInfo.section3KillSwitchTitle}</strong> {t.appInfo.section3KillSwitchDesc}</span>
                 </li>
               </ul>
+            </section>
+
+            {/* 5. Telemetria */}
+            <section className="space-y-2">
+              <div className="flex items-center gap-2 text-sky-400 font-bold uppercase tracking-wider text-[11px]">
+                <Activity className="w-4 h-4" />
+                <h4>{t.appInfo.section4Title}</h4>
+              </div>
+              <p className="text-[var(--text-muted)]">
+                {t.appInfo.section4Text}
+              </p>
             </section>
           </div>
 
@@ -193,9 +204,9 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2 rounded-lg text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors"
+              className="w-full py-2 rounded-lg text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
             >
-              Fechar Painel Informativo
+              {t.header.aboutBtn}
             </button>
           </div>
         </div>

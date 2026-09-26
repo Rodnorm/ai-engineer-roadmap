@@ -13,6 +13,8 @@ import {
   X,
 } from "lucide-react";
 
+import { useI18n } from "@/lib/i18n/context";
+
 interface SessionHistoryDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +28,7 @@ export function SessionHistoryDrawer({
   onSelectBrief,
   currentBriefId,
 }: SessionHistoryDrawerProps) {
+  const { t, locale } = useI18n();
   const [briefs, setBriefs] = useState<StoredBrief[]>([]);
   const [sessionInfo, setSessionInfo] = useState<{
     shortId: string;
@@ -64,7 +67,14 @@ export function SessionHistoryDrawer({
   }, [isOpen]);
 
   const handleClearHistory = async () => {
-    if (!confirm("Deseja realmente limpar o histórico de briefings desta sessão?")) {
+    const confirmMsg =
+      locale === "de"
+        ? "Möchten Sie den Briefing-Verlauf dieser Sitzung wirklich löschen?"
+        : locale === "en"
+        ? "Are you sure you want to clear your session history?"
+        : "Deseja realmente limpar o histórico de briefings desta sessão?";
+
+    if (!confirm(confirmMsg)) {
       return;
     }
     try {
@@ -87,6 +97,8 @@ export function SessionHistoryDrawer({
 
   if (!isOpen) return null;
 
+  const dateLocale = locale === "de" ? "de-DE" : locale === "en" ? "en-US" : "pt-BR";
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
@@ -106,7 +118,7 @@ export function SessionHistoryDrawer({
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                  Histórico da Sessão
+                  {t.historyDrawer.title}
                 </h3>
                 {sessionInfo && (
                   <span className="text-[11px] font-mono text-[var(--text-muted)]">
@@ -118,7 +130,7 @@ export function SessionHistoryDrawer({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -128,7 +140,7 @@ export function SessionHistoryDrawer({
           <div className="mx-6 mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] flex items-start gap-2 text-emerald-500">
             <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>
-              Seus briefings são protegidos por cookie assinado e vinculados exclusivamente a este navegador.
+              {t.historyDrawer.privacyNotice}
             </span>
           </div>
 
@@ -137,13 +149,13 @@ export function SessionHistoryDrawer({
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs text-[var(--text-muted)]">
                 <RotateCcw className="w-5 h-5 animate-spin" />
-                <span>Carregando briefings...</span>
+                <span>Loading...</span>
               </div>
             ) : briefs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs text-[var(--text-muted)] text-center">
                 <FileText className="w-8 h-8 opacity-30" />
-                <p>Nenhum briefing salvo nesta sessão ainda.</p>
-                <p className="text-[11px]">Gere seu primeiro briefing para vê-lo aqui.</p>
+                <p className="font-semibold">{t.historyDrawer.emptyTitle}</p>
+                <p className="text-[11px]">{t.historyDrawer.emptySubtitle}</p>
               </div>
             ) : (
               briefs.map((b) => {
@@ -168,8 +180,8 @@ export function SessionHistoryDrawer({
                       <button
                         type="button"
                         onClick={(e) => handleDeleteOne(b.id, e)}
-                        title="Excluir briefing"
-                        className="text-[var(--text-muted)] hover:text-red-400 p-1 transition-colors"
+                        title="Delete"
+                        className="text-[var(--text-muted)] hover:text-red-400 p-1 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -178,7 +190,7 @@ export function SessionHistoryDrawer({
                       {b.topic}
                     </p>
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-subtle)]/50 text-[10px] text-[var(--text-muted)] font-mono">
-                      <span>{new Date(b.createdAt).toLocaleTimeString("pt-BR")}</span>
+                      <span>{new Date(b.createdAt).toLocaleTimeString(dateLocale)}</span>
                       <span className="capitalize">{b.tone} • {b.result.metrics.totalLatencyMs}ms</span>
                     </div>
                   </div>
@@ -196,9 +208,9 @@ export function SessionHistoryDrawer({
               <button
                 type="button"
                 onClick={handleClearHistory}
-                className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                className="text-red-400 hover:text-red-300 font-medium transition-colors cursor-pointer"
               >
-                Limpar Histórico
+                {t.historyDrawer.clearSessionBtn}
               </button>
             </div>
           )}

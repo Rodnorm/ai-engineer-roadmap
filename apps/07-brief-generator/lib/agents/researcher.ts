@@ -16,6 +16,7 @@ export interface RunResearcherOptions {
   topic: string;
   scope: string;
   tone: BriefTone;
+  locale?: "pt" | "en" | "de";
   maxRounds?: number;
   onStep?: (step: AgentTraceStep) => void;
 }
@@ -149,6 +150,7 @@ async function runDeterministicResearcher(
     topic,
     scope,
     tone,
+    locale: options.locale || "pt",
     investigatedTopics: [
       `Limites operacionais e arquitetura de ${topic}`,
       "Impactos de conformidade, segurança e latência",
@@ -241,6 +243,7 @@ Gere um dossiê técnico estruturado em JSON estrito contendo:
     topic,
     scope,
     tone,
+    locale: options.locale || "pt",
     investigatedTopics: Array.isArray(parsed.investigatedTopics)
       ? parsed.investigatedTopics
       : [`Análise de arquitetura para ${topic}`],

@@ -18,6 +18,7 @@ const RequestSchema = z.object({
     .optional()
     .transform((value) => value || undefined),
   tone: z.enum(["executive", "technical", "critical"]).default("executive"),
+  locale: z.enum(["pt", "en", "de"]).default("pt"),
 });
 
 export const runtime = "nodejs";
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { topic, scope, tone } = parseResult.data;
+  const { topic, scope, tone, locale } = parseResult.data;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
           topic,
           scope,
           tone,
+          locale,
           clientIp,
           onStep: (step: AgentTraceStep) => {
             sendEvent({ type: "step", step });

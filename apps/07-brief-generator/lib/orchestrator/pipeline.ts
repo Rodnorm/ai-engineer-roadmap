@@ -16,6 +16,7 @@ export interface PipelineOptions {
   topic: string;
   scope?: string;
   tone?: BriefTone;
+  locale?: "pt" | "en" | "de";
   clientIp?: string;
   maxRounds?: number;
   onStep?: (step: AgentTraceStep) => void;
@@ -36,6 +37,7 @@ export async function executeMultiAgentPipeline(
     topic,
     scope = "Enterprise Architecture & Engineering Leadership",
     tone = "executive",
+    locale = "pt",
     clientIp = "127.0.0.1",
     onStep,
   } = options;
@@ -96,6 +98,7 @@ export async function executeMultiAgentPipeline(
       topic,
       scope,
       tone,
+      locale,
       maxRounds: effectiveMaxRounds,
       onStep: recordStep,
     });
