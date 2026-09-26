@@ -3,6 +3,8 @@ import assert from "node:assert";
 import { executeMultiAgentPipeline } from "../lib/orchestrator/pipeline";
 import { isGenerationEnabled, rateLimiter } from "../lib/security/rate-limiter";
 import { ResearchDossierSchema } from "../types/agent";
+import { NextRequest } from "next/server";
+import { POST } from "../app/api/generate-brief/route";
 
 describe("Multi-Agent Core Engine & Handoff Pipeline", () => {
   it("should execute end-to-end multi-agent pipeline deterministically", async () => {
@@ -98,5 +100,26 @@ describe("Multi-Agent Core Engine & Handoff Pipeline", () => {
     } finally {
       process.env.MAX_RESEARCH_ROUNDS = originalEnv;
     }
+  });
+
+  it("uses the default scope for blank input and rejects oversized prompts", async () => {
+    const request = (topic: string, scope: string) =>
+      new NextRequest("http://localhost:3007/api/generate-brief", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ topic, scope }),
+      });
+
+    const blankScope = await POST(request("Monólito Modular vs Microsserviços", "  "));
+    assert.strictEqual(blankScope.status, 200);
+    const events = await blankScope.text();
+    assert.ok(events.includes('"type":"complete"'), "Blank scope should generate a brief");
+    assert.ok(events.includes("Enterprise Architecture & Engineering Leadership"));
+
+    const oversizedTopic = await POST(request("x".repeat(301), "Engenharia"));
+    assert.strictEqual(oversizedTopic.status, 400);
+
+    const oversizedScope = await POST(request("Tema válido", "x".repeat(1001)));
+    assert.strictEqual(oversizedScope.status, 400);
   });
 });
