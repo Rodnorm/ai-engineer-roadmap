@@ -14,6 +14,7 @@ This directory provides standardized, auditable AI System Cards for every applic
 | **04 Pocket RAG** | Azure OpenAI `text-embedding-3-small` / `gpt-4o-mini` | Local-first retrieval-augmented generation | No (Information) | [System Card](./04-pocket-rag.md) |
 | **05 Agentic Workflow** | Azure OpenAI `gpt-4o-mini` | Stateful multi-step human-in-the-loop workflow | **Yes (Mandatory)** | [System Card](./05-agentic-workflow.md) |
 | **06 Production Agent** | Azure OpenAI `gpt-4o-mini` + MCP Servers | Autonomous tool calling with sandboxed boundaries | **Yes (Destructive tools)** | [System Card](./06-production-agent.md) |
+| **07 Brief Generator** | Azure OpenAI `gpt-4o` / `gpt-4o-mini` | Heterogeneous multi-agent research and executive brief synthesis | No (Audit Trail) | [System Card](./07-brief-generator.md) |
 
 ---
 
