@@ -210,6 +210,7 @@ export default function HomePage() {
               </label>
               <textarea
                 id="topic-input"
+                maxLength={300}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 rows={2}
@@ -225,6 +226,7 @@ export default function HomePage() {
                 </label>
                 <input
                   type="text"
+                  maxLength={1000}
                   value={scope}
                   onChange={(e) => setScope(e.target.value)}
                   placeholder="Ex: Engenharia e Custos"
