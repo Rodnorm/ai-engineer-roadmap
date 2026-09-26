@@ -53,6 +53,11 @@ export interface Dictionary {
     waitingSubtitle: string;
     inputLabel: string;
     outputLabel: string;
+    handoffCardTitle: string;
+    handoffCardDesc: string;
+    agentResearcher: string;
+    agentWriter: string;
+    agentOrchestrator: string;
   };
   briefViewer: {
     tabBrief: string;
@@ -62,6 +67,11 @@ export interface Dictionary {
     print: string;
     emptyTitle: string;
     emptySubtitle: string;
+    executiveSummaryLabel: string;
+    keyInsightsHeading: string;
+    metricsHeading: string;
+    risksHeading: string;
+    recommendationsHeading: string;
     dossierTopicsTitle: string;
     dossierFactsTitle: string;
     dossierMetricsTitle: string;

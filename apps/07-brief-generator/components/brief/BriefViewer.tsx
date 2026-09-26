@@ -135,14 +135,14 @@ export function BriefViewer({ brief, dossier, isLoading }: BriefViewerProps) {
 
             <div className="my-4 p-4 rounded-xl bg-violet-500/10 border border-violet-500/20">
               <h4 className="text-xs uppercase font-bold tracking-wider text-violet-400 mb-1">
-                Sumário Executivo (PR-FAQ Style)
+                {t.briefViewer.executiveSummaryLabel}
               </h4>
               <p className="text-sm leading-relaxed m-0 text-[var(--text-primary)]">
                 {brief.executiveSummary}
               </p>
             </div>
 
-            <h2>Evidências Fundamentais do Estudo</h2>
+            <h2>{t.briefViewer.keyInsightsHeading}</h2>
             <ul>
               {brief.keyInsights.map((insight, idx) => (
                 <li key={idx} className="text-sm">
@@ -153,7 +153,7 @@ export function BriefViewer({ brief, dossier, isLoading }: BriefViewerProps) {
 
             {dossier && dossier.metrics.length > 0 && (
               <>
-                <h2>Métricas & Indicadores de Performance</h2>
+                <h2>{t.briefViewer.metricsHeading}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-3">
                   {dossier.metrics.map((metric, idx) => (
                     <div
@@ -176,7 +176,7 @@ export function BriefViewer({ brief, dossier, isLoading }: BriefViewerProps) {
               </>
             )}
 
-            <h2>Riscos, Restrições & Trade-offs Críticos</h2>
+            <h2>{t.briefViewer.risksHeading}</h2>
             <ul>
               {brief.risksAndTradeoffs.map((risk, idx) => (
                 <li key={idx} className="text-sm text-amber-500/90 font-medium">
@@ -185,7 +185,7 @@ export function BriefViewer({ brief, dossier, isLoading }: BriefViewerProps) {
               ))}
             </ul>
 
-            <h2>Recomendações Estratégicas de Ação</h2>
+            <h2>{t.briefViewer.recommendationsHeading}</h2>
             <ol>
               {brief.actionRecommendations.map((action, idx) => (
                 <li key={idx} className="text-sm">

@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import { executeMultiAgentPipeline } from "../lib/orchestrator/pipeline";
-import { isValidLocale, LOCALES } from "../lib/i18n/locales";
+import { isValidLocale, LOCALES, localizeStepAction } from "../lib/i18n/locales";
 
 describe("i18n Multilingual Support & Localization", () => {
   it("validates supported locales", () => {
@@ -13,6 +13,32 @@ describe("i18n Multilingual Support & Localization", () => {
     assert.strictEqual(isValidLocale(null), false);
     assert.strictEqual(isValidLocale(undefined), false);
     assert.deepStrictEqual(LOCALES, ["en", "pt", "de"]);
+  });
+
+  it("localizes trace step actions accurately across locales", () => {
+    const rawAction = "Initialize Heterogeneous Multi-Agent Pipeline";
+    assert.strictEqual(
+      localizeStepAction(rawAction, "de"),
+      "Heterogene Multi-Agenten-Pipeline Initialisieren"
+    );
+    assert.strictEqual(
+      localizeStepAction(rawAction, "pt"),
+      "Inicializar Pipeline Multi-Agente Heterogêneo"
+    );
+    assert.strictEqual(localizeStepAction(rawAction, "en"), rawAction);
+
+    assert.strictEqual(
+      localizeStepAction("Tool Call: search_facts", "de"),
+      "Werkzeugaufruf: search_facts"
+    );
+    assert.strictEqual(
+      localizeStepAction("Tool Call: search_facts", "pt"),
+      "Chamada de Ferramenta: search_facts"
+    );
+    assert.strictEqual(
+      localizeStepAction("Tool Call: search_facts", "en"),
+      "Tool Call: search_facts"
+    );
   });
 
   it("generates an English brief when locale='en'", async () => {

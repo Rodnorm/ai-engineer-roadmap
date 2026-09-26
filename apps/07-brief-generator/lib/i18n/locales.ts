@@ -73,3 +73,48 @@ export function detectBrowserLocale(): Locale {
 
   return DEFAULT_LOCALE;
 }
+
+const DE_ACTIONS: Record<string, string> = {
+  "Initialize Heterogeneous Multi-Agent Pipeline": "Heterogene Multi-Agenten-Pipeline Initialisieren",
+  "Plan Strategic Research Inquiry": "Strategische Rechercheuntersuchung Planen",
+  "Finalize Research Dossier": "Recherche-Dossier Abschließen",
+  "Execute Handoff Protocol (Researcher -> Writer)": "Handoff-Protokoll Ausführen (Researcher -> Writer)",
+  "Ingest Research Dossier & Formulate Structure": "Recherche-Dossier Einlesen & Struktur Festlegen",
+  "Synthesize Executive Document & Structure Callouts": "Executive-Dokument Synthetisieren & Handlungsempfehlungen",
+  "Finalize Pipeline & Compile Telemetry": "Pipeline Abschließen & Telemetrie Erfassen",
+  "Azure OpenAI Executive Drafting": "Management-Redaktion via Azure OpenAI",
+  "Azure OpenAI Research Query & Synthesis": "Rechercheabfrage & Synthese via Azure OpenAI",
+};
+
+const PT_ACTIONS: Record<string, string> = {
+  "Initialize Heterogeneous Multi-Agent Pipeline": "Inicializar Pipeline Multi-Agente Heterogêneo",
+  "Plan Strategic Research Inquiry": "Planejar Investigação de Pesquisa Estratégica",
+  "Finalize Research Dossier": "Finalizar Dossiê de Pesquisa",
+  "Execute Handoff Protocol (Researcher -> Writer)": "Executar Protocolo de Handoff (Researcher -> Writer)",
+  "Ingest Research Dossier & Formulate Structure": "Ingerir Dossiê de Pesquisa e Estruturar Briefing",
+  "Synthesize Executive Document & Structure Callouts": "Sintetizar Documento Executivo e Recomendações",
+  "Finalize Pipeline & Compile Telemetry": "Finalizar Pipeline e Compilar Telemetria",
+  "Azure OpenAI Executive Drafting": "Redação Executiva via Azure OpenAI",
+  "Azure OpenAI Research Query & Synthesis": "Pesquisa e Síntese via Azure OpenAI",
+};
+
+/**
+ * Localizes trace step action strings to Portuguese or German.
+ */
+export function localizeStepAction(action: string, locale: Locale): string {
+  if (locale === "de") {
+    if (DE_ACTIONS[action]) return DE_ACTIONS[action];
+    if (action.startsWith("Tool Call: ")) {
+      return action.replace("Tool Call: ", "Werkzeugaufruf: ");
+    }
+  }
+
+  if (locale === "pt") {
+    if (PT_ACTIONS[action]) return PT_ACTIONS[action];
+    if (action.startsWith("Tool Call: ")) {
+      return action.replace("Tool Call: ", "Chamada de Ferramenta: ");
+    }
+  }
+
+  return action;
+}
