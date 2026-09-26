@@ -157,6 +157,16 @@ export const de: Dictionary = {
       summary: "Autonomer ReAct-Agent mit mehreren Werkzeugen, Offline-Ausführung und menschlicher Freigabe vor sensiblen Aktionen.",
       description: "Agentic Workflow orchestriert Rechner-, Wissenssuch- und Alarmierungswerkzeuge über Azure-OpenAI-Function-Calling oder einen deterministischen Offline-Planer – mit Iterationsgrenzen, Rate Limiting und verpflichtender Human-in-the-Loop-Freigabe.",
       category: "Autonome Agenten & Tool Calling",
+    },
+    "agent-workspace": {
+      summary: "Streaming-KI-Agent-Workspace mit Foundry Agent Service, typisierten MCP-Tools, Genehmigungsschranken und persistentem Verlauf.",
+      description: "Agent Workspace verbindet einen Next.js-Streaming-Chat mit dem Azure AI Foundry Agent Service und einem Node.js-MCP-Server. Beinhaltet typisierte Workspace-Tools, explizite Genehmigungsschranken und Cosmos DB-Persistenz.",
+      category: "KI-Agenten & MCP",
+    },
+    "brief-generator": {
+      summary: "Heterogene Multi-Agenten-Recherche- und Synthese-Engine für strukturierte Executive Briefings mit vollständiger Nachvollziehbarkeit.",
+      description: "Multi-Agent Brief Generator entkoppelt Faktenrecherche und Executive-Redaktion in zwei spezialisierte Agenten: einen Researcher mit Werkzeugen und einen Writer ohne externe Tools. Beinhaltet Echtzeit-SSE-Handoff-Tracing, deterministische Offline-Engine und signierte Sitzungsisolation.",
+      category: "Multi-Agenten-Systeme & Orchestrierung",
     }
   },
 };

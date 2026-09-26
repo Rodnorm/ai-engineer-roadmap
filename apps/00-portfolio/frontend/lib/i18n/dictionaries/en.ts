@@ -155,6 +155,16 @@ export const en = {
       summary: "Autonomous ReAct agent with multi-tool calling, offline execution, and human approval before sensitive actions.",
       description: "Agentic Workflow orchestrates calculator, knowledge-search, and alert tools through Azure OpenAI function calling or a deterministic offline planner, with iteration limits, rate limits, and mandatory Human-in-the-Loop authorization.",
       category: "Autonomous Agents & Tool Calling",
+    },
+    "agent-workspace": {
+      summary: "Streaming AI agent workspace with Foundry Agent Service, typed MCP tools, approval gates, and durable conversations.",
+      description: "Agent Workspace connects a Next.js streaming chat to Azure AI Foundry Agent Service and a Node.js MCP server. Includes typed workspace tools, explicit approval gates, and Cosmos DB conversation persistence.",
+      category: "AI Agents & MCP",
+    },
+    "brief-generator": {
+      summary: "Heterogeneous multi-agent research and synthesis engine producing structured executive briefings with audit trails.",
+      description: "Multi-Agent Brief Generator decouples information discovery and executive synthesis into two specialized agents: a tool-using Researcher and a zero-tool Writer. Includes real-time SSE handoff tracing, deterministic offline engine, and signed session isolation.",
+      category: "Multi-Agent Systems & Orchestration",
     }
   },
 };

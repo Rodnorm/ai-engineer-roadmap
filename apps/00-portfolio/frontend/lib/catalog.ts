@@ -133,6 +133,20 @@ export function getAppCatalog(locale?: Locale): AppItem[] {
         caseStudyPath: "agent-workspace.md",
         security: { publicDemo: false, rateLimited: true, storesUserContent: true },
       },
+      {
+        id: "07",
+        slug: "brief-generator",
+        title: "Brief Generator",
+        summary: "Heterogeneous multi-agent research and synthesis engine producing structured executive briefings with audit trails.",
+        description: "Multi-Agent Brief Generator decouples information discovery and executive synthesis into two specialized agents: a tool-using Researcher and a zero-tool Writer. Includes real-time SSE handoff tracing, deterministic offline engine, and signed session isolation.",
+        category: "Multi-Agent Systems & Orchestration",
+        status: "live",
+        technologies: ["Next.js 15", "Azure OpenAI", "Multi-Agent Handoff", "SSE Streaming"],
+        liveUrl: "",
+        repositoryPath: "apps/07-brief-generator",
+        caseStudyPath: "brief-generator.md",
+        security: { publicDemo: true, rateLimited: true, storesUserContent: false },
+      },
     ];
   }
 
