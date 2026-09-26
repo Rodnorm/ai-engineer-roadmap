@@ -31,12 +31,26 @@ import {
   Zap,
 } from "lucide-react";
 
+import { useI18n } from "@/lib/i18n/context";
+import { LocalizedScenario } from "@/lib/i18n/types";
+
 export default function HomePage() {
+  const { t, locale } = useI18n();
   const [topic, setTopic] = useState(COMPLETE_SCENARIOS[0].topic);
   const [scope, setScope] = useState(COMPLETE_SCENARIOS[0].scope);
   const [tone, setTone] = useState<BriefTone>("executive");
+  const [hasUserEdited, setHasUserEdited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sync initial scenario when language changes if user hasn't edited
+  useEffect(() => {
+    if (!hasUserEdited && t.scenarios.items?.[0]) {
+      setTopic(t.scenarios.items[0].topic);
+      setScope(t.scenarios.items[0].scope);
+      setTone(t.scenarios.items[0].tone);
+    }
+  }, [locale, t, hasUserEdited]);
 
   // Drawers state
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -58,10 +72,11 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  const handleSelectScenario = (scenario: ScenarioItem) => {
+  const handleSelectScenario = (scenario: ScenarioItem | LocalizedScenario) => {
     setTopic(scenario.topic);
     setScope(scenario.scope);
     setTone(scenario.tone);
+    setHasUserEdited(true);
     setIsScenariosOpen(false);
   };
 
@@ -73,6 +88,7 @@ export default function HomePage() {
     setDossier(historical.result.dossier);
     setSteps(historical.result.trace);
     setResult(historical.result);
+    setHasUserEdited(true);
     setError(null);
   };
 
@@ -91,7 +107,7 @@ export default function HomePage() {
       const res = await fetch("/api/generate-brief", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, scope, tone }),
+        body: JSON.stringify({ topic, scope, tone, locale }),
       });
 
       if (!res.ok) {
@@ -165,17 +181,17 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <Sliders className="w-4 h-4 text-[var(--accent-agent-research)]" />
               <h2 className="text-sm font-semibold text-[var(--text-primary)]">
-                Parâmetros da Investigação & Síntese
+                {t.controlPanel.title}
               </h2>
             </div>
 
             <button
               type="button"
               onClick={() => setIsScenariosOpen(!isScenariosOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--accent-agent-research)] hover:border-[var(--card-hover-border)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--accent-agent-research)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>12 Cenários Prontos</span>
+              <span>{t.controlPanel.scenariosBtn}</span>
               {isScenariosOpen ? (
                 <ChevronUp className="w-3.5 h-3.5" />
               ) : (
@@ -190,7 +206,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2 mb-3">
                 <BookOpen className="w-4 h-4 text-[var(--accent-agent-research)]" />
                 <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
-                  Catálogo de 12 Cenários de Engenharia & Arquitetura
+                  {t.controlPanel.scenariosCatalogTitle}
                 </h3>
               </div>
               <QuickScenarios
@@ -206,15 +222,18 @@ export default function HomePage() {
                 htmlFor="topic-input"
                 className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5"
               >
-                Tema / Pergunta de Pesquisa
+                {t.controlPanel.topicLabel}
               </label>
               <textarea
                 id="topic-input"
                 maxLength={300}
                 value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                onChange={(e) => {
+                  setTopic(e.target.value);
+                  setHasUserEdited(true);
+                }}
                 rows={2}
-                placeholder="Ex: Análise comparativa de migração de arquitetura..."
+                placeholder={t.controlPanel.topicPlaceholder}
                 className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-research)] transition-all resize-none"
               />
             </div>
@@ -222,30 +241,36 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                  Escopo de Análise
+                  {t.controlPanel.scopeLabel}
                 </label>
                 <input
                   type="text"
                   maxLength={1000}
                   value={scope}
-                  onChange={(e) => setScope(e.target.value)}
-                  placeholder="Ex: Engenharia e Custos"
+                  onChange={(e) => {
+                    setScope(e.target.value);
+                    setHasUserEdited(true);
+                  }}
+                  placeholder={t.controlPanel.scopePlaceholder}
                   className="w-full px-3 py-1.5 text-xs rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-research)]"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                  Tom da Redação
+                  {t.controlPanel.toneLabel}
                 </label>
                 <select
                   value={tone}
-                  onChange={(e) => setTone(e.target.value as BriefTone)}
+                  onChange={(e) => {
+                    setTone(e.target.value as BriefTone);
+                    setHasUserEdited(true);
+                  }}
                   className="w-full px-3 py-1.5 text-xs rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-writer)]"
                 >
-                  <option value="executive">Executivo (Foco em Decisão & Riscos)</option>
-                  <option value="technical">Técnico (Foco em Arquitetura & Código)</option>
-                  <option value="critical">Crítico (Foco em Trade-offs & Fricção)</option>
+                  <option value="executive">{t.controlPanel.toneExecutive}</option>
+                  <option value="technical">{t.controlPanel.toneTechnical}</option>
+                  <option value="critical">{t.controlPanel.toneCritical}</option>
                 </select>
               </div>
 
@@ -258,12 +283,12 @@ export default function HomePage() {
                   {isLoading ? (
                     <>
                       <RotateCcw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Investigando & Redigindo...</span>
+                      <span>{t.controlPanel.generatingBtn}</span>
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Gerar Briefing Executivo</span>
+                      <span>{t.controlPanel.generateBtn}</span>
                     </>
                   )}
                 </button>

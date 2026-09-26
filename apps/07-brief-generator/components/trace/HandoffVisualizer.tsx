@@ -20,6 +20,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 
 interface HandoffVisualizerProps {
   steps: AgentTraceStep[];
@@ -32,6 +33,7 @@ export function HandoffVisualizer({
   isLoading,
   result,
 }: HandoffVisualizerProps) {
+  const { t } = useI18n();
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
@@ -68,18 +70,18 @@ export function HandoffVisualizer({
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-[var(--accent-agent-research)]" />
           <h2 className="text-sm font-semibold tracking-tight text-[var(--text-primary)]">
-            Handoff & Execution Trace
+            {t.handoffVisualizer.title}
           </h2>
         </div>
         <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
           {isLoading && (
             <span className="flex items-center gap-1.5 text-sky-500 animate-pulse font-medium">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processando...
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t.controlPanel.generatingBtn}
             </span>
           )}
           {result && (
             <span className="text-emerald-500 flex items-center gap-1 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Concluído ({result.metrics.totalLatencyMs}ms)
+              <CheckCircle2 className="w-3.5 h-3.5" /> ({result.metrics.totalLatencyMs}ms)
             </span>
           )}
         </div>
@@ -89,15 +91,15 @@ export function HandoffVisualizer({
       {result && (
         <div className="grid grid-cols-3 gap-2 p-2.5 mb-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] text-xs">
           <div>
-            <span className="text-[var(--text-muted)] block">Pesquisa</span>
+            <span className="text-[var(--text-muted)] block">{t.handoffVisualizer.researchLatency}</span>
             <span className="font-semibold text-sky-400">{result.metrics.researchLatencyMs}ms</span>
           </div>
           <div>
-            <span className="text-[var(--text-muted)] block">Redação</span>
+            <span className="text-[var(--text-muted)] block">{t.handoffVisualizer.writerLatency}</span>
             <span className="font-semibold text-violet-400">{result.metrics.writerLatencyMs}ms</span>
           </div>
           <div>
-            <span className="text-[var(--text-muted)] block">Tokens Est.</span>
+            <span className="text-[var(--text-muted)] block">{t.handoffVisualizer.estimatedTokens}</span>
             <span className="font-semibold text-emerald-400">~{result.metrics.tokensEstimated}</span>
           </div>
         </div>
@@ -108,9 +110,9 @@ export function HandoffVisualizer({
         {steps.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-48 text-center text-xs text-[var(--text-muted)] space-y-2">
             <Bot className="w-8 h-8 opacity-30" />
-            <p>Nenhuma execução em andamento.</p>
+            <p className="font-semibold">{t.handoffVisualizer.waitingTitle}</p>
             <p className="max-w-[240px]">
-              Insira um tópico ou escolha um cenário ao lado para disparar a colaboração multi-agente.
+              {t.handoffVisualizer.waitingSubtitle}
             </p>
           </div>
         ) : (

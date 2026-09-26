@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n/context";
 import {
   HelpCircle,
   History,
   Lock,
   Network,
-  ShieldCheck,
 } from "lucide-react";
 
 interface HeaderProps {
@@ -21,6 +22,7 @@ export function Header({
   onOpenHistory,
   briefsCount = 0,
 }: HeaderProps) {
+  const { t } = useI18n();
   const [sessionShortId, setSessionShortId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,14 +43,14 @@ export function Header({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-sm sm:text-base font-bold tracking-tight text-[var(--text-primary)]">
-              Multi-Agent Brief Generator
+              {t.header.title}
             </h1>
             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-500/15 text-violet-500 border border-violet-500/30">
-              MULTI-AGENT
+              {t.header.badge}
             </span>
           </div>
           <p className="text-[11px] text-[var(--text-muted)] hidden sm:block">
-            Orquestração Heterogênea: Researcher (Tools) + Writer (Zero-Tool Synthesis)
+            {t.header.subtitle}
           </p>
         </div>
       </div>
@@ -59,7 +61,7 @@ export function Header({
           <button
             type="button"
             onClick={onOpenHistory}
-            title="Sessão Privada isolada via cookie assinado. Clique para ver histórico."
+            title={t.header.sessionTitle}
             className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/25 hover:bg-emerald-500/15 transition-colors cursor-pointer"
           >
             <Lock className="w-3 h-3" />
@@ -76,23 +78,26 @@ export function Header({
         <button
           type="button"
           onClick={onOpenHistory}
-          aria-label="Abrir histórico de briefings da sessão"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors"
+          aria-label={t.header.historyBtn}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
         >
           <History className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Histórico</span>
+          <span className="hidden sm:inline">{t.header.historyBtn}</span>
         </button>
 
         {/* Info Drawer Button */}
         <button
           type="button"
           onClick={onOpenInfo}
-          aria-label="Sobre o App e Arquitetura Multi-Agente"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors"
+          aria-label={t.header.aboutBtn}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Sobre o App</span>
+          <span className="hidden sm:inline">{t.header.aboutBtn}</span>
         </button>
+
+        {/* Language Switcher */}
+        <LanguageSwitcher />
 
         {/* Dark / Light Toggle */}
         <ThemeToggle />

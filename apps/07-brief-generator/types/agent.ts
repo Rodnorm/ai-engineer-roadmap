@@ -19,6 +19,7 @@ export interface ResearchDossier {
   topic: string;
   scope: string;
   tone: BriefTone;
+  locale?: "pt" | "en" | "de";
   investigatedTopics: string[];
   verifiedFacts: VerifiedFact[];
   frictionPoints: string[];
@@ -31,6 +32,7 @@ export const ResearchDossierSchema = z.object({
   topic: z.string().min(1),
   scope: z.string().min(1),
   tone: z.enum(["executive", "technical", "critical"]),
+  locale: z.enum(["pt", "en", "de"]).optional().default("pt"),
   investigatedTopics: z.array(z.string()),
   verifiedFacts: z.array(
     z.object({

@@ -165,29 +165,32 @@ export const COMPLETE_SCENARIOS: ScenarioItem[] = [
   },
 ];
 
+import { useI18n } from "@/lib/i18n/context";
+import { LocalizedScenario } from "@/lib/i18n/types";
+
 interface QuickScenariosProps {
-  onSelect: (scenario: ScenarioItem) => void;
+  onSelect: (scenario: ScenarioItem | LocalizedScenario) => void;
   activeTopic?: string;
 }
 
 export function QuickScenarios({ onSelect, activeTopic }: QuickScenariosProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
+  const { t } = useI18n();
+  const scenariosList = t.scenarios.items || COMPLETE_SCENARIOS;
 
-  const categories = [
-    "Todos",
-    "Arquitetura",
-    "Segurança",
-    "Inteligência Artificial",
-    "FinOps & Cloud",
-    "SRE & Confiabilidade",
-    "Banco de Dados",
-    "Gestão & Cultura",
-  ];
+  // Extract unique categories from active scenarios list
+  const uniqueCategories = Array.from(new Set(scenariosList.map((s) => s.category)));
+  const allLabel = t.scenarios.allCategories;
+  const categories = [allLabel, ...uniqueCategories];
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(allLabel);
+
+  // If selected category is no longer present after switching languages, reset to "All"
+  const currentCategory = categories.includes(selectedCategory) ? selectedCategory : allLabel;
 
   const filtered =
-    selectedCategory === "Todos"
-      ? COMPLETE_SCENARIOS
-      : COMPLETE_SCENARIOS.filter((s) => s.category.includes(selectedCategory));
+    currentCategory === allLabel
+      ? scenariosList
+      : scenariosList.filter((s) => s.category === currentCategory);
 
   return (
     <div className="space-y-3">
@@ -198,8 +201,8 @@ export function QuickScenarios({ onSelect, activeTopic }: QuickScenariosProps) {
             key={cat}
             type="button"
             onClick={() => setSelectedCategory(cat)}
-            className={`px-2.5 py-1 rounded-full whitespace-nowrap text-xs font-medium transition-all ${
-              selectedCategory === cat
+            className={`px-2.5 py-1 rounded-full whitespace-nowrap text-xs font-medium transition-all cursor-pointer ${
+              currentCategory === cat
                 ? "bg-[var(--accent-agent-research)] text-white shadow-sm"
                 : "border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
@@ -241,9 +244,9 @@ export function QuickScenarios({ onSelect, activeTopic }: QuickScenariosProps) {
               </div>
 
               <div className="mt-3 pt-2 border-t border-[var(--border-subtle)]/60 flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span className="capitalize font-mono">Tom: {item.tone}</span>
+                <span className="capitalize font-mono">{t.controlPanel.toneLabel}: {item.tone}</span>
                 <span className="text-[var(--accent-agent-writer)] font-semibold flex items-center gap-1">
-                  Carregar <Sparkles className="w-3 h-3" />
+                  {t.scenarios.loadAction} <Sparkles className="w-3 h-3" />
                 </span>
               </div>
             </div>
