@@ -15,6 +15,7 @@ FRONTEND_CONFIGS = [
     REPO_ROOT / "apps" / "04-pocket-rag" / "frontend" / "next.config.mjs",
     REPO_ROOT / "apps" / "05-agentic-workflow" / "frontend" / "next.config.mjs",
     REPO_ROOT / "apps" / "06-agent-workspace" / "frontend" / "next.config.mjs",
+    REPO_ROOT / "apps" / "07-brief-generator" / "next.config.mjs",
 ]
 
 REQUIRED_HEADERS = [
@@ -37,7 +38,7 @@ class TestSecurityHeaders(unittest.TestCase):
 
     def test_required_security_headers_configured(self) -> None:
         for config_path in FRONTEND_CONFIGS:
-            app_name = config_path.parent.parent.name
+            app_name = config_path.parent.name if config_path.parent.name != "frontend" else config_path.parent.parent.name
             content = config_path.read_text(encoding="utf-8")
 
             # Must not contain Report-Only CSP

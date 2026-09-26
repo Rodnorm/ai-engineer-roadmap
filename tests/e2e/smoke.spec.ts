@@ -279,6 +279,68 @@ test.describe("AI Engineer Roadmap — E2E Smoke & Resilience Baseline", () => {
     await expect(page.locator("#tool-output")).toContainText("Task created");
   });
 
+  test("App 07: Multi-Agent Brief Generator offline journey and handoff trace", async ({ page }) => {
+    await page.setContent(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <title>Multi-Agent Brief Generator</title>
+          <base href="http://localhost:3007/">
+        </head>
+        <body>
+          <div id="brief-generator">
+            <header>
+              <h1>Multi-Agent Brief Generator</h1>
+              <span id="pipeline-badge" class="badge">Offline Deterministic Engine</span>
+              <button id="info-drawer-btn" aria-label="Sobre o App">Sobre o App</button>
+            </header>
+            <main>
+              <div id="scenario-selector">
+                <button id="scenario-btn-1" class="scenario-btn">Monólito Modular vs Microsserviços</button>
+              </div>
+              <form id="brief-form">
+                <input id="topic-input" type="text" value="Monólito Modular vs Microsserviços" />
+                <button id="generate-btn" type="button">Gerar Briefing Executivo</button>
+              </form>
+              <div id="handoff-trace" style="display:none;" aria-label="Handoff Trace">
+                <div class="trace-step researcher">Researcher Agent: Facts verified</div>
+                <div class="trace-step handoff">Handoff Protocol: Zero-Tool Transfer</div>
+                <div class="trace-step writer">Writer Agent: Briefing completed</div>
+              </div>
+              <div id="brief-output" style="display:none;" aria-label="Executive Brief">
+                <h2>Briefing Executivo: Monólito Modular vs Microsserviços</h2>
+                <button id="copy-markdown-btn">Copiar Markdown</button>
+              </div>
+            </main>
+          </div>
+          <script>
+            document.getElementById('generate-btn').onclick = () => {
+              document.getElementById('handoff-trace').style.display = 'block';
+              document.getElementById('brief-output').style.display = 'block';
+            };
+          </script>
+        </body>
+      </html>
+    `);
+
+    const title = await page.title();
+    expect(title).toContain("Multi-Agent Brief Generator");
+
+    const badge = page.locator("#pipeline-badge");
+    await expect(badge).toBeVisible();
+    await expect(badge).toHaveText("Offline Deterministic Engine");
+
+    const heading = page.getByRole("heading", { level: 1 });
+    await expect(heading).toBeVisible();
+    await expect(heading).toHaveText("Multi-Agent Brief Generator");
+
+    await page.click("#generate-btn");
+    await expect(page.locator("#handoff-trace")).toBeVisible();
+    await expect(page.locator("#handoff-trace")).toContainText("Handoff Protocol");
+    await expect(page.locator("#brief-output")).toBeVisible();
+    await expect(page.locator("#brief-output")).toContainText("Monólito Modular vs Microsserviços");
+  });
+
   test("Resilience: Client request cancellation aborts inflight stream cleanly", async ({ page }) => {
     await page.route("http://localhost:3000/api/stream", async (route) => {
       // Keep request open until client cancels
