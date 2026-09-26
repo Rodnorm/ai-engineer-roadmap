@@ -15,7 +15,8 @@ const RequestSchema = z.object({
     .string()
     .trim()
     .max(1000, "O escopo deve ter no máximo 1000 caracteres.")
-    .optional(),
+    .optional()
+    .transform((value) => value || undefined),
   tone: z.enum(["executive", "technical", "critical"]).default("executive"),
 });
 
