@@ -1,6 +1,6 @@
 import { InvocationTelemetry, DeploymentTarget } from "@/types/deployment";
 import { randomUUID } from "node:crypto";
-import { AzureOpenAI } from "openai";
+import OpenAI from "openai";
 
 export interface InferenceRequest {
   target: DeploymentTarget;
@@ -22,6 +22,10 @@ export const MODEL_PRICING: Record<string, { promptPer1k: number; completionPer1
     promptPer1k: 0.00015,
     completionPer1k: 0.0006,
   },
+  "gpt-4.1-mini": {
+    promptPer1k: 0.00015,
+    completionPer1k: 0.0006,
+  },
 };
 
 export function estimateCost(model: string, promptTokens: number, completionTokens: number): number {
@@ -33,9 +37,9 @@ export function estimateCost(model: string, promptTokens: number, completionToke
 }
 
 export class InferenceClient {
-  private static azureClient: AzureOpenAI | null = null;
+  private static azureClient: OpenAI | null = null;
 
-  private static getAzureClient(): AzureOpenAI | null {
+  private static getAzureClient(): OpenAI | null {
     if (this.azureClient) return this.azureClient;
     const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
     const apiKey = process.env.AZURE_OPENAI_API_KEY;
@@ -43,10 +47,17 @@ export class InferenceClient {
 
     if (endpoint && apiKey && !endpoint.includes("your-resource-name")) {
       try {
-        this.azureClient = new AzureOpenAI({
-          endpoint,
+        const cleanEndpoint = endpoint.replace(/\/+$/, "");
+        const isOpenAIV1 = cleanEndpoint.includes("/openai/v1");
+        const baseURL = isOpenAIV1
+          ? cleanEndpoint
+          : `${cleanEndpoint}/openai/deployments`;
+
+        this.azureClient = new OpenAI({
           apiKey,
-          apiVersion,
+          baseURL,
+          defaultQuery: isOpenAIV1 ? undefined : { "api-version": apiVersion },
+          defaultHeaders: { "api-key": apiKey },
         });
       } catch (err) {
         console.warn("[InferenceClient] Failed to initialize AzureOpenAI client, falling back to offline:", err);
@@ -74,7 +85,7 @@ export class InferenceClient {
    * Online inference with Azure OpenAI
    */
   private static async executeAzure(
-    client: AzureOpenAI,
+    client: OpenAI,
     request: InferenceRequest,
     startTime: number
   ): Promise<InvocationTelemetry> {
@@ -83,6 +94,11 @@ export class InferenceClient {
     let fullText = "";
     let promptTokens = Math.max(10, Math.round(request.prompt.length / 4));
     let completionTokens = 0;
+
+    const actualModel =
+      request.target === "green"
+        ? process.env.AZURE_OPENAI_DEPLOYMENT_CANDIDATE || process.env.AZURE_OPENAI_DEPLOYMENT || request.model
+        : process.env.AZURE_OPENAI_DEPLOYMENT || request.model;
 
     try {
       const messages: Array<{ role: "system" | "user"; content: string }> = [];
@@ -97,7 +113,7 @@ export class InferenceClient {
       messages.push({ role: "user", content: request.prompt });
 
       const stream = await client.chat.completions.create({
-        model: request.model,
+        model: actualModel,
         messages,
         temperature: request.temperature ?? 0.3,
         max_tokens: request.maxTokens ?? 800,
