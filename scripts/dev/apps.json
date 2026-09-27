@@ -14,7 +14,8 @@
           "NEXT_PUBLIC_APP_04_URL": "http://localhost:3004",
           "NEXT_PUBLIC_APP_05_URL": "http://localhost:3005",
           "NEXT_PUBLIC_APP_06_URL": "http://localhost:3006",
-          "NEXT_PUBLIC_APP_07_URL": "http://localhost:3007"
+          "NEXT_PUBLIC_APP_07_URL": "http://localhost:3007",
+          "NEXT_PUBLIC_APP_08_URL": "http://localhost:3008"
         }
       }
     },
@@ -150,6 +151,20 @@
           "PORT": "3007",
           "APP_MODE": "offline",
           "GENERATION_ENABLED": "true"
+        }
+      }
+    },
+    {
+      "id": "08",
+      "name": "Production AI Deployment & Operations Studio",
+      "frontend": {
+        "dir": "apps/08-ai-ops-deployment",
+        "port": 3008,
+        "command": "npm run dev",
+        "env": {
+          "PORT": "3008",
+          "APP_MODE": "offline",
+          "DEPLOY_ENABLED": "true"
         }
       }
     }

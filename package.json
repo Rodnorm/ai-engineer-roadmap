@@ -11,7 +11,8 @@
     "apps/04-pocket-rag/frontend",
     "apps/05-agentic-workflow/frontend",
     "apps/06-agent-workspace/frontend",
-    "apps/07-brief-generator"
+    "apps/07-brief-generator",
+    "apps/08-ai-ops-deployment"
   ],
   "scripts": {
     "dev": "node scripts/dev/run.mjs --all",
@@ -24,6 +25,7 @@
     "dev:05": "node scripts/dev/run.mjs --app 05",
     "dev:06": "node scripts/dev/run.mjs --app 06",
     "dev:07": "node scripts/dev/run.mjs --app 07",
+    "dev:08": "node scripts/dev/run.mjs --app 08",
     "test": "node --test scripts/dev/*.test.mjs",
     "test:e2e": "npx --prefix tests/e2e playwright test --config tests/e2e/playwright.config.ts",
     "test:evals": "python evals/run_evals.py"
