@@ -1,6 +1,6 @@
 import { InvocationTelemetry, DeploymentTarget } from "@/types/deployment";
 import { randomUUID } from "node:crypto";
-import OpenAI from "openai";
+import { AzureOpenAI, OpenAI } from "openai";
 
 export interface InferenceRequest {
   target: DeploymentTarget;
@@ -11,6 +11,8 @@ export interface InferenceRequest {
   maxTokens?: number;
   requireStructuredJson?: boolean;
 }
+
+export type SupportedClient = OpenAI | AzureOpenAI;
 
 // Cost calculations per 1,000 tokens
 export const MODEL_PRICING: Record<string, { promptPer1k: number; completionPer1k: number }> = {
@@ -37,33 +39,58 @@ export function estimateCost(model: string, promptTokens: number, completionToke
 }
 
 export class InferenceClient {
-  private static azureClient: OpenAI | null = null;
+  private static cachedClient: SupportedClient | null = null;
+  private static cachedEndpoint: string | null = null;
 
-  private static getAzureClient(): OpenAI | null {
-    if (this.azureClient) return this.azureClient;
+  /**
+   * Factory function that constructs the correct SDK client depending on endpoint type:
+   * - Classic Azure: https://<resource>.openai.azure.com/ -> AzureOpenAI client (uses /openai/deployments/{deployment}/chat/completions)
+   * - Azure AI Foundry / OpenAI v1: https://<resource>.services.ai.azure.com/openai/v1 -> OpenAI client (uses /chat/completions with model parameter)
+   */
+  public static createClient(
+    endpoint: string,
+    apiKey: string,
+    apiVersion: string = "2024-10-21"
+  ): SupportedClient {
+    const cleanEndpoint = endpoint.replace(/\/+$/, "");
+    const isOpenAIV1 = cleanEndpoint.includes("/openai/v1") || cleanEndpoint.endsWith("/v1");
+
+    if (isOpenAIV1) {
+      return new OpenAI({
+        apiKey,
+        baseURL: cleanEndpoint,
+        defaultHeaders: { "api-key": apiKey },
+      });
+    }
+
+    return new AzureOpenAI({
+      endpoint: cleanEndpoint,
+      apiKey,
+      apiVersion,
+    });
+  }
+
+  private static getAzureClient(): SupportedClient | null {
     const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
     const apiKey = process.env.AZURE_OPENAI_API_KEY;
     const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
 
-    if (endpoint && apiKey && !endpoint.includes("your-resource-name")) {
-      try {
-        const cleanEndpoint = endpoint.replace(/\/+$/, "");
-        const isOpenAIV1 = cleanEndpoint.includes("/openai/v1");
-        const baseURL = isOpenAIV1
-          ? cleanEndpoint
-          : `${cleanEndpoint}/openai/deployments`;
-
-        this.azureClient = new OpenAI({
-          apiKey,
-          baseURL,
-          defaultQuery: isOpenAIV1 ? undefined : { "api-version": apiVersion },
-          defaultHeaders: { "api-key": apiKey },
-        });
-      } catch (err) {
-        console.warn("[InferenceClient] Failed to initialize AzureOpenAI client, falling back to offline:", err);
-      }
+    if (!endpoint || !apiKey || endpoint.includes("your-resource-name")) {
+      return null;
     }
-    return this.azureClient;
+
+    if (this.cachedClient && this.cachedEndpoint === endpoint) {
+      return this.cachedClient;
+    }
+
+    try {
+      this.cachedClient = this.createClient(endpoint, apiKey, apiVersion);
+      this.cachedEndpoint = endpoint;
+      return this.cachedClient;
+    } catch (err) {
+      console.warn("[InferenceClient] Failed to initialize client, falling back to offline:", err);
+      return null;
+    }
   }
 
   /**
@@ -85,7 +112,7 @@ export class InferenceClient {
    * Online inference with Azure OpenAI
    */
   private static async executeAzure(
-    client: OpenAI,
+    client: SupportedClient,
     request: InferenceRequest,
     startTime: number
   ): Promise<InvocationTelemetry> {
@@ -94,11 +121,6 @@ export class InferenceClient {
     let fullText = "";
     let promptTokens = Math.max(10, Math.round(request.prompt.length / 4));
     let completionTokens = 0;
-
-    const actualModel =
-      request.target === "green"
-        ? process.env.AZURE_OPENAI_DEPLOYMENT_CANDIDATE || process.env.AZURE_OPENAI_DEPLOYMENT || request.model
-        : process.env.AZURE_OPENAI_DEPLOYMENT || request.model;
 
     try {
       const messages: Array<{ role: "system" | "user"; content: string }> = [];
@@ -112,8 +134,9 @@ export class InferenceClient {
       }
       messages.push({ role: "user", content: request.prompt });
 
+      // Honor the model selected by the routing policy
       const stream = await client.chat.completions.create({
-        model: actualModel,
+        model: request.model,
         messages,
         temperature: request.temperature ?? 0.3,
         max_tokens: request.maxTokens ?? 800,
