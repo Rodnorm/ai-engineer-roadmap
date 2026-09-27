@@ -1,7 +1,7 @@
 FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+COPY package.json package-lock.json* ./
+RUN if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps; fi
 
 FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS builder
 WORKDIR /app
@@ -24,6 +24,6 @@ USER nextjs
 EXPOSE 3008
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -q --spider "http://127.0.0.1:${PORT:-3008}/api/health" || exit 1
+  CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT || 3008) + '/api/health').then(r => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1));"
 
 CMD ["node", "server.js"]
