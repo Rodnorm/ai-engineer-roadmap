@@ -2,7 +2,7 @@ openai>=3.13.0
 pydantic>=2.13.5
 python-dotenv
 azure-identity
-fastapi>=0.111
+fastapi>=0.142.2
 azure-ai-projects
 azure-ai-textanalytics
 uvicorn[standard]>=0.30
