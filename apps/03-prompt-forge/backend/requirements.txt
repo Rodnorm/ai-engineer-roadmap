@@ -1,6 +1,6 @@
 python-dotenv
 fastapi>=0.141.1
-uvicorn[standard]>=0.52.4
+uvicorn[standard]>=0.54.0
 pydantic>=2.13.5
 openai>=3.13.0
 azure-ai-contentsafety>=1.0.0
