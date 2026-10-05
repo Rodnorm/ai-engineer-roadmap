@@ -1,6 +1,6 @@
 python-dotenv
 azure-identity
-openai>=3.13.0
+openai>=3.23.0
 fastapi>=0.111
 pydantic>=2.13.5
 uvicorn[standard]>=0.30
