@@ -4,8 +4,7 @@ updates:
   - package-ecosystem: npm
     directory: /apps/00-portfolio/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -19,13 +18,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/01-smart-inspector/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -39,13 +37,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/02-support-bot/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -59,13 +56,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/04-pocket-rag/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -79,13 +75,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/03-prompt-forge/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -99,13 +94,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/05-agentic-workflow/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -119,13 +113,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/06-agent-workspace/frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -139,13 +132,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: npm
     directory: /apps/06-agent-workspace/mcp-server
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -159,13 +151,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /apps/01-smart-inspector/backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -179,13 +170,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /apps/02-support-bot/backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -199,13 +189,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /apps/04-pocket-rag/backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -219,13 +208,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /apps/03-prompt-forge/backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -239,13 +227,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /apps/05-agentic-workflow/backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -259,13 +246,12 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "06:00"
       timezone: Europe/Berlin
     groups:
@@ -279,4 +265,4 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
