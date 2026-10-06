@@ -24,10 +24,10 @@ export function Header() {
         <Link
           href={getLocalizedPath("/", locale)}
           className="flex min-w-0 flex-shrink items-center gap-2 font-bold tracking-tight text-foreground transition-colors hover:text-primary sm:text-lg"
-          aria-label="AI Engineer Roadmap home"
+          aria-label="Rodrigo Normando AI Solutions"
         >
           <Sparkles className="h-5 w-5 flex-shrink-0 text-primary" />
-          <span className="hidden whitespace-nowrap sm:inline">AI Engineer Roadmap</span>
+          <span className="hidden whitespace-nowrap sm:inline">Rodrigo Normando • AI Solutions</span>
         </Link>
         <nav className="flex min-w-0 items-center justify-end gap-0.5 text-sm font-medium text-text-secondary sm:gap-2 md:gap-4">
           <Link

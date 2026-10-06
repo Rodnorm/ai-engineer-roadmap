@@ -58,13 +58,13 @@ test("getDictionary returns correct translations and falls back to default Engli
   const deDict = getDictionary("de");
   const fallbackDict = getDictionary("invalid-locale");
 
-  assert.equal(enDict.nav.catalog, "Catalog");
-  assert.equal(ptDict.nav.catalog, "Catálogo");
-  assert.equal(deDict.nav.catalog, "Katalog");
+  assert.equal(enDict.nav.catalog, "Solutions");
+  assert.equal(ptDict.nav.catalog, "Soluções");
+  assert.equal(deDict.nav.catalog, "Lösungen");
 
   // Fallback to English
-  assert.equal(fallbackDict.nav.catalog, "Catalog");
-  assert.equal(fallbackDict.home.heroTitleHighlight, "AI Engineer");
+  assert.equal(fallbackDict.nav.catalog, "Solutions");
+  assert.equal(fallbackDict.home.heroTitleHighlight, "Production AI Solutions");
 });
 
 test("catalog localization applies localized descriptions per locale", () => {
@@ -72,9 +72,9 @@ test("catalog localization applies localized descriptions per locale", () => {
   const ptApps = getAppCatalog("pt");
   const deApps = getAppCatalog("de");
 
-  assert.equal(enApps.length, 6);
-  assert.equal(ptApps.length, 6);
-  assert.equal(deApps.length, 6);
+  assert.equal(enApps.length, 8);
+  assert.equal(ptApps.length, 8);
+  assert.equal(deApps.length, 8);
 
   // Check category and summary localization
   const enApp1 = enApps.find((a) => a.id === "01");
