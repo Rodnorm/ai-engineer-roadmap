@@ -57,13 +57,14 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
     {
       id: "04",
       title: "App 04: Pocket RAG",
-      status: "in_progress",
+      status: "completed",
       description: locale === "pt"
-        ? "Fundamentação documental local com embeddings vetoriais, busca semântica, recuperação híbrida e avaliação de chunking."
+        ? "Base de conhecimento RAG privada e multilíngue com armazenamento vetorial em SQLite, documentos de exemplo e citações verificáveis."
         : locale === "de"
-        ? "Lokale Dokumentengrundung mit Vektor-Embeddings, semantischer Suche, hybrider Abfrage und Chunking-Strategie-Evaluierung."
-        : "Local document grounding with vector embeddings, semantic search, hybrid retrieval, and chunking strategy evaluation.",
+        ? "Private, mehrsprachige RAG-Wissensbasis mit SQLite-Vektorspeicher, Beispieldokumenten und nachvollziehbaren Quellenangaben."
+        : "Private multilingual RAG knowledge base with SQLite vector storage, bundled example documents, and inspectable citations.",
       badge: "Vector DBs & Local RAG",
+      link: "/apps/pocket-rag",
     },
     {
       id: "05",
@@ -91,25 +92,27 @@ export function RoadmapPageView({ locale = "en" }: { locale?: Locale }) {
     },
     {
       id: "07",
-      title: "App 07: Fine-Tuning & Evals",
-      status: "planned",
+      title: "App 07: Multi-Agent Brief Generator",
+      status: "completed",
       description: locale === "pt"
-        ? "Pipeline de fine-tuning supervisionado, curadoria de dataset, avaliações offline e comparação de modelos base vs. ajustados."
+        ? "Motor de pesquisa e síntese multi-agente heterogêneo produzindo briefings executivos estruturados com rastreabilidade total."
         : locale === "de"
-        ? "Supervised-Fine-Tuning-Pipeline, Dataset-Kuratierung, Offline-Evaluierungen und Vergleich von Basis- und angepassten Modellen."
-        : "Supervised fine-tuning pipeline, dataset curation, offline evaluations, and base vs. fine-tuned model comparison.",
-      badge: locale === "pt" ? "Fine-Tuning & Avaliações" : locale === "de" ? "Fine-Tuning & Evals" : "Fine-Tuning & Evals",
+        ? "Heterogene Multi-Agenten-Recherche- und Synthese-Engine für strukturierte Executive Briefings mit vollständiger Nachvollziehbarkeit."
+        : "Heterogeneous multi-agent research and synthesis engine producing structured executive briefings with audit trails.",
+      badge: locale === "pt" ? "Sistemas Multi-Agente" : locale === "de" ? "Multi-Agenten-Systeme" : "Multi-Agent Systems",
+      link: "/apps/brief-generator",
     },
     {
       id: "08",
-      title: "App 08: Production Deployment",
-      status: "planned",
+      title: "App 08: AI Ops & Deployment Studio",
+      status: "completed",
       description: locale === "pt"
-        ? "Estratégias avançadas de deploy: blue-green, canary releases, rollback automatizado e monitoramento de SLA em produção."
+        ? "Plataforma corporativa de AIOps com rollout canário progressivo, roteamento blue/green sem indisponibilidade e rollback automatizado de SLO."
         : locale === "de"
-        ? "Erweiterte Deployment-Strategien: Blue-Green, Canary-Releases, automatisiertes Rollback und SLA-Monitoring in der Produktion."
-        : "Advanced deployment strategies: blue-green, canary releases, automated rollback, and production SLA monitoring.",
-      badge: locale === "pt" ? "Deploy & SLA" : locale === "de" ? "Deployment & SLA" : "Deployment & SLA",
+        ? "Enterprise AIOps-Plattform mit progressivem Canary-Rollout, unterbrechungsfreiem Blue/Green-Routing und automatisiertem SLO-Rollback."
+        : "Enterprise AIOps platform with progressive canary rollout, zero-downtime blue/green routing, and automated SLO rollback.",
+      badge: locale === "pt" ? "AIOps & Implantação" : locale === "de" ? "AIOps & Deployment" : "AIOps & Deployment",
+      link: "/apps/ai-ops-deployment",
     },
   ];
 

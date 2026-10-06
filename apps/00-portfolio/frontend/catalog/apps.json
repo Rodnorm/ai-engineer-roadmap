@@ -217,6 +217,37 @@
         "path": "apps/07-brief-generator",
         "framework": "Next.js"
       }
+    },
+    {
+      "id": "08",
+      "slug": "ai-ops-deployment",
+      "title": "AI Ops & Deployment Studio",
+      "summary": "Enterprise AIOps platform with progressive canary rollout, zero-downtime blue/green routing, and automated SLO rollback.",
+      "description": "Production AI Deployment & Operations Studio manages generative AI deployment lifecycles with deterministic canary traffic splitting, live percentile telemetry (P50/P95), Error Budget tracking, Circuit Breaker guards, automated rollbacks, and OWASP LLM01 security shields.",
+      "category": "AI Deployment, Observability & AIOps",
+      "status": "live",
+      "technologies": [
+        "Next.js 15",
+        "Azure OpenAI",
+        "Canary Routing",
+        "AIOps Observability"
+      ],
+      "liveUrl": "",
+      "repositoryPath": "apps/08-ai-ops-deployment",
+      "caseStudyPath": "ai-ops-deployment.md",
+      "security": {
+        "publicDemo": true,
+        "rateLimited": true,
+        "storesUserContent": false
+      },
+      "frontend": {
+        "path": "apps/08-ai-ops-deployment",
+        "framework": "Next.js"
+      },
+      "backend": {
+        "path": "apps/08-ai-ops-deployment",
+        "framework": "Next.js"
+      }
     }
   ]
 }
