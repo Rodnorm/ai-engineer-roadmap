@@ -273,14 +273,14 @@ export default function PromptForge() {
         cost: payload.meta.cost / variationCount,
       })));
       setProgress(3);
-      setRequests((current): RequestEntry[] => [
+      setRequests((current) => [
         {
           id: createLocalRequestId(),
           brief: trimmedBrief,
           persona,
           tokens: payload.meta.tokens.total,
           cost: payload.meta.cost,
-          status: "complete",
+          status: "complete" as const,
           createdAt: formatRequestTime(),
         },
         ...current,
@@ -288,14 +288,14 @@ export default function PromptForge() {
     } catch (requestError) {
       if (!(requestError instanceof DOMException && requestError.name === "AbortError")) {
         setError("api");
-        setRequests((current): RequestEntry[] => [
+        setRequests((current) => [
           {
             id: createLocalRequestId(),
             brief: trimmedBrief,
             persona,
             tokens: 0,
             cost: 0,
-            status: "error",
+            status: "error" as const,
             createdAt: formatRequestTime(),
           },
           ...current,
@@ -312,7 +312,7 @@ export default function PromptForge() {
     const tokens = results.reduce((total, item) => total + item.tokens, 0);
     const cost = results.reduce((total, item) => total + item.cost, 0);
 
-    setRequests((current): RequestEntry[] => [
+    setRequests((current) => [
       {
         id: createLocalRequestId(),
         brief: brief.trim(),
