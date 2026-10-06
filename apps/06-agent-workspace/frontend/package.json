@@ -12,11 +12,11 @@
     "provision:agent": "tsx scripts/provision-agent.ts"
   },
   "dependencies": {
-    "@azure/ai-projects": "^2.6.0",
+    "@azure/ai-projects": "^2.7.1",
     "@azure/cosmos": "^4.10.1",
     "@azure/identity": "^4.13.3",
     "lucide-react": "^0.577.0",
-    "next": "^15.5.25",
+    "next": "^15.5.27",
     "openai": "^6.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -28,9 +28,9 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.2.7",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.5.25",
+    "eslint-config-next": "^15.5.27",
     "tailwindcss": "^4.0.0",
-    "tsx": "^4.20.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.0.0"
   }
 }
