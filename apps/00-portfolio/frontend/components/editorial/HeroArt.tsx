@@ -1,19 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function HeroArt() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !innerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       // Bounded subtle parallax: max 20px
       const offset = Math.max(-20, Math.min(20, -rect.top * 0.05));
-      setScrollY(offset);
+      innerRef.current.style.transform = `translateY(${offset}px)`;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -33,8 +33,8 @@ export function HeroArt() {
         - Dark theme: paper art piece mounted on charcoal surface with soft shadow, no color inversion.
       */}
       <div
+        ref={innerRef}
         className="relative w-full aspect-[819/1024] rounded-sm overflow-hidden transition-transform ease-out duration-100 motion-reduce:transform-none dark:shadow-2xl dark:border dark:border-border dark:bg-[#FAF7F2]"
-        style={{ transform: `translateY(${scrollY}px)` }}
       >
         <Image
           src="/images/editorial/hero-collage.webp"

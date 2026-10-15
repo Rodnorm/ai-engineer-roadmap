@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface EditorialTickerProps {
   items?: string[];
@@ -10,11 +10,11 @@ export function EditorialTicker({
   items = ["ACCESSIBILITY", "FRONTEND", "APPLIED AI", "SYSTEMS", "HUMAN-IN-THE-LOOP"],
 }: EditorialTickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
+  const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !innerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
@@ -22,7 +22,7 @@ export function EditorialTicker({
       const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + rect.height)));
       // Bounded displacement up to -120px
       const targetOffset = -(progress * 120);
-      setOffset(targetOffset);
+      innerRef.current.style.transform = `translateX(${targetOffset}px)`;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -36,12 +36,12 @@ export function EditorialTicker({
   return (
     <div
       ref={containerRef}
-      className="w-full border-y border-border py-3.5 my-8 sm:my-12 overflow-hidden select-none bg-surface/30 backdrop-blur-sm"
+      className="w-full border-y border-border py-4 my-8 sm:my-12 overflow-hidden select-none bg-surface/30 backdrop-blur-sm"
       aria-hidden="true"
     >
       <div
-        className="whitespace-nowrap font-serif text-xs sm:text-sm md:text-base tracking-[0.25em] sm:tracking-[0.32em] text-foreground font-semibold uppercase transition-transform ease-out duration-75 motion-reduce:transform-none"
-        style={{ transform: `translateX(${offset}px)` }}
+        ref={innerRef}
+        className="whitespace-nowrap font-serif text-sm sm:text-base md:text-lg tracking-[0.28em] sm:tracking-[0.35em] text-foreground font-bold uppercase transition-transform ease-out duration-75 motion-reduce:transform-none"
       >
         <span>{content}</span>
         <span>{content}</span>
