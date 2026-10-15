@@ -1,14 +1,8 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LOCALES, Locale, LOCALE_LABELS, getLocalizedPath, LOCALE_COOKIE } from "@/lib/i18n";
+import { LOCALES, Locale, LOCALE_LABELS, getLocalizedPath, LOCALE_COOKIE, getLocaleFromPath } from "@/lib/i18n";
 import { Globe } from "lucide-react";
-
-function getLocaleFromPath(pathname: string): Locale {
-  if (pathname === "/pt" || pathname.startsWith("/pt/")) return "pt";
-  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
-  return "en";
-}
 
 export function LanguageSelector() {
   const pathname = usePathname() || "/";

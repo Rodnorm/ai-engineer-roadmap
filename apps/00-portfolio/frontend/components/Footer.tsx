@@ -2,14 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
+import { getDictionary, getLocalizedPath, getLocaleFromPath } from "@/lib/i18n";
 import { GITHUB_URL, LINKEDIN_URL } from "@/lib/personal-content";
-
-function getLocaleFromPath(pathname: string): Locale {
-  if (pathname === "/pt" || pathname.startsWith("/pt/")) return "pt";
-  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
-  return "en";
-}
 
 export function Footer() {
   const pathname = usePathname() || "/";

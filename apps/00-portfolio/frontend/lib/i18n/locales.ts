@@ -46,3 +46,10 @@ export function getLocalizedPath(pathname: string, targetLocale: Locale): string
 
   return cleanPath === "/" ? `/${targetLocale}` : `/${targetLocale}${cleanPath}`;
 }
+
+export function getLocaleFromPath(pathname: string): Locale {
+  if (pathname === "/pt" || pathname.startsWith("/pt/")) return "pt";
+  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
+  return "en";
+}
+

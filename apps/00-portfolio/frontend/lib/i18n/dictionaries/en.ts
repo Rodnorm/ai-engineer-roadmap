@@ -8,6 +8,7 @@ export const en = {
     catalog: "Projects",
     roadmap: "Learning roadmap",
     about: "About",
+    contact: "Contact",
     github: "GitHub",
     language: "Language",
     selectLanguage: "Select language",
