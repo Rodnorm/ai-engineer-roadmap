@@ -25,7 +25,7 @@ Browser
    │
    ▼
 Next.js frontend
-   │  POST /api/backend/query
+   │  POST /api
    ▼
 FastAPI backend
    ├── Azure AI Language
@@ -91,7 +91,7 @@ The NLP analysis provides additional context to the agent, including the detecte
 
 ## Prerequisites
 
-- Node.js 20 or newer
+- Node.js 20.9 or newer
 - Python 3.10 or newer
 - An Azure AI Foundry project
 - A deployed Azure AI Foundry agent without an attached knowledge base
@@ -137,7 +137,7 @@ RATE_LIMIT_ENABLED=true
 RATE_LIMIT_REQUESTS_PER_MINUTE=5
 RATE_LIMIT_REQUESTS_PER_DAY_PER_IP=30
 RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY=300
-TRUST_PROXY_HEADERS=true
+TRUST_PROXY_HEADERS=false
 ```
 
 Do not commit the completed `.env` file.
@@ -154,13 +154,18 @@ The backend enables conservative limits by default:
 - No automatic OpenAI request retries
 - 5 requests per minute per IP
 - 30 requests per day per IP
-- 300 requests per day across the running process
+- 300 requests per day across processes sharing the SQLite counter database
 
 A rejected request returns HTTP `429` with a `Retry-After` header. Invalid or oversized input is rejected with HTTP `422` before any Azure service is called.
 
-The included limiter stores counters in the Python process. It is effective for local testing and basic abuse protection, but multiple isolated process instances may restart or scale. Therefore, `RATE_LIMIT_GLOBAL_REQUESTS_PER_DAY` is a per-instance safety limit, not a guaranteed deployment-wide spending cap. For a strict production-wide limit, add a shared counter such as Redis/KV, configure edge rate limiting, and keep the Azure deployment TPM quota and subscription spending limit low.
+The limiter persists counters in SQLite (`RATE_LIMIT_DB_PATH`). Processes sharing
+the same file share quotas; separate hosts/volumes do not. Production requires
+`RATE_LIMIT_HASH_KEY` of at least 32 characters. Persist the counter volume across
+restarts; these request limits are not a hard cloud-spending cap.
 
-When the backend runs behind a reverse proxy, `TRUST_PROXY_HEADERS=true` allows it to identify the original client from `X-Forwarded-For`. Set it to `false` if Uvicorn is exposed directly to untrusted clients.
+Forwarded client IPs are accepted only when `TRUST_PROXY_HEADERS=true` and the
+connecting peer belongs to `TRUSTED_PROXY_CIDRS`. Leave proxy trust disabled for
+direct, untrusted connections.
 
 ## Running locally
 
@@ -208,13 +213,18 @@ To verify HTTP rate limiting locally without consuming many Azure calls, tempora
 From `apps/02-support-bot/frontend`:
 
 ```bash
+cp .env.example .env.local
+# Set BACKEND_URL=http://localhost:8000 in .env.local
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3002](http://localhost:3002).
 
-During local development, Next.js rewrites requests from `/api/backend/*` to the FastAPI service running at `http://localhost:8000`.
+The Next.js `POST /api` route forwards to `BACKEND_URL` plus `/query`, or to
+`MESSAGE_SERVICE_URL` as a fallback. For root `npm run dev:02`, set
+`BACKEND_URL=http://localhost:8002`; the orchestrator currently sets the unused
+`BACKEND_INTERNAL_URL` variable.
 
 ## API
 
@@ -229,9 +239,10 @@ Example response:
 ```json
 {
   "status": "ok",
-  "endpoint": true,
-  "agent_name": true,
-  "azure_openai_configured": true
+  "generation_enabled": true,
+  "azure_openai_configured": true,
+  "azure_language_configured": true,
+  "rate_limit_enabled": true
 }
 ```
 
@@ -303,12 +314,12 @@ For current setup details, see Microsoft's documentation for [choosing an Azure 
 
 ## Deployment
 
-The app is deployed using Docker Compose on Coolify (`compose.coolify.yml`):
+The app includes a Docker Compose configuration for Coolify (`compose.coolify.yml`):
 
 - `web`: the Next.js frontend
 - `backend`: the FastAPI application
 
-Frontend requests to `/api/backend/*` are rewritten to the internal backend service.
+The frontend `POST /api` route proxies to the internal backend service.
 
 Configure all required environment variables in the Coolify resource. Never store Azure credentials in source control.
 
@@ -328,22 +339,18 @@ The application analyzes messages for personally identifiable information. Befor
 
 This project is currently a learning application and should not be treated as a production healthcare system without these controls.
 
-## Known limitations
+## Implemented checks and known limitations
 
-- Automated tests and CI workflows have not been added yet
-- Azure SDK calls require improved timeout and error handling
-- Authentication configuration should be standardized across Azure clients
-- Backend dependencies should be pinned for reproducible builds
-- PII should be redacted before the original message is forwarded to the agent
-- The in-memory limiter must be replaced by a shared-store or edge limiter for a strict deployment-wide quota
-- The API needs production authentication and observability
+Backend tests cover local retrieval, rate limiting and proxy-IP handling; the repository
+also contains frontend/E2E tests and CI workflows. Backend dependency locks exist.
+The Azure OpenAI client has explicit timeout/output-token bounds and disables retries;
+these controls should not be interpreted as a single deadline across every NLP call.
 
-## Possible next steps
+PII entries returned in `nlpAnalysis.pii` contain `maskedText`, category and confidence.
+This does not redact the original question: it is sent to Azure Language and the
+Foundry agent. Named entities/key phrases may also contain sensitive content.
 
-- Add unit and integration tests
-- Add Playwright end-to-end tests
-- Add CI for linting, type checking, tests, and builds
-- Introduce structured response models for the full API response
-- Add telemetry, correlation IDs, and latency metrics
-- Add conversation persistence with an explicit retention policy
-- Add human handoff for unresolved or sensitive requests
+FAQ retrieval is a small static keyword search. There is no user account system,
+conversation database, vector search, or human-handoff integration. Each `/query`
+request supplies one question; browser chat history is not a persistent multi-turn
+agent conversation. Azure Search remains an optional future integration.

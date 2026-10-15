@@ -1,9 +1,10 @@
 # App 04 — pocketRag
 
-pocketRag is a local-first personal RAG knowledge base built with Next.js, FastAPI,
-SQLite Vector storage, Azure OpenAI embeddings, and Azure OpenAI
-answer generation. Its current status is **in development** until a durable host and
-the credentialed evaluation are validated.
+pocketRag is a personal RAG knowledge base with local document storage built with Next.js, FastAPI,
+SQLite storage for JSON-encoded vectors, Azure OpenAI embeddings, and Azure OpenAI
+answer generation. Ingestion, retrieval, suggestions, citations and retention are
+implemented. Credentialed evaluation and host validation remain separate release
+evidence; this README does not certify deployment readiness.
 
 ## Data flow
 
@@ -59,8 +60,13 @@ Open `http://localhost:3000`. The Next.js route handler proxies `/api/backend` t
 FastAPI, creates a signed anonymous owner cookie, and adds the internal API key and
 owner ID server-side. On Windows, use `npm.cmd` when PowerShell blocks `npm.ps1`.
 
-The multilingual embedding model downloads on first use. Pre-download and retain its
-cache on a production host to avoid unpredictable cold starts.
+Embeddings are requested from Azure OpenAI; no local embedding model is downloaded.
+Configure `AZURE_OPENAI_EMBEDDING_DEPLOYMENT` and the Azure credentials before
+indexing documents or querying. The generation kill switch does not make embeddings
+local or free. For the root orchestrator, set `BACKEND_URL=http://localhost:8004`;
+its `NEXT_PUBLIC_API_BASE_URL` setting is unused by the BFF. The frontend package
+currently fixes port 3000 despite the registry declaring 3004. To run alongside
+App 00, start the frontend separately with `npx next dev --port 3004`.
 
 For uploaded documents, the empty chat view generates up to five suggested questions
 from bounded excerpts of the five most recent documents. Suggestions use the same
@@ -121,7 +127,8 @@ must monitor these events because no application can guarantee deletion when its
 storage is unavailable. Stale orphan files left by interrupted operations are also
 removed after the retention window.
 
-When generation is enabled, document excerpts are sent to Azure OpenAI to create
+During ingestion and retrieval, document chunks and questions are sent to Azure
+OpenAI for embeddings. When generation is enabled, excerpts are also sent to create
 question suggestions and answer questions. Visible chat history is browser-only and
 is not sent, so questions are independent rather than persistent multi-turn
 conversations. Before decommissioning a host, use the clear action and verify the
@@ -129,7 +136,8 @@ mounted volume is empty.
 
 ## API
 
-The browser calls the same-origin `/api/backend/*` BFF. Direct FastAPI `/api/*`
+The browser calls the same-origin `/api/backend/*` BFF: for example,
+`/api/backend/api/query` forwards to FastAPI `/api/query`. Direct FastAPI `/api/*`
 requests are internal and require both `Authorization: Bearer <POCKET_RAG_API_KEY>`
 and the BFF-provided `X-Owner-ID`; clients must not choose their own owner ID.
 
@@ -143,9 +151,12 @@ and the BFF-provided `X-Owner-ID`; clients must not choose their own owner ID.
 | `POST` | `/api/suggestions` | Generate contextual questions from recent uploads |
 | `POST` | `/api/query` | Retrieve evidence and optionally generate an answer |
 | `GET` | `/api/stats` | Document/chunk counts and vector-store state |
+| `GET` | `/api/examples` | List bundled examples and suggestions |
+| `POST` | `/api/examples/load` | Index bundled examples |
+| `GET` | `/api/examples/{filename}` | Download a bundled example |
 
 Retrieval uses Azure OpenAI embeddings (`text-embedding-3-small`) and cosine
-similarity computed directly in SQLite/NumPy. Index configuration is stored beside metadata; changing model or chunking
+similarity computed in NumPy (with a pure-Python fallback) over vectors loaded from SQLite. No SQLite vector extension is required. Index configuration is stored beside metadata; changing model or chunking
 with existing documents requires clearing and reindexing. Similarity is a retrieval
 score, not a probability that an answer is correct. Below-threshold results abstain.
 Document content is delimited as untrusted data in the generation prompt, context and
@@ -181,15 +192,15 @@ paid generation/evaluator calls. Never publish simulated scores as measurements.
 
 ## Deployment
 
-The app is deployed using Docker Compose on Coolify (`compose.coolify.yml`): Next.js at `/`
-and FastAPI at `/api/backend`. The frontend sends same-origin API requests.
+The app includes `compose.coolify.yml` for Coolify. Next.js serves the UI and
+`/api/backend/*` BFF; it maps those calls to the internal FastAPI `/api/*` routes.
 
 The backend uses a mounted persistent volume (`pocket-rag-data`) at `/app/data`
 to ensure durable SQLite and uploaded-file storage across restarts. Configure
 `BACKEND_URL`, `POCKET_RAG_API_KEY`, and `POCKET_RAG_SESSION_SECRET` on the
 Next.js resource; configure the same `POCKET_RAG_API_KEY` on FastAPI.
 Keep generation disabled during initial setup, deploy from `main`, and test upload,
-query, delete, restart recovery, model cold start, duration, and kill switch on the
+query, delete, restart recovery, provider connectivity, duration, and kill switch on the
 actual host.
 
 Security headers disable framework disclosure, MIME sniffing, framing, camera,
@@ -199,4 +210,5 @@ reviewing real reports.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the implementation decisions and outstanding
 release evidence.
+
 

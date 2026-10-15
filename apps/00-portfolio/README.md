@@ -7,7 +7,7 @@ App 00 serves as the central showcase and global catalog for the `ai-engineer-ro
 ## 🏛️ Architectural Principles
 
 1. **Isolation:** App 00 displays and organizes project metadata, but does NOT execute other apps' backends or hold their Azure credentials.
-2. **Static & Fast:** Pure Next.js static generation reading directly from `catalog/apps.json` and `apps/00-portfolio/frontend/content/`.
+2. **Static & Fast:** Next.js pages read `catalog/apps.json` relative to the frontend working directory and Markdown from `frontend/content/`. The Docker build incorporates the shared root catalog; local development also has a frontend catalog copy. `frontend/lib/catalog.ts` supplies a fallback catalog when no entries load.
 3. **No Iframes:** Links direct users to external public demo deployments (`liveUrl`).
 
 ---
@@ -69,11 +69,12 @@ npm run build
 
 ## Deployment
 
-App 00 is deployed using Docker Compose on Coolify (`compose.coolify.yml`):
+App 00 includes a Docker Compose configuration for Coolify (`compose.coolify.yml`):
 
 - **Coolify Base Directory:** `/`
 - **Docker Compose Location:** `/apps/00-portfolio/compose.coolify.yml`
 - **Watch Paths:** `apps/00-portfolio/**` and `catalog/**`
 - **Public service:** `web:3000`
 
-The image build incorporates the shared catalog and case studies. Production deployments are triggered from `main`.
+The image build incorporates the shared catalog and case studies. Deployment triggers and Watch Paths must be configured in Coolify. Catalog statuses and the safety scorecard are repository metadata, not live availability or security measurements.
+
