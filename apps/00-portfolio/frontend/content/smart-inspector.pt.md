@@ -9,7 +9,7 @@ O Smart Inspector é uma aplicação de inspeção visual multimodal. Ela permit
 - Implementar modelo duplo de contenção de custos (rate limiting, limite de concorrência, kill switch).
 
 ## 3. Arquitetura e Tecnologias
-- **Frontend:** Next.js 14, Tailwind CSS, TypeScript.
+- **Frontend:** Next.js 16, Tailwind CSS, TypeScript.
 - **Backend:** FastAPI, Python 3.12, Pillow, Azure OpenAI SDK.
 
 ## 4. Decisões de Segurança e Controle de Custos
