@@ -30,15 +30,15 @@ Do not commit `.env`. The server still starts without Azure credentials, but
 python main.py
 ```
 
-The API is available at `http://localhost:8000/api/backend`. Interactive API
-documentation is available at `/api/backend/docs`.
+Direct routes are available at `http://localhost:8000`; the backend also accepts
+the `/api/backend` proxy prefix. Interactive docs are available at `/docs` (or
+`/api/backend/docs`) outside production.
 
 ## Endpoints
 
 - `GET /health` reports service and Azure configuration status.
 - `POST /generate` generates exactly three structured variations.
 - `POST /generate/stream` streams generation progress using server-sent events.
-- `GET /log?limit=20` returns recent process-local generation entries.
 - `POST /safety/check` analyzes text with Azure Content Safety when configured.
 - `GET /prompts` returns the bundled prompt test harness.
 
@@ -66,7 +66,7 @@ Invoke-RestMethod `
 The response contains `data.variations` plus request ID, latency, token usage,
 and estimated cost under `meta`.
 
-The streaming endpoint accepts the same payload and emits `start`, `delta`,
+The streaming endpoint accepts the same payload and emits `safety`, `start`, `delta`,
 `variation`, `result`, or `error` SSE events. Each `variation` contains one
 complete card as soon as its JSON object closes; the final `result` contains
 the same validated response shape as `/generate`.
@@ -83,7 +83,9 @@ Invoke-RestMethod `
 
 ## Notes
 
-- Request logs are intentionally kept in memory and reset with the process.
+- The UI request list lives in browser component state; the backend has no `/log` route or durable history API.
 - `/generate` checks the brief with Content Safety before calling the model.
-- Without Content Safety credentials, the API falls back to a small local blocked-term heuristic.
+- Without Content Safety credentials, development uses a small local blocked-term heuristic. Production fails closed with `503` when the remote check is needed.
+- Production requires `RATE_LIMIT_HASH_KEY` (at least 32 characters); quota counters use SQLite.
 - Application logs are JSON and every response includes an `x-request-id` header.
+

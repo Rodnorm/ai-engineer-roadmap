@@ -2,7 +2,7 @@
 
 A Next.js content studio for marketers to turn a brief into three structured content variations using distinct personas.
 
-The Next.js frontend is connected to a FastAPI backend with Azure OpenAI structured generation, native SSE streaming, Azure Content Safety, and an in-memory request log.
+The Next.js frontend is connected to a FastAPI backend with Azure OpenAI structured generation, native SSE streaming, Azure Content Safety, and request metadata displayed in browser memory.
 
 ## Frontend features
 
@@ -32,11 +32,13 @@ The Next.js frontend is connected to a FastAPI backend with Azure OpenAI structu
 From `apps/03-prompt-forge/frontend`:
 
 ```powershell
+Copy-Item .env.example .env.local
+# Set BACKEND_URL=http://localhost:8000
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3003`.
 
 ## Backend setup
 
@@ -50,19 +52,28 @@ Copy-Item .env.example .env
 python main.py
 ```
 
-Fill the three `AZURE_OPENAI_*` values in `.env`. The API is available at `http://localhost:8000/api/backend`; without Azure configuration, `/generate` returns `503` while the other endpoints remain available.
+Fill the `AZURE_OPENAI_*` values in `.env`. Direct FastAPI routes are rooted at
+`http://localhost:8000`; `/api/backend` is also accepted as a proxy prefix.
+Without Azure configuration, generation returns `503`. Production
+(`APP_ENV=production`) also requires Content Safety credentials and a
+`RATE_LIMIT_HASH_KEY` of at least 32 characters. Development can use the local
+blocked-term heuristic when Content Safety is unconfigured.
 
 Main endpoints:
 
 - `GET /health`
 - `POST /generate`
 - `POST /generate/stream`
-- `GET /log?limit=20`
 - `POST /safety/check`
 - `GET /prompts`
 
-## Pending integrations
+## Request history and limits
 
-- Persistent request logging beyond process memory
+The UI keeps recent request metadata in component state. There is no `GET /log`
+endpoint or durable request-history store. Backend JSON logs include operational
+metadata. Request quotas use SQLite; concurrency is process-local. Persistent
+user-visible history remains unimplemented.
 
-The frontend uses `/generate/stream` by default. The non-streaming `/generate` endpoint remains available as a fallback and for direct API clients.
+The frontend calls `/api/backend/generate/stream`, which proxies to FastAPI
+`/generate/stream`, by default. The non-streaming `/generate` endpoint remains available as a fallback and for direct API clients.
+
