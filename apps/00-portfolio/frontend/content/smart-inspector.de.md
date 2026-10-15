@@ -9,7 +9,7 @@ Smart Inspector ist eine multimodale Bildanalyseanwendung. Benutzer können Bild
 - Zweistufiges Kostenschutzmodell (Rate Limiting, Parallelitätsgrenzen, Kill Switch).
 
 ## 3. Architektur & Technologie-Stack
-- **Frontend:** Next.js 14, Tailwind CSS, TypeScript.
+- **Frontend:** Next.js 16, Tailwind CSS, TypeScript.
 - **Backend:** FastAPI, Python 3.12, Pillow, Azure OpenAI SDK.
 
 ## 4. Sicherheits- und Kostenkontrollentscheidungen

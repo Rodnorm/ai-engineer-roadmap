@@ -8,11 +8,12 @@ LLM chat demos often hide the difficult integration work: tool discovery, approv
 
 The application combines a responsive Next.js chat with a dedicated Node MCP server. A provider seam allows the same interface to use a deterministic offline agent during development or Microsoft Foundry Agent Service in production.
 
-The MCP server exposes exactly three tools:
+The MCP server exposes exactly four tools:
 
 - `list_tasks` for filtered task retrieval;
 - `search_notes` for deterministic workspace search;
-- `create_task` for a user-approved write operation.
+- `create_task` for a user-approved write operation;
+- `update_task` for a user-approved task update operation.
 
 The application streams agent and tool lifecycle events to the browser with Server-Sent Events. Conversations are kept in memory locally and can be stored in Azure Cosmos DB in production. Foundry conversation identifiers are stored with the local conversation so the remote context can continue across requests.
 

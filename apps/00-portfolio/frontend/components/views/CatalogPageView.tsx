@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getPersonalContent, PROFESSIONAL_CASE_PATH } from "@/lib/personal-content";
 import { getAppCatalog } from "@/lib/catalog";
 import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
 import { ExternalLink, BookOpen, ShieldCheck } from "lucide-react";
@@ -6,6 +7,7 @@ import { ExternalLink, BookOpen, ShieldCheck } from "lucide-react";
 export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
   const dict = getDictionary(locale);
   const apps = getAppCatalog(locale);
+  const text = getPersonalContent(locale);
 
   return (
     <div className="space-y-8 py-4">
@@ -14,6 +16,10 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
         <p className="text-text-muted text-sm">{dict.catalog.subtitle}</p>
       </div>
 
+      <aside className="rounded-2xl border border-primary/30 bg-surface p-5 space-y-3">
+        <p className="text-sm text-text-secondary">{text.projectNote}</p>
+        <Link href={getLocalizedPath(PROFESSIONAL_CASE_PATH, locale)} className="text-sm font-semibold text-primary hover:underline">{text.professionalLabel}: {text.caseTitle} →</Link>
+      </aside>
       {apps.length === 0 ? (
         <div className="p-8 text-center text-text-muted text-sm rounded-2xl bg-surface border border-border">
           {dict.catalog.emptyNotice}
@@ -23,8 +29,8 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
           {apps.map((app) => (
             <div key={app.id} className="rounded-2xl bg-surface border border-border hover:border-primary/50 transition-all p-6 flex flex-col justify-between space-y-4 shadow-sm">
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full bg-surface-muted text-text-secondary text-xs font-mono font-medium">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-surface-muted text-text-secondary text-xs font-mono font-medium break-words">
                     {dict.home.appBadge} {app.id} — {app.category}
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold capitalize">
@@ -78,3 +84,4 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
     </div>
   );
 }
+
