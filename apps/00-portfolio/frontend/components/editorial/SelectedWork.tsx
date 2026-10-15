@@ -75,24 +75,30 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
     }, 50);
   }, []);
 
-  const handleManualSelect = useCallback((id: string) => {
+  const handleManualSelect = useCallback((id: string, e?: React.MouseEvent) => {
     setActiveId(id);
     clickOriginYRef.current = window.scrollY;
+    // Release focus from click so it doesn't lock scroll selection
+    isFocusInsideRef.current = false;
+    if (e?.currentTarget) {
+      (e.currentTarget as HTMLElement).blur();
+    }
   }, []);
 
   // Pixel-based viewport calculation for scroll selection
   useEffect(() => {
     const handleScroll = () => {
-      // 1. If keyboard focus is inside a project control, scroll observer NEVER overrides selection
-      if (isFocusInsideRef.current) return;
-
-      // 2. If user clicked a project, require at least 80px scroll delta before scroll takes over
+      // 1. If user clicked a project, require at least 80px scroll delta before scroll takes over
       if (clickOriginYRef.current !== null) {
         if (Math.abs(window.scrollY - clickOriginYRef.current) < 80) {
           return;
         }
         clickOriginYRef.current = null;
+        isFocusInsideRef.current = false;
       }
+
+      // 2. If genuine keyboard navigation is inside a project control, don't override selection
+      if (isFocusInsideRef.current) return;
 
       if (!sectionRef.current) return;
       const sectionRect = sectionRef.current.getBoundingClientRect();
@@ -160,7 +166,7 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                   if (el) itemRefs.current.set(project.id, el);
                   else itemRefs.current.delete(project.id);
                 }}
-                className={`p-6 sm:p-7 rounded-2xl border transition-all duration-200 ${
+                className={`p-6 sm:p-7 rounded-lg border transition-all duration-200 ${
                   isActive
                     ? "border-primary bg-surface shadow-sm"
                     : "border-border bg-surface/50 hover:border-primary/40"
@@ -188,12 +194,12 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                   {/* Dedicated selection button separate from navigation link */}
                   <button
                     type="button"
-                    onClick={() => handleManualSelect(project.id)}
+                    onClick={(e) => handleManualSelect(project.id, e)}
                     aria-pressed={isActive}
-                    aria-label={`Visualizar prévia de ${project.title}`}
-                    className="text-xs font-medium text-text-muted hover:text-foreground border border-border rounded-lg px-2 py-0.5 transition-colors focus-visible:outline-primary"
+                    aria-label={`${text.previewAriaLabel} ${project.title}`}
+                    className="text-xs font-medium text-text-muted hover:text-foreground border border-border rounded px-2 py-0.5 transition-colors focus-visible:outline-primary"
                   >
-                    {isActive ? "Ativo" : "Prévia"}
+                    {isActive ? text.activeLabel : text.previewLabel}
                   </button>
                 </div>
 
@@ -208,7 +214,7 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                 </p>
 
                 {/* Tech tags */}
-                <div className="flex flex-wrap gap-1.5 mb-5" aria-label="Tecnologias">
+                <div className="flex flex-wrap gap-1.5 mb-5" aria-label={text.techAriaLabel}>
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
@@ -231,7 +237,7 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
 
                 {/* Mobile linear preview: displayed directly beneath project card on < 768px */}
                 <div className="mt-5 md:hidden border-t border-border pt-4">
-                  {renderPreviewContent(project.id)}
+                  {renderPreviewContent(project.id, text)}
                 </div>
               </article>
             );
@@ -240,14 +246,14 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
 
         {/* Right Column: Desktop Sticky Preview Card (hidden on mobile) */}
         <div className="hidden md:block md:col-span-6 lg:col-span-6 sticky top-20">
-          <div className="p-6 lg:p-8 rounded-3xl border border-border bg-surface shadow-md space-y-4">
+          <div className="p-6 lg:p-8 rounded-lg border border-border bg-surface shadow-md space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3 text-xs font-mono text-text-muted">
               <span>SELECTED PREVIEW</span>
               <span className="font-semibold text-primary">{activeCounter}</span>
             </div>
 
             <div className="min-h-[360px] flex flex-col justify-center">
-              {renderPreviewContent(activeId)}
+              {renderPreviewContent(activeId, text)}
             </div>
           </div>
         </div>
@@ -256,10 +262,10 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
   );
 }
 
-function renderPreviewContent(id: string) {
+function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalContent>) {
   if (id === "ai-review-platform") {
     return (
-      <div className="p-5 rounded-2xl bg-surface-card border border-border space-y-4">
+      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
         <div className="flex items-center justify-between text-xs">
           <span className="font-mono font-semibold text-primary">R&D PLATFORM WORKBENCH</span>
           <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
@@ -270,19 +276,19 @@ function renderPreviewContent(id: string) {
           Human-in-the-Loop Document Verification Flow
         </p>
         <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-          <div className="p-2.5 rounded-lg bg-surface border border-border">
+          <div className="p-2.5 rounded bg-surface border border-border">
             <span className="text-primary block font-bold">01. INGEST</span>
             PDF & Markdown parsing
           </div>
-          <div className="p-2.5 rounded-lg bg-surface border border-border">
+          <div className="p-2.5 rounded bg-surface border border-border">
             <span className="text-primary block font-bold">02. MAP</span>
             Model field extraction
           </div>
-          <div className="p-2.5 rounded-lg bg-surface border border-border">
+          <div className="p-2.5 rounded bg-surface border border-border">
             <span className="text-primary block font-bold">03. REVIEW</span>
             Optimistic lock (HTTP 409)
           </div>
-          <div className="p-2.5 rounded-lg bg-surface border border-border">
+          <div className="p-2.5 rounded bg-surface border border-border">
             <span className="text-primary block font-bold">04. EXPORT</span>
             Audit-logged Excel / CSV
           </div>
@@ -297,23 +303,23 @@ function renderPreviewContent(id: string) {
 
   if (id === "pocket-rag") {
     return (
-      <div className="p-5 rounded-2xl bg-surface-card border border-border space-y-4">
+      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
         <div className="flex items-center justify-between text-xs">
           <span className="font-mono font-semibold text-primary">POCKET RAG QUERY</span>
           <span className="px-2 py-0.5 rounded bg-surface-muted text-text-muted text-[11px] font-mono">
-            Demonstração com dados de exemplo
+            {text.previewSampleBadge}
           </span>
         </div>
-        <div className="p-3 rounded-xl bg-surface border border-border text-xs space-y-1.5">
+        <div className="p-3 rounded bg-surface border border-border text-xs space-y-1.5">
           <p className="font-medium text-foreground">
-            Pergunta: &quot;Quais são as condições de cancelamento do contrato de moradia?&quot;
+            {text.pocketRagQuery.question}
           </p>
           <p className="text-text-muted text-[11px]">
-            Fontes citadas: <span className="text-primary font-mono">[Doc: mietvertrag_beispiel.pdf §4]</span>
+            {text.pocketRagQuery.sourcesLabel}: <span className="text-primary font-mono">[Doc: mietvertrag_beispiel.pdf §4]</span>
           </p>
         </div>
-        <div className="p-3 rounded-xl bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed">
-          O aviso prévio deve ser emitido por escrito até o terceiro dia útil do mês para produzir efeito ao término do segundo mês seguinte.
+        <div className="p-3 rounded bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed">
+          {text.pocketRagQuery.answer}
         </div>
         <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-muted">
           <span>Local SQLite Vectors</span>
@@ -325,28 +331,28 @@ function renderPreviewContent(id: string) {
 
   if (id === "agent-workspace") {
     return (
-      <div className="p-5 rounded-2xl bg-surface-card border border-border space-y-4">
+      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
         <div className="flex items-center justify-between text-xs">
           <span className="font-mono font-semibold text-primary">AGENT WORKSPACE SESSION</span>
           <span className="px-2 py-0.5 rounded bg-surface-muted text-text-muted text-[11px] font-mono">
-            Demonstração com dados de exemplo
+            {text.previewSampleBadge}
           </span>
         </div>
-        <div className="p-3 rounded-xl bg-surface border border-border text-xs space-y-2">
+        <div className="p-3 rounded bg-surface border border-border text-xs space-y-2">
           <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-mono">
             <Terminal className="w-3.5 h-3.5 text-primary" />
             <span>{"tool_call: list_tasks({ status: \"pending\" })"}</span>
           </div>
           <div className="p-2 rounded bg-surface-muted text-[11px] font-mono text-text-secondary">
-            → [TASK-102] Revisar acessibilidade das tabelas de dados
+            → [TASK-102] {text.agentWorkspaceDemo.taskLabel}
           </div>
         </div>
-        <div className="p-3 rounded-xl bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed flex items-start gap-2">
+        <div className="p-3 rounded bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed flex items-start gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-          <span>Stream SSE ativo: Ferramenta executada com confirmação de escrita.</span>
+          <span>{text.agentWorkspaceDemo.streamStatus}</span>
         </div>
         <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-muted">
-          <span>Provedor Determinístico Offline</span>
+          <span>{text.agentWorkspaceDemo.offlineProvider}</span>
           <span className="font-mono">MCP 2026 Compatible</span>
         </div>
       </div>
