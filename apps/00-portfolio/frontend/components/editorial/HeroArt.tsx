@@ -29,12 +29,13 @@ export function HeroArt() {
     >
       {/* 
         Art presentation:
-        - Light theme: seamless integration with ivory background (mix-blend-multiply).
-        - Dark theme: paper art piece mounted on charcoal surface with soft shadow, no color inversion.
+        - Transparent collage floats organically in both light and dark modes.
+        - Light mode: subtle mix-blend-multiply preserves paper texture over ivory background.
+        - Dark mode: mix-blend-normal renders original paper, charcoal, and terracotta tones cleanly.
       */}
       <div
         ref={innerRef}
-        className="relative w-full aspect-[819/1024] rounded-sm overflow-hidden transition-transform ease-out duration-100 motion-reduce:transform-none dark:shadow-2xl dark:border dark:border-border dark:bg-[#FAF7F2]"
+        className="relative w-full aspect-[819/1024] transition-transform ease-out duration-100 motion-reduce:transform-none"
       >
         <Image
           src="/images/editorial/hero-collage.webp"
@@ -43,7 +44,7 @@ export function HeroArt() {
           height={1024}
           sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 420px"
           priority
-          className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal"
+          className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal drop-shadow-sm dark:drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
         />
       </div>
     </div>
