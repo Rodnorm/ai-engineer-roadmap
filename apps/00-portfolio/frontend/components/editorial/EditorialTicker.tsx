@@ -15,6 +15,10 @@ export function EditorialTicker({
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current || !innerRef.current) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        innerRef.current.style.transform = "none";
+        return;
+      }
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 

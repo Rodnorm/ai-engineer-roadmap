@@ -10,6 +10,10 @@ export function HeroArt() {
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current || !innerRef.current) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        innerRef.current.style.transform = "none";
+        return;
+      }
       const rect = containerRef.current.getBoundingClientRect();
       // Bounded subtle parallax: max 20px
       const offset = Math.max(-20, Math.min(20, -rect.top * 0.05));

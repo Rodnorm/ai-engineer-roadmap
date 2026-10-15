@@ -27,7 +27,7 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
           <div className="space-y-3">
             <div className="flex flex-wrap items-baseline gap-3">
               <span className="font-serif italic text-primary text-base sm:text-lg">
-                / Built with intent — Interfaces, systems & applied AI
+                {text.heroAnnotation}
               </span>
             </div>
             <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.08]">

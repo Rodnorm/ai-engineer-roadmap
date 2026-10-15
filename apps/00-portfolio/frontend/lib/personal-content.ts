@@ -13,7 +13,7 @@ interface PersonalContent {
   caseContributionsTitle: string; caseSections: TextSection[]; outcomeTitle: string; outcome: string;
   boundary: string; backExperience: string; backHome: string; projectNote: string;
   activeLabel: string; previewLabel: string; previewAriaLabel: string; techAriaLabel: string;
-  previewSampleBadge: string;
+  previewSampleBadge: string; heroAnnotation: string;
   pocketRagQuery: { question: string; sourcesLabel: string; answer: string };
   agentWorkspaceDemo: { taskLabel: string; streamStatus: string; offlineProvider: string };
   featured: { title: string; summary: string; slug: string }[];
@@ -168,6 +168,7 @@ const content: Record<Locale, PersonalContent> = {
     "previewAriaLabel": "View preview for",
     "techAriaLabel": "Technologies",
     "previewSampleBadge": "Demonstration with sample data",
+    "heroAnnotation": "/ Built with intent — Interfaces, systems & applied AI",
     "pocketRagQuery": {
       "question": "What are the cancellation terms for the residential lease?",
       "sourcesLabel": "Cited sources",
@@ -335,6 +336,7 @@ const content: Record<Locale, PersonalContent> = {
     "previewAriaLabel": "Visualizar prévia de",
     "techAriaLabel": "Tecnologias",
     "previewSampleBadge": "Demonstração com dados de exemplo",
+    "heroAnnotation": "/ Criado com intenção — Interfaces, sistemas e IA aplicada",
     "pocketRagQuery": {
       "question": "Quais são as condições de cancelamento do contrato de moradia?",
       "sourcesLabel": "Fontes citadas",
@@ -502,6 +504,7 @@ const content: Record<Locale, PersonalContent> = {
     "previewAriaLabel": "Vorschau anzeigen für",
     "techAriaLabel": "Technologien",
     "previewSampleBadge": "Demonstration mit Beispieldaten",
+    "heroAnnotation": "/ Mit Absicht gebaut — Schnittstellen, Systeme & angewandte KI",
     "pocketRagQuery": {
       "question": "Welche Kündigungsfristen gelten für den Mietvertrag?",
       "sourcesLabel": "Zitierte Quellen",
