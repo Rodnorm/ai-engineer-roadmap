@@ -27,14 +27,14 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
           <div className="space-y-3">
             <div className="flex flex-wrap items-baseline gap-3">
               <span className="font-serif italic text-primary text-base sm:text-lg">
-                / Interfaces, systems & applied AI
+                / Built with intent — Interfaces, systems & applied AI
               </span>
             </div>
             <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.08]">
-              Built with intent.
+              Rodrigo Normando
             </h1>
             <p className="text-xl sm:text-2xl font-semibold text-foreground/90 font-serif">
-              Rodrigo Normando — {text.role}
+              {text.role}
             </p>
           </div>
 
@@ -45,20 +45,21 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <a
               href="#selected-work"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white dark:text-background hover:bg-primary-hover transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white dark:text-background hover:bg-primary-hover transition-colors shadow-sm"
+              aria-label={text.workTitle}
             >
-              <span>Selected work</span>
+              <span>{text.workTitle}</span>
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>
             <Link
               href={getLocalizedPath("/experience", locale)}
-              className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground hover:border-primary transition-colors"
+              className="rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground hover:border-primary transition-colors"
             >
               {text.experienceLabel}
             </Link>
             <Link
               href={getLocalizedPath("/apps", locale)}
-              className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground hover:border-primary transition-colors"
+              className="rounded-lg border border-border bg-surface px-5 py-3 text-sm font-semibold text-foreground hover:border-primary transition-colors"
             >
               {text.projectsLabel}
             </Link>
@@ -92,9 +93,9 @@ export function HomePageView({ locale = "en" }: { locale?: Locale }) {
             return (
               <div
                 key={group.title}
-                className="rounded-2xl border border-border bg-surface p-6 space-y-4 hover:border-primary/40 transition-colors"
+                className="rounded-lg border border-border bg-surface p-6 space-y-4 hover:border-primary/40 transition-colors"
               >
-                <div className="w-10 h-10 rounded-xl bg-surface-muted flex items-center justify-center border border-border">
+                <div className="w-10 h-10 rounded-lg bg-surface-muted flex items-center justify-center border border-border">
                   <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
                 </div>
                 <h3 className="font-serif text-lg font-bold text-foreground">{group.title}</h3>
