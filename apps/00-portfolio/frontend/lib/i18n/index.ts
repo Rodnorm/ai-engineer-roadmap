@@ -17,4 +17,5 @@ export function getDictionary(locale?: string | null): Dictionary {
 }
 
 export * from "./locales";
+export * from "./routing";
 export type { Dictionary };

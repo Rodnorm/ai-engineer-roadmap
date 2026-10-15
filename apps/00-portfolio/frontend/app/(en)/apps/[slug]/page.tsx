@@ -1,6 +1,6 @@
 import { getAppCatalog, getAppBySlug } from "@/lib/catalog";
 import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, getRouteAlternates } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -19,9 +19,15 @@ export async function generateMetadata({ params }: PageProps) {
   const app = getAppBySlug(slug, "en");
   if (!app) return {};
 
+  const alternates = getRouteAlternates(`/apps/${slug}`, "en");
+
   return {
     title: `${app.title} Case Study — ${getDictionary("en").meta.siteTitle}`,
     description: app.summary,
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages,
+    },
   };
 }
 

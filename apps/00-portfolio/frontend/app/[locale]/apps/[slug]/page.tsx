@@ -1,6 +1,6 @@
 import { getAppCatalog, getAppBySlug } from "@/lib/catalog";
 import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
-import { LOCALES, Locale, isValidLocale, getDictionary } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, getRouteAlternates } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -27,13 +27,19 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps) {
   const { locale, slug } = await params;
   if (!isValidLocale(locale)) return {};
-  const app = getAppBySlug(slug, locale as Locale);
+  const validLoc = locale as Locale;
+  const app = getAppBySlug(slug, validLoc);
   if (!app) return {};
-  const dict = getDictionary(locale);
+  const dict = getDictionary(validLoc);
+  const alternates = getRouteAlternates(`/apps/${slug}`, validLoc);
 
   return {
     title: `${app.title} — ${dict.meta.siteTitle}`,
     description: app.summary,
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages,
+    },
   };
 }
 

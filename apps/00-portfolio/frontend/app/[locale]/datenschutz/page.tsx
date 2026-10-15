@@ -1,5 +1,5 @@
 import { DatenschutzPageView } from "@/components/views/DatenschutzPageView";
-import { LOCALES, Locale, isValidLocale } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getRouteAlternates } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -16,14 +16,21 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   if (!isValidLocale(locale)) return {};
-  const isPt = locale === "pt";
+  const validLoc = locale as Locale;
+  const isPt = validLoc === "pt";
+  const alternates = getRouteAlternates("/datenschutz", validLoc);
+
   return {
     title: isPt
-      ? "Política de Privacidade | AI Engineer Roadmap"
-      : "Datenschutzerklärung | AI Engineer Roadmap",
+      ? "Política de Privacidade | Rodrigo Normando"
+      : "Datenschutzerklärung | Rodrigo Normando",
     description: isPt
       ? "Informações sobre tratamento de dados pessoais nas aplicações do Roadmap."
       : "Informationen zur Verarbeitung personenbezogener Daten in den Roadmap-Anwendungen.",
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages,
+    },
   };
 }
 
