@@ -10,6 +10,7 @@ export const pt: Dictionary = {
     catalog: "Projetos",
     roadmap: "Trilha de aprendizado",
     about: "Sobre",
+    contact: "Contato",
     github: "GitHub",
     language: "Idioma",
     selectLanguage: "Selecionar idioma",

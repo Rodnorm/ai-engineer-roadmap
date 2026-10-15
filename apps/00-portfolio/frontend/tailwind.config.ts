@@ -21,6 +21,11 @@ const config: Config = {
         accent: "var(--accent)",
         "text-muted": "var(--text-muted)",
         "text-secondary": "var(--text-secondary)",
+        "accent-focus": "var(--accent-focus)",
+      },
+      fontFamily: {
+        serif: ["var(--font-serif)", "Playfair Display", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "Inter", "system-ui", "-apple-system", "sans-serif"],
       },
     },
   },

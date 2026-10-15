@@ -10,6 +10,7 @@ export const de: Dictionary = {
     catalog: "Projekte",
     roadmap: "Lernpfad",
     about: "Über mich",
+    contact: "Kontakt",
     github: "GitHub",
     language: "Sprache",
     selectLanguage: "Sprache wählen",

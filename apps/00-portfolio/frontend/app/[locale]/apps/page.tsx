@@ -1,5 +1,5 @@
 import { CatalogPageView } from "@/components/views/CatalogPageView";
-import { LOCALES, Locale, isValidLocale, getDictionary } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -15,11 +15,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
   if (!isValidLocale(locale)) return {};
-  const dict = getDictionary(locale);
-  return {
+  const validLoc = locale as Locale;
+  const dict = getDictionary(validLoc);
+
+  return createPageMetadata({
     title: `${dict.catalog.title} — ${dict.meta.siteTitle}`,
     description: dict.catalog.subtitle,
-  };
+    pathname: "/apps",
+    locale: validLoc,
+  });
 }
 
 export default async function LocalizedAppsPage({ params }: PageProps) {

@@ -17,6 +17,9 @@ import { getAppCatalog, getCaseStudyContent, resolveAppUrl } from "../lib/catalo
 test("supported locales definition", () => {
   assert.deepEqual([...LOCALES], ["en", "pt", "de"]);
   assert.equal(DEFAULT_LOCALE, "en");
+  assert.equal(LOCALE_LABELS.en, "English");
+  assert.equal(LOCALE_LABELS.pt, "Português");
+  assert.equal(LOCALE_LABELS.de, "Deutsch");
   assert.equal(LOCALE_HTML_LANG.en, "en");
   assert.equal(LOCALE_HTML_LANG.pt, "pt-BR");
   assert.equal(LOCALE_HTML_LANG.de, "de");

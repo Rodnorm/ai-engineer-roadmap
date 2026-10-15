@@ -12,6 +12,10 @@ interface PersonalContent {
   caseSummary: string; caseContext: string; caseContextTitle: string; caseFlowTitle: string; flow: string[];
   caseContributionsTitle: string; caseSections: TextSection[]; outcomeTitle: string; outcome: string;
   boundary: string; backExperience: string; backHome: string; projectNote: string;
+  activeLabel: string; previewLabel: string; previewAriaLabel: string; techAriaLabel: string;
+  previewSampleBadge: string; heroAnnotation: string;
+  pocketRagQuery: { question: string; sourcesLabel: string; answer: string };
+  agentWorkspaceDemo: { taskLabel: string; streamStatus: string; offlineProvider: string };
   featured: { title: string; summary: string; slug: string }[];
 }
 
@@ -159,6 +163,22 @@ const content: Record<Locale, PersonalContent> = {
     "backExperience": "Back to experience",
     "backHome": "Back to home",
     "projectNote": "These applications are personal learning projects. Provider modes, retained data and limitations differ by app; their READMEs describe those boundaries.",
+    "activeLabel": "Active",
+    "previewLabel": "Preview",
+    "previewAriaLabel": "View preview for",
+    "techAriaLabel": "Technologies",
+    "previewSampleBadge": "Demonstration with sample data",
+    "heroAnnotation": "/ Built with intent — Interfaces, systems & applied AI",
+    "pocketRagQuery": {
+      "question": "What are the cancellation terms for the residential lease?",
+      "sourcesLabel": "Cited sources",
+      "answer": "Notice must be given in writing by the third working day of the month to take effect at the end of the second following month."
+    },
+    "agentWorkspaceDemo": {
+      "taskLabel": "Review accessibility of data tables",
+      "streamStatus": "Active SSE stream: Tool executed with write confirmation.",
+      "offlineProvider": "Offline Deterministic Provider"
+    },
     "featured": [
       {
         "title": "Pocket RAG",
@@ -311,6 +331,22 @@ const content: Record<Locale, PersonalContent> = {
     "backExperience": "Voltar à experiência",
     "backHome": "Voltar ao início",
     "projectNote": "Estas aplicações são projetos pessoais de aprendizado. Modos de execução, retenção de dados e limitações variam por app e estão descritos nos respectivos READMEs.",
+    "activeLabel": "Ativo",
+    "previewLabel": "Prévia",
+    "previewAriaLabel": "Visualizar prévia de",
+    "techAriaLabel": "Tecnologias",
+    "previewSampleBadge": "Demonstração com dados de exemplo",
+    "heroAnnotation": "/ Criado com intenção — Interfaces, sistemas e IA aplicada",
+    "pocketRagQuery": {
+      "question": "Quais são as condições de cancelamento do contrato de moradia?",
+      "sourcesLabel": "Fontes citadas",
+      "answer": "O aviso prévio deve ser emitido por escrito até o terceiro dia útil do mês para produzir efeito ao término do segundo mês seguinte."
+    },
+    "agentWorkspaceDemo": {
+      "taskLabel": "Revisar acessibilidade das tabelas de dados",
+      "streamStatus": "Stream SSE ativo: Ferramenta executada com confirmação de escrita.",
+      "offlineProvider": "Provedor Determinístico Offline"
+    },
     "featured": [
       {
         "title": "Pocket RAG",
@@ -463,6 +499,22 @@ const content: Record<Locale, PersonalContent> = {
     "backExperience": "Zur Berufserfahrung",
     "backHome": "Zur Startseite",
     "projectNote": "Diese Anwendungen sind eigene Lernprojekte. Ausführungsmodi, Datenspeicherung und Grenzen unterscheiden sich je App und sind in den jeweiligen READMEs beschrieben.",
+    "activeLabel": "Aktiv",
+    "previewLabel": "Vorschau",
+    "previewAriaLabel": "Vorschau anzeigen für",
+    "techAriaLabel": "Technologien",
+    "previewSampleBadge": "Demonstration mit Beispieldaten",
+    "heroAnnotation": "/ Mit Absicht gebaut — Schnittstellen, Systeme & angewandte KI",
+    "pocketRagQuery": {
+      "question": "Welche Kündigungsfristen gelten für den Mietvertrag?",
+      "sourcesLabel": "Zitierte Quellen",
+      "answer": "Die Kündigung muss bis zum dritten Werktag eines Monats schriftlich zugehen, um zum Ablauf des übernächsten Monats wirksam zu werden."
+    },
+    "agentWorkspaceDemo": {
+      "taskLabel": "Barrierefreiheit von Datentabellen überprüfen",
+      "streamStatus": "Aktiver SSE-Stream: Werkzeug mit Schreibbestätigung ausgeführt.",
+      "offlineProvider": "Deterministischer Offline-Provider"
+    },
     "featured": [
       {
         "title": "Pocket RAG",

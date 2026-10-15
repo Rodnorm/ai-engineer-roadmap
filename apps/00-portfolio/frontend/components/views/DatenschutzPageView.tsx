@@ -267,16 +267,16 @@ export function DatenschutzPageView({
       </div>
 
       <header className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+        <p className="text-xs font-mono font-semibold uppercase tracking-widest text-primary">
           {t.badge}
         </p>
-        <h1 className="text-4xl font-bold text-foreground">{t.title}</h1>
+        <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-foreground">{t.title}</h1>
         <p className="text-sm text-text-muted">{t.date}</p>
       </header>
 
       {/* 1. Data Controller */}
       <section className="space-y-3">
-        <h2 className="text-2xl font-semibold text-foreground">{t.s1Title}</h2>
+        <h2 className="font-serif text-2xl font-bold text-foreground">{t.s1Title}</h2>
         <address className="not-italic leading-relaxed">
           <strong className="text-foreground">{t.controllerName}</strong>
           <br />

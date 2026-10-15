@@ -1,5 +1,5 @@
 import { HomePageView } from "@/components/views/HomePageView";
-import { LOCALES, Locale, isValidLocale, getDictionary } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, getRouteAlternates } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -16,9 +16,15 @@ export async function generateMetadata({ params }: PageProps) {
   const { locale } = await params;
   if (!isValidLocale(locale)) return {};
   const dict = getDictionary(locale);
+  const alternates = getRouteAlternates("/", locale as Locale);
+
   return {
     title: dict.meta.siteTitle,
     description: dict.meta.siteDescription,
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages,
+    },
   };
 }
 

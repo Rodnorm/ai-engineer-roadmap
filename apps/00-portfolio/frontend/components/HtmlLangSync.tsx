@@ -2,20 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { LOCALE_HTML_LANG, Locale, LOCALE_COOKIE } from "@/lib/i18n";
-
-function getLocaleFromPath(pathname: string): Locale {
-  if (pathname === "/pt" || pathname.startsWith("/pt/")) return "pt";
-  if (pathname === "/de" || pathname.startsWith("/de/")) return "de";
-  return "en";
-}
+import { LOCALE_COOKIE, getLocaleFromPath } from "@/lib/i18n";
 
 export function HtmlLangSync() {
   const pathname = usePathname();
 
   useEffect(() => {
     const currentLocale = getLocaleFromPath(pathname || "/");
-    document.documentElement.lang = LOCALE_HTML_LANG[currentLocale] || "en";
 
     // Persist active locale
     try {

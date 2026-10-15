@@ -1,6 +1,6 @@
 import { getAppCatalog, getAppBySlug } from "@/lib/catalog";
 import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -19,10 +19,12 @@ export async function generateMetadata({ params }: PageProps) {
   const app = getAppBySlug(slug, "en");
   if (!app) return {};
 
-  return {
+  return createPageMetadata({
     title: `${app.title} Case Study — ${getDictionary("en").meta.siteTitle}`,
     description: app.summary,
-  };
+    pathname: `/apps/${slug}`,
+    locale: "en",
+  });
 }
 
 export default async function CaseStudyPage({ params }: PageProps) {
