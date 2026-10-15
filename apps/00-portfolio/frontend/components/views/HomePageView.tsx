@@ -1,139 +1,62 @@
 import Link from "next/link";
-import { getAppCatalog } from "@/lib/catalog";
-import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
-import { ArrowRight, Cpu, Zap, Lock, ExternalLink, BookOpen } from "lucide-react";
-import { RotatingSkillBadge } from "@/components/RotatingSkillBadge";
-import { AiSafetyScorecard } from "@/components/AiSafetyScorecard";
+import { ArrowRight, Code2, Layers, Users } from "lucide-react";
+import { getLocalizedPath, type Locale } from "@/lib/i18n";
+import { getPersonalContent, PROFESSIONAL_CASE_PATH } from "@/lib/personal-content";
+import { ContactCard } from "@/components/ContactCard";
+
+const skillIcons = [Code2, Layers, Users];
 
 export function HomePageView({ locale = "en" }: { locale?: Locale }) {
-  const dict = getDictionary(locale);
-  const apps = getAppCatalog(locale);
-
+  const text = getPersonalContent(locale);
   return (
-    <div className="space-y-16 py-4">
-      {/* Hero Section */}
-      <section className="text-center space-y-6 max-w-3xl mx-auto pt-8 px-1">
-        <RotatingSkillBadge locale={locale} />
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight break-words">
-          {dict.home.heroTitlePrefix}{" "}
-          <span className="text-primary">
-            {dict.home.heroTitleHighlight}
-          </span>
-        </h1>
-        <p className="text-text-muted text-base sm:text-lg leading-relaxed">
-          {dict.home.heroSubtitle}
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <Link
-            href={getLocalizedPath("/apps", locale)}
-            className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 text-sm"
-          >
-            <span>{dict.home.ctaExploreCatalog}</span>
-            <ArrowRight className="w-4 h-4" />
+    <div className="space-y-14 py-4">
+      <section className="max-w-4xl space-y-6 py-8">
+        <p className="text-sm font-semibold text-primary">{text.location}</p>
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground">Rodrigo Normando</h1>
+        <p className="text-xl sm:text-2xl font-semibold text-foreground">{text.role}</p>
+        <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-text-secondary">{text.intro}</p>
+        <div className="flex flex-wrap gap-3">
+          <Link href={getLocalizedPath("/experience", locale)} className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary/90">
+            {text.experienceLabel}<ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
-          <Link
-            href={getLocalizedPath("/roadmap", locale)}
-            className="px-5 py-2.5 rounded-xl bg-surface border border-border hover:border-text-secondary text-foreground font-semibold transition-all text-sm shadow-sm"
-          >
-            {dict.home.ctaViewRoadmap}
-          </Link>
+          <Link href={getLocalizedPath("/apps", locale)} className="rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold hover:border-primary">{text.projectsLabel}</Link>
         </div>
       </section>
 
-      {/* Stack & Highlights */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-surface border border-border space-y-2 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-primary/10 w-fit text-primary mb-3">
-            <Cpu className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground">{dict.home.highlight1Title}</h3>
-          <p className="text-text-muted text-sm">
-            {dict.home.highlight1Desc}
-          </p>
-        </div>
-        <div className="p-6 rounded-2xl bg-surface border border-border space-y-2 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-accent/10 w-fit text-accent mb-3">
-            <Lock className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground">{dict.home.highlight2Title}</h3>
-          <p className="text-text-muted text-sm">
-            {dict.home.highlight2Desc}
-          </p>
-        </div>
-        <div className="p-6 rounded-2xl bg-surface border border-border space-y-2 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 w-fit text-emerald-600 dark:text-emerald-400 mb-3">
-            <Zap className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground">{dict.home.highlight3Title}</h3>
-          <p className="text-text-muted text-sm">
-            {dict.home.highlight3Desc}
-          </p>
-        </div>
-      </section>
-
-      {/* Featured Projects Catalog */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">{dict.home.featuredTitle}</h2>
-            <p className="text-text-muted text-sm">{dict.home.featuredSubtitle}</p>
-          </div>
-          <Link
-            href={getLocalizedPath("/apps", locale)}
-            className="text-primary text-sm font-semibold hover:underline flex items-center gap-1"
-          >
-            {dict.home.viewAll} ({apps.length}) <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {apps.map((app) => (
-            <div key={app.id} className="rounded-2xl bg-surface border border-border hover:border-primary/50 transition-all p-6 flex flex-col justify-between space-y-4 shadow-sm">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full bg-surface-muted text-text-secondary text-xs font-mono font-medium">
-                    {dict.home.appBadge} {app.id}
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold capitalize">
-                    {app.status}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-foreground">{app.title}</h3>
-                <p className="text-text-muted text-sm line-clamp-3">{app.summary}</p>
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {app.technologies.map((tech) => (
-                    <span key={tech} className="px-2 py-0.5 rounded bg-surface-muted border border-border text-text-secondary text-xs font-mono">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 pt-4 border-t border-border text-xs font-semibold">
-                <Link
-                  href={getLocalizedPath(`/apps/${app.slug}`, locale)}
-                  className="flex-1 py-2 px-3 rounded-lg bg-surface border border-border hover:border-primary text-center text-text-secondary hover:text-foreground transition-all flex items-center justify-center gap-1.5"
-                >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>{dict.home.caseStudyBtn}</span>
-                </Link>
-                {app.liveUrl && <a
-                  href={app.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="py-2 px-3 rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all flex items-center justify-center gap-1"
-                >
-                  <span>{dict.home.demoBtn}</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>}
-              </div>
+      <section className="grid gap-5 md:grid-cols-3" aria-label={text.skillsTitle}>
+        {text.groups.map((group, index) => {
+          const Icon = skillIcons[index];
+          return (
+            <div key={group.title} className="rounded-2xl border border-border bg-surface p-6 space-y-4">
+              <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
+              <h2 className="text-lg font-bold">{group.title}</h2>
+              <p className="text-sm leading-relaxed text-text-muted">{group.items.slice(0, 4).join(" · ")}</p>
             </div>
+          );
+        })}
+      </section>
+
+      <section className="space-y-6">
+        <div className="space-y-2"><h2 className="text-2xl font-bold">{text.workTitle}</h2><p className="text-text-muted">{text.workIntro}</p></div>
+        <article className="rounded-3xl border border-primary/30 bg-surface p-6 sm:p-8 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">{text.professionalLabel}</p>
+          <h3 className="text-2xl font-bold">{text.caseTitle}</h3>
+          <p className="max-w-3xl leading-relaxed text-text-secondary">{text.caseSummary}</p>
+          <p className="text-xs font-mono text-text-muted">Python · FastAPI · Human-in-the-loop · Ollama · CI</p>
+          <Link href={getLocalizedPath(PROFESSIONAL_CASE_PATH, locale)} className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">{text.readCase}<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+        </article>
+        <div className="grid gap-5 sm:grid-cols-2">
+          {text.featured.map((project) => (
+            <article key={project.slug} className="rounded-2xl border border-border bg-surface p-6 space-y-4">
+              <p className="text-xs font-semibold text-text-muted">{text.personalLabel}</p>
+              <h3 className="text-xl font-bold">{project.title}</h3>
+              <p className="text-sm leading-relaxed text-text-secondary">{project.summary}</p>
+              <Link href={getLocalizedPath(`/apps/${project.slug}`, locale)} className="text-sm font-semibold text-primary hover:underline">{text.readCase}<span className="sr-only"> — {project.title}</span></Link>
+            </article>
           ))}
         </div>
       </section>
-
-      {/* AI Reliability & Safety Scorecard */}
-      <AiSafetyScorecard dict={dict} />
+      <ContactCard locale={locale} />
     </div>
   );
 }

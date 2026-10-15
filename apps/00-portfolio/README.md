@@ -1,6 +1,6 @@
-# App 00 — AI Engineer Portfolio & Global Catalog
+# App 00 — Rodrigo Normando · Personal Engineering Portfolio
 
-App 00 serves as the central showcase and global catalog for the `ai-engineer-roadmap` monorepo.
+App 00 presents Rodrigo Normando’s professional experience, engineering skills and personal AI projects. The roadmap catalog remains available as a record of learning projects.
 
 ---
 
@@ -78,3 +78,31 @@ App 00 includes a Docker Compose configuration for Coolify (`compose.coolify.yml
 
 The image build incorporates the shared catalog and case studies. Deployment triggers and Watch Paths must be configured in Coolify. Catalog statuses and the safety scorecard are repository metadata, not live availability or security measurements.
 
+
+
+## Personal portfolio content
+
+- `/`: personal introduction, one professional case study and two selected personal projects.
+- `/experience`: professional history, with the internal AI R&D work shown within the consulting role.
+- `/experience/ai-review-platform`: anonymized professional case study; no internal project name, private repository links, colleagues or report attachments are published.
+- `/about`: frontend/backend skills, education, languages and LinkedIn contact for CV requests.
+- `/apps` and `/roadmap`: personal AI projects with app-specific capabilities and limitations.
+
+English uses root URLs; Portuguese and German use `/pt` and `/de`, including the new experience routes. `frontend/lib/personal-content.ts` holds typed personal content for all three languages. The professional case is based on the user-supplied participation report; historical profile details are user-provided. Revalidate dates and language levels when updating the profile. No downloadable CV is included because a current public PDF has not been added.
+
+The professional case omits internal names and artifacts and distinguishes individual contributions from project-wide test counts. It does not establish production deployment or regulatory certification. No report file is copied into the public assets.
+
+### Local checks for this change
+
+From the repository root, run `npm ci`, then:
+
+```bash
+cd apps/00-portfolio/frontend
+npm run lint
+npx tsc --noEmit
+npm test
+npm run build
+npm run dev
+```
+
+Check the home, experience, professional case, about, catalog and roadmap pages in EN/PT/DE; switch languages while on the professional case. Check keyboard focus, light/dark themes and narrow mobile widths. Confirm professional and personal labels, external contact links and the absence of the internal project name. Build/tests were intentionally left for the user to run locally for this change.

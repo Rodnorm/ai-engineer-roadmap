@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Code2, Map, User } from "lucide-react";
+import { Sparkles, Code2, BriefcaseBusiness, User } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getDictionary, Locale, getLocalizedPath } from "@/lib/i18n";
@@ -24,10 +24,10 @@ export function Header() {
         <Link
           href={getLocalizedPath("/", locale)}
           className="flex min-w-0 flex-shrink items-center gap-2 font-bold tracking-tight text-foreground transition-colors hover:text-primary sm:text-lg"
-          aria-label="Rodrigo Normando AI Solutions"
+          aria-label="Rodrigo Normando"
         >
           <Sparkles className="h-5 w-5 flex-shrink-0 text-primary" />
-          <span className="hidden whitespace-nowrap sm:inline">Rodrigo Normando • AI Solutions</span>
+          <span className="hidden min-w-0 truncate sm:inline sm:max-w-32 lg:max-w-none">Rodrigo Normando</span>
         </Link>
         <nav className="flex min-w-0 items-center justify-end gap-0.5 text-sm font-medium text-text-secondary sm:gap-2 md:gap-4">
           <Link
@@ -39,12 +39,12 @@ export function Header() {
             <span className="hidden sm:inline">{dict.nav.catalog}</span>
           </Link>
           <Link
-            href={getLocalizedPath("/roadmap", locale)}
+            href={getLocalizedPath("/experience", locale)}
             className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 transition-colors hover:text-primary sm:px-2"
-            aria-label={dict.nav.roadmap}
+            aria-label={dict.nav.experience}
           >
-            <Map className="h-4 w-4" />
-            <span className="hidden sm:inline">{dict.nav.roadmap}</span>
+            <BriefcaseBusiness className="h-4 w-4" />
+            <span className="hidden sm:inline">{dict.nav.experience}</span>
           </Link>
           <Link
             href={getLocalizedPath("/about", locale)}
@@ -57,10 +57,10 @@ export function Header() {
           <LanguageSelector />
           <ThemeToggle />
           <a
-            href="https://github.com/Rodnorm/ai-engineer-roadmap"
+            href="https://github.com/Rodnorm"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-lg border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-primary md:inline-flex"
+            className="hidden rounded-lg border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-primary lg:inline-flex"
           >
             GitHub
           </a>
@@ -69,3 +69,4 @@ export function Header() {
     </header>
   );
 }
+

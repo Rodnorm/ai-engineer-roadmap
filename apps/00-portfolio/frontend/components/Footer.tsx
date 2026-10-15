@@ -19,7 +19,7 @@ export function Footer() {
     <footer className="border-t border-border bg-surface/50 py-8 mt-20 text-text-muted text-xs transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-center sm:text-left">{dict.footer.copyright}</p>
-        <div className="flex items-center gap-4 text-text-secondary">
+        <div className="flex flex-wrap justify-center items-center gap-4 text-text-secondary">
           <Link
             href={getLocalizedPath("/about", locale)}
             className="hover:text-primary transition-colors"
@@ -42,7 +42,7 @@ export function Footer() {
           </Link>
           <span className="text-border" aria-hidden="true">•</span>
           <a
-            href="https://github.com/Rodnorm/ai-engineer-roadmap"
+            href="https://github.com/Rodnorm"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-primary transition-colors"
@@ -63,3 +63,4 @@ export function Footer() {
     </footer>
   );
 }
+

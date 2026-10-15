@@ -6,8 +6,8 @@ import { HtmlLangSync } from "@/components/HtmlLangSync";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "AI Engineer Roadmap & Portfolio",
-  description: "Comprehensive portfolio showcasing incremental AI engineering projects, multi-modal vision analysis, RAG, prompt engineering, and security hardening.",
+  title: "Rodrigo Normando — Frontend & Applied AI",
+  description: "Professional experience, frontend engineering and applied AI projects by Rodrigo Normando.",
 };
 
 const antiFoucScript = `
@@ -47,3 +47,4 @@ export default function RootLayout({
     </html>
   );
 }
+

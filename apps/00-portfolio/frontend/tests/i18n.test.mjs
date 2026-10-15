@@ -58,13 +58,13 @@ test("getDictionary returns correct translations and falls back to default Engli
   const deDict = getDictionary("de");
   const fallbackDict = getDictionary("invalid-locale");
 
-  assert.equal(enDict.nav.catalog, "Solutions");
-  assert.equal(ptDict.nav.catalog, "Soluções");
-  assert.equal(deDict.nav.catalog, "Lösungen");
+  assert.equal(enDict.nav.catalog, "Projects");
+  assert.equal(ptDict.nav.catalog, "Projetos");
+  assert.equal(deDict.nav.catalog, "Projekte");
 
   // Fallback to English
-  assert.equal(fallbackDict.nav.catalog, "Solutions");
-  assert.equal(fallbackDict.home.heroTitleHighlight, "Production AI Solutions");
+  assert.equal(fallbackDict.nav.catalog, "Projects");
+  assert.equal(fallbackDict.meta.siteTitle, enDict.meta.siteTitle);
 });
 
 test("catalog localization applies localized descriptions per locale", () => {
@@ -111,4 +111,5 @@ test("resolveAppUrl resolves from environment variable with fallback to producti
 
   delete process.env.NEXT_PUBLIC_APP_01_URL;
 });
+
 
