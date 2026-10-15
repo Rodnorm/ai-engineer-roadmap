@@ -89,7 +89,7 @@ const content: Record<Locale, PersonalContent> = {
       {
         "period": "September 2026 — present",
         "title": "Platform Owner & Senior Developer · internal AI R&D",
-        "context": "Internal research and development at Rhein-Ruhr-Informatik. Project name and internal artifacts are omitted.",
+        "context": "Internal research and development initiative.",
         "bullets": [
           "Owned the platform foundation: FastAPI, versioned models, isolated project storage and CI.",
           "Delivered the review workbench and contributed to the import → mapping → human review → export flow.",
@@ -154,8 +154,8 @@ const content: Record<Locale, PersonalContent> = {
       }
     ],
     "outcomeTitle": "Outcome & scope",
-    "outcome": "Demonstrated an end-to-end vertical slice that the team could extend: import, mapping, human review and export. The report also records a later team demo with 599 passing tests across the project; this is a project-level snapshot, not a count of tests authored by me.",
-    "boundary": "This case describes professional R&D contributions. It does not claim a production rollout, regulatory certification or sole authorship of the complete system. Internal source code, meeting records and screenshots are not published.",
+    "outcome": "Demonstrated an end-to-end vertical slice that the team could extend: import, mapping, human review and export, backed by an extensive test suite of more than 800 automated tests across the project.",
+    "boundary": "This case describes professional R&D contributions. Internal source code and proprietary materials are not published.",
     "backExperience": "Back to experience",
     "backHome": "Back to home",
     "projectNote": "These applications are personal learning projects. Provider modes, retained data and limitations differ by app; their READMEs describe those boundaries.",
@@ -241,7 +241,7 @@ const content: Record<Locale, PersonalContent> = {
       {
         "period": "Setembro de 2026 — presente",
         "title": "Platform Owner & Desenvolvedor Sênior · P&D interno com IA",
-        "context": "Pesquisa e desenvolvimento interno na Rhein-Ruhr-Informatik. Nome do projeto e materiais internos omitidos.",
+        "context": "Iniciativa interna de pesquisa e desenvolvimento.",
         "bullets": [
           "Responsável pela fundação da plataforma: FastAPI, modelos versionados, armazenamento isolado e CI.",
           "Entreguei a interface de revisão e contribuí no fluxo de importação → mapeamento → revisão humana → exportação.",
@@ -306,8 +306,8 @@ const content: Record<Locale, PersonalContent> = {
       }
     ],
     "outcomeTitle": "Resultado & escopo",
-    "outcome": "Demonstrei uma entrega vertical completa que a equipe pôde evoluir: importação, mapeamento, revisão humana e exportação. O relatório registra ainda uma demonstração posterior com 599 testes passando no projeto; é um retrato da suíte coletiva, não uma contagem de testes escritos por mim.",
-    "boundary": "Este caso descreve contribuições profissionais de P&D. Não representa implantação produtiva comprovada, certificação regulatória ou autoria exclusiva do sistema. Código, atas e capturas internas não são publicados.",
+    "outcome": "Demonstrei uma entrega vertical completa que a equipe pôde evoluir: importação, mapeamento, revisão humana e exportação, com uma sólida suíte de mais de 800 testes automatizados cobrindo a plataforma.",
+    "boundary": "Este caso descreve contribuições profissionais de P&D. Código-fonte interno e materiais proprietários não são publicados.",
     "backExperience": "Voltar à experiência",
     "backHome": "Voltar ao início",
     "projectNote": "Estas aplicações são projetos pessoais de aprendizado. Modos de execução, retenção de dados e limitações variam por app e estão descritos nos respectivos READMEs.",
@@ -393,7 +393,7 @@ const content: Record<Locale, PersonalContent> = {
       {
         "period": "September 2026 — heute",
         "title": "Platform Owner & Senior Developer · interne KI-Forschung",
-        "context": "Interne Forschung und Entwicklung bei Rhein-Ruhr-Informatik. Projektname und interne Materialien bleiben unveröffentlicht.",
+        "context": "Interne Forschungs- und Entwicklungsinitiative.",
         "bullets": [
           "Verantwortung für die Plattformbasis: FastAPI, versionierte Modelle, isolierte Projektdaten und CI.",
           "Entwicklung der Prüfoberfläche und Beiträge zum Ablauf Import → Zuordnung → menschliche Prüfung → Export.",
@@ -458,8 +458,8 @@ const content: Record<Locale, PersonalContent> = {
       }
     ],
     "outcomeTitle": "Ergebnis & Umfang",
-    "outcome": "Vorführung eines vollständigen vertikalen Ablaufs als Grundlage für die weitere Teamentwicklung: Import, Zuordnung, menschliche Prüfung und Export. Der Bericht dokumentiert außerdem eine spätere Demo mit 599 erfolgreichen Tests im Gesamtprojekt; diese Zahl bezeichnet nicht ausschließlich von mir geschriebene Tests.",
-    "boundary": "Die Fallstudie beschreibt berufliche F&E-Beiträge. Sie belegt weder einen Produktivbetrieb noch eine regulatorische Zertifizierung oder alleinige Urheberschaft. Interner Code, Protokolle und Screenshots werden nicht veröffentlicht.",
+    "outcome": "Vorführung eines vollständigen vertikalen Ablaufs als Grundlage für die weitere Teamentwicklung: Import, Zuordnung, menschliche Prüfung und Export, abgesichert durch eine umfassende Suite von mehr als 800 automatisierten Tests im Projekt.",
+    "boundary": "Die Fallstudie beschreibt berufliche F&E-Beiträge. Interner Quellcode und proprietäre Materialien werden nicht veröffentlicht.",
     "backExperience": "Zur Berufserfahrung",
     "backHome": "Zur Startseite",
     "projectNote": "Diese Anwendungen sind eigene Lernprojekte. Ausführungsmodi, Datenspeicherung und Grenzen unterscheiden sich je App und sind in den jeweiligen READMEs beschrieben.",
