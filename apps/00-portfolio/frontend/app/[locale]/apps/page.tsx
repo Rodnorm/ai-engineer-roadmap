@@ -1,5 +1,5 @@
 import { CatalogPageView } from "@/components/views/CatalogPageView";
-import { LOCALES, Locale, isValidLocale, getDictionary, getRouteAlternates } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -17,16 +17,13 @@ export async function generateMetadata({ params }: PageProps) {
   if (!isValidLocale(locale)) return {};
   const validLoc = locale as Locale;
   const dict = getDictionary(validLoc);
-  const alternates = getRouteAlternates("/apps", validLoc);
 
-  return {
+  return createPageMetadata({
     title: `${dict.catalog.title} — ${dict.meta.siteTitle}`,
     description: dict.catalog.subtitle,
-    alternates: {
-      canonical: alternates.canonical,
-      languages: alternates.languages,
-    },
-  };
+    pathname: "/apps",
+    locale: validLoc,
+  });
 }
 
 export default async function LocalizedAppsPage({ params }: PageProps) {

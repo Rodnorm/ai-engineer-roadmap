@@ -1,17 +1,14 @@
 import { CatalogPageView } from "@/components/views/CatalogPageView";
-import { getDictionary, getRouteAlternates } from "@/lib/i18n";
+import { getDictionary, createPageMetadata } from "@/lib/i18n";
 
 const dict = getDictionary("en");
-const alternates = getRouteAlternates("/apps", "en");
 
-export const metadata = {
+export const metadata = createPageMetadata({
   title: `${dict.catalog.title} — ${dict.meta.siteTitle}`,
   description: dict.catalog.subtitle,
-  alternates: {
-    canonical: alternates.canonical,
-    languages: alternates.languages,
-  },
-};
+  pathname: "/apps",
+  locale: "en",
+});
 
 export default function AppsPage() {
   return <CatalogPageView locale="en" />;

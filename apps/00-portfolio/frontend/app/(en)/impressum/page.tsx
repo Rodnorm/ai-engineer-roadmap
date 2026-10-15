@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { ImpressumPageView } from "@/components/views/ImpressumPageView";
-import { getRouteAlternates } from "@/lib/i18n";
+import { createPageMetadata } from "@/lib/i18n";
 
-const alternates = getRouteAlternates("/impressum", "en");
-
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Legal Notice (Impressum) | Rodrigo Normando",
   description: "Provider identification and legal notice for normando.dev and roadmap apps.",
-  alternates: {
-    canonical: alternates.canonical,
-    languages: alternates.languages,
-  },
-};
+  pathname: "/impressum",
+  locale: "en",
+});
 
 export default function ImpressumPage() {
   return <ImpressumPageView initialLocale="en" />;

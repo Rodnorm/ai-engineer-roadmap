@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProfessionalCasePageView } from "@/components/views/ProfessionalCasePageView";
-import { LOCALES, Locale, isValidLocale, getRouteAlternates } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, createPageMetadata } from "@/lib/i18n";
 import { getPersonalContent } from "@/lib/personal-content";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -14,16 +14,13 @@ export async function generateMetadata({ params }: Props) {
   if (!isValidLocale(locale) || locale === "en") return {};
   const validLoc = locale as Locale;
   const text = getPersonalContent(validLoc);
-  const alternates = getRouteAlternates("/experience/ai-review-platform", validLoc);
 
-  return {
+  return createPageMetadata({
     title: `${text.caseTitle} — Rodrigo Normando`,
     description: text.caseSummary,
-    alternates: {
-      canonical: alternates.canonical,
-      languages: alternates.languages,
-    },
-  };
+    pathname: "/experience/ai-review-platform",
+    locale: validLoc,
+  });
 }
 
 export default async function Page({ params }: Props) {

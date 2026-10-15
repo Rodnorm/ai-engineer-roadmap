@@ -1,5 +1,5 @@
 import { ImpressumPageView } from "@/components/views/ImpressumPageView";
-import { LOCALES, Locale, isValidLocale, getRouteAlternates } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -18,20 +18,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!isValidLocale(locale)) return {};
   const validLoc = locale as Locale;
   const isPt = validLoc === "pt";
-  const alternates = getRouteAlternates("/impressum", validLoc);
 
-  return {
+  return createPageMetadata({
     title: isPt
       ? "Aviso Legal (Impressum) | Rodrigo Normando"
       : "Impressum | Rodrigo Normando",
     description: isPt
       ? "Identificação do provedor e aviso legal de normando.dev."
       : "Anbieterkennzeichnung für normando.dev und die AI Engineer Roadmap Apps.",
-    alternates: {
-      canonical: alternates.canonical,
-      languages: alternates.languages,
-    },
-  };
+    pathname: "/impressum",
+    locale: validLoc,
+  });
 }
 
 export default async function LocalizedImpressumPage({ params }: PageProps) {

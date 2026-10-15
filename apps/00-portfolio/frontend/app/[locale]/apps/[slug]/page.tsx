@@ -1,6 +1,6 @@
 import { getAppCatalog, getAppBySlug } from "@/lib/catalog";
 import { CaseStudyPageView } from "@/components/views/CaseStudyPageView";
-import { LOCALES, Locale, isValidLocale, getDictionary, getRouteAlternates } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -31,16 +31,13 @@ export async function generateMetadata({ params }: PageProps) {
   const app = getAppBySlug(slug, validLoc);
   if (!app) return {};
   const dict = getDictionary(validLoc);
-  const alternates = getRouteAlternates(`/apps/${slug}`, validLoc);
 
-  return {
+  return createPageMetadata({
     title: `${app.title} — ${dict.meta.siteTitle}`,
     description: app.summary,
-    alternates: {
-      canonical: alternates.canonical,
-      languages: alternates.languages,
-    },
-  };
+    pathname: `/apps/${slug}`,
+    locale: validLoc,
+  });
 }
 
 export default async function LocalizedCaseStudyPage({ params }: PageProps) {

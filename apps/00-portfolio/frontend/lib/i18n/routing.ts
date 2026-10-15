@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { LOCALES, Locale, LOCALE_HTML_LANG, getLocalizedPath } from "./locales";
 
 export const SITE_URL = "https://normando.dev";
@@ -30,5 +31,59 @@ export function getRouteAlternates(pathname: string, currentLocale: Locale): Pag
   return {
     canonical,
     languages,
+  };
+}
+
+export interface CreatePageMetadataOptions {
+  title: string;
+  description: string;
+  pathname: string;
+  locale: Locale;
+  image?: string;
+}
+
+/**
+ * Builds localized page metadata ensuring Open Graph and Twitter tags
+ * match the specific page title, description, and canonical URL.
+ */
+export function createPageMetadata({
+  title,
+  description,
+  pathname,
+  locale,
+  image = "/images/editorial/og-card.png",
+}: CreatePageMetadataOptions): Metadata {
+  const alternates = getRouteAlternates(pathname, locale);
+  const ogLocale = locale === "pt" ? "pt_BR" : locale === "de" ? "de_DE" : "en_US";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: alternates.canonical,
+      languages: alternates.languages,
+    },
+    openGraph: {
+      title,
+      description,
+      url: alternates.canonical,
+      siteName: "Rodrigo Normando",
+      locale: ogLocale,
+      type: "website",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
   };
 }

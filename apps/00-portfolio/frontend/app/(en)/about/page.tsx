@@ -1,16 +1,12 @@
 import { AboutPageView } from "@/components/views/AboutPageView";
-import { getDictionary, getRouteAlternates } from "@/lib/i18n";
+import { getDictionary, createPageMetadata } from "@/lib/i18n";
 
-const alternates = getRouteAlternates("/about", "en");
-
-export const metadata = {
+export const metadata = createPageMetadata({
   title: `About ${getDictionary("en").about.title} — Software Engineer`,
   description: getDictionary("en").about.bio,
-  alternates: {
-    canonical: alternates.canonical,
-    languages: alternates.languages,
-  },
-};
+  pathname: "/about",
+  locale: "en",
+});
 
 export default function AboutPage() {
   return <AboutPageView locale="en" />;

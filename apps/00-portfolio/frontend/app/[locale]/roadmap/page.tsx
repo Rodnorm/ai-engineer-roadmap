@@ -1,5 +1,5 @@
 import { RoadmapPageView } from "@/components/views/RoadmapPageView";
-import { LOCALES, Locale, isValidLocale, getDictionary, getRouteAlternates } from "@/lib/i18n";
+import { LOCALES, Locale, isValidLocale, getDictionary, createPageMetadata } from "@/lib/i18n";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -17,16 +17,13 @@ export async function generateMetadata({ params }: PageProps) {
   if (!isValidLocale(locale)) return {};
   const validLoc = locale as Locale;
   const dict = getDictionary(validLoc);
-  const alternates = getRouteAlternates("/roadmap", validLoc);
 
-  return {
+  return createPageMetadata({
     title: `${dict.roadmap.title} — ${dict.meta.siteTitle}`,
     description: dict.roadmap.subtitle,
-    alternates: {
-      canonical: alternates.canonical,
-      languages: alternates.languages,
-    },
-  };
+    pathname: "/roadmap",
+    locale: validLoc,
+  });
 }
 
 export default async function LocalizedRoadmapPage({ params }: PageProps) {

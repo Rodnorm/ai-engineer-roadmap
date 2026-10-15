@@ -1,18 +1,15 @@
 import { ProfessionalCasePageView } from "@/components/views/ProfessionalCasePageView";
 import { getPersonalContent } from "@/lib/personal-content";
-import { getRouteAlternates } from "@/lib/i18n";
+import { createPageMetadata } from "@/lib/i18n";
 
 const text = getPersonalContent("en");
-const alternates = getRouteAlternates("/experience/ai-review-platform", "en");
 
-export const metadata = {
+export const metadata = createPageMetadata({
   title: `${text.caseTitle} — Rodrigo Normando`,
   description: text.caseSummary,
-  alternates: {
-    canonical: alternates.canonical,
-    languages: alternates.languages,
-  },
-};
+  pathname: "/experience/ai-review-platform",
+  locale: "en",
+});
 
 export default function Page() {
   return <ProfessionalCasePageView locale="en" />;
