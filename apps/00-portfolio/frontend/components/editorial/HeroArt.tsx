@@ -38,7 +38,7 @@ export function HeroArt() {
         className="relative w-full aspect-[819/1024] transition-transform ease-out duration-100 motion-reduce:transform-none"
       >
         <Image
-          src="/images/editorial/hero-collage.webp"
+          src="/images/editorial/hero-art.webp"
           alt=""
           width={819}
           height={1024}
