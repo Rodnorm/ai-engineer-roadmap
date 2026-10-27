@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse
 
 from config import load_settings
 from ingestion import IngestionError, ParsedChunk, parse_document
-from models import Citation, DocumentChunk, DocumentItem, DocumentUploadResponse, QueryRequest, QueryResponse, SuggestionRequest, SuggestionResponse, SystemStats
+from models import Citation, DocumentChunk, DocumentItem, DocumentUploadResponse, ExampleDocument, QueryRequest, QueryResponse, SuggestionRequest, SuggestionResponse, SystemStats
 from storage import DocumentStore
 
 try:
@@ -382,7 +382,7 @@ def list_documents(
     return store.list_documents(source, owner_id=owner_id)
 
 
-@app.get("/api/examples")
+@app.get("/api/examples", response_model=list[ExampleDocument])
 def list_example_documents(_owner_id: str = Depends(require_owner_access)):
     return [
         {

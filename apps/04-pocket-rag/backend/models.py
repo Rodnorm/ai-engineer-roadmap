@@ -3,6 +3,14 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+class ExampleDocument(BaseModel):
+    id: str
+    filename: str
+    title: str
+    description: str
+    loaded: bool
+    download_url: str
+
 class DocumentItem(BaseModel):
     id: str
     filename: str
