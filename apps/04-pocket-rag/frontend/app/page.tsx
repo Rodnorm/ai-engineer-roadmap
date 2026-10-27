@@ -192,21 +192,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-bg text-text flex flex-col font-sans">
+    <div className="min-h-screen bg-bg text-text flex flex-col font-mono">
       <Header />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 space-y-4">
-        {/* Compact Telemetry Ribbon */}
-        <TelemetryBar
-          stats={stats}
-          lastCost={lastCost}
-          lastTokens={lastTokens}
-          lastLatency={lastLatency}
-          labels={labels}
-        />
-
-        {/* Main Grid: Document Manager & Chat Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+      <main className="mx-auto w-full max-w-7xl flex-1 p-3 sm:p-5">
+        {/* Main DevTool Workspace: Document Vault & Query Console */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
           <div className="lg:col-span-4">
             <DocumentManager
               documents={documents}
@@ -249,6 +240,16 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* Terminal Statusline docked at bottom */}
+      <TelemetryBar
+        stats={stats}
+        lastCost={lastCost}
+        lastTokens={lastTokens}
+        lastLatency={lastLatency}
+        labels={labels}
+        isBusy={isQuerying || isUploading}
+      />
 
       <CitationsDrawer
         citation={selectedCitation}

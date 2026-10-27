@@ -50,10 +50,10 @@ export default function AppInfo() {
           <InfoSection title={infoT("howToUse")} items={[infoT("step1"), infoT("step2"), infoT("step3")]} ordered />
 
           <section className="mt-7">
-            <h3 className="text-sm font-semibold">{infoT("technologies")}</h3>
-            <ul className="mt-3 flex flex-wrap gap-2">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-muted">{infoT("technologies")}</h3>
+            <ul className="mt-2 flex flex-wrap gap-1.5 font-mono">
               {["Next.js 15", "React 19", "TypeScript", "Tailwind CSS 4", "FastAPI", "SQLite Vector", "Azure OpenAI"].map((technology) => (
-                <li key={technology} className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted">{technology}</li>
+                <li key={technology} className="border border-border bg-surface px-2 py-0.5 text-[10px] text-terminal">{technology}</li>
               ))}
             </ul>
           </section>
@@ -64,7 +64,7 @@ export default function AppInfo() {
 }
 
 function InfoItem({ label, value }: { label: string; value: string }) {
-  return <div className="min-w-0 rounded-xl border border-border bg-surface p-3"><dt className="text-[0.65rem] uppercase tracking-wide text-muted">{label}</dt><dd className="mt-1 break-words text-xs font-medium">{value}</dd></div>;
+  return <div className="min-w-0 border border-border bg-surface/50 p-2.5 font-mono"><dt className="text-[10px] uppercase tracking-wide text-muted">{label}</dt><dd className="mt-1 break-words text-xs font-bold text-accent">{value}</dd></div>;
 }
 
 function InfoSection({ title, items, ordered = false }: { title: string; items: string[]; ordered?: boolean }) {

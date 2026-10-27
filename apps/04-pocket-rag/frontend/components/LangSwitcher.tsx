@@ -53,7 +53,7 @@ export default function LangSwitcher() {
         <ul
           role="listbox"
           aria-label={t("language")}
-          className="absolute right-0 z-50 mt-2 min-w-36 overflow-hidden rounded-xl border border-border bg-panel py-1 shadow-xl"
+          className="absolute right-0 z-50 mt-1 min-w-36 overflow-hidden rounded-none border border-border bg-panel py-1 shadow-lg font-mono text-xs"
         >
           {LOCALES.map((option) => (
             <li key={option} role="presentation">
@@ -62,13 +62,13 @@ export default function LangSwitcher() {
                 role="option"
                 aria-selected={option === locale}
                 onClick={() => selectLocale(option)}
-                className={`w-full cursor-pointer px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:bg-accent-soft ${
+                className={`w-full cursor-pointer px-3 py-1.5 text-left text-xs transition focus:outline-none ${
                   option === locale
-                    ? "bg-accent-soft font-medium text-accent-strong"
-                    : "text-text hover:bg-surface"
+                    ? "bg-surface font-bold text-accent"
+                    : "text-text hover:bg-surface/50"
                 }`}
               >
-                {LOCALE_LABELS[option]}
+                {option === locale ? `> ${LOCALE_LABELS[option]}` : `  ${LOCALE_LABELS[option]}`}
               </button>
             </li>
           ))}

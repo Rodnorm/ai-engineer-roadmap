@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Database, Coins, Cpu, Zap, Activity } from 'lucide-react';
 import { SystemStats } from '../lib/api';
 
 interface TelemetryBarProps {
@@ -10,6 +9,7 @@ interface TelemetryBarProps {
   lastTokens: number;
   lastLatency: number;
   labels: Record<string, string>;
+  isBusy?: boolean;
 }
 
 export const TelemetryBar: React.FC<TelemetryBarProps> = ({
@@ -18,65 +18,68 @@ export const TelemetryBar: React.FC<TelemetryBarProps> = ({
   lastTokens,
   lastLatency,
   labels,
+  isBusy = false,
 }) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/70 bg-panel/70 px-3.5 py-2 backdrop-blur-md text-xs shadow-xs">
-      <div className="flex flex-wrap items-center gap-3 sm:gap-5">
-        {/* Vector DB Engine */}
-        <div className="flex items-center gap-1.5">
-          <Database className="h-3.5 w-3.5 text-accent" aria-hidden="true" />
-          <span className="text-[11px] text-muted">{labels.vectorDb || 'Vector Store'}:</span>
-          <span className="font-mono text-[11px] font-semibold text-text">
-            {stats?.vector_store_type || 'SQLite Vector'}
-          </span>
+    <footer className="sticky bottom-0 z-30 w-full border-t border-border bg-panel text-[11px] font-mono text-terminal select-none">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-3 py-1.5 sm:px-6">
+        {/* Left Status & Engine Info */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1.5 bg-surface px-2 py-0.5 border border-border">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                isBusy ? 'bg-amber-400 animate-ping' : 'bg-accent'
+              }`}
+            />
+            <span className="font-bold text-text">
+              {isBusy ? '[STATUS: BUSY]' : '[STATUS: READY]'}
+            </span>
+          </div>
+
+          <div className="hidden items-center gap-1 sm:flex text-muted">
+            <span>EMBEDDINGS:</span>
+            <span className="text-text font-medium">1536-dim</span>
+          </div>
+
+          <span className="hidden text-border sm:inline">|</span>
+
+          <div className="flex items-center gap-1">
+            <span className="text-muted">STORE:</span>
+            <span className="text-text font-medium">{stats?.vector_store_type || 'SQLITE'}</span>
+          </div>
+
+          <span className="hidden text-border sm:inline">|</span>
+
+          <div className="flex items-center gap-1">
+            <span className="text-muted">DOCS:</span>
+            <span className="text-accent font-semibold">{stats?.total_documents ?? 0}</span>
+          </div>
         </div>
 
-        <div className="hidden h-3 w-px bg-border sm:block" aria-hidden="true" />
+        {/* Right Query Metrics (VIM statusline style) */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1">
+            <span className="text-muted">TOKENS:</span>
+            <span className="text-text font-semibold">{lastTokens.toLocaleString()}</span>
+          </div>
 
-        {/* Cost */}
-        <div className="flex items-center gap-1.5">
-          <Coins className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" aria-hidden="true" />
-          <span className="text-[11px] text-muted">{labels.cost || 'Cost'}:</span>
-          <span className="font-mono text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-            ${lastCost.toFixed(5)}
-          </span>
-        </div>
+          <span className="text-border">|</span>
 
-        <div className="hidden h-3 w-px bg-border sm:block" aria-hidden="true" />
+          <div className="flex items-center gap-1">
+            <span className="text-muted">LATENCY:</span>
+            <span className="text-text font-semibold">
+              {lastLatency > 0 ? `${lastLatency}ms` : '--'}
+            </span>
+          </div>
 
-        {/* Tokens */}
-        <div className="flex items-center gap-1.5">
-          <Cpu className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" aria-hidden="true" />
-          <span className="text-[11px] text-muted">{labels.tokens || 'Tokens'}:</span>
-          <span className="font-mono text-[11px] font-semibold text-text">
-            {lastTokens.toLocaleString()}
-          </span>
-        </div>
+          <span className="text-border">|</span>
 
-        <div className="hidden h-3 w-px bg-border sm:block" aria-hidden="true" />
-
-        {/* Latency */}
-        <div className="flex items-center gap-1.5">
-          <Zap className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
-          <span className="text-[11px] text-muted">{labels.latency || 'Latency'}:</span>
-          <span className="font-mono text-[11px] font-semibold text-text">
-            {lastLatency > 0 ? `${lastLatency}ms` : '—'}
-          </span>
+          <div className="flex items-center gap-1 bg-surface px-2 py-0.5 border border-border">
+            <span className="text-muted">COST:</span>
+            <span className="text-accent font-bold">${lastCost.toFixed(5)}</span>
+          </div>
         </div>
       </div>
-
-      {/* Connection & Status Pill */}
-      <div className="flex items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/60 px-2.5 py-0.5 text-[10px] font-medium text-muted">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          </span>
-          {stats?.total_documents !== undefined
-            ? `${stats.total_documents} ${stats.total_documents === 1 ? 'doc' : 'docs'}`
-            : (labels.connected || 'Ready')}
-        </span>
-      </div>
-    </div>
+    </footer>
   );
 };

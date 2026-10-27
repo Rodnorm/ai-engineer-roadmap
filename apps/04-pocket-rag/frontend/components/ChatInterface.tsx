@@ -2,16 +2,12 @@
 
 import React, { useEffect, useId, useRef, useState } from 'react';
 import {
-  ArrowUpRight,
+  ArrowRight,
   BookOpen,
-  Bot,
   ChevronDown,
   ChevronUp,
   Loader2,
-  Send,
-  Sparkles,
-  Square,
-  User,
+  Terminal,
   Trash2,
   Search,
 } from 'lucide-react';
@@ -55,17 +51,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 }) => {
   const [input, setInput] = useState('');
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
-  const [isMac, setIsMac] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const suggestionsButtonRef = useRef<HTMLButtonElement>(null);
   const suggestionsPanelId = useId();
 
-  useEffect(() => {
-    setIsMac(typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform));
-  }, []);
-
-  // Scroll to bottom when new messages arrive
+  // Auto-scroll to bottom on update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -98,7 +89,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
 
-    // Support commands like /clear
     if (trimmed.toLowerCase() === '/clear') {
       setInput('');
       onClearChat?.();
@@ -111,7 +101,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       void handleSubmit();
     }
@@ -127,10 +117,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           type="button"
           key={`${part}-${index}`}
           onClick={() => onSelectCitation(citation)}
-          className="inline-flex items-center mx-0.5 rounded px-1.5 py-0.2 font-mono text-[11px] font-semibold text-accent bg-accent/10 border border-accent/25 hover:bg-accent/20 focus:outline-none focus-visible:ring-1 focus-visible:ring-accent transition-colors cursor-pointer"
-          aria-label={`${labels.openCitation || 'Open citation'} ${citation.citation_id}: ${citation.filename}`}
+          className="inline-flex items-center mx-1 px-1.5 py-0.2 font-mono text-[10px] font-bold text-accent bg-accent/10 border border-accent/40 hover:bg-accent/20 cursor-pointer"
+          title={`${citation.filename} (Chunk ${citation.chunk_index + 1})`}
+          aria-label={`${labels.openCitation || 'Citation'} ${citation.citation_id}: ${citation.filename}`}
         >
-          {part}
+          [ref:{citation.filename.slice(0, 16)}#{citation.chunk_index + 1}]
         </button>
       ) : (
         <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>
@@ -138,248 +129,248 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     });
   };
 
-  // Curated starter prompts when emptyStateSuggestions is empty or minimal
   const defaultStarters = [
     'Resuma as seções principais deste documento',
     'Liste os pontos de ação e prazos citados',
-    'Quais são os principais riscos, custos e obrigações?',
+    'Diagnóstico de inconsistências e riscos contratuais',
   ];
   const starters = emptyStateSuggestions.length > 0 ? emptyStateSuggestions.slice(0, 3) : defaultStarters;
 
   return (
-    <div className="flex flex-col h-[640px] rounded-2xl border border-border/70 bg-panel/80 backdrop-blur-sm shadow-xs overflow-hidden">
-      {/* Top Header inside Chat */}
-      <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
+    <div className="terminal-box flex flex-col h-[650px] font-mono text-xs">
+      {/* Console Top Bar */}
+      <div className="flex items-center justify-between border-b border-border bg-surface/50 px-3 py-2">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-accent">
-            <Bot className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="text-xs font-semibold text-text">
-              {labels.assistantTitle || 'pocketRag Assistant'}
-            </h3>
-            <p className="text-[10px] text-muted">
-              Semantic Search & Direct Citations
-            </p>
-          </div>
+          <Terminal className="h-3.5 w-3.5 text-accent" />
+          <span className="font-bold text-text uppercase tracking-wider">
+            {'// QUERY_CONSOLE'}
+          </span>
+          <span className="text-muted text-[11px] hidden sm:inline">
+            :: ACTIVE_SESSION
+          </span>
         </div>
 
-        {messages.length > 0 && onClearChat && (
-          <button
-            type="button"
-            onClick={onClearChat}
-            className="pill-button text-[10px] py-1 px-2.5 cursor-pointer"
-            title="Clear conversation"
-          >
-            <Trash2 className="h-3 w-3" />
-            Clear
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {suggestedQuestions.length > 0 && (
+            <div ref={suggestionsRef} className="relative">
+              <button
+                ref={suggestionsButtonRef}
+                type="button"
+                onClick={() => setIsSuggestionsOpen((open) => !open)}
+                disabled={isLoading}
+                aria-expanded={isSuggestionsOpen}
+                aria-controls={suggestionsPanelId}
+                className="inline-flex items-center gap-1 border border-border bg-panel px-2 py-0.5 text-[10px] text-terminal hover:border-border-focus hover:text-text cursor-pointer"
+              >
+                <Search className="h-2.5 w-2.5" />
+                <span>[:queries]</span>
+                {isSuggestionsOpen ? (
+                  <ChevronUp className="h-3 w-3" />
+                ) : (
+                  <ChevronDown className="h-3 w-3" />
+                )}
+              </button>
+
+              {isSuggestionsOpen && (
+                <div
+                  id={suggestionsPanelId}
+                  role="region"
+                  className="absolute right-0 top-full z-40 mt-1 max-h-56 w-80 overflow-y-auto border border-border bg-panel p-1 shadow-lg"
+                >
+                  {suggestedQuestions.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => {
+                        setIsSuggestionsOpen(false);
+                        void onSend(q);
+                      }}
+                      className="flex w-full items-start gap-1.5 p-1.5 text-left text-[11px] text-terminal hover:bg-surface hover:text-accent cursor-pointer"
+                    >
+                      <span className="text-accent">&gt;</span>
+                      <span className="min-w-0 flex-1">{q}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {messages.length > 0 && onClearChat && (
+            <button
+              type="button"
+              onClick={onClearChat}
+              className="inline-flex items-center gap-1 border border-border bg-panel px-2 py-0.5 text-[10px] text-muted hover:border-error/40 hover:text-error transition-colors cursor-pointer"
+              title="Clear console output"
+            >
+              <Trash2 className="h-2.5 w-2.5" />
+              <span>[:clear]</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages / Execution Output Stream */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-bg/50">
         {messages.length === 0 ? (
-          <div className="flex h-full flex-col justify-center px-4 py-8 max-w-xl mx-auto">
-            {/* Empty State Banner */}
-            <div className="text-center mb-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-accent/20 bg-accent/10 text-accent mb-3">
-                <Sparkles className="h-6 w-6" />
+          <div className="flex h-full flex-col justify-center max-w-xl mx-auto py-6">
+            {/* Terminal ASCII Welcome Banner */}
+            <div className="border border-border bg-panel p-3.5 mb-5 font-mono text-[11px]">
+              <div className="text-accent font-bold mb-1">
+                ┌─────────────────────────────────────────────────────────────┐
               </div>
-              <h3 className="text-sm font-semibold tracking-tight text-text">
-                {labels.assistantTitle || 'pocketRag Assistant'}
-              </h3>
-              <p className="mt-1 text-xs text-muted">
-                Ask questions and retrieve answers grounded in your indexed documents.
+              <div className="text-text font-bold">
+                │ POCKET_RAG :: VECTOR QUERY CONSOLE [LOCAL_ENGINE v0.4]      │
+              </div>
+              <div className="text-muted text-[10px]">
+                │ SQLite Vector DB: MOUNTED | OpenAI Embeddings: 1536-dim     │
+              </div>
+              <div className="text-accent font-bold mt-1">
+                └─────────────────────────────────────────────────────────────┘
+              </div>
+              <p className="mt-2 text-muted leading-relaxed text-[11px]">
+                Type query in terminal prompt below or select quick execution commands:
               </p>
             </div>
 
-            {/* Clickable Starter Prompt Cards */}
-            <div className="space-y-2">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
-                Suggested prompts
-              </p>
-              <div className="grid grid-cols-1 gap-2">
-                {starters.map((starter) => (
-                  <button
-                    key={starter}
-                    type="button"
-                    onClick={() => void onSend(starter)}
-                    disabled={isLoading}
-                    className="group flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-surface/30 px-3.5 py-3 text-left transition-all duration-150 hover:border-accent/60 hover:bg-surface/70 hover:shadow-xs disabled:opacity-50 cursor-pointer"
-                  >
-                    <span className="text-xs text-text group-hover:text-accent transition-colors leading-relaxed">
+            {/* Quick Starters Styled as Terminal Command Executions */}
+            <div className="space-y-1.5">
+              <div className="text-[10px] text-muted uppercase tracking-wider mb-1">
+                {'// QUICK_STARTERS'}
+              </div>
+              {starters.map((starter, i) => (
+                <button
+                  key={starter}
+                  type="button"
+                  onClick={() => void onSend(starter)}
+                  disabled={isLoading}
+                  className="group flex w-full items-center justify-between border border-border bg-panel px-3 py-2 text-left font-mono text-xs transition-colors hover:border-accent hover:bg-surface cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-accent font-bold">[ 0{i + 1} ]</span>
+                    <span className="text-text group-hover:text-accent transition-colors">
                       {starter}
                     </span>
-                    <ArrowUpRight className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
-                  </button>
-                ))}
-              </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] text-muted group-hover:text-accent font-bold">
+                    <span>[ ↵ EXEC ]</span>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         ) : (
           messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              {msg.sender === 'assistant' && (
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent mt-0.5">
-                  <Bot className="h-3.5 w-3.5" />
-                </div>
-              )}
+            <div key={msg.id} className="space-y-1 font-mono text-xs">
+              {/* Message Header Prompt Indicator */}
+              <div className="flex items-center gap-2 text-[10px] text-muted">
+                {msg.sender === 'user' ? (
+                  <span className="text-accent font-bold">
+                    guest@pocket-rag:~$
+                  </span>
+                ) : (
+                  <span className="text-orange-400 font-bold">
+                    rag@engine:~# [OUTPUT]
+                  </span>
+                )}
+                {msg.latency_ms !== undefined && (
+                  <span>
+                    ({msg.latency_ms}ms • {msg.tokens || 0} tokens)
+                  </span>
+                )}
+              </div>
 
-              <div className={`flex flex-col max-w-[85%] ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                <div
-                  className={`rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-xs ${
-                    msg.sender === 'user'
-                      ? 'bg-accent-strong text-white rounded-br-xs font-normal'
-                      : 'bg-surface/50 border border-border/70 text-text rounded-bl-xs'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">
-                    {msg.sender === 'assistant' ? renderAnswer(msg) : msg.text}
-                  </p>
+              {/* Message Body */}
+              <div
+                className={`border p-3 text-xs leading-relaxed ${
+                  msg.sender === 'user'
+                    ? 'border-border bg-surface text-text'
+                    : 'border-border-focus bg-panel text-text'
+                }`}
+              >
+                <div className="whitespace-pre-wrap font-sans">
+                  {msg.sender === 'assistant' ? renderAnswer(msg) : msg.text}
                 </div>
 
                 {/* Citations Badges */}
                 {msg.sender === 'assistant' && msg.citations && msg.citations.length > 0 && (
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5 pl-1">
-                    <span className="text-[10px] font-semibold text-muted flex items-center gap-1">
-                      <BookOpen className="h-3 w-3 text-accent" aria-hidden="true" />
-                      {labels.citationsLabel || 'Citations'}:
+                  <div className="mt-3 pt-2 border-t border-border/60 flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
+                    <span className="text-muted flex items-center gap-1">
+                      <BookOpen className="h-3 w-3 text-accent" />
+                      SOURCES:
                     </span>
                     {msg.citations.map((c) => (
                       <button
                         key={c.citation_id}
-                        onClick={() => onSelectCitation(c)}
                         type="button"
-                        className="inline-flex items-center gap-1 rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-[10px] font-medium text-accent hover:bg-accent/20 transition-colors cursor-pointer"
+                        onClick={() => onSelectCitation(c)}
+                        className="border border-accent/40 bg-accent/10 px-1.5 py-0.2 font-mono text-[10px] text-accent hover:bg-accent/20 transition-colors cursor-pointer"
                       >
-                        [{c.citation_id}] {c.filename}
+                        [ref:{c.filename}#chunk{c.chunk_index + 1}]
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-
-              {msg.sender === 'user' && (
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-surface text-muted mt-0.5">
-                  <User className="h-3.5 w-3.5" />
-                </div>
-              )}
             </div>
           ))
         )}
 
+        {/* Querying Indicator */}
         {isLoading && (
           <div
             role="status"
             aria-live="polite"
-            className="flex items-center gap-2.5 text-xs text-accent animate-fade-in pl-1"
+            className="flex items-center gap-2 text-accent font-mono text-xs border border-accent/40 bg-accent/10 p-2.5"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            </div>
-            <span className="font-medium">{labels.thinking || 'Retrieving context & generating answer...'}</span>
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <span>[QUERYING] Searching vector embeddings &amp; synthesizing context...</span>
+            <span className="animate-blink font-bold">_</span>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Floating Bottom Input Area */}
-      <div className="border-t border-border/60 bg-panel/60 p-3 backdrop-blur-md">
-        {/* Suggested Questions Dropdown (if available) */}
-        {suggestedQuestions.length > 0 && (
-          <div ref={suggestionsRef} className="relative mb-2">
-            <button
-              ref={suggestionsButtonRef}
-              type="button"
-              onClick={() => setIsSuggestionsOpen((open) => !open)}
-              disabled={isLoading}
-              aria-expanded={isSuggestionsOpen}
-              aria-controls={suggestionsPanelId}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-surface/40 px-2.5 py-1 text-[11px] font-medium text-muted transition-colors hover:border-accent/40 hover:bg-surface hover:text-text disabled:opacity-50 cursor-pointer"
-            >
-              <Search className="h-3 w-3" />
-              {labels.suggestedQuestions || 'Suggested questions'}
-              {isSuggestionsOpen ? (
-                <ChevronUp className="h-3 w-3" aria-hidden="true" />
-              ) : (
-                <ChevronDown className="h-3 w-3" aria-hidden="true" />
-              )}
-            </button>
+      {/* Terminal Shell Input Bar */}
+      <div className="border-t border-border bg-panel p-2.5">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          {/* Shell prompt prefix */}
+          <span className="font-mono text-xs font-bold text-accent shrink-0 pl-1">
+            guest@pocket-rag:~$
+          </span>
 
-            {isSuggestionsOpen && (
-              <div
-                id={suggestionsPanelId}
-                role="region"
-                aria-label={labels.suggestedQuestions || 'Suggested questions'}
-                className="animate-fade-in absolute bottom-full left-0 z-30 mb-2 max-h-56 w-full overflow-y-auto rounded-xl border border-border/70 bg-panel/95 p-1.5 shadow-xl backdrop-blur-md"
-              >
-                {suggestedQuestions.map((question) => (
-                  <button
-                    key={question}
-                    type="button"
-                    onClick={() => {
-                      setIsSuggestionsOpen(false);
-                      void onSend(question);
-                    }}
-                    disabled={isLoading}
-                    className="flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-xs text-text transition-colors hover:bg-surface focus:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:opacity-50 cursor-pointer"
-                  >
-                    <span className="min-w-0 flex-1">{question}</span>
-                    <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Input Form with Command Support & Shortcut Pill */}
-        <form
-          onSubmit={handleSubmit}
-          className="relative flex items-center rounded-2xl border border-border/70 bg-surface/30 p-1.5 transition-all duration-150 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/50 focus-within:bg-panel"
-        >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={labels.queryPlaceholder || 'Ask a question or type /clear to reset...'}
-            className="flex-1 bg-transparent px-3 py-2 text-xs text-text placeholder:text-muted focus:outline-none"
+            placeholder={labels.queryPlaceholder || 'Ask a question or type /clear...'}
+            className="flex-1 bg-bg border border-border px-3 py-1.5 font-mono text-xs text-text placeholder:text-muted focus:border-accent focus:outline-none"
             disabled={isLoading}
             aria-label={labels.queryLabel || 'Question'}
             maxLength={2000}
           />
 
-          <div className="flex items-center gap-1.5 pr-1">
-            {isLoading ? (
-              <button
-                type="button"
-                onClick={onCancel}
-                aria-label={labels.cancel || 'Cancel'}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition-colors cursor-pointer"
-                title="Cancel response"
-              >
-                <Square className="h-3.5 w-3.5" aria-hidden="true" />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                aria-label={labels.send || 'Send question'}
-                className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-accent px-3 text-xs font-medium text-white transition-all hover:bg-accent-strong disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
-              >
-                <Send className="h-3.5 w-3.5" aria-hidden="true" />
-                <kbd className="hidden sm:inline font-mono text-[10px] opacity-75">
-                  {isMac ? '⌘↵' : 'Ctrl↵'}
-                </kbd>
-              </button>
-            )}
-          </div>
+          {isLoading ? (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="border border-error/50 bg-error/15 px-3 py-1.5 font-mono text-xs text-error hover:bg-error/25 cursor-pointer shrink-0"
+              title="Abort execution"
+            >
+              [ ■ ABORT ]
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              aria-label={labels.send || 'Execute'}
+              className="terminal-btn-accent shrink-0 cursor-pointer disabled:opacity-40"
+            >
+              <span>[ ↵ EXEC ]</span>
+            </button>
+          )}
         </form>
       </div>
     </div>
