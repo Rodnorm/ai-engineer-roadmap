@@ -214,21 +214,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-bg/50">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col justify-center max-w-xl mx-auto py-6">
-            {/* Terminal ASCII Welcome Banner */}
-            <div className="border border-border bg-panel p-3.5 mb-5 font-mono text-[11px]">
-              <div className="text-accent font-bold mb-1">
-                ┌─────────────────────────────────────────────────────────────┐
+            {/* Terminal Welcome Banner */}
+            <div className="mb-5 space-y-2">
+              <div className="border border-accent bg-accent/5 p-3 font-mono">
+                <div className="text-accent font-bold text-xs tracking-tight">
+                  POCKET_RAG :: VECTOR QUERY CONSOLE [LOCAL_ENGINE v0.4]
+                </div>
+                <div className="text-muted text-[11px] mt-1">
+                  SQLite Vector DB: MOUNTED | OpenAI Embeddings: 1536-dim
+                </div>
               </div>
-              <div className="text-text font-bold">
-                │ POCKET_RAG :: VECTOR QUERY CONSOLE [LOCAL_ENGINE v0.4]      │
-              </div>
-              <div className="text-muted text-[10px]">
-                │ SQLite Vector DB: MOUNTED | OpenAI Embeddings: 1536-dim     │
-              </div>
-              <div className="text-accent font-bold mt-1">
-                └─────────────────────────────────────────────────────────────┘
-              </div>
-              <p className="mt-2 text-muted leading-relaxed text-[11px]">
+              <p className="text-muted text-[11px] px-0.5">
                 Type query in terminal prompt below or select quick execution commands:
               </p>
             </div>
