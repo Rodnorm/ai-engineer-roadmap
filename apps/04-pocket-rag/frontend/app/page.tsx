@@ -5,7 +5,7 @@ import { Header } from '../components/Header';
 import { DocumentManager } from '../components/DocumentManager';
 import { ChatInterface, ChatMessage } from '../components/ChatInterface';
 import { CitationsDrawer } from '../components/CitationsDrawer';
-import { TelemetryPanel } from '../components/TelemetryPanel';
+import { TelemetryBar } from '../components/TelemetryBar';
 import { useI18n } from '@/lib/i18n/I18nProvider';
 import {
   fetchDocuments,
@@ -195,8 +195,9 @@ export default function Home() {
     <div className="min-h-screen bg-bg text-text flex flex-col font-sans">
       <Header />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 space-y-5">
-        <TelemetryPanel
+      <main className="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6 space-y-4">
+        {/* Compact Telemetry Ribbon */}
+        <TelemetryBar
           stats={stats}
           lastCost={lastCost}
           lastTokens={lastTokens}
@@ -204,7 +205,8 @@ export default function Home() {
           labels={labels}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Main Grid: Document Manager & Chat Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           <div className="lg:col-span-4">
             <DocumentManager
               documents={documents}
@@ -229,6 +231,7 @@ export default function Home() {
               onSend={handleSendQuestion}
               onCancel={() => queryController.current?.abort()}
               onSelectCitation={(cit) => setSelectedCitation(cit)}
+              onClearChat={() => setMessages([])}
               suggestedQuestions={documentMode === 'examples' ? [
                 labels.exampleQuestion1,
                 labels.exampleQuestion2,
@@ -236,6 +239,11 @@ export default function Home() {
                 labels.exampleQuestion4,
                 labels.exampleQuestion5,
               ] : suggestedQuestions}
+              emptyStateSuggestions={documentMode === 'examples' ? [
+                'What are the main obligations in this contract?',
+                'List all renewal and termination clauses',
+                'Extract and summarize all deadlines and action items',
+              ] : suggestedQuestions.slice(0, 3)}
               labels={labels}
             />
           </div>

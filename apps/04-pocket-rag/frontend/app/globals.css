@@ -5,17 +5,19 @@
 @theme {
   --color-bg: #f8fafc;
   --color-panel: #ffffff;
-  --color-sidebar: #f1f5f9;
-  --color-surface: #e2e8f0;
-  --color-border: #cbd5e1;
+  --color-secondary: #ffffff;
+  --color-surface: #f1f5f9;
+  --color-border: #e2e8f0;
   --color-text: #0f172a;
   --color-muted: #64748b;
+  --color-secondary-text: #64748b;
   --color-accent: #0284c7;
   --color-accent-strong: #0369a1;
-  --color-accent-soft: #e0f2fe;
+  --color-accent-soft: rgba(2, 132, 199, 0.08);
   --color-success: #10b981;
   --color-error: #ef4444;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), "Geist Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "JetBrains Mono", monospace;
 }
 
 :root {
@@ -25,16 +27,17 @@
 :root.dark,
 .dark {
   color-scheme: dark;
-  --color-bg: #020617;
-  --color-panel: #0f172a;
-  --color-sidebar: #0b1220;
-  --color-surface: #1e293b;
-  --color-border: #334155;
+  --color-bg: #090d16;
+  --color-panel: #0e1424;
+  --color-secondary: #0e1424;
+  --color-surface: #141c2e;
+  --color-border: rgba(255, 255, 255, 0.08);
   --color-text: #f8fafc;
   --color-muted: #94a3b8;
+  --color-secondary-text: #94a3b8;
   --color-accent: #38bdf8;
-  --color-accent-strong: #7dd3fc;
-  --color-accent-soft: #082f49;
+  --color-accent-strong: #0ea5e9;
+  --color-accent-soft: rgba(56, 189, 248, 0.08);
   --color-success: #34d399;
   --color-error: #f87171;
 }
@@ -76,15 +79,27 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.25s ease-out forwards;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @layer components {
   .control-button {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel text-sm font-medium text-muted shadow-sm transition hover:border-sky-300 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950;
+    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel px-3 text-xs font-medium text-muted transition-all duration-150 hover:border-accent/40 hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1;
   }
 
   .icon-button {
-    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition-all duration-150 hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+  }
+
+  .icon-button.danger {
+    @apply hover:text-error hover:bg-error/10;
+  }
+
+  .pill-button {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface/50 px-3 py-1 text-[11px] font-medium text-muted transition-all duration-150 hover:border-accent/40 hover:bg-surface hover:text-text;
+  }
+
+  .pill-button.danger {
+    @apply border-error/20 bg-error/5 text-error hover:bg-error/15 hover:border-error/40;
   }
 }
