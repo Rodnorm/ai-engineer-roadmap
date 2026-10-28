@@ -15,14 +15,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("app07-theme");var d=t==="dark"||(!t);document.documentElement.classList.toggle("dark",d);document.documentElement.setAttribute("data-theme",d?"dark":"light")}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="antialiased min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <ThemeProvider>
           <I18nProvider>
             {children}
-            <footer className="mt-auto border-t border-[var(--border-subtle)] px-4 py-4 text-center text-xs text-[var(--text-muted)]">
+            <footer className="mt-auto border-t border-[var(--border-subtle)] px-4 py-3 text-center font-mono text-[0.7rem] text-[var(--text-muted)]">
               <a
-                className="transition-colors hover:text-sky-500"
+                className="transition-colors hover:text-[var(--dossier-accent)]"
                 href="https://normando.dev/datenschutz"
               >
                 Datenschutz
@@ -31,7 +38,7 @@ export default function RootLayout({
                 ·
               </span>
               <a
-                className="transition-colors hover:text-sky-500"
+                className="transition-colors hover:text-[var(--dossier-accent)]"
                 href="https://normando.dev/impressum"
               >
                 Impressum

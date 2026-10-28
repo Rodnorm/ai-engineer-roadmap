@@ -172,6 +172,17 @@ class TestPocketRagBackend(unittest.TestCase):
         empty = self.upload("empty.txt", b"")
         self.assertEqual(empty.status_code, 422)
 
+    def test_docx_rejects_xml_entity_expansion(self):
+        output = io.BytesIO()
+        with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("word/document.xml", (
+                '<!DOCTYPE doc [<!ENTITY payload "untrusted">]>'
+                '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+                '<w:body><w:p><w:r><w:t>&payload;</w:t></w:r></w:p></w:body></w:document>'
+            ))
+        response = self.upload("unsafe.docx", output.getvalue())
+        self.assertEqual(response.status_code, 422)
+
     def test_duplicate_and_index_failure_leave_no_orphans(self):
         first = self.upload()
         self.assertEqual(first.status_code, 201)

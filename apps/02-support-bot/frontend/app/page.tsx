@@ -3,7 +3,7 @@
 import Cards from "@/components/Cards";
 import AppInfo from "@/components/AppInfo";
 import ChatArea, { ChatAreaHandle } from "@/components/ChatArea";
-import { ChevronDown } from "lucide-react";
+import { BookOpen, ChevronDown, Terminal } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getAppInfo } from "@/lib/app-info";
@@ -30,26 +30,28 @@ export default function HomePage() {
 	}, []);
 
 	return (
-		<div className="w-full max-w-full min-w-0 h-dvh bg-white dark:bg-slate-950 flex flex-col overflow-hidden">
-			<header className="shrink-0 w-full max-w-2xl mx-auto px-4 pt-14 sm:pt-8">
-				<div className="flex items-start justify-between gap-3">
+		<div className="w-full max-w-full min-w-0 h-dvh bg-bg text-text flex flex-col overflow-hidden">
+			<header className="shrink-0 w-full max-w-3xl mx-auto px-4 pt-14 sm:pt-8">
+				<div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border/80 pb-3">
 					<div className="min-w-0">
-						<h1 className="text-slate-900 dark:text-slate-100 font-semibold text-2xl sm:text-5xl leading-tight tracking-tight">
-							{t("greeting")}
-						</h1>
-
-						<h1 className="bg-gradient-to-r from-sky-500 to-pink-500 inline-block text-transparent bg-clip-text font-semibold text-2xl sm:text-5xl leading-tight tracking-tight">
-							{t("question")}
+						<div className="flex items-center gap-2 font-mono text-[10px] text-accent uppercase tracking-wider mb-1">
+							<Terminal className="size-3" />
+							<span>[+] ENTERPRISE_SUPPORT_DESK :: AZURE_FOUNDRY_NLP v2.4</span>
+						</div>
+						<h1 className="font-mono text-xl sm:text-2xl font-bold tracking-tight uppercase text-text">
+							{t("greeting")}{" "}
+							<span className="text-accent">{t("question")}</span>
 						</h1>
 					</div>
 
-					<div className="flex items-center gap-1 mt-1">
+					<div className="flex items-center gap-1.5 shrink-0">
 						<AppInfo config={getAppInfo(locale)} />
 						<Link
 							href="/faq"
-							className="shrink-0 inline-flex items-center text-xs font-medium text-slate-500 hover:text-sky-600 px-2.5 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+							className="inline-flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 font-mono text-xs font-medium text-text transition hover:border-border-active hover:bg-surface-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
 						>
-							{t("faqLink")}
+							<BookOpen className="size-3 text-accent" />
+							<span>{t("faqLink")}</span>
 						</Link>
 
 						<button
@@ -57,16 +59,12 @@ export default function HomePage() {
 							onClick={() => setShowCards((prev) => !prev)}
 							aria-expanded={showCards}
 							aria-controls="suggestion-cards"
-							aria-label={
-								showCards
-									? t("suggestionsToggle")
-									: t("suggestionsToggle")
-							}
-							className="sm:hidden shrink-0 inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-sky-600 px-2.5 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+							aria-label={t("suggestionsToggle")}
+							className="sm:hidden inline-flex h-8 items-center gap-1 border border-border bg-surface px-2 font-mono text-xs font-medium text-text transition hover:border-border-active hover:bg-surface-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
 						>
 							<span>{t("suggestionsToggle")}</span>
 							<ChevronDown
-								className={`w-3.5 h-3.5 transition-transform duration-200 ${
+								className={`size-3 transition-transform duration-200 ${
 									showCards ? "rotate-180" : ""
 								}`}
 								aria-hidden="true"
@@ -75,13 +73,13 @@ export default function HomePage() {
 					</div>
 				</div>
 
-			<p className="hidden sm:block text-slate-500 dark:text-slate-400 leading-relaxed tracking-tight mt-3 text-sm sm:text-base max-w-lg">
+				<p className="hidden sm:block text-muted font-mono text-xs leading-relaxed mt-2.5 max-w-xl">
 					{t("intro")}
 				</p>
 
 				<div
 					id="suggestion-cards"
-					className={`mt-3 sm:mt-6 mb-3 sm:mb-4 ${
+					className={`mt-2 mb-2 ${
 						showCards ? "block" : "hidden sm:block"
 					}`}
 				>
@@ -89,7 +87,7 @@ export default function HomePage() {
 				</div>
 			</header>
 
-			<div className="flex-1 min-h-0 w-full max-w-2xl mx-auto px-4 pb-3 sm:pb-4 flex flex-col">
+			<div className="flex-1 min-h-0 w-full max-w-3xl mx-auto px-4 pb-3 sm:pb-4 flex flex-col">
 				<ChatArea ref={chatRef} />
 			</div>
 		</div>

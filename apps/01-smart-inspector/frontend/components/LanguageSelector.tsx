@@ -7,9 +7,10 @@ import {
   LOCALE_LABELS,
   type Locale,
 } from "@/lib/i18n";
+import { Globe } from "lucide-react";
 
 /**
- * Top-left language switcher. Renders a button that toggles a dropdown
+ * Top-right language switcher. Renders a button that toggles a dropdown
  * listing the three supported locales (pt-BR, en, de). The current locale
  * is highlighted and selecting another updates the global language.
  */
@@ -50,18 +51,18 @@ export default function LanguageSelector() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("lang.menuLabel")}
-        className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium text-text transition hover:bg-bg"
+        className="inline-flex h-8 items-center gap-2 border border-border bg-surface px-2.5 font-mono text-xs font-medium text-text transition hover:border-border-active hover:bg-surface-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
       >
-        <span aria-hidden="true" className="text-base">🌐</span>
-        <span>{LOCALE_LABELS[locale]}</span>
-        <span aria-hidden="true" className="text-xs text-muted">▾</span>
+        <Globe className="size-3.5 text-accent" />
+        <span className="uppercase">{LOCALE_LABELS[locale]}</span>
+        <span aria-hidden="true" className="text-[10px] text-muted">▾</span>
       </button>
 
       {open && (
         <ul
           role="listbox"
           aria-label={t("lang.menuLabel")}
-          className="absolute left-0 z-20 mt-2 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-surface shadow-lg"
+          className="absolute right-0 z-30 mt-1 min-w-[9rem] border border-border bg-panel shadow-2xl font-mono text-xs"
         >
           {LOCALES.map((option) => {
             const selected = option === locale;
@@ -72,15 +73,15 @@ export default function LanguageSelector() {
                   role="option"
                   aria-selected={selected}
                   onClick={() => choose(option)}
-                  className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition ${
+                  className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left transition ${
                     selected
-                      ? "bg-accent/15 text-text"
-                      : "text-text hover:bg-bg"
+                      ? "bg-accent/15 text-accent font-semibold"
+                      : "text-text hover:bg-surface"
                   }`}
                 >
                   <span>{LOCALE_LABELS[option]}</span>
                   {selected && (
-                    <span aria-hidden="true" className="text-accent">✓</span>
+                    <span aria-hidden="true" className="text-accent text-xs">✓</span>
                   )}
                   <span className="sr-only">
                     {t("lang.changeTo", { language: LOCALE_LABELS[option] })}

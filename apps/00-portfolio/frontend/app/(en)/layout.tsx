@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { HtmlLangSync } from "@/components/HtmlLangSync";
 import { StructuredData } from "@/components/StructuredData";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
-import { playfair, inter } from "@/lib/fonts";
+import { playfair, inter, jetbrainsMono } from "@/lib/fonts";
 import { SITE_URL, getRouteAlternates } from "@/lib/i18n";
 
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default function RootEnglishLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${playfair.variable} ${inter.variable}`}
+      className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: antiFoucScript }} />

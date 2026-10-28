@@ -3,40 +3,61 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-bg: #f8fafc;
-  --color-panel: #ffffff;
-  --color-sidebar: #f1f5f9;
-  --color-surface: #e2e8f0;
-  --color-border: #cbd5e1;
-  --color-text: #0f172a;
-  --color-muted: #64748b;
-  --color-accent: #0284c7;
-  --color-accent-strong: #0369a1;
-  --color-accent-soft: #e0f2fe;
-  --color-success: #10b981;
+  --color-bg: #0a0a0c;
+  --color-panel: #111115;
+  --color-surface: #18181d;
+  --color-border: #23232a;
+  --color-border-focus: #3f3f46;
+  --color-text: #ededed;
+  --color-muted: #71717a;
+  --color-terminal: #a1a1aa;
+  --color-accent: #10b981;
+  --color-accent-strong: #059669;
+  --color-accent-soft: rgba(16, 185, 129, 0.08);
+  --color-orange: #f97316;
+  --color-warn: #f59e0b;
   --color-error: #ef4444;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-success: #10b981;
+  --font-mono: var(--font-jetbrains-mono), var(--font-geist-mono), "JetBrains Mono", monospace;
+  --font-sans: var(--font-geist-sans), "Geist Sans", system-ui, sans-serif;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --color-bg: #0a0a0c;
+  --color-panel: #111115;
+  --color-surface: #18181d;
+  --color-border: #23232a;
+  --color-border-focus: #3f3f46;
+  --color-text: #ededed;
+  --color-muted: #71717a;
+  --color-terminal: #a1a1aa;
+  --color-accent: #10b981;
+  --color-accent-strong: #059669;
+  --color-accent-soft: rgba(16, 185, 129, 0.08);
+  --color-orange: #f97316;
+  --color-warn: #f59e0b;
+  --color-error: #ef4444;
+  --color-success: #10b981;
 }
 
-:root.dark,
-.dark {
-  color-scheme: dark;
-  --color-bg: #020617;
-  --color-panel: #0f172a;
-  --color-sidebar: #0b1220;
-  --color-surface: #1e293b;
-  --color-border: #334155;
-  --color-text: #f8fafc;
-  --color-muted: #94a3b8;
-  --color-accent: #38bdf8;
-  --color-accent-strong: #7dd3fc;
-  --color-accent-soft: #082f49;
-  --color-success: #34d399;
-  --color-error: #f87171;
+:root:not(.dark) {
+  color-scheme: light;
+  --color-bg: #fafafa;
+  --color-panel: #ffffff;
+  --color-surface: #f4f4f5;
+  --color-border: #e4e4e7;
+  --color-border-focus: #a1a1aa;
+  --color-text: #09090b;
+  --color-muted: #71717a;
+  --color-terminal: #52525b;
+  --color-accent: #059669;
+  --color-accent-strong: #047857;
+  --color-accent-soft: rgba(5, 150, 105, 0.08);
+  --color-orange: #ea580c;
+  --color-warn: #d97706;
+  --color-error: #dc2626;
+  --color-success: #059669;
 }
 
 * {
@@ -47,44 +68,45 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
 }
 
-.gradient-title {
-  background: linear-gradient(135deg, #0284c7 0%, #6366f1 50%, #ec4899 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+/* Technical scanline / cursor animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-.gradient-title-dark {
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.25s ease-out forwards;
+.animate-blink {
+  animation: blink 1s infinite;
 }
 
 @layer components {
+  .terminal-box {
+    @apply rounded-none border border-border bg-panel text-text;
+  }
+
+  .terminal-btn {
+    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-none border border-border bg-panel px-3 font-mono text-xs text-terminal transition-colors duration-100 hover:border-border-focus hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  .terminal-btn-accent {
+    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-none border border-accent/40 bg-accent/10 px-3 font-mono text-xs font-medium text-accent transition-colors duration-100 hover:bg-accent/20 hover:border-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  .terminal-tab {
+    @apply flex-1 py-1.5 px-3 font-mono text-[11px] font-medium transition-colors border-r border-border last:border-r-0 text-center;
+  }
+
   .control-button {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel text-sm font-medium text-muted shadow-sm transition hover:border-sky-300 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950;
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-none border border-border bg-panel text-xs text-muted transition-colors hover:border-border-focus hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-accent;
   }
 
   .icon-button {
-    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply inline-flex size-7 cursor-pointer items-center justify-center rounded-none text-muted transition-colors hover:bg-surface hover:text-text focus:outline-none;
+  }
+
+  .icon-button.danger {
+    @apply hover:text-error hover:bg-error/10;
   }
 }

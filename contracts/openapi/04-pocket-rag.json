@@ -212,6 +212,44 @@
         "title": "DocumentUploadResponse",
         "type": "object"
       },
+      "ExampleDocument": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "download_url": {
+            "title": "Download Url",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "loaded": {
+            "title": "Loaded",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "title",
+          "description",
+          "loaded",
+          "download_url"
+        ],
+        "title": "ExampleDocument",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -464,6 +502,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
@@ -516,6 +570,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
@@ -565,6 +635,22 @@
                 }
               ],
               "title": "Authorization"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
             }
           }
         ],
@@ -631,6 +717,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
@@ -675,13 +777,35 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExampleDocument"
+                  },
+                  "title": "Response List Example Documents Api Examples Get",
+                  "type": "array"
+                }
               }
             },
             "description": "Successful Response"
@@ -718,6 +842,22 @@
                 }
               ],
               "title": "Authorization"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
             }
           }
         ],
@@ -778,6 +918,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
@@ -821,6 +977,22 @@
                 }
               ],
               "title": "Authorization"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
             }
           }
         ],
@@ -878,6 +1050,22 @@
               ],
               "title": "Authorization"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
+            }
           }
         ],
         "responses": {
@@ -923,6 +1111,22 @@
                 }
               ],
               "title": "Authorization"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Owner-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Owner-Id"
             }
           }
         ],

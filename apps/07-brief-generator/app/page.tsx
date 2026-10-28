@@ -176,37 +176,37 @@ export default function HomePage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
         {/* Top Control Panel */}
-        <section className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-5 shadow-sm">
+        <section className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xs p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-[var(--accent-agent-research)]" />
-              <h2 className="text-sm font-semibold text-[var(--text-primary)]">
-                {t.controlPanel.title}
+              <Sliders className="w-3.5 h-3.5 text-[var(--dossier-accent)]" />
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                {"//"} {t.controlPanel.title}
               </h2>
             </div>
 
             <button
               type="button"
               onClick={() => setIsScenariosOpen(!isScenariosOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--accent-agent-research)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs text-xs font-mono font-semibold uppercase tracking-wider border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <Zap className="w-3 h-3 text-[var(--dossier-accent)]" />
               <span>{t.controlPanel.scenariosBtn}</span>
               {isScenariosOpen ? (
-                <ChevronUp className="w-3.5 h-3.5" />
+                <ChevronUp className="w-3 h-3" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3" />
               )}
             </button>
           </div>
 
           {/* Collapsible 12-scenario catalogue */}
           {isScenariosOpen && (
-            <div className="mb-5 p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]/40 transition-all">
+            <div className="mb-5 p-4 rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-card)]/40 transition-all">
               <div className="flex items-center gap-2 mb-3">
-                <BookOpen className="w-4 h-4 text-[var(--accent-agent-research)]" />
-                <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
-                  {t.controlPanel.scenariosCatalogTitle}
+                <BookOpen className="w-3.5 h-3.5 text-[var(--dossier-accent)]" />
+                <h3 className="text-xs font-mono font-bold text-[var(--text-primary)] uppercase tracking-wider">
+                  {"//"} {t.controlPanel.scenariosCatalogTitle}
                 </h3>
               </div>
               <QuickScenarios
@@ -220,9 +220,9 @@ export default function HomePage() {
             <div>
               <label
                 htmlFor="topic-input"
-                className="block text-xs font-semibold text-[var(--text-primary)] mb-1.5"
+                className="block text-[11px] font-mono uppercase tracking-wider text-[var(--text-primary)] mb-1.5"
               >
-                {t.controlPanel.topicLabel}
+                {"//"} {t.controlPanel.topicLabel}
               </label>
               <textarea
                 id="topic-input"
@@ -234,14 +234,14 @@ export default function HomePage() {
                 }}
                 rows={2}
                 placeholder={t.controlPanel.topicPlaceholder}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-research)] transition-all resize-none"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--dossier-accent)] transition-all resize-none"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                  {t.controlPanel.scopeLabel}
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] mb-1">
+                  {"//"} {t.controlPanel.scopeLabel}
                 </label>
                 <input
                   type="text"
@@ -252,13 +252,13 @@ export default function HomePage() {
                     setHasUserEdited(true);
                   }}
                   placeholder={t.controlPanel.scopePlaceholder}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-research)]"
+                  className="w-full px-3 py-1.5 text-xs font-mono rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--dossier-accent)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
-                  {t.controlPanel.toneLabel}
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] mb-1">
+                  {"//"} {t.controlPanel.toneLabel}
                 </label>
                 <select
                   value={tone}
@@ -266,7 +266,7 @@ export default function HomePage() {
                     setTone(e.target.value as BriefTone);
                     setHasUserEdited(true);
                   }}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-agent-writer)]"
+                  className="w-full px-3 py-1.5 text-xs font-mono rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--dossier-accent)]"
                 >
                   <option value="executive">{t.controlPanel.toneExecutive}</option>
                   <option value="technical">{t.controlPanel.toneTechnical}</option>
@@ -278,7 +278,7 @@ export default function HomePage() {
                 <button
                   type="submit"
                   disabled={isLoading || !topic.trim()}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-violet-600 hover:from-sky-400 hover:to-violet-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-violet-500/20 transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xs text-xs font-mono font-bold uppercase tracking-wider text-black bg-[var(--dossier-accent)] hover:bg-yellow-400 border border-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -299,9 +299,9 @@ export default function HomePage() {
 
         {/* Error Banner */}
         {error && (
-          <div className="flex items-center gap-2 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs">
+          <div className="flex items-center gap-2 p-3 rounded-xs bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <p className="font-medium">{error}</p>
+            <p className="font-medium">{"//"} ERROR: {error}</p>
           </div>
         )}
 

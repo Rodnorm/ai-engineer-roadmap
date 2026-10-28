@@ -5,6 +5,7 @@ import kbPtBr from "@/data/healthcare-billing-kb.pt-BR.json";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getDictionary, resolveLocale } from "@/lib/i18n/getDictionary";
+import { ArrowLeft, BookOpen, ChevronDown } from "lucide-react";
 
 type KbEntry = {
 	id: number;
@@ -24,7 +25,7 @@ export async function generateMetadata() {
 	const dict = getDictionary(locale);
 
 	return {
-		title: dict.faq.title,
+		title: `${dict.faq.title} :: Enterprise Knowledge Base`,
 		description: dict.faq.description,
 	};
 }
@@ -41,52 +42,56 @@ export default async function FaqPage() {
 		.sort((a, b) => a.id - b.id);
 
 	return (
-		<div className="w-full max-w-full min-w-0 min-h-dvh bg-white dark:bg-slate-950">
-			<header className="w-full max-w-2xl mx-auto px-4 pt-6 sm:pt-8 pb-4">
+		<div className="w-full max-w-full min-w-0 min-h-dvh bg-bg text-text">
+			<header className="w-full max-w-3xl mx-auto px-4 pt-14 sm:pt-8 pb-5 border-b border-border/80">
 				<div className="flex items-center justify-between gap-3">
-					<h1 className="text-slate-900 dark:text-slate-100 font-semibold text-3xl sm:text-4xl leading-tight tracking-tight">
-						{dict.faq.pageTitle}
-					</h1>
+					<div>
+						<div className="flex items-center gap-1.5 font-mono text-[10px] text-accent uppercase tracking-wider mb-1">
+							<BookOpen className="size-3" />
+							<span>KNOWLEDGE_BASE // AUDITED_GROUNDING_DOCS</span>
+						</div>
+						<h1 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight text-text">
+							{dict.faq.pageTitle}
+						</h1>
+					</div>
 
 					<Link
 						href="/"
-						className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 px-3 py-1.5 rounded-md hover:bg-sky-50/60 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+						className="inline-flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 font-mono text-xs font-medium text-text transition hover:border-border-active hover:bg-surface-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
 					>
-						{dict.faq.backToChat}
+						<ArrowLeft className="size-3 text-accent" />
+						<span>{dict.faq.backToChat}</span>
 					</Link>
 				</div>
 
-			<p className="text-slate-500 dark:text-slate-400 leading-relaxed tracking-tight mt-2 text-sm sm:text-base">
+				<p className="font-mono text-xs text-muted leading-relaxed mt-2.5 max-w-xl">
 					{dict.faq.summary}
 				</p>
 			</header>
 
-			<main className="w-full max-w-2xl mx-auto px-4 pb-8 space-y-2">
+			<main className="w-full max-w-3xl mx-auto px-4 py-6 space-y-2.5 font-mono">
 				{entries.map((entry) => (
 					<details
 						key={entry.id}
-						className="group border border-slate-200 bg-white shadow-sm rounded-xl open:shadow-md transition-shadow duration-200 dark:border-slate-800 dark:bg-slate-900"
+						className="group border border-border bg-panel transition hover:border-border-active open:border-accent/50"
 					>
-						<summary className="flex items-center justify-between gap-3 cursor-pointer list-none p-4 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 rounded-xl">
-							<span className="text-sm sm:text-base font-medium text-slate-800 dark:text-slate-200 leading-snug">
-								{entry.question}
-							</span>
+						<summary className="flex items-center justify-between gap-3 cursor-pointer list-none p-3.5 select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-accent">
+							<div className="flex items-start gap-2.5 min-w-0">
+								<span className="shrink-0 text-accent text-[11px] font-semibold">
+									[FAQ_{String(entry.id).padStart(3, "0")}]
+								</span>
+								<span className="font-sans text-xs sm:text-sm font-medium text-text leading-snug">
+									{entry.question}
+								</span>
+							</div>
 
-							<svg
-								className="w-4 h-4 shrink-0 text-slate-400 group-open:text-sky-500 transition-transform duration-200 group-open:rotate-180"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
+							<ChevronDown
+								className="size-4 shrink-0 text-muted group-open:text-accent transition-transform duration-200 group-open:rotate-180"
 								aria-hidden="true"
-							>
-								<polyline points="6 9 12 15 18 9" />
-							</svg>
+							/>
 						</summary>
 
-						<div className="px-4 pb-4 -mt-1 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+						<div className="border-t border-border/60 bg-surface/40 px-4 py-3 font-sans text-xs leading-relaxed text-muted">
 							{entry.answer}
 						</div>
 					</details>

@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import {
   LOCALES,
-  Locale,
   LOCALE_LABELS,
   LOCALE_SHORT_LABELS,
 } from "@/lib/i18n/locales";
@@ -35,14 +34,14 @@ export function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t.header.switchLanguage}
         title={t.header.switchLanguage}
-        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--card-hover-border)] transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-2.5 h-8 rounded-xs text-xs font-mono border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--dossier-accent)] transition-colors cursor-pointer"
       >
-        <Globe className="w-3.5 h-3.5 text-sky-500" />
+        <Globe className="size-3.5 text-accent-research" />
         <span className="font-bold">{LOCALE_SHORT_LABELS[locale]}</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1.5 w-32 py-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg shadow-lg z-50 animate-fadeIn">
+        <div className="absolute right-0 mt-1 w-32 py-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xs shadow-xl z-50 font-mono">
           {LOCALES.map((loc) => {
             const isSelected = loc === locale;
             return (
@@ -55,12 +54,12 @@ export function LanguageSwitcher() {
                 }}
                 className={`w-full flex items-center justify-between px-3 py-1.5 text-xs text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-sky-500/10 text-sky-500 font-bold"
+                    ? "bg-[var(--bg-card)] text-[var(--dossier-accent)] font-bold"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)]"
                 }`}
               >
                 <span>{LOCALE_LABELS[loc]}</span>
-                <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">
+                <span className="text-[10px] uppercase text-[var(--text-muted)]">
                   {loc}
                 </span>
               </button>

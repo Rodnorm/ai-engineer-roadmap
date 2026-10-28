@@ -74,7 +74,7 @@ export default function Cards({ onSelect }: CardsProps) {
 		<div className="relative w-full overflow-hidden">
 			<div
 				ref={scrollRef}
-				className="p-4 flex flex-nowrap gap-3 w-full overflow-x-scroll overflow-y-hidden pb-2 scroll-smooth"
+				className="py-2 px-1 flex flex-nowrap gap-2.5 w-full overflow-x-scroll overflow-y-hidden scroll-smooth"
 				style={{
 					WebkitOverflowScrolling: "touch",
 					scrollbarWidth: "none",
@@ -86,18 +86,21 @@ export default function Cards({ onSelect }: CardsProps) {
 						type="button"
 						aria-label={t("askAria", { question: card })}
 						onClick={() => onSelect?.(card)}
-						className="group relative shrink-0 snap-start w-64 text-left border border-slate-200 bg-white shadow-sm hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:bg-sky-50/40 rounded-xl p-3 pr-8 transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+						className="group relative shrink-0 snap-start w-64 text-left border border-border bg-panel p-2.5 pr-7 transition hover:border-accent hover:bg-surface cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded-none"
 					>
-						<p className="text-sm leading-snug">{card}</p>
-						<div className="absolute top-2.5 right-2.5 text-slate-300 group-hover:text-sky-500 transition-colors duration-200">
-							<ArrowRightIcon className="w-4 h-4" aria-hidden="true" />
+						<div className="flex items-center gap-1.5 font-mono text-[10px] text-accent/80 mb-1">
+							<span>[PROMPT_{String((index % 10) + 1).padStart(2, "0")}]</span>
+						</div>
+						<p className="font-sans text-xs leading-snug text-text line-clamp-2">{card}</p>
+						<div className="absolute top-2.5 right-2 text-muted group-hover:text-accent transition-colors">
+							<ArrowRightIcon className="size-3.5" aria-hidden="true" />
 						</div>
 					</button>
 				))}
 			</div>
 
-			<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent dark:from-slate-950" />
-			<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-slate-950" />
+			<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-bg to-transparent" />
+			<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-bg to-transparent" />
 		</div>
 	);
 }

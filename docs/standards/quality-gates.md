@@ -49,11 +49,34 @@ This standard defines the automated quality gates, linting, type-checking, and c
 ## 3. End-to-End & Accessibility (E2E)
 
 ### 3.1 Playwright Smoke Tests
-- Runs deterministic, offline-mocked critical journeys for each app.
-- Tests resilience against 400, 413, 429, and 503 error codes.
-- Tests stream aborts and request cancellation.
-- Failure-only artifact retention (screenshots, traces, videos).
+The current `tests/e2e/smoke.spec.ts` suite is a scaffold, not a CI gate:
+it renders inline fixture HTML, and its API probes allow connection failures.
+Run it manually with `npm run test:e2e` for scaffold development only.
+Before restoring an automatic gate, start the actual apps, exercise their real
+components/routes, mock only external providers, and fail on unavailable servers.
+Backend unit tests and frontend tests/builds remain automatic.
 
 ### 3.2 Accessibility (a11y)
 - **Engine**: `axe-core`
 - **Standard**: Zero critical or serious accessibility violations on main landing views.
+
+## 4. CI scope and free-account operation
+
+- PRs and pushes to `main` validate changed apps (00–08), catalog and Compose,
+  Python quality, and OpenAPI contracts. Full app validation runs weekly or via
+  `workflow_dispatch` with `run_all`.
+- Python lock validation resolves against committed pins and compares package
+  versions/markers, not generated comments or the changing set of PyPI hashes.
+  Installation uses `--require-hashes` and `pip check`.
+- OpenAPI export uses `requirements.lock`, matching deployed dependency versions.
+- Gitleaks, pip-audit, Bandit and CodeQL remain security checks. Trivy performs
+  the broader repository scan weekly or manually, avoiding overlapping PR scans.
+- Dependency review was removed: Dependency Graph is disabled in this repository,
+  and resolved dependencies are already audited. Conventional title checking was
+  removed because it does not validate application behavior.
+- Use standard `ubuntu-latest` runners only. Runtime is free for this public
+  repository ([GitHub billing documentation](https://docs.github.com/en/actions/concepts/billing-and-usage)).
+  No paid API credentials are needed by the validation suite. Keep paid runner
+  types and paid cache overage disabled in account settings.
+- Security reports are uploaded only on failure and retained for one day;
+  Gitleaks artifact uploads are disabled. Artifacts/storage have separate limits.

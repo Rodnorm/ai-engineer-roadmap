@@ -35,15 +35,7 @@ export default function MessageContainer({
 	}, [messages, isLoading]);
 
 	return (
-		<div
-			className="chat-scroll flex-1 min-h-0 p-2 space-y-3 overflow-y-auto rounded-2xl"
-			style={{
-				maskImage:
-					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
-				WebkitMaskImage:
-					"linear-gradient(to bottom, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)",
-			}}
-		>
+		<div className="chat-scroll flex-1 min-h-0 py-2 px-1 space-y-3 overflow-y-auto">
 			{messages.map((message) => (
 				<Message
 					key={message.id}
@@ -56,12 +48,12 @@ export default function MessageContainer({
 			))}
 
 			{isLoading && (
-				<div className="flex">
-					<div className="bg-slate-100 border border-slate-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm flex items-center gap-1.5 dark:border-slate-700 dark:bg-slate-800">
-						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.3s]" />
-						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce [animation-delay:-0.15s]" />
-						<span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />
-						<span className="sr-only">{t("thinking")}</span>
+				<div className="flex border border-border bg-panel p-3 font-mono text-xs text-accent">
+					<div className="flex items-center gap-2">
+						<span className="size-1.5 bg-accent animate-ping" />
+						<span className="uppercase tracking-wider">
+							[ {t("thinking")} ] :: RETRIEVING FAQ & NLP PIPELINE...
+						</span>
 					</div>
 				</div>
 			)}

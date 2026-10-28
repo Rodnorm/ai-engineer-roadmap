@@ -1,4 +1,4 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 
 export const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -9,5 +9,11 @@ export const playfair = Playfair_Display({
 export const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });

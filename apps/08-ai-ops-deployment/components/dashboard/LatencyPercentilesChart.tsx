@@ -27,17 +27,17 @@ export function LatencyPercentilesChart({ metrics }: LatencyPercentilesChartProp
   );
 
   return (
-    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+    <div className="rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-sm font-mono">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+          <div className="w-8 h-8 rounded-xs bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-[var(--sre-cyan)]">
             <BarChart3 className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--text-primary)]">
-              Distribuição de Latência (Blue vs Green)
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+              {"//"} DISTRIBUIÇÃO DE LATÊNCIA (BLUE VS GREEN)
             </h3>
-            <p className="text-xs text-[var(--text-muted)]">
+            <p className="text-[11px] font-sans text-[var(--text-muted)]">
               Comparação percentilar em tempo real com linha de referência de SLO
             </p>
           </div>
@@ -46,11 +46,11 @@ export function LatencyPercentilesChart({ metrics }: LatencyPercentilesChartProp
         {/* Legend */}
         <div className="flex items-center gap-3 text-xs font-mono">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
-            <span className="text-blue-400 font-bold">Blue (gpt-4o)</span>
+            <span className="w-2 h-2 rounded-xs bg-[var(--sre-cyan)]" />
+            <span className="text-[var(--sre-cyan)] font-bold">Blue (gpt-4o)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
+            <span className="w-2 h-2 rounded-xs bg-emerald-400" />
             <span className="text-emerald-400 font-bold">Green (gpt-4o-mini)</span>
           </div>
         </div>
@@ -63,29 +63,29 @@ export function LatencyPercentilesChart({ metrics }: LatencyPercentilesChartProp
           const greenWidth = Math.min(100, Math.round((p.green / maxVal) * 100));
 
           return (
-            <div key={p.label} className="space-y-1.5">
-              <div className="flex justify-between text-xs font-mono">
+            <div key={p.label} className="space-y-1">
+              <div className="flex justify-between text-[11px] font-mono">
                 <span className="font-semibold text-[var(--text-primary)]">{p.label}</span>
-                <div className="flex items-center gap-3 text-[11px]">
-                  <span className="text-blue-400 font-bold">{p.blue}ms</span>
-                  <span className="text-[var(--text-muted)]">|</span>
+                <div className="flex items-center gap-3 text-[10px]">
+                  <span className="text-[var(--sre-cyan)] font-bold">{p.blue}ms</span>
+                  <span className="text-[var(--text-muted)]">::</span>
                   <span className="text-emerald-400 font-bold">{p.green}ms</span>
                 </div>
               </div>
 
               {/* Blue Bar */}
-              <div className="h-2 w-full bg-[var(--bg-card)] rounded-full overflow-hidden flex">
+              <div className="h-1.5 w-full bg-[var(--bg-card)] rounded-xs overflow-hidden flex border border-[var(--border-subtle)]">
                 <div
-                  className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                  className="bg-[var(--sre-cyan)] h-full transition-all duration-500"
                   style={{ width: `${Math.max(2, blueWidth)}%` }}
                 />
               </div>
 
               {/* Green Bar */}
-              <div className="h-2 w-full bg-[var(--bg-card)] rounded-full overflow-hidden flex">
+              <div className="h-1.5 w-full bg-[var(--bg-card)] rounded-xs overflow-hidden flex border border-[var(--border-subtle)]">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    p.green > metrics.slo.maxP95LatencyMs ? "bg-rose-500" : "bg-emerald-500"
+                  className={`h-full transition-all duration-500 ${
+                    p.green > metrics.slo.maxP95LatencyMs ? "bg-rose-500" : "bg-emerald-400"
                   }`}
                   style={{ width: `${Math.max(2, greenWidth)}%` }}
                 />
@@ -96,15 +96,15 @@ export function LatencyPercentilesChart({ metrics }: LatencyPercentilesChartProp
       </div>
 
       {/* Footer Summary Comparison */}
-      <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-[var(--border-subtle)] text-xs font-mono">
-        <div className="p-2.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-          <p className="text-[var(--text-muted)] text-[10px]">CUSTO BLUE (gpt-4o)</p>
-          <p className="text-sm font-bold text-blue-400 mt-0.5">${metrics.blue.totalCostUsd}</p>
+      <div className="grid grid-cols-2 gap-2.5 mt-4 pt-3.5 border-t border-[var(--border-subtle)] text-xs font-mono">
+        <div className="p-2.5 rounded-xs bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+          <p className="text-[var(--text-muted)] text-[10px] uppercase">CUSTO BLUE (gpt-4o)</p>
+          <p className="text-sm font-bold text-[var(--sre-cyan)] mt-0.5">${metrics.blue.totalCostUsd}</p>
           <p className="text-[10px] text-[var(--text-muted)]">{metrics.blue.totalTokens} tokens</p>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-          <p className="text-[var(--text-muted)] text-[10px]">CUSTO GREEN (gpt-4o-mini)</p>
+        <div className="p-2.5 rounded-xs bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+          <p className="text-[var(--text-muted)] text-[10px] uppercase">CUSTO GREEN (gpt-4o-mini)</p>
           <p className="text-sm font-bold text-emerald-400 mt-0.5">${metrics.green.totalCostUsd}</p>
           <p className="text-[10px] text-[var(--text-muted)]">{metrics.green.totalTokens} tokens</p>
         </div>

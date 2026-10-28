@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Bot, RotateCcw } from 'lucide-react';
+import { RotateCcw, Cpu } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { LangSwitcher } from './LangSwitcher';
 import { AppInfo } from './AppInfo';
@@ -16,15 +16,18 @@ export function Header({ hasSteps, onReset }: HeaderProps) {
   const t = useT('app');
 
   return (
-    <header className="border-b border-border pb-6 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <header className="border-b border-border pb-5 space-y-3.5 font-sans">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Brand & Title */}
         <div className="flex items-center gap-3">
-          <div className="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-md shadow-sky-500/20 shrink-0">
-            <Bot className="w-6 h-6 sm:w-7 sm:h-7" />
+          <div className="size-8 rounded-xs border border-accent bg-accent/15 text-accent flex items-center justify-center shrink-0">
+            <Cpu className="size-4.5" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[0.65rem] uppercase tracking-widest text-accent">{"//"} SCADA_MISSION_CONTROL</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text">
               {t('title')}
             </h1>
           </div>
@@ -36,10 +39,10 @@ export function Header({ hasSteps, onReset }: HeaderProps) {
             <button
               type="button"
               onClick={onReset}
-              className="control-button gap-1.5 px-3 text-xs font-medium cursor-pointer"
+              className="control-button gap-1.5 px-2.5 text-xs font-mono cursor-pointer"
             >
-              <RotateCcw className="size-3.5" />
-              <span className="hidden sm:inline">{t('resetButton')}</span>
+              <RotateCcw className="size-3" />
+              <span>[ {t('resetButton')} ]</span>
             </button>
           )}
 
@@ -49,19 +52,19 @@ export function Header({ hasSteps, onReset }: HeaderProps) {
         </div>
       </div>
 
-      <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-2xl">
+      <p className="text-xs text-muted leading-relaxed max-w-2xl">
         {t('subtitle')}
       </p>
 
       {/* Feature Badges */}
-      <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-        <span className="px-2.5 py-1 rounded-lg bg-surface border border-border text-muted font-medium">
+      <div className="flex flex-wrap items-center gap-2 pt-0.5 font-mono text-[0.65rem]">
+        <span className="px-2 py-0.5 rounded-xs bg-surface border border-border text-muted uppercase">
           {t('loopBadge')}
         </span>
-        <span className="px-2.5 py-1 rounded-lg bg-surface border border-border text-muted font-medium">
+        <span className="px-2 py-0.5 rounded-xs bg-surface border border-border text-muted uppercase">
           {t('toolsBadge')}
         </span>
-        <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-medium">
+        <span className="px-2 py-0.5 rounded-xs bg-amber-500/10 border border-amber-500/30 text-amber-500 uppercase">
           {t('hitlBadge')}
         </span>
       </div>

@@ -10,18 +10,17 @@ export default function HomePage() {
   const { locale, t } = useLanguage();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <div className="mb-8 flex items-start justify-between gap-4">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <div className="mb-6 flex flex-col justify-between gap-4 border-b border-border pb-5 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight">
-            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-red-500 bg-clip-text text-transparent">
-              Smart
-            </span>{" "}
-            <span className="text-text">
-              Inspector
-            </span>
+          <div className="flex items-center gap-2 font-mono text-[11px] text-accent">
+            <span className="inline-block size-2 bg-accent animate-pulse" />
+            <span>[+] OPTICS_STUDIO :: MULTIMODAL_INSPECTOR v1.0</span>
+          </div>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-text sm:text-3xl font-mono uppercase">
+            Smart <span className="text-accent">Inspector</span>
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted">
+          <p className="mt-1.5 max-w-2xl text-xs text-muted font-mono leading-relaxed">
             {t("page.subtitle")}
           </p>
         </div>

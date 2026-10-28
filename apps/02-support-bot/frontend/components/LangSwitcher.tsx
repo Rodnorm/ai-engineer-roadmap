@@ -1,15 +1,13 @@
 "use client";
 
-import { ChevronDown, Languages } from "lucide-react";
+import { ChevronDown, Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { LOCALE_LABELS, LOCALES, type Locale } from "@/lib/i18n/locales";
 
 /**
  * Fixed-position language dropdown rendered in the root layout so it is
- * available on every page. The component is client-only; it reads its
- * initial selection from the provider (which the server pre-populated from
- * the cookie) to keep the first paint consistent.
+ * available on every page.
  */
 export default function LangSwitcher() {
 	const { locale, setLocale } = useI18n();
@@ -47,7 +45,7 @@ export default function LangSwitcher() {
 	return (
 		<div
 			ref={containerRef}
-			className="fixed top-3 right-20 sm:top-4 sm:right-24 z-50"
+			className="fixed top-3 right-13 sm:top-4 sm:right-24 z-50 font-mono"
 		>
 			<button
 				type="button"
@@ -55,12 +53,13 @@ export default function LangSwitcher() {
 				aria-haspopup="listbox"
 				aria-expanded={open}
 				aria-label={t.switchAria}
-				className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-white/80 backdrop-blur border border-slate-200 hover:border-sky-300 hover:text-sky-600 px-2.5 py-1.5 rounded-md shadow-sm hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-sky-600 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+				className="inline-flex h-8 items-center gap-1.5 border border-border bg-surface px-2 sm:px-2.5 font-mono text-xs font-medium text-text transition hover:border-border-active hover:bg-surface-hover focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
 			>
-				<Languages className="w-3.5 h-3.5" aria-hidden="true" />
-				<span>{LOCALE_LABELS[locale]}</span>
+				<Globe className="size-3 text-accent shrink-0" aria-hidden="true" />
+				<span className="hidden sm:inline uppercase">{LOCALE_LABELS[locale]}</span>
+				<span className="sm:hidden uppercase">{locale === "pt-BR" ? "PT" : locale.toUpperCase()}</span>
 				<ChevronDown
-					className={`w-3.5 h-3.5 transition-transform duration-200 ${
+					className={`size-3 text-muted transition-transform duration-200 ${
 						open ? "rotate-180" : ""
 					}`}
 					aria-hidden="true"
@@ -71,7 +70,7 @@ export default function LangSwitcher() {
 				<ul
 					role="listbox"
 					aria-label={t.label}
-					className="absolute right-0 mt-1.5 min-w-[8rem] rounded-md border border-slate-200 bg-white shadow-lg py-1 overflow-hidden dark:border-slate-700 dark:bg-slate-900"
+					className="absolute right-0 mt-1 min-w-[8rem] border border-border bg-panel shadow-2xl py-0.5 overflow-hidden font-mono text-xs"
 				>
 					{LOCALES.map((option) => {
 						const isActive = option === locale;
@@ -82,10 +81,10 @@ export default function LangSwitcher() {
 									role="option"
 									aria-selected={isActive}
 									onClick={() => handleSelect(option)}
-									className={`w-full text-left text-sm px-3 py-1.5 transition-colors duration-150 cursor-pointer focus:outline-none focus-visible:bg-sky-50 ${
+									className={`w-full text-left text-xs px-3 py-1.5 transition-colors duration-150 cursor-pointer focus:outline-none ${
 										isActive
-											? "bg-sky-50 text-sky-700 font-medium dark:bg-sky-950 dark:text-sky-300"
-											: "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+											? "bg-accent/15 text-accent font-semibold"
+											: "text-text hover:bg-surface"
 									}`}
 								>
 									{LOCALE_LABELS[option]}

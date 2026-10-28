@@ -36,9 +36,11 @@ jobs:
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
 
   filesystem:
     name: Dependencies and configuration
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -56,6 +58,7 @@ jobs:
           format: json
           output: trivy-report.json
           exit-code: "0"
+          skip-files: "**/Dockerfile.dockerignore"
 
       - name: Summarize Trivy findings
         run: |
@@ -79,13 +82,13 @@ jobs:
           test "${critical_count}" -eq 0
 
       - name: Upload Trivy report
-        if: ${{ always() }}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: trivy-security-report
           path: trivy-report.json
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   python_dependencies:
     name: Python dependencies — ${{ matrix.app }}
@@ -128,13 +131,13 @@ jobs:
           --output "pip-audit-${{ matrix.app }}.json"
 
       - name: Upload dependency report
-        if: ${{ always() }}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pip-audit-${{ matrix.app }}
           path: pip-audit-${{ matrix.app }}.json
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   python_static_analysis:
     name: Python static analysis
@@ -175,13 +178,13 @@ jobs:
           test "${high_count}" -eq 0
 
       - name: Upload static-analysis report
-        if: ${{ always() }}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: bandit-security-report
           path: bandit-report.json
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 1
 
   codeql:
     name: CodeQL — ${{ matrix.language }}
@@ -209,18 +212,3 @@ jobs:
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3.38.2
-
-  dependency_review:
-    name: Dependency review
-    if: ${{ github.event_name == 'pull_request' && github.event.repository.private == false }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - name: Review dependency changes
-        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0

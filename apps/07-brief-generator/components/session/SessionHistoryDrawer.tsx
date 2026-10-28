@@ -113,16 +113,16 @@ export function SessionHistoryDrawer({
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-card)]/50">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500">
-                <History className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-xs bg-[var(--dossier-accent)]/15 border border-[var(--dossier-accent)]/30 flex items-center justify-center text-[var(--dossier-accent)]">
+                <History className="w-3.5 h-3.5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[var(--text-primary)]">
-                  {t.historyDrawer.title}
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  {"//"} {t.historyDrawer.title}
                 </h3>
                 {sessionInfo && (
-                  <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                    {sessionInfo.shortId}
+                  <span className="text-[10px] font-mono text-[var(--text-muted)]">
+                    SESSION_ID: {sessionInfo.shortId}
                   </span>
                 )}
               </div>
@@ -130,32 +130,34 @@ export function SessionHistoryDrawer({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-xs border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Privacy Banner */}
-          <div className="mx-6 mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] flex items-start gap-2 text-emerald-500">
-            <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div className="mx-6 mt-4 p-2.5 rounded-xs bg-emerald-500/5 border border-emerald-500/20 text-[10px] font-mono flex items-start gap-2 text-emerald-400">
+            <Lock className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
             <span>
-              {t.historyDrawer.privacyNotice}
+              {"//"} PRIVACY: {t.historyDrawer.privacyNotice}
             </span>
           </div>
 
           {/* Briefs List */}
           <div className="flex-1 overflow-y-auto p-6 space-y-2.5">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs text-[var(--text-muted)]">
-                <RotateCcw className="w-5 h-5 animate-spin" />
-                <span>Loading...</span>
+              <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs font-mono text-[var(--text-muted)]">
+                <RotateCcw className="w-4 h-4 animate-spin" />
+                <span>{"//"} LOADING_SESSION_DATA...</span>
               </div>
             ) : briefs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs text-[var(--text-muted)] text-center">
-                <FileText className="w-8 h-8 opacity-30" />
-                <p className="font-semibold">{t.historyDrawer.emptyTitle}</p>
-                <p className="text-[11px]">{t.historyDrawer.emptySubtitle}</p>
+              <div className="flex flex-col items-center justify-center h-48 space-y-2 text-xs text-[var(--text-muted)] text-center border border-dashed border-[var(--border-subtle)] rounded-xs p-4">
+                <FileText className="w-8 h-8 opacity-25" />
+                <p className="font-mono text-xs font-semibold text-[var(--text-primary)]">
+                  {t.historyDrawer.emptyTitle}
+                </p>
+                <p className="text-[11px] font-sans max-w-xs">{t.historyDrawer.emptySubtitle}</p>
               </div>
             ) : (
               briefs.map((b) => {
@@ -167,14 +169,14 @@ export function SessionHistoryDrawer({
                       onSelectBrief(b);
                       onClose();
                     }}
-                    className={`p-3 rounded-xl border text-xs cursor-pointer transition-all ${
+                    className={`p-3 rounded-xs border text-xs cursor-pointer transition-all ${
                       isSelected
-                        ? "border-[var(--accent-agent-writer)] bg-violet-500/10 shadow-sm"
+                        ? "border-[var(--dossier-accent)] bg-yellow-500/10 shadow-sm"
                         : "border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--card-hover-border)]"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-[var(--text-primary)] line-clamp-1">
+                      <span className="font-mono font-bold text-[var(--text-primary)] line-clamp-1 text-xs">
                         {b.result.brief.title || b.topic}
                       </span>
                       <button
@@ -183,10 +185,10 @@ export function SessionHistoryDrawer({
                         title="Delete"
                         className="text-[var(--text-muted)] hover:text-red-400 p-1 transition-colors cursor-pointer"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
-                    <p className="text-[11px] text-[var(--text-muted)] line-clamp-2">
+                    <p className="text-[11px] text-[var(--text-muted)] font-sans line-clamp-2">
                       {b.topic}
                     </p>
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border-subtle)]/50 text-[10px] text-[var(--text-muted)] font-mono">
@@ -201,16 +203,16 @@ export function SessionHistoryDrawer({
 
           {/* Footer with Clear All */}
           {briefs.length > 0 && (
-            <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-card)]/40 flex justify-between items-center text-xs">
-              <span className="text-[var(--text-muted)]">
-                {briefs.length} {briefs.length === 1 ? "briefing" : "briefings"}
+            <div className="p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-card)]/40 flex justify-between items-center text-xs font-mono">
+              <span className="text-[var(--text-muted)] text-[11px]">
+                {briefs.length} {briefs.length === 1 ? "RECORD" : "RECORDS"}
               </span>
               <button
                 type="button"
                 onClick={handleClearHistory}
-                className="text-red-400 hover:text-red-300 font-medium transition-colors cursor-pointer"
+                className="text-red-400 hover:text-red-300 font-medium transition-colors cursor-pointer text-xs"
               >
-                {t.historyDrawer.clearSessionBtn}
+                [ {t.historyDrawer.clearSessionBtn} ]
               </button>
             </div>
           )}

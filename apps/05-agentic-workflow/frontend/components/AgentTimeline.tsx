@@ -25,110 +25,133 @@ export function AgentTimeline({ steps, isThinking }: AgentTimelineProps) {
   const getStepIcon = (type: string) => {
     switch (type) {
       case 'thought':
-        return <Brain className="w-4 h-4 text-sky-500" />;
+        return <Brain className="size-3.5 text-accent" />;
       case 'tool_call':
-        return <Wrench className="w-4 h-4 text-indigo-500" />;
+        return <Wrench className="size-3.5 text-indigo-400" />;
       case 'tool_result':
-        return <Terminal className="w-4 h-4 text-emerald-500" />;
+        return <Terminal className="size-3.5 text-emerald-400" />;
       case 'waiting_approval':
-        return <AlertTriangle className="w-4 h-4 text-amber-500" />;
+        return <AlertTriangle className="size-3.5 text-amber-500" />;
       case 'answer':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+        return <CheckCircle2 className="size-3.5 text-emerald-400" />;
       case 'error':
-        return <XCircle className="w-4 h-4 text-rose-500" />;
+        return <XCircle className="size-3.5 text-rose-500" />;
       default:
-        return <HelpCircle className="w-4 h-4 text-muted" />;
+        return <HelpCircle className="size-3.5 text-muted" />;
+    }
+  };
+
+  const getStepPrefix = (type: string, index: number) => {
+    const formatted = index.toString().padStart(2, '0');
+    switch (type) {
+      case 'thought':
+        return `[T-${formatted}] THOUGHT`;
+      case 'tool_call':
+        return `[A-${formatted}] ACTION / TOOL_CALL`;
+      case 'tool_result':
+        return `[O-${formatted}] OBSERVATION`;
+      case 'waiting_approval':
+        return `[H-${formatted}] HUMAN_IN_THE_LOOP`;
+      case 'answer':
+        return `[F-${formatted}] FINAL_ANSWER`;
+      case 'error':
+        return `[E-${formatted}] FAULT`;
+      default:
+        return `[S-${formatted}] STEP`;
     }
   };
 
   const getBadgeStyle = (type: string) => {
     switch (type) {
       case 'thought':
-        return 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30';
+        return 'text-accent border-accent/40 bg-accent/10';
       case 'tool_call':
-        return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30';
+        return 'text-indigo-400 border-indigo-500/40 bg-indigo-500/10';
       case 'tool_result':
-        return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
+        return 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10';
       case 'waiting_approval':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30';
+        return 'text-amber-500 border-amber-500/40 bg-amber-500/10';
       case 'answer':
-        return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40';
+        return 'text-emerald-400 border-emerald-500/50 bg-emerald-500/15';
+      case 'error':
+        return 'text-rose-400 border-rose-500/40 bg-rose-500/10';
       default:
-        return 'bg-surface text-muted border-border';
+        return 'text-muted border-border bg-surface';
     }
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted flex items-center gap-2">
-        <span>{t('title')}</span>
-        <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-surface text-muted border border-border">
-          {steps.length === 1 ? t('step') : t('steps', { count: steps.length })}
-        </span>
+    <div className="space-y-3 font-mono">
+      <div className="flex items-center justify-between border-b border-border pb-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted flex items-center gap-2">
+          <span>{"//"} {t('title')}</span>
+          <span className="px-1.5 py-0.5 rounded-xs text-[10px] bg-surface text-muted border border-border">
+            {steps.length === 1 ? t('step') : t('steps', { count: steps.length })}
+          </span>
+        </h3>
         {isThinking && (
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-normal lowercase tracking-normal text-sky-500 font-mono transition-opacity duration-300">
-            <span className="inline-block size-1.5 rounded-full bg-sky-500 animate-ping" />
+          <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-accent transition-opacity duration-300">
+            <span className="inline-block size-1.5 rounded-full bg-accent animate-ping" />
             {t('thinking')}
           </span>
         )}
-      </h3>
+      </div>
 
-      <div className="relative border-l-2 border-border ml-3.5 pl-6 space-y-5">
+      <div className="relative border-l border-border ml-3 pl-5 space-y-4">
         {steps.map((step) => {
           const isFinal = step.type === 'answer';
 
           return (
             <div key={step.step_index} className="relative group animate-fade-to-light">
-              {/* Step indicator circle */}
-              <div className="absolute -left-[33px] top-1 rounded-full p-1.5 bg-panel border border-border shadow-xs">
+              {/* Step indicator node */}
+              <div className="absolute -left-[27px] top-2 rounded-xs p-1 bg-panel border border-border">
                 {getStepIcon(step.type)}
               </div>
 
               <div
-                className={`rounded-2xl border p-4 space-y-2.5 transition-all shadow-xs ${
+                className={`rounded-xs border p-3.5 space-y-2 transition-colors ${
                   isFinal
-                    ? 'bg-emerald-500/5 border-emerald-500/40 shadow-emerald-500/10'
-                    : 'bg-panel border-border hover:border-sky-500/30'
+                    ? 'bg-emerald-500/5 border-emerald-500/40'
+                    : 'bg-panel border-border hover:border-accent/40'
                 }`}
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-muted">#{step.step_index}</span>
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-medium border uppercase tracking-wider ${getBadgeStyle(
+                      className={`px-2 py-0.5 rounded-xs text-[10px] font-bold border uppercase tracking-wider ${getBadgeStyle(
                         step.type
                       )}`}
                     >
-                      {step.type.replace('_', ' ')}
+                      {getStepPrefix(step.type, step.step_index)}
                     </span>
                     {step.tool_name && (
-                      <span className="px-2 py-0.5 rounded-md text-xs font-mono bg-surface text-accent-strong border border-border">
+                      <span className="px-1.5 py-0.5 rounded-xs text-[10px] bg-surface text-accent border border-border">
                         {step.tool_name}()
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-muted font-medium">{step.title}</span>
+                  <span className="text-[11px] text-muted">{step.title}</span>
                 </div>
 
-                <div className="text-sm text-text leading-relaxed whitespace-pre-wrap">
+                <div className="text-xs text-text leading-relaxed whitespace-pre-wrap font-sans">
                   {step.content}
                 </div>
 
                 {step.tool_args && (
-                  <div className="rounded-xl bg-surface border border-border p-3 font-mono text-xs text-text overflow-x-auto">
-                    <span className="text-muted text-[10px] uppercase font-sans font-semibold block mb-1">
-                      {t('toolArgs')}
+                  <div className="rounded-xs bg-surface border border-border p-2.5 text-[11px] text-text overflow-x-auto">
+                    <span className="text-muted text-[9px] uppercase font-mono font-semibold block mb-1">
+                      {"//"} {t('toolArgs')}
                     </span>
-                    <pre>{JSON.stringify(step.tool_args, null, 2)}</pre>
+                    <pre className="font-mono">{JSON.stringify(step.tool_args, null, 2)}</pre>
                   </div>
                 )}
 
                 {step.tool_result && (
-                  <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/30 p-3 font-mono text-xs text-emerald-800 dark:text-emerald-300 overflow-x-auto">
-                    <span className="text-emerald-600 dark:text-emerald-400 text-[10px] uppercase font-sans font-semibold block mb-1">
-                      {t('toolOutput')}
+                  <div className="rounded-xs bg-emerald-500/5 border border-emerald-500/30 p-2.5 text-[11px] text-emerald-700 dark:text-emerald-300 overflow-x-auto">
+                    <span className="text-emerald-600 dark:text-emerald-400 text-[9px] uppercase font-mono font-semibold block mb-1">
+                      {"//"} {t('toolOutput')}
                     </span>
-                    <div>{step.tool_result}</div>
+                    <div className="font-mono whitespace-pre-wrap">{step.tool_result}</div>
                   </div>
                 )}
               </div>

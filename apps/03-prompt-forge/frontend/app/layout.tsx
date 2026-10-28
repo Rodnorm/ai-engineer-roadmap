@@ -40,20 +40,20 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("prompt-forge-theme");var d=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem("prompt-forge-theme");var d=t==="dark"||(!t);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
           }}
         />
       </head>
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col font-sans">
         <I18nProvider initialLocale={locale} dictionaries={dictionaries}>
           {children}
         </I18nProvider>
-      <footer className="mt-auto border-t border-white/10 px-4 py-4 text-center text-xs text-slate-500">
-          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/datenschutz">Datenschutz</a>
+        <footer className="mt-auto border-t border-border px-4 py-4 text-center font-mono text-[0.7rem] text-muted">
+          <a className="transition-colors hover:text-accent" href="https://normando.dev/datenschutz">Datenschutz</a>
           <span className="px-2" aria-hidden="true">·</span>
-          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/impressum">Impressum</a>
+          <a className="transition-colors hover:text-accent" href="https://normando.dev/impressum">Impressum</a>
         </footer>
-        </body>
+      </body>
     </html>
   );
 }

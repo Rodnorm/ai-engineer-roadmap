@@ -1,4 +1,4 @@
-import { Brain, ChevronDown } from "lucide-react";
+import { Brain, ChevronDown, User, Bot } from "lucide-react";
 import { MessageUserType, MessageType } from "./MessageContainer";
 import { NLPAnalysisCard } from "./NLPAnalysisCard";
 import { useT } from "@/lib/i18n/I18nProvider";
@@ -18,16 +18,22 @@ export default function Message({
 
 	if (message.type === MessageUserType.USER) {
 		return (
-			<div className="flex flex-col items-end gap-1.5">
-				<div className="flex justify-end">
-					<div className="bg-slate-900 px-4 py-2.5 text-white rounded-2xl rounded-br-md shadow-sm max-w-[80%] dark:bg-sky-600">
-						<p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
+			<div className="flex flex-col items-end gap-1">
+				{/* Technical Log Header */}
+				<div className="flex items-center gap-1.5 font-mono text-[10px] text-muted">
+					<User className="size-3 text-accent" />
+					<span>USER_INPUT // LOG_ID: {message.id.slice(0, 8)}</span>
+				</div>
+
+				<div className="flex justify-end w-full">
+					<div className="border border-accent/40 bg-surface/90 px-3.5 py-2.5 text-text rounded-none shadow-none max-w-[90%] sm:max-w-[82%]">
+						<p className="font-sans text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
 					</div>
 				</div>
 
 				{message.nlpAnalysis && (
 					<>
-						<div className="self-end">
+						<div className="self-end mt-0.5">
 							<button
 								type="button"
 								onClick={onToggleAnalysis}
@@ -35,12 +41,12 @@ export default function Message({
 								aria-label={
 									showAnalysis ? t("hideAnalysis") : t("showAnalysis")
 								}
-								className="group inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-sky-600 px-2 py-1 rounded-md hover:bg-sky-50/60 transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:text-slate-400 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+								className="group inline-flex items-center gap-1.5 border border-border bg-panel px-2 py-0.5 font-mono text-[10px] text-muted hover:border-accent hover:text-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-accent rounded-none"
 							>
-								<Brain className="w-3.5 h-3.5" aria-hidden="true" />
-								<span>{t("nlpShort")}</span>
+								<Brain className="size-3 text-accent" aria-hidden="true" />
+								<span className="uppercase">[ {t("nlpShort")} ]</span>
 								<ChevronDown
-									className={`w-3.5 h-3.5 transition-transform duration-200 ${
+									className={`size-3 transition-transform duration-200 ${
 										showAnalysis ? "rotate-180" : ""
 									}`}
 									aria-hidden="true"
@@ -49,7 +55,7 @@ export default function Message({
 						</div>
 
 						{showAnalysis && (
-							<div className="self-end w-full max-w-[95%]">
+							<div className="self-end w-full max-w-[98%] sm:max-w-[90%]">
 								<NLPAnalysisCard analysis={message.nlpAnalysis} />
 							</div>
 						)}
@@ -60,9 +66,17 @@ export default function Message({
 	}
 
 	return (
-		<div className="flex">
-			<div className="bg-slate-100 border border-slate-200 px-4 py-2.5 text-slate-800 rounded-2xl rounded-bl-md shadow-sm max-w-[80%] dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-				<p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
+		<div className="flex flex-col items-start gap-1">
+			{/* Technical Log Header */}
+			<div className="flex items-center gap-1.5 font-mono text-[10px] text-accent">
+				<Bot className="size-3 text-accent" />
+				<span>AGENT [FOUNDRY_LLM] :: FAQ_GROUNDED</span>
+			</div>
+
+			<div className="flex justify-start w-full">
+				<div className="border-l-2 border-l-accent border-y border-r border-border bg-panel px-3.5 py-2.5 text-text rounded-none shadow-none max-w-[95%] sm:max-w-[85%]">
+					<p className="font-sans text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+				</div>
 			</div>
 		</div>
 	);

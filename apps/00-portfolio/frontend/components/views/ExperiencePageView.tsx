@@ -17,34 +17,34 @@ export function ExperiencePageView({ locale = "en" }: { locale?: Locale }) {
         </p>
       </header>
 
-      <ol className="space-y-8 border-l-2 border-border pl-5 sm:pl-8">
+      <ol className="space-y-6 border-l border-border pl-5 sm:pl-8">
         {text.career.map((entry, index) => (
           <li
             key={entry.title}
-            className="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4 shadow-sm hover:border-primary/40 transition-colors"
+            className="rounded-xs border border-border bg-surface p-5 sm:p-7 space-y-3.5 hover:border-text-muted transition-colors font-mono"
           >
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
-                {entry.period}
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-text-muted">
+                [{entry.period}]
               </span>
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
+            <h2 className="font-serif text-lg sm:text-xl font-bold text-foreground">
               {entry.title}
             </h2>
-            <p className="text-sm leading-relaxed text-text-muted italic">{entry.context}</p>
-            <ul className="list-disc pl-5 space-y-2 text-text-secondary text-sm leading-relaxed">
+            <p className="text-xs leading-relaxed text-text-muted font-sans italic">{entry.context}</p>
+            <ul className="list-disc pl-5 space-y-1.5 text-text-secondary text-xs sm:text-sm leading-relaxed font-sans">
               {entry.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
             {index === 0 && (
-              <div className="pt-2">
+              <div className="pt-2 font-mono">
                 <Link
                   href={getLocalizedPath(PROFESSIONAL_CASE_PATH, locale)}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline group"
+                  className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-foreground hover:text-accent group"
                 >
-                  <span>{text.readCase}</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                  <span>[ {text.readCase} ]</span>
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                 </Link>
               </div>
             )}

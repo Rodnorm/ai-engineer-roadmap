@@ -11,16 +11,12 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_KEY);
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = saved !== null ? saved === 'dark' : prefersDark;
-
-    setIsDark(shouldBeDark);
-    document.documentElement.classList.toggle('dark', shouldBeDark);
+    setIsDark(document.documentElement.classList.contains('dark'));
   }, []);
 
   const toggleTheme = () => {
-    const nextIsDark = !isDark;
+    const currentlyDark = document.documentElement.classList.contains('dark');
+    const nextIsDark = !currentlyDark;
     document.documentElement.classList.toggle('dark', nextIsDark);
     localStorage.setItem(THEME_KEY, nextIsDark ? 'dark' : 'light');
     setIsDark(nextIsDark);
@@ -34,12 +30,12 @@ export function ThemeToggle() {
       aria-label={isDark ? t('lightTheme') : t('darkTheme')}
       title={isDark ? t('lightTheme') : t('darkTheme')}
       onClick={toggleTheme}
-      className="control-button size-9 cursor-pointer"
+      className="control-button size-8 p-0 cursor-pointer"
     >
       {isDark ? (
-        <Sun className="size-4 text-amber-400 hover:text-amber-300 transition-colors" />
+        <Sun className="size-3.5 text-amber-400 hover:text-amber-300 transition-colors" />
       ) : (
-        <Moon className="size-4 text-slate-700 hover:text-slate-900 transition-colors" />
+        <Moon className="size-3.5 text-slate-700 hover:text-slate-900 transition-colors" />
       )}
     </button>
   );
