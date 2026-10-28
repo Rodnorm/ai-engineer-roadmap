@@ -74,8 +74,8 @@ metrics_collector = MetricsCollector()
 
 def format_traceparent(request_id: str) -> str:
     """Generate a W3C traceparent header from request correlation ID."""
-    trace_id = hashlib.md5(request_id.encode("utf-8"), usedforsecurity=False).hexdigest()
-    span_id = hashlib.md5(f"{request_id}-span".encode("utf-8"), usedforsecurity=False).hexdigest()[:16]
+    trace_id = hashlib.sha256(request_id.encode("utf-8")).hexdigest()[:32]
+    span_id = hashlib.sha256(f"{request_id}-span".encode("utf-8")).hexdigest()[:16]
     return f"00-{trace_id}-{span_id}-01"
 
 
