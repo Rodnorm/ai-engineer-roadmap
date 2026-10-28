@@ -30,43 +30,42 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full max-w-full border-b border-border bg-background/85 backdrop-blur-md transition-colors duration-200">
+    <header className="sticky top-0 z-50 w-full max-w-full border-b border-border bg-background/90 backdrop-blur-md transition-colors duration-200">
       <div className="mx-auto flex h-16 max-w-6xl min-w-0 items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
         <Link
           href={getLocalizedPath("/", locale)}
-          className="flex min-w-0 flex-shrink-0 items-center gap-2 font-bold tracking-tight text-foreground transition-colors hover:text-primary group"
+          className="flex min-w-0 flex-shrink-0 items-center gap-2.5 tracking-tight text-foreground transition-colors group"
           aria-label="Rodrigo Normando"
         >
-          <span className="font-serif font-black text-xl text-foreground group-hover:text-primary transition-colors">
-            RN
-          </span>
-          <span className="text-text-muted font-light hidden sm:inline" aria-hidden="true">
-            /
-          </span>
-          <span className="text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors truncate hidden sm:inline">
-            Rodrigo Normando
-          </span>
+          <div className="flex flex-col">
+            <span className="font-mono text-xs sm:text-sm font-bold tracking-wider uppercase text-foreground group-hover:text-accent transition-colors truncate">
+              RODRIGO NORMANDO
+            </span>
+            <span className="font-mono text-[9px] tracking-widest uppercase text-text-muted hidden sm:inline">
+              AI SYSTEM ARCHITECTURE
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex min-w-0 items-center justify-end gap-1 text-sm font-medium text-text-secondary md:gap-3 lg:gap-4">
+        <nav className="hidden md:flex min-w-0 items-center justify-end gap-1 text-xs font-mono font-medium text-text-secondary md:gap-2 lg:gap-3">
           <Link
             href={getLocalizedPath("/apps", locale)}
-            className="rounded-lg px-2.5 py-1.5 transition-colors hover:text-primary hover:bg-surface/60 font-semibold"
+            className="rounded-xs px-2.5 py-1.5 border border-transparent hover:border-border hover:bg-surface hover:text-foreground transition-all uppercase tracking-wider"
           >
-            {dict.nav.catalog}
+            [ {dict.nav.catalog} ]
           </Link>
           <Link
             href={getLocalizedPath("/experience", locale)}
-            className="rounded-lg px-2.5 py-1.5 transition-colors hover:text-primary hover:bg-surface/60 font-semibold"
+            className="rounded-xs px-2.5 py-1.5 border border-transparent hover:border-border hover:bg-surface hover:text-foreground transition-all uppercase tracking-wider"
           >
-            {dict.nav.experience}
+            [ {dict.nav.experience} ]
           </Link>
           <Link
             href={getLocalizedPath("/about", locale)}
-            className="rounded-lg px-2.5 py-1.5 transition-colors hover:text-primary hover:bg-surface/60 font-semibold"
+            className="rounded-xs px-2.5 py-1.5 border border-transparent hover:border-border hover:bg-surface hover:text-foreground transition-all uppercase tracking-wider"
           >
-            {dict.nav.about}
+            [ {dict.nav.about} ]
           </Link>
 
           {/* Contact Pill */}
@@ -74,14 +73,14 @@ export function Header() {
             href={LINKEDIN_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden lg:inline-flex items-center gap-1 rounded-full border border-primary/50 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-white dark:hover:text-background transition-all"
+            className="hidden lg:inline-flex items-center gap-1 rounded-xs border border-border bg-surface px-2.5 py-1 text-[11px] font-mono font-semibold text-text-secondary hover:text-foreground hover:border-text-muted transition-all uppercase tracking-wider"
             aria-label={`${dict.nav.contact} on LinkedIn`}
           >
             <span>{dict.nav.contact}</span>
             <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
           </a>
 
-          <div className="flex items-center gap-1 border-l border-border pl-2 sm:pl-3">
+          <div className="flex items-center gap-1.5 border-l border-border pl-2 sm:pl-3">
             <LanguageSelector />
             <ThemeToggle />
           </div>
@@ -97,7 +96,7 @@ export function Header() {
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="inline-flex items-center justify-center rounded-lg border border-border p-2 text-text-secondary hover:text-foreground hover:bg-surface transition-colors focus-visible:outline-primary"
+            className="inline-flex items-center justify-center rounded-xs border border-border p-1.5 text-text-secondary hover:text-foreground hover:bg-surface transition-colors focus-visible:outline-primary"
           >
             {isMenuOpen ? (
               <X className="h-4 w-4" aria-hidden="true" />
