@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const THEME_KEY = "support-bot-theme";
@@ -17,7 +17,8 @@ export default function ThemeToggle() {
 	}, []);
 
 	const toggleTheme = () => {
-		const nextIsDark = !isDark;
+		const currentlyDark = document.documentElement.classList.contains("dark");
+		const nextIsDark = !currentlyDark;
 		document.documentElement.classList.toggle("dark", nextIsDark);
 		localStorage.setItem(THEME_KEY, nextIsDark ? "dark" : "light");
 		setIsDark(nextIsDark);
@@ -30,17 +31,19 @@ export default function ThemeToggle() {
 			aria-checked={isDark}
 			aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
 			onClick={toggleTheme}
-			className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 inline-flex h-8 w-14 items-center rounded-full border border-slate-200 bg-white/85 p-1 shadow-sm backdrop-blur transition-colors duration-200 hover:border-sky-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/85 dark:hover:border-sky-600 dark:focus-visible:ring-offset-slate-950"
+			className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 inline-flex h-8 w-8 sm:w-auto items-center justify-center gap-1.5 border border-border bg-panel/90 px-0 sm:px-2.5 font-mono text-[10px] uppercase text-muted shadow-lg backdrop-blur transition hover:border-accent hover:text-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-accent"
 		>
-			<span
-				className={`flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 ${
-					isDark
-						? "translate-x-6 bg-sky-500 text-white"
-						: "translate-x-0 bg-slate-100 text-slate-600"
-				}`}
-			>
-				<Moon className="h-3.5 w-3.5" aria-hidden="true" />
-			</span>
+			{isDark ? (
+				<>
+					<Moon className="size-3 text-accent shrink-0" aria-hidden="true" />
+					<span className="hidden sm:inline">[ DARK ]</span>
+				</>
+			) : (
+				<>
+					<Sun className="size-3 text-amber-500 shrink-0" aria-hidden="true" />
+					<span className="hidden sm:inline">[ LIGHT ]</span>
+				</>
+			)}
 		</button>
 	);
 }
