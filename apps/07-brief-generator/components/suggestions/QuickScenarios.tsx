@@ -201,10 +201,10 @@ export function QuickScenarios({ onSelect, activeTopic }: QuickScenariosProps) {
             key={cat}
             type="button"
             onClick={() => setSelectedCategory(cat)}
-            className={`px-2.5 py-1 rounded-full whitespace-nowrap text-xs font-medium transition-all cursor-pointer ${
+            className={`px-2 py-1 rounded-xs whitespace-nowrap text-[11px] font-mono uppercase tracking-wider transition-all cursor-pointer border ${
               currentCategory === cat
-                ? "bg-[var(--accent-agent-research)] text-white shadow-sm"
-                : "border border-[var(--border-subtle)] bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "bg-[var(--dossier-accent)] text-black border-[var(--dossier-accent)] font-bold shadow-sm"
+                : "border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {cat}
@@ -213,40 +213,40 @@ export function QuickScenarios({ onSelect, activeTopic }: QuickScenariosProps) {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
         {filtered.map((item) => {
           const isSelected = activeTopic === item.topic;
           return (
             <div
               key={item.id}
               onClick={() => onSelect(item)}
-              className={`p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
+              className={`p-3 rounded-xs border cursor-pointer transition-all flex flex-col justify-between ${
                 isSelected
-                  ? "border-[var(--accent-agent-research)] bg-sky-500/10 shadow-sm"
-                  : "border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--card-hover-border)] hover:-translate-y-0.5"
+                  ? "border-[var(--dossier-accent)] bg-[var(--dossier-accent)]/10 shadow-sm"
+                  : "border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--card-hover-border)]"
               }`}
             >
               <div>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent-agent-research)] px-2 py-0.5 rounded-md bg-sky-500/10">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--dossier-accent)] px-1.5 py-0.5 rounded-xs bg-yellow-500/10 border border-yellow-500/20">
                     {item.category}
                   </span>
-                  <span className="text-[11px] text-[var(--text-muted)] font-mono">
-                    #{item.id}
+                  <span className="text-[10px] text-[var(--text-muted)] font-mono">
+                    #{String(item.id).padStart(2, "0")}
                   </span>
                 </div>
-                <h4 className="text-xs font-bold text-[var(--text-primary)] mb-1">
+                <h4 className="text-xs font-mono font-bold text-[var(--text-primary)] mb-1">
                   {item.title}
                 </h4>
-                <p className="text-[11px] text-[var(--text-muted)] line-clamp-2 leading-relaxed">
+                <p className="text-[11px] text-[var(--text-muted)] font-sans line-clamp-2 leading-relaxed">
                   {item.topic}
                 </p>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-[var(--border-subtle)]/60 flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span className="capitalize font-mono">{t.controlPanel.toneLabel}: {item.tone}</span>
-                <span className="text-[var(--accent-agent-writer)] font-semibold flex items-center gap-1">
-                  {t.scenarios.loadAction} <Sparkles className="w-3 h-3" />
+              <div className="mt-2.5 pt-2 border-t border-[var(--border-subtle)]/60 flex items-center justify-between text-[10px] text-[var(--text-muted)] font-mono">
+                <span className="capitalize">{t.controlPanel.toneLabel}: {item.tone}</span>
+                <span className="text-[var(--dossier-accent)] font-semibold flex items-center gap-1">
+                  {t.scenarios.loadAction} ↵
                 </span>
               </div>
             </div>
