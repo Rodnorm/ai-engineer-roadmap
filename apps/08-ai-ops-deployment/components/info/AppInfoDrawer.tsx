@@ -54,24 +54,24 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
         {/* Header */}
         <div className="sticky top-0 z-10 p-5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-md flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-blue-600/15 text-blue-400">
-              <Activity className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xs bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-[var(--sre-cyan)]">
+              <Activity className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[var(--text-primary)]">
-                {t.infoDrawer.title}
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                {"//"} {t.infoDrawer.title}
               </h3>
-              <p className="text-xs text-[var(--text-muted)]">
-                {t.infoDrawer.subtitle}
+              <p className="text-[10px] font-mono text-[var(--text-muted)]">
+                SPEC_SPECIFICATION :: SRE_RESILIENCE_AND_DEPLOYMENT
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+            className="w-7 h-7 rounded-xs border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -79,47 +79,47 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
         <div className="p-6 space-y-6 text-xs text-[var(--text-primary)] leading-relaxed">
           {/* Section 1: Overview */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
-              <Zap className="w-4 h-4" />
-              <h4>{t.infoDrawer.overviewTitle}</h4>
+            <div className="flex items-center gap-2 text-[var(--sre-cyan)] font-mono font-bold text-xs uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5" />
+              <h4>{"//"} 01 :: {t.infoDrawer.overviewTitle}</h4>
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
+            <p className="text-[var(--text-muted)] font-sans leading-relaxed">
               {t.infoDrawer.overviewContent}
             </p>
           </div>
 
           {/* Section 2: Traffic Routing */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-              <GitBranch className="w-4 h-4" />
-              <h4>{t.infoDrawer.routingTitle}</h4>
+            <div className="flex items-center gap-2 text-emerald-400 font-mono font-bold text-xs uppercase tracking-wider">
+              <GitBranch className="w-3.5 h-3.5" />
+              <h4>{"//"} 02 :: {t.infoDrawer.routingTitle}</h4>
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
+            <p className="text-[var(--text-muted)] font-sans leading-relaxed">
               {t.infoDrawer.routingContent}
             </p>
-            <div className="p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] font-mono text-[11px] space-y-1">
-              <p className="text-blue-400 font-bold">• Baseline (Blue): gpt-4o flagship</p>
-              <p className="text-emerald-400 font-bold">• Canary (Green): gpt-4o-mini / novo prompt</p>
-              <p className="text-purple-400 font-bold">• Shadow Mirror: Invocação assíncrona duplicada</p>
+            <div className="p-3 rounded-xs bg-[var(--bg-card)] border border-[var(--border-subtle)] font-mono text-[11px] space-y-1">
+              <p className="text-[var(--sre-cyan)] font-bold">• BASELINE (BLUE): gpt-4o flagship</p>
+              <p className="text-emerald-400 font-bold">• CANARY (GREEN): gpt-4o-mini / novo prompt</p>
+              <p className="text-purple-400 font-bold">• SHADOW MIRROR: Invocação assíncrona duplicada</p>
             </div>
           </div>
 
           {/* Section 3: SLOs & Error Budgets */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
-              <Gauge className="w-4 h-4" />
-              <h4>{t.infoDrawer.sloTitle}</h4>
+            <div className="flex items-center gap-2 text-purple-400 font-mono font-bold text-xs uppercase tracking-wider">
+              <Gauge className="w-3.5 h-3.5" />
+              <h4>{"//"} 03 :: {t.infoDrawer.sloTitle}</h4>
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
+            <p className="text-[var(--text-muted)] font-sans leading-relaxed">
               {t.infoDrawer.sloContent}
             </p>
             <div className="grid grid-cols-2 gap-2 text-center font-mono text-[11px]">
-              <div className="p-2 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                <span className="text-[var(--text-muted)] block text-[10px]">SLO Latência P95</span>
-                <span className="font-bold text-blue-400">&lt; 2500ms</span>
+              <div className="p-2.5 rounded-xs bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                <span className="text-[var(--text-muted)] block text-[10px] uppercase">SLO Latência P95</span>
+                <span className="font-bold text-[var(--sre-cyan)]">&lt; 2500ms</span>
               </div>
-              <div className="p-2 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                <span className="text-[var(--text-muted)] block text-[10px]">SLO Disponibilidade</span>
+              <div className="p-2.5 rounded-xs bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+                <span className="text-[var(--text-muted)] block text-[10px] uppercase">SLO Disponibilidade</span>
                 <span className="font-bold text-emerald-400">99.0%</span>
               </div>
             </div>
@@ -127,30 +127,30 @@ export function AppInfoDrawer({ isOpen, onClose }: AppInfoDrawerProps) {
 
           {/* Section 4: Resilience & Circuit Breaker */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
-              <ShieldCheck className="w-4 h-4" />
-              <h4>{t.infoDrawer.resilienceTitle}</h4>
+            <div className="flex items-center gap-2 text-rose-400 font-mono font-bold text-xs uppercase tracking-wider">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <h4>{"//"} 04 :: {t.infoDrawer.resilienceTitle}</h4>
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
+            <p className="text-[var(--text-muted)] font-sans leading-relaxed">
               {t.infoDrawer.resilienceContent}
             </p>
           </div>
 
           {/* Section 5: Governance & Security */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-              <Lock className="w-4 h-4" />
-              <h4>{t.infoDrawer.governanceTitle}</h4>
+            <div className="flex items-center gap-2 text-amber-400 font-mono font-bold text-xs uppercase tracking-wider">
+              <Lock className="w-3.5 h-3.5" />
+              <h4>{"//"} 05 :: {t.infoDrawer.governanceTitle}</h4>
             </div>
-            <p className="text-[var(--text-muted)] leading-relaxed">
+            <p className="text-[var(--text-muted)] font-sans leading-relaxed">
               {t.infoDrawer.governanceContent}
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-auto p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-card)]/50 text-center text-[11px] text-[var(--text-muted)] font-mono">
-          App 08 • Production AI Deployment & Operations Studio • Capstone
+        <div className="mt-auto p-4 border-t border-[var(--border-subtle)] bg-[var(--bg-card)]/50 text-center text-[10px] text-[var(--text-muted)] font-mono">
+          APP_08 :: SRE_RESILIENCE_AND_DEPLOYMENT_STUDIO :: CAPSTONE
         </div>
       </div>
     </div>
