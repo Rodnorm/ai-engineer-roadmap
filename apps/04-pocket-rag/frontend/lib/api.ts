@@ -82,7 +82,14 @@ async function checked(response: Response) {
   if (response.ok) return response;
   const body = await response.json().catch(() => null);
   const error = body?.error;
-  throw new ApiError(error?.message || 'Request failed', response.status, error?.request_id);
+  const message =
+    error?.message ||
+    (typeof error === 'string'
+      ? error
+      : typeof body?.detail === 'string'
+        ? body.detail
+        : `Request failed with status ${response.status}`);
+  throw new ApiError(message, response.status, error?.request_id);
 }
 
 export async function fetchHealth() {

@@ -11,7 +11,6 @@ interface Context {
 const REQUEST_HEADERS = ['accept', 'content-type', 'x-request-id'];
 const RESPONSE_HEADERS = [
   'content-disposition',
-  'content-length',
   'content-type',
   'retry-after',
   'x-request-id',
@@ -34,6 +33,7 @@ async function proxy(request: Request, { params }: Context): Promise<Response> {
     }
     headers.set('authorization', `Bearer ${apiKey}`);
     headers.set('x-owner-id', ownerId);
+    headers.set('accept-encoding', 'identity');
 
     const body =
       request.method === 'GET' || request.method === 'HEAD'
@@ -52,7 +52,12 @@ async function proxy(request: Request, { params }: Context): Promise<Response> {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
     }
-    return new Response(upstream.body, {
+    responseHeaders.delete('content-length');
+    responseHeaders.delete('content-encoding');
+
+    const responseData = await upstream.arrayBuffer();
+
+    return new Response(responseData, {
       status: upstream.status,
       statusText: upstream.statusText,
       headers: responseHeaders,
