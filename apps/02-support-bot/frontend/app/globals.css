@@ -2,89 +2,91 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@property --animated-border-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes animated-gradient-border-flow {
-  to {
-    --animated-border-angle: 360deg;
-  }
-}
-
 @theme {
-  --color-bg: #ffffff;
-  --color-surface: #f8fafc;
-  --color-surface-hover: #f1f5f9;
+  --color-bg: #0a0c10;
+  --color-panel: #11141b;
+  --color-surface: #181c26;
+  --color-surface-hover: #222735;
 
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-border: #202634;
+  --color-border-active: #323c52;
 
-  --color-text: #0f172a;
+  --color-text: #f1f5f9;
+  --color-text-muted: #64748b;
   --color-muted: #64748b;
+  --color-mono: #94a3b8;
 
-  --color-accent: #0ea5e9;
-  --color-accent-blue: #0ea5e9;
-  --color-accent-pink: #ec4899;
-  --color-accent-red: #f43f5e;
+  --color-accent: #06b6d4;
+  --color-accent-subtle: rgba(6, 182, 212, 0.1);
+
+  --color-sentiment-pos: #10b981;
+  --color-sentiment-neu: #71717a;
+  --color-sentiment-neg: #ef4444;
+  --color-pii: #f59e0b;
 
   --color-success: #10b981;
+  --color-warn: #f59e0b;
   --color-error: #ef4444;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --radius-card: 0.9rem;
-  --radius-button: 0.55rem;
-  --radius-input: 0.65rem;
+  --radius-card: 0.125rem;
+  --radius-button: 0.125rem;
+  --radius-input: 0.125rem;
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-border bg-white p-6 shadow-sm;
+    @apply border border-border bg-panel p-5 rounded-none;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center border border-accent bg-accent/15 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-accent transition hover:bg-accent hover:text-black disabled:cursor-not-allowed disabled:opacity-40 rounded-none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center border border-border bg-surface px-4 py-2 font-mono text-xs font-medium uppercase tracking-wider text-text transition hover:border-border-active hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-40 rounded-none;
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border border-border bg-white px-3 py-1 text-xs text-muted;
+    @apply inline-flex items-center border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-mono transition hover:border-accent/40 rounded-none;
   }
 
   .label {
-    @apply text-xs uppercase tracking-wider text-muted;
+    @apply font-mono text-[10px] uppercase tracking-wider text-muted;
   }
 }
 
 :root {
   color-scheme: light;
-  --animated-border-surface: #ffffff;
-  --animated-border-blue: rgb(14 165 233 / 54%);
-  --animated-border-violet: rgb(139 92 246 / 48%);
-  --animated-border-pink: rgb(236 72 153 / 42%);
-  --animated-border-cyan: rgb(34 211 238 / 50%);
+  --color-bg: #f8fafc;
+  --color-panel: #ffffff;
+  --color-surface: #f1f5f9;
+  --color-surface-hover: #e2e8f0;
+  --color-border: #e2e8f0;
+  --color-border-active: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-muted: #64748b;
+  --color-mono: #475569;
+  --color-accent: #0891b2;
 }
 
-:root.dark {
+:root.dark,
+.dark {
   color-scheme: dark;
-  --color-bg: #020617;
-  --color-surface: #0f172a;
-  --color-surface-hover: #1e293b;
-  --color-border: #334155;
-  --color-border-strong: #475569;
-  --color-text: #e2e8f0;
-  --color-muted: #94a3b8;
-  --animated-border-surface: #0f172a;
-  --animated-border-blue: rgb(56 189 248 / 64%);
-  --animated-border-violet: rgb(167 139 250 / 58%);
-  --animated-border-pink: rgb(244 114 182 / 50%);
-  --animated-border-cyan: rgb(34 211 238 / 60%);
+  --color-bg: #0a0c10;
+  --color-panel: #11141b;
+  --color-surface: #181c26;
+  --color-surface-hover: #222735;
+  --color-border: #202634;
+  --color-border-active: #323c52;
+  --color-text: #f1f5f9;
+  --color-text-muted: #64748b;
+  --color-muted: #64748b;
+  --color-mono: #94a3b8;
+  --color-accent: #06b6d4;
 }
 
 body {
@@ -93,69 +95,13 @@ body {
   font-family: var(--font-sans);
 }
 
-.animated-gradient-border {
-  position: relative;
-  isolation: isolate;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(
-      var(--animated-border-surface),
-      var(--animated-border-surface)
-    ) padding-box,
-    conic-gradient(
-      from var(--animated-border-angle),
-      var(--animated-border-blue) 0deg,
-      var(--animated-border-violet) 90deg,
-      var(--animated-border-pink) 180deg,
-      var(--animated-border-cyan) 270deg,
-      var(--animated-border-blue) 360deg
-    ) border-box;
-  animation: animated-gradient-border-flow 10s linear infinite;
-}
-
-.animated-gradient-border::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  z-index: -1;
-  padding: 4px;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: 0.16;
-  filter: blur(7px);
-  background: conic-gradient(
-    from var(--animated-border-angle),
-    var(--animated-border-blue) 0deg,
-    var(--animated-border-violet) 90deg,
-    var(--animated-border-pink) 180deg,
-    var(--animated-border-cyan) 270deg,
-    var(--animated-border-blue) 360deg
-  );
-  animation: animated-gradient-border-flow 10s linear infinite;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animated-gradient-border,
-  .animated-gradient-border::after {
-    animation: none;
-  }
-}
-
 .chat-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border-strong) transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 .chat-scroll::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .chat-scroll::-webkit-scrollbar-track {
@@ -163,10 +109,10 @@ body {
 }
 
 .chat-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
-  border-radius: 9999px;
+  background: var(--color-border);
+  border-radius: 0px;
 }
 
 .chat-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted);
+  background: var(--color-border-active);
 }
