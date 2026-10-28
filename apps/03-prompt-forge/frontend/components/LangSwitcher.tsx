@@ -42,10 +42,11 @@ export default function LangSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t("language")}
-        className="control-button gap-2 px-3"
+        className="control-button gap-1.5 px-2 font-mono text-xs"
       >
         <LanguageIcon />
         <span className="hidden sm:inline">{LOCALE_LABELS[locale]}</span>
+        <span className="uppercase sm:hidden">{locale}</span>
         <ChevronIcon open={open} />
       </button>
 
@@ -53,7 +54,7 @@ export default function LangSwitcher() {
         <ul
           role="listbox"
           aria-label={t("language")}
-          className="absolute right-0 z-50 mt-2 min-w-36 overflow-hidden rounded-xl border border-border bg-panel py-1 shadow-xl"
+          className="absolute right-0 z-50 mt-1 min-w-36 overflow-hidden rounded-sm border border-border bg-panel py-1 font-mono text-xs shadow-xl"
         >
           {LOCALES.map((option) => (
             <li key={option} role="presentation">
@@ -62,9 +63,9 @@ export default function LangSwitcher() {
                 role="option"
                 aria-selected={option === locale}
                 onClick={() => selectLocale(option)}
-                className={`w-full cursor-pointer px-3 py-2 text-left text-sm transition focus:outline-none focus-visible:bg-accent-soft ${
+                className={`w-full cursor-pointer px-3 py-1.5 text-left text-xs transition focus:outline-none ${
                   option === locale
-                    ? "bg-accent-soft font-medium text-accent-strong"
+                    ? "bg-surface font-semibold text-accent"
                     : "text-text hover:bg-surface"
                 }`}
               >
@@ -80,7 +81,7 @@ export default function LangSwitcher() {
 
 function LanguageIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5" aria-hidden="true">
       <circle cx="12" cy="12" r="9" />
       <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
     </svg>
