@@ -9,22 +9,26 @@
   --color-border-subtle: var(--border-subtle);
   --color-accent-research: var(--accent-agent-research);
   --color-accent-writer: var(--accent-agent-writer);
+  --color-dossier-accent: var(--dossier-accent);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", monospace;
 }
 
 :root, html.dark, [data-theme="dark"] {
-  --bg-primary: #090d16;
-  --bg-surface: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-subtle: #334155;
+  --bg-primary: #0c0d10;
+  --bg-surface: #121418;
+  --bg-card: #191b22;
+  --text-primary: #f4f4f5;
+  --text-muted: #71717a;
+  --border-subtle: #242833;
   --accent-agent-research: #38bdf8;
-  --accent-agent-writer: #a78bfa;
-  --card-border: #242d42;
-  --card-hover-border: #475569;
-  --tag-bg: rgba(56, 189, 248, 0.1);
-  --tag-border: rgba(56, 189, 248, 0.25);
+  --accent-agent-writer: #eab308;
+  --dossier-accent: #eab308;
+  --dossier-verified: #10b981;
+  --card-border: #242833;
+  --card-hover-border: #eab308;
+  --tag-bg: rgba(234, 179, 8, 0.1);
+  --tag-border: rgba(234, 179, 8, 0.3);
   color-scheme: dark;
 }
 
@@ -36,11 +40,13 @@ html:not(.dark), html.light, [data-theme="light"] {
   --text-muted: #64748b;
   --border-subtle: #e2e8f0;
   --accent-agent-research: #0284c7;
-  --accent-agent-writer: #7c3aed;
+  --accent-agent-writer: #ca8a04;
+  --dossier-accent: #ca8a04;
+  --dossier-verified: #059669;
   --card-border: #e2e8f0;
-  --card-hover-border: #cbd5e1;
-  --tag-bg: rgba(2, 132, 199, 0.08);
-  --tag-border: rgba(2, 132, 199, 0.2);
+  --card-hover-border: #ca8a04;
+  --tag-bg: rgba(202, 138, 4, 0.08);
+  --tag-border: rgba(202, 138, 4, 0.25);
   color-scheme: light;
 }
 
@@ -54,78 +60,87 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Markdown and Prose styles for Executive Briefing */
 .brief-prose h1 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   margin-bottom: 0.75rem;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  font-family: var(--font-sans);
 }
 
 .brief-prose h2 {
-  font-size: 1.2rem;
-  font-weight: 650;
-  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.25rem;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .brief-prose p {
   line-height: 1.65;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   color: var(--text-primary);
+  font-size: 0.85rem;
 }
 
 .brief-prose ul, .brief-prose ol {
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   padding-left: 1.25rem;
+  font-size: 0.85rem;
 }
 
 .brief-prose li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   line-height: 1.55;
 }
 
 .brief-prose blockquote {
-  border-left: 3px solid var(--accent-agent-writer);
-  padding: 0.5rem 0.75rem;
-  margin: 1rem 0;
-  background: rgba(167, 139, 250, 0.08);
-  border-radius: 0 8px 8px 0;
-  font-size: 0.9rem;
+  border-left: 2px solid var(--dossier-accent);
+  padding: 0.4rem 0.75rem;
+  margin: 0.85rem 0;
+  background: rgba(234, 179, 8, 0.05);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
 }
 
 .brief-prose table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
 }
 
 .brief-prose th, .brief-prose td {
   border: 1px solid var(--border-subtle);
-  padding: 0.5rem 0.75rem;
+  padding: 0.4rem 0.65rem;
   text-align: left;
 }
 
 .brief-prose th {
   background-color: var(--bg-card);
   font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
 .brief-prose code {
   background-color: var(--bg-card);
   padding: 0.15rem 0.35rem;
-  border-radius: 4px;
-  font-size: 0.85em;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border-radius: 2px;
+  font-size: 0.8em;
+  font-family: var(--font-mono);
+  border: 1px solid var(--border-subtle);
 }
 
 @keyframes pulseSlow {
