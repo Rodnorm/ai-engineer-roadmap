@@ -1,4 +1,4 @@
-import { Send, Square } from "lucide-react";
+import { CornerDownLeft, Send, Square, Terminal } from "lucide-react";
 
 import {
 	forwardRef,
@@ -61,50 +61,60 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 		};
 
 		return (
-			<>
-				<div className="animated-gradient-border shrink-0 rounded-2xl shadow-sm relative focus-within:ring-2 focus-within:ring-sky-100 transition-shadow duration-200 dark:focus-within:ring-sky-950">
-				<textarea
-					ref={textAreaRef}
-					value={value}
-					onKeyDown={handleKeyDown}
-					placeholder={t("inputPlaceholder")}
-					onChange={(e) => setValue(e.target.value)}
-					disabled={isLoading}
-					rows={3}
-					className="mx-5 my-4 w-[calc(100%_-_2.5rem)] resize-none border-0 bg-transparent pr-14 text-slate-900 placeholder:text-slate-400 outline-none disabled:opacity-60 leading-relaxed dark:text-slate-100 dark:placeholder:text-slate-500"
-				/>
+			<div className="mt-2 shrink-0">
+				<div className="relative border border-border bg-panel focus-within:border-accent transition-colors">
+					{/* Console Bar Header */}
+					<div className="flex items-center justify-between border-b border-border/60 px-3 py-1 font-mono text-[10px] text-muted">
+						<div className="flex items-center gap-1.5 text-accent">
+							<Terminal className="size-3" />
+							<span>INPUT_STREAM // TICKET_ENTRY</span>
+						</div>
+						<span className="text-[10px]">{value.length} CHARS</span>
+					</div>
 
-				{isLoading ? (
-					<button
-						type="button"
-						aria-label={t("stop")}
-						onClick={onStop}
-						className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
-					>
-						<Square
-							className="w-4 h-4"
-							aria-hidden="true"
-						/>
-					</button>
-				) : (
-					<button
-						type="button"
-						aria-label={t("send")}
-						onClick={submit}
-						disabled={!value.trim()}
-						className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-					>
-						<Send
-							className="w-4 h-4"
-							aria-hidden="true"
-						/>
-					</button>
-				)}
+					<textarea
+						ref={textAreaRef}
+						value={value}
+						onKeyDown={handleKeyDown}
+						placeholder={t("inputPlaceholder")}
+						onChange={(e) => setValue(e.target.value)}
+						disabled={isLoading}
+						rows={2}
+						className="w-full resize-none border-0 bg-transparent p-3 pr-28 font-mono text-xs text-text placeholder:text-muted/60 outline-none disabled:opacity-50 leading-relaxed"
+					/>
+
+					<div className="absolute bottom-2.5 right-2.5 flex items-center gap-2">
+						{isLoading ? (
+							<button
+								type="button"
+								aria-label={t("stop")}
+								onClick={onStop}
+								className="inline-flex items-center gap-1.5 border border-red-500/40 bg-red-500/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-red-400 hover:bg-red-500 hover:text-black transition cursor-pointer"
+							>
+								<Square className="size-3" aria-hidden="true" />
+								<span>[ {t("stop")} ]</span>
+							</button>
+						) : (
+							<button
+								type="button"
+								aria-label={t("send")}
+								onClick={submit}
+								disabled={!value.trim()}
+								className="btn-primary py-1 px-3 text-[11px]"
+							>
+								<span className="mr-1">[ {t("send")}</span>
+								<CornerDownLeft className="size-3" aria-hidden="true" />
+								<span>]</span>
+							</button>
+						)}
+					</div>
+				</div>
+
+				<p className="mt-1.5 text-center font-mono text-[10px] leading-relaxed text-muted">
+					<span className="text-accent/80">[PII_PROTOCOL]: </span>
+					{t("privacyNotice")}
+				</p>
 			</div>
-			<p className="mt-2 text-center text-[11px] leading-relaxed text-slate-500/80 dark:text-slate-400/80">
-				{t("privacyNotice")}
-			</p>
-		</>
 		);
 	}
 );
