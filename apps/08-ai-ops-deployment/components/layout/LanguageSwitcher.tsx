@@ -24,17 +24,17 @@ export function LanguageSwitcher() {
     <div className="relative inline-block text-left" ref={containerRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-card)] transition-colors text-xs font-semibold text-[var(--text-primary)]"
+        className="flex items-center gap-1.5 h-8 px-2.5 rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--border-active)] transition-colors text-xs font-mono text-[var(--text-primary)] cursor-pointer"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <Globe className="w-3.5 h-3.5 text-blue-400" />
+        <Globe className="w-3.5 h-3.5 text-[var(--sre-cyan)]" />
         <span>{LOCALE_SHORT_LABELS[locale]}</span>
         <ChevronDown className="w-3 h-3 text-[var(--text-muted)]" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-32 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-xl z-50 py-1">
+        <div className="absolute right-0 mt-1 w-32 rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-2xl z-50 py-1 font-mono">
           {LOCALES.map((l) => (
             <button
               key={l}
@@ -42,9 +42,9 @@ export function LanguageSwitcher() {
                 setLocale(l);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-between ${
+              className={`w-full text-left px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-between cursor-pointer ${
                 locale === l
-                  ? "bg-blue-600/15 text-blue-400 font-semibold"
+                  ? "bg-cyan-500/15 text-[var(--sre-cyan)] font-semibold border-l-2 border-l-[var(--sre-cyan)]"
                   : "text-[var(--text-primary)] hover:bg-[var(--bg-card)]"
               }`}
             >

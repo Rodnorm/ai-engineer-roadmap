@@ -42,11 +42,11 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="p-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-card)] transition-colors text-[var(--text-primary)]"
+      className="w-8 h-8 rounded-xs border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--border-active)] flex items-center justify-center transition-colors text-[var(--text-primary)] cursor-pointer"
       title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
       aria-label="Toggle Theme"
     >
-      {theme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-500" />}
+      {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-[var(--sre-cyan)]" />}
     </button>
   );
 }
