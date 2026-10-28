@@ -46,10 +46,11 @@ export function LangSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t('language')}
-        className="control-button gap-1.5 px-2.5 sm:px-3 cursor-pointer"
+        className="control-button gap-1.5 px-2 text-xs font-mono cursor-pointer"
       >
-        <Globe className="size-4 text-sky-500 shrink-0" />
-        <span className="hidden sm:inline text-xs font-medium text-text">{LOCALE_LABELS[locale]}</span>
+        <Globe className="size-3.5 text-accent shrink-0" />
+        <span className="hidden sm:inline">{LOCALE_LABELS[locale]}</span>
+        <span className="uppercase sm:hidden">{locale}</span>
         <ChevronDown className={`size-3 transition-transform text-muted ${open ? 'rotate-180' : ''}`} />
       </button>
 
@@ -57,7 +58,7 @@ export function LangSwitcher() {
         <ul
           role="listbox"
           aria-label={t('language')}
-          className="absolute right-0 z-50 mt-2 min-w-36 overflow-hidden rounded-xl border border-border bg-panel py-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-150"
+          className="absolute right-0 z-50 mt-1 min-w-36 overflow-hidden rounded-xs border border-border bg-panel py-1 font-mono text-xs shadow-xl"
         >
           {LOCALES.map((option) => (
             <li key={option} role="presentation">
@@ -66,9 +67,9 @@ export function LangSwitcher() {
                 role="option"
                 aria-selected={option === locale}
                 onClick={() => selectLocale(option)}
-                className={`w-full cursor-pointer px-3 py-2 text-left text-xs transition focus:outline-none ${
+                className={`w-full cursor-pointer px-3 py-1.5 text-left text-xs transition focus:outline-none ${
                   option === locale
-                    ? 'bg-accent-soft font-semibold text-accent-strong'
+                    ? 'bg-surface font-semibold text-accent'
                     : 'text-text hover:bg-surface'
                 }`}
               >
