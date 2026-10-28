@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	const locale = resolveLocale(store.get("locale")?.value);
 	const dict = dictionaries[locale];
 	return {
-		title: dict.app.title,
+		title: `${dict.app.title} :: Enterprise NLP Desk`,
 		description: dict.app.description,
 	};
 }
@@ -46,22 +46,22 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 			<head>
 				<script
 					dangerouslySetInnerHTML={{
-						__html: `(function(){try{var t=localStorage.getItem("support-bot-theme");var d=t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
+						__html: `(function(){try{var t=localStorage.getItem("support-bot-theme");var d=t?t==="dark":true;document.documentElement.classList.toggle("dark",d)}catch(e){}})();`,
 					}}
 				/>
 			</head>
-			<body className="flex min-h-full flex-col">
+			<body className="flex min-h-full flex-col bg-bg text-text font-sans antialiased selection:bg-cyan-500/25 selection:text-cyan-300">
 				<I18nProvider initialLocale={locale} dictionaries={dictionaries}>
 					<LangSwitcher />
 					<ThemeToggle />
 					{children}
 				</I18nProvider>
-			<footer className="mt-auto border-t border-white/10 px-4 py-4 text-center text-xs text-slate-500">
-          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/datenschutz">Datenschutz</a>
-          <span className="px-2" aria-hidden="true">·</span>
-          <a className="transition-colors hover:text-sky-500" href="https://normando.dev/impressum">Impressum</a>
-        </footer>
-        </body>
+				<footer className="mt-auto border-t border-border px-4 py-3 text-center font-mono text-[11px] text-muted">
+					<a className="transition-colors hover:text-accent" href="https://normando.dev/datenschutz">Datenschutz</a>
+					<span className="px-2 text-border-active" aria-hidden="true">/</span>
+					<a className="transition-colors hover:text-accent" href="https://normando.dev/impressum">Impressum</a>
+				</footer>
+			</body>
 		</html>
 	);
 }
