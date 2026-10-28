@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { HtmlLangSync } from "@/components/HtmlLangSync";
 import { StructuredData } from "@/components/StructuredData";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
-import { playfair, inter } from "@/lib/fonts";
+import { playfair, inter, jetbrainsMono } from "@/lib/fonts";
 import {
   SITE_URL,
   LOCALES,
@@ -90,7 +90,7 @@ export default async function LocalizedRootLayout({ children, params }: LayoutPr
     <html
       lang={langAttr}
       suppressHydrationWarning
-      className={`${playfair.variable} ${inter.variable}`}
+      className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: antiFoucScript }} />
