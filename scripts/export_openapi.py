@@ -53,7 +53,7 @@ def export_single_app(backend: dict) -> str:
     """Run in a child process to isolate imports and environments."""
     repo_root = Path(__file__).resolve().parent.parent
     backend_dir = repo_root / backend["path"]
-    reqs_file = backend_dir / "requirements.txt"
+    reqs_file = backend_dir / "requirements.lock"
 
     code = f"""
 import sys, os, json

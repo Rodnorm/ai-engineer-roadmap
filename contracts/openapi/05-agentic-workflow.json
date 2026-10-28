@@ -410,6 +410,23 @@
         "summary": "Get Session Endpoint"
       }
     },
+    "/api/metrics": {
+      "get": {
+        "description": "Operational metrics: request count, error rate, p50/p95 latency, token totals.",
+        "operationId": "get_metrics_api_metrics_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Metrics"
+      }
+    },
     "/health": {
       "get": {
         "description": "Sanitized health check exposing no internal infrastructure details.",
@@ -425,6 +442,23 @@
           }
         },
         "summary": "Health Check"
+      }
+    },
+    "/metrics": {
+      "get": {
+        "description": "Operational metrics: request count, error rate, p50/p95 latency, token totals.",
+        "operationId": "get_metrics_metrics_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Metrics"
       }
     }
   }

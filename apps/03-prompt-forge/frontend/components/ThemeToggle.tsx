@@ -11,7 +11,10 @@ export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    const frame = requestAnimationFrame(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const toggleTheme = () => {

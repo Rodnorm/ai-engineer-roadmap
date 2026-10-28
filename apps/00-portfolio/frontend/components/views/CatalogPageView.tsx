@@ -13,7 +13,7 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
     <div className="space-y-8 py-4">
       <div className="border-b border-border pb-6 space-y-2">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
-          <span>// CATALOG</span>
+          <span>{"// CATALOG"}</span>
           <span className="text-border">/</span>
           <span>SYSTEM_INDEX</span>
         </div>
@@ -25,7 +25,7 @@ export function CatalogPageView({ locale = "en" }: { locale?: Locale }) {
 
       <aside className="rounded-xs border border-border bg-surface p-5 sm:p-6 space-y-2.5 font-mono text-xs">
         <div className="flex items-center gap-2 text-text-secondary uppercase tracking-wider text-[11px] font-bold">
-          <span>// SYSTEM_NOTE</span>
+          <span>{"// SYSTEM_NOTE"}</span>
         </div>
         <p className="text-text-secondary leading-relaxed font-sans text-sm">{text.projectNote}</p>
         <div className="pt-1">

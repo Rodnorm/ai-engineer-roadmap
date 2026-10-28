@@ -123,7 +123,7 @@ export function AiSafetyScorecard({ dict }: Props) {
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <p className="text-[11px] uppercase tracking-wider text-text-secondary">
-                  // {t.methodologyModalTitle}
+                  {"// "}{t.methodologyModalTitle}
                 </p>
                 <h3
                   id="methodology-modal-title"

@@ -335,7 +335,7 @@ export default function PromptForge() {
               PF
             </span>
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-text">
-              PROMPT_FORGE <span className="text-muted text-[0.65rem]">// STUDIO v3.0</span>
+              PROMPT_FORGE <span className="text-muted text-[0.65rem]">{"// STUDIO v3.0"}</span>
             </span>
           </a>
 

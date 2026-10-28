@@ -253,7 +253,7 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
         <div className="hidden md:block md:col-span-6 lg:col-span-6 sticky top-20">
           <div className="p-5 lg:p-6 rounded-xs border border-border bg-surface space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3 text-xs font-mono text-text-muted">
-              <span>// ARCHITECTURE_PREVIEW</span>
+              <span>{"// ARCHITECTURE_PREVIEW"}</span>
               <span className="font-semibold text-foreground">[{activeCounter}]</span>
             </div>
 
@@ -273,7 +273,7 @@ function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalCon
       <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
-            // WORKBENCH_PLATFORM
+            {"// WORKBENCH_PLATFORM"}
           </span>
           <span className="px-2 py-0.5 rounded-xs border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
             ● PRODUCTION_SLICE
@@ -313,7 +313,7 @@ function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalCon
       <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
-            // POCKET_RAG_QUERY
+            {"// POCKET_RAG_QUERY"}
           </span>
           <span className="px-2 py-0.5 rounded-xs bg-surface-muted border border-border text-text-muted text-[10px]">
             {text.previewSampleBadge}
@@ -343,7 +343,7 @@ function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalCon
       <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
-            // AGENT_SESSION
+            {"// AGENT_SESSION"}
           </span>
           <span className="px-2 py-0.5 rounded-xs bg-surface-muted border border-border text-text-muted text-[10px]">
             {text.previewSampleBadge}

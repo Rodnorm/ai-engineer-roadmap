@@ -2,7 +2,10 @@ import io
 import re
 import zipfile
 from dataclasses import dataclass
-from xml.etree import ElementTree
+from xml.etree.ElementTree import ParseError
+
+from defusedxml import ElementTree
+from defusedxml.common import DefusedXmlException
 
 
 SUPPORTED_EXTENSIONS = {"pdf", "txt", "md", "docx"}
@@ -77,7 +80,7 @@ def _parse_docx(content: bytes) -> list[tuple[str, int | None]]:
             root = ElementTree.fromstring(archive.read("word/document.xml"))
     except IngestionError:
         raise
-    except (zipfile.BadZipFile, ElementTree.ParseError, OSError) as error:
+    except (zipfile.BadZipFile, ParseError, DefusedXmlException, OSError) as error:
         raise IngestionError("The DOCX is corrupted or cannot be parsed") from error
 
     paragraphs = []

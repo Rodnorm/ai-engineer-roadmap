@@ -36,7 +36,7 @@ export default function GenerationResults({ results, isGenerating, personaName }
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-accent">// STUDIO_CANVAS</span>
+            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-accent">{"// STUDIO_CANVAS"}</span>
           </div>
           <h2 id="results-title" className="mt-1 text-lg font-semibold tracking-tight">{t("title")}</h2>
           <p className="mt-0.5 text-xs text-muted">{t("subtitle")}</p>
@@ -84,7 +84,7 @@ export default function GenerationResults({ results, isGenerating, personaName }
               <div>
                 <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
                   <span className="font-mono text-xs font-semibold uppercase tracking-wider text-accent">
-                    // VARIATION_0{variation.id}
+                    {"// VARIATION_0"}{variation.id}
                   </span>
                   <button
                     type="button"

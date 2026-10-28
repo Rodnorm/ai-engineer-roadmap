@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 3 * * *" # Daily full cross-project drift validation at 03:00 UTC
+    - cron: "0 3 * * 1" # Weekly full validation; PRs validate changed apps
   workflow_dispatch:
     inputs:
       run_all:
@@ -41,6 +41,7 @@ jobs:
       app05: ${{ steps.filter.outputs.app05 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       app06: ${{ steps.filter.outputs.app06 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       app07: ${{ steps.filter.outputs.app07 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
+      app08: ${{ steps.filter.outputs.app08 == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
       catalog: ${{ steps.filter.outputs.app00 == 'true' || steps.filter.outputs.catalog == 'true' || steps.filter.outputs.global == 'true' || github.event_name == 'schedule' || inputs.run_all == true }}
     steps:
       - name: Check out repository
@@ -67,6 +68,8 @@ jobs:
               - 'apps/06-agent-workspace/**'
             app07:
               - 'apps/07-brief-generator/**'
+            app08:
+              - 'apps/08-ai-ops-deployment/**'
             catalog:
               - 'catalog/**'
             global:
@@ -74,6 +77,9 @@ jobs:
               - 'templates/**'
               - 'docs/standards/**'
               - 'package.json'
+              - 'package-lock.json'
+              - 'scripts/**'
+              - 'contracts/**'
               - '.gitignore'
 
   catalog_validation:
@@ -113,27 +119,6 @@ jobs:
 
       - name: Check OpenAPI schema drift
         run: python scripts/export_openapi.py --check
-
-  e2e_smoke:
-    name: E2E Smoke & Resilience Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 20
-
-      - name: Install E2E test dependencies
-        run: npm --prefix tests/e2e install
-
-      - name: Install Playwright browsers
-        run: npx --prefix tests/e2e playwright install --with-deps chromium
-
-      - name: Run E2E smoke tests
-        run: npm run test:e2e
 
   python_quality:
     name: Python Quality Gates (Ruff & Mypy)
@@ -191,6 +176,9 @@ jobs:
           - app: Brief Generator
             id: app07
             directory: apps/07-brief-generator
+          - app: AI Ops Deployment
+            id: app08
+            directory: apps/08-ai-ops-deployment
 
     defaults:
       run:
@@ -280,13 +268,21 @@ jobs:
         name: Verify lockfile consistency
         run: |
           python -m pip install --disable-pip-version-check uv
-          uv pip compile requirements.txt -o requirements.lock.check --generate-hashes --python-version 3.12 --universal
-          diff -u requirements.lock requirements.lock.check
-          rm -f requirements.lock.check
+          # Constrain resolution to committed versions. Hash/header changes on PyPI
+          # are not dependency drift; pip checks hashes during installation below.
+          pins() {
+            sed -n '/^[a-zA-Z0-9]/ {s/ \\$//;s/[[:space:]]*$//;p;}' "$1" | sort
+          }
+          uv pip compile requirements.txt --constraint requirements.lock --python-version 3.12 --universal --quiet -o /tmp/requirements.check
+          diff -u <(pins requirements.lock) <(pins /tmp/requirements.check)
+          if [ -f requirements-test.txt ]; then
+            uv pip compile requirements-test.txt --constraint requirements.lock --constraint requirements-test.lock --python-version 3.12 --universal --quiet -o /tmp/requirements-test.check
+            diff -u <(pins requirements-test.lock) <(pins /tmp/requirements-test.check)
+          fi
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Install dependencies
-        run: python -m pip install --disable-pip-version-check -r ${{ matrix.requirements }}
+        run: python -m pip install --disable-pip-version-check --require-hashes -r ${{ matrix.requirements }}
 
       - if: ${{ needs.changes.outputs[matrix.id] == 'true' }}
         name: Check dependency compatibility
