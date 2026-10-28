@@ -7,7 +7,7 @@ import {
 	type AnalysisResult,
 } from "@/lib/analyze-image";
 import { useLanguage } from "@/components/LanguageProvider";
-import { Image, Trash2, Upload } from "lucide-react";
+import { Crosshair, Image as ImageIcon, Loader2, RefreshCw, Trash2, Upload } from "lucide-react";
 import { ImageAnalyzerResults } from "./ImageAnalyzerResults";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -101,42 +101,68 @@ export default function ImageAnalyzer() {
 
 	return (
 		<div className="grid gap-6 lg:grid-cols-2">
-			<section className="card flex flex-col gap-4">
-				<div className="flex items-center justify-between">
-					<h2 className="text-lg font-medium">{t("left.heading")}</h2>
+			{/* Left Column: Optical Stage & Controls */}
+			<section className="card flex flex-col gap-4 border-border bg-panel">
+				{/* Stage Header */}
+				<div className="flex items-center justify-between border-b border-border/80 pb-3">
+					<div className="flex items-center gap-2">
+						<Crosshair className="size-4 text-accent" />
+						<h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-text">
+							{t("left.heading")}
+						</h2>
+					</div>
 					{file && (
 						<button
 							type="button"
 							onClick={onReset}
-							className="mr-1 text-xs text-muted hover:text-text"
+							className="inline-flex items-center gap-1.5 font-mono text-[11px] text-muted hover:text-red-400 transition-colors"
 						>
-
-							<Trash2 className="mb-1 mr-1 inline h-3 w-3 stroke-sky-500" />
-							<span className="mb-2 mr-1 inline">{t("left.remove")}</span>
-
+							<Trash2 className="size-3.5" />
+							<span>[ {t("left.remove")} ]</span>
 						</button>
 					)}
 				</div>
 
+				{/* Optical Stage / Dropzone */}
 				<label
 					htmlFor="image-input"
-					className="flex min-h-[260px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-bg/40 p-6 text-center text-sm text-muted transition hover:border-accent hover:text-text"
+					className="group relative flex min-h-[300px] cursor-pointer flex-col items-center justify-center overflow-hidden border border-dashed border-border bg-surface/50 p-6 text-center transition hover:border-accent/60 hover:bg-surface"
 				>
+					{/* Technical Reticle Corners */}
+					<span className="pointer-events-none absolute left-2 top-2 font-mono text-xs text-accent/70 select-none">┌</span>
+					<span className="pointer-events-none absolute right-2 top-2 font-mono text-xs text-accent/70 select-none">┐</span>
+					<span className="pointer-events-none absolute bottom-2 left-2 font-mono text-xs text-accent/70 select-none">└</span>
+					<span className="pointer-events-none absolute bottom-2 right-2 font-mono text-xs text-accent/70 select-none">┘</span>
+
 					{previewUrl ? (
-						// eslint-disable-next-line @next/next/no-img-element
-						<img
-							src={previewUrl}
-							alt={t("left.previewAlt")}
-							className="max-h-80 w-auto rounded-lg object-contain"
-						/>
+						<div className="relative flex max-h-80 w-full items-center justify-center">
+							{/* eslint-disable-next-line @next/next/no-img-element */}
+							<img
+								src={previewUrl}
+								alt={t("left.previewAlt")}
+								className="max-h-72 w-auto border border-border object-contain shadow-md"
+							/>
+							{/* Subtle optical target overlay */}
+							<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+								<div className="size-16 rounded-full border border-dashed border-accent/20" />
+								<div className="absolute size-2 bg-accent/40 rounded-full" />
+							</div>
+						</div>
 					) : (
-						<>
-							<Upload className="mb-2 h-10 w-10 stroke-sky-500" />
-							<span className="text-base font-medium text-text">
+						<div className="flex flex-col items-center py-4">
+							<div className="mb-3 flex size-12 items-center justify-center border border-border bg-panel group-hover:border-accent/60">
+								<Upload className="size-5 text-accent" />
+							</div>
+							<span className="font-mono text-xs font-semibold uppercase tracking-wider text-text">
 								{t("left.dropzonePrompt")}
 							</span>
-							<span className="mt-1 text-xs">{t("left.dropzoneHint")}</span>
-						</>
+							<span className="mt-1 font-mono text-[11px] text-muted">
+								{t("left.dropzoneHint")}
+							</span>
+							<span className="mt-3 inline-block border border-border/80 bg-panel px-2.5 py-1 font-mono text-[10px] text-mono uppercase">
+								FORMAT: PNG, JPG, WEBP | MAX: 20MB
+							</span>
+						</div>
 					)}
 					<input
 						id="image-input"
@@ -149,34 +175,58 @@ export default function ImageAnalyzer() {
 					/>
 				</label>
 
-				<div className="flex items-center justify-between gap-3">
-					<div className="flex items-center gap-2">
-						<Image className="h-4 w-4 stroke-sky-500" />
-						<span className="truncate text-xs text-muted">
-							{file ? file.name : t("left.noFile")}
-						</span>
+				{/* Buffer Telemetry & Submit Button */}
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-border/60 pt-3">
+					<div className="flex items-center gap-2 min-w-0">
+						<ImageIcon className="size-4 shrink-0 text-accent" />
+						<div className="min-w-0 font-mono text-[11px]">
+							{file ? (
+								<p className="truncate text-text font-medium">
+									<span className="text-muted">BUFFER: </span>
+									{file.name}
+									<span className="ml-1 text-[10px] text-muted">
+										({(file.size / 1024).toFixed(1)} KB)
+									</span>
+								</p>
+							) : (
+								<p className="text-muted">{t("left.noFile")}</p>
+							)}
+						</div>
 					</div>
+
 					<button
 						type="button"
 						onClick={onSubmit}
 						disabled={!canSubmit}
-						className="btn-primary"
+						className="btn-primary min-w-[160px]"
 					>
-						{isLoading ? t("left.submitting") : t("left.submit")}
+						{isLoading ? (
+							<span className="flex items-center gap-2">
+								<Loader2 className="size-3.5 animate-spin" />
+								{t("left.submitting")}
+							</span>
+						) : (
+							<span>[ {t("left.submit")} ]</span>
+						)}
 					</button>
 				</div>
 
+				{/* Diagnostic Error Alert */}
 				{error && (
-					<p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+					<div className="border border-red-500/50 bg-red-500/10 p-3 font-mono text-xs text-red-400">
+						<span className="font-bold">[ERR_DIAGNOSTIC]: </span>
 						{error}
-					</p>
+					</div>
 				)}
 
-				<p className="mt-1 text-balance text-center text-[11px] leading-relaxed text-muted/80">
+				{/* Technical Calibration & Privacy Notice */}
+				<div className="border border-border/60 bg-surface/40 p-2.5 font-mono text-[10px] leading-relaxed text-muted">
+					<span className="font-semibold text-accent/80">[CALIBRATION NOTICE]: </span>
 					{t("left.privacyNotice")}
-				</p>
+				</div>
 			</section>
 
+			{/* Right Column: Telemetry & Inspection Layers */}
 			<ImageAnalyzerResults
 				file={file}
 				error={error}
