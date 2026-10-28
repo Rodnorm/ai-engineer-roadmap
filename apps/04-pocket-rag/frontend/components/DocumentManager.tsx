@@ -141,7 +141,9 @@ export const DocumentManager: React.FC<DocumentManagerProps> = ({
     try {
       await onLoadExamples();
     } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : labels.operationFailed || 'Failed to load examples');
+      const msg = error instanceof Error ? error.message : '';
+      const fallback = labels.operationFailed || 'Failed to load examples';
+      setErrorMsg(msg && !msg.startsWith('[') && !msg.startsWith('{') ? msg : fallback);
     }
   };
 
