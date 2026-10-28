@@ -7,38 +7,56 @@
   --color-panel: #ffffff;
   --color-sidebar: #f8fafc;
   --color-surface: #f1f5f9;
+  --color-editor: #ffffff;
   --color-border: #e2e8f0;
   --color-text: #0f172a;
   --color-muted: #64748b;
-  --color-accent: #0ea5e9;
-  --color-accent-strong: #0369a1;
-  --color-accent-soft: #e0f2fe;
+  --color-accent: #7c3aed;
+  --color-accent-strong: #6d28d9;
+  --color-accent-soft: #f3e8ff;
   --color-success: #059669;
   --color-error: #dc2626;
   --color-code: #0f172a;
   --color-code-text: #e2e8f0;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", monospace;
 }
 
 :root {
   color-scheme: light;
+  --color-bg: #f8fafc;
+  --color-panel: #ffffff;
+  --color-sidebar: #f8fafc;
+  --color-surface: #f1f5f9;
+  --color-editor: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #7c3aed;
+  --color-accent-strong: #6d28d9;
+  --color-accent-soft: #f3e8ff;
+  --color-success: #059669;
+  --color-error: #dc2626;
+  --color-code: #0f172a;
+  --color-code-text: #e2e8f0;
 }
 
-:root.dark {
+:root.dark, .dark {
   color-scheme: dark;
-  --color-bg: #020617;
-  --color-panel: #0f172a;
-  --color-sidebar: #0b1220;
-  --color-surface: #1e293b;
-  --color-border: #334155;
-  --color-text: #f1f5f9;
-  --color-muted: #94a3b8;
-  --color-accent: #38bdf8;
-  --color-accent-strong: #7dd3fc;
-  --color-accent-soft: #082f49;
-  --color-success: #34d399;
-  --color-error: #f87171;
-  --color-code: #020617;
+  --color-bg: #0b0b0f;
+  --color-panel: #121218;
+  --color-sidebar: #0e0e14;
+  --color-surface: #1a1a22;
+  --color-editor: #08080b;
+  --color-border: #242430;
+  --color-text: #f8fafc;
+  --color-muted: #64748b;
+  --color-accent: #8b5cf6;
+  --color-accent-strong: #a78bfa;
+  --color-accent-soft: rgba(139, 92, 246, 0.12);
+  --color-success: #10b981;
+  --color-error: #f43f5e;
+  --color-code: #08080b;
   --color-code-text: #cbd5e1;
 }
 
@@ -66,62 +84,56 @@ select {
 
 @layer components {
   .label {
-    @apply text-xs font-semibold uppercase tracking-[0.16em] text-accent-strong;
+    @apply font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-accent;
   }
 
   .field-label {
-    @apply text-sm font-semibold text-text;
+    @apply font-mono text-xs font-semibold uppercase tracking-wider text-text;
   }
 
   .field-control {
-    @apply block w-full rounded-xl border border-border bg-panel px-3.5 py-3 text-sm text-text shadow-sm outline-none transition placeholder:text-muted/70 hover:border-slate-300 focus:border-accent focus:ring-2 focus:ring-sky-100 dark:hover:border-slate-500 dark:focus:ring-sky-950;
+    @apply block w-full rounded-sm border border-border bg-panel px-3.5 py-2.5 text-sm text-text outline-none transition placeholder:text-muted/60 hover:border-border/80 focus:border-accent focus:ring-1 focus:ring-accent/40;
   }
 
   .studio-card {
-    @apply rounded-2xl border border-border bg-panel p-5 shadow-sm sm:p-7;
+    @apply rounded-sm border border-border bg-panel p-5 sm:p-7;
   }
 
   .persona-card {
-    @apply cursor-pointer rounded-xl border border-border bg-panel p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:hover:border-sky-700 dark:focus-visible:ring-offset-slate-950;
+    @apply cursor-pointer rounded-sm border border-border bg-panel p-4 text-left transition hover:border-accent/60 focus:outline-none focus-visible:ring-1 focus-visible:ring-accent;
   }
 
   .persona-card-selected {
-    @apply border-sky-400 bg-sky-50/60 ring-1 ring-sky-300 dark:border-sky-600 dark:bg-sky-950/30 dark:ring-sky-700;
+    @apply border-accent bg-surface ring-1 ring-accent/40;
   }
 
   .btn-primary {
-    @apply inline-flex cursor-pointer items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:bg-sky-500 dark:hover:bg-sky-400 dark:focus-visible:ring-offset-slate-950;
+    @apply inline-flex cursor-pointer items-center justify-center rounded-sm border border-accent bg-accent px-4 py-2.5 font-mono text-xs font-medium uppercase tracking-wider text-white shadow-sm transition hover:bg-accent-strong focus:outline-none focus-visible:ring-1 focus-visible:ring-accent;
   }
 
   .btn-secondary {
-    @apply inline-flex cursor-pointer items-center justify-center rounded-xl border border-border bg-panel px-5 py-3 text-sm font-semibold text-text shadow-sm transition hover:border-sky-300 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-slate-950;
+    @apply inline-flex cursor-pointer items-center justify-center rounded-sm border border-border bg-panel px-4 py-2.5 font-mono text-xs font-medium uppercase tracking-wider text-text transition hover:border-accent/60 hover:bg-surface focus:outline-none focus-visible:ring-1 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .control-button {
-    @apply inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-panel text-sm font-medium text-muted shadow-sm transition hover:border-sky-300 hover:bg-accent-soft hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950;
+    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-sm border border-border bg-panel px-2.5 font-mono text-xs text-muted transition hover:border-accent/60 hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-accent;
   }
 
   .icon-button {
-    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-sm border border-border bg-panel text-muted transition hover:border-accent/60 hover:bg-surface hover:text-text focus:outline-none focus-visible:ring-1 focus-visible:ring-accent;
   }
 
   .result-card {
-    @apply rounded-2xl border border-border bg-panel p-5 shadow-sm;
+    @apply rounded-sm border border-border bg-panel p-5;
   }
 
   .view-tab {
-    @apply cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-muted transition hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+    @apply cursor-pointer rounded-none px-3 py-1 font-mono text-xs font-medium text-muted transition hover:text-text focus:outline-none;
   }
 
   .view-tab-active {
-    @apply bg-panel text-text shadow-sm;
+    @apply bg-surface font-semibold text-accent;
   }
-}
-
-.gradient-text {
-  background: linear-gradient(90deg, #0ea5e9, #8b5cf6 52%, #ec4899);
-  background-clip: text;
-  color: transparent;
 }
 
 summary::-webkit-details-marker {
@@ -130,13 +142,13 @@ summary::-webkit-details-marker {
 
 .code-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-muted) transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 @keyframes result-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -145,7 +157,7 @@ summary::-webkit-details-marker {
 }
 
 .animate-result-in {
-  animation: result-in 300ms ease-out both;
+  animation: result-in 200ms ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
