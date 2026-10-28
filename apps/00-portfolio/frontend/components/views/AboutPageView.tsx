@@ -9,66 +9,68 @@ export function AboutPageView({ locale = "en" }: { locale?: Locale }) {
   const text = getPersonalContent(locale);
   return (
     <div className="max-w-4xl mx-auto space-y-10 py-4">
-      <section className="rounded-3xl border border-border bg-surface p-6 sm:p-10 space-y-6 shadow-sm">
+      <section className="rounded-xs border border-border bg-surface p-5 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row gap-6 sm:items-center">
-          <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-2xl overflow-hidden border border-border shadow-inner">
+          <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-xs overflow-hidden border border-border">
             <Image
               src="/profile.jpg"
               alt="Rodrigo Normando"
-              width={112}
-              height={112}
+              width={96}
+              height={96}
               className="object-cover h-full w-full"
               priority
             />
           </div>
-          <div className="min-w-0 space-y-1.5">
-            <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-foreground">
+          <div className="min-w-0 space-y-1">
+            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-foreground">
               {text.profileTitle}
             </h1>
-            <p className="font-serif font-semibold text-primary text-base sm:text-lg">
+            <p className="font-mono font-semibold text-text-secondary text-sm sm:text-base">
               {text.role}
             </p>
-            <p className="text-xs font-mono uppercase tracking-wider text-text-muted">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-text-muted">
               {text.location}
             </p>
           </div>
         </div>
 
-        <p className="text-text-secondary text-base sm:text-lg leading-relaxed">
+        <p className="text-text-secondary text-sm sm:text-base leading-relaxed font-sans">
           {text.bio}
         </p>
 
-        <div className="flex flex-wrap gap-5 text-sm font-semibold text-primary pt-2 border-t border-border">
-          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
-            LinkedIn ↗
+        <div className="flex flex-wrap gap-4 text-xs font-mono font-semibold uppercase tracking-wider pt-3 border-t border-border">
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+            [ LinkedIn ↗ ]
           </a>
-          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
-            GitHub ↗
+          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+            [ GitHub ↗ ]
           </a>
-          <Link href={getLocalizedPath("/experience", locale)} className="hover:underline">
-            {text.experienceLabel} →
+          <Link href={getLocalizedPath("/experience", locale)} className="hover:text-accent">
+            [ {text.experienceLabel} → ]
           </Link>
         </div>
       </section>
 
       {/* Skills in Context */}
-      <section className="space-y-5">
-        <h2 className="font-serif text-2xl font-bold text-foreground">
-          {text.skillsTitle}
-        </h2>
-        <div className="grid gap-5 sm:grid-cols-2">
+      <section className="space-y-4">
+        <div className="border-b border-border pb-2 flex items-center justify-between">
+          <h2 className="font-mono text-sm uppercase tracking-wider font-bold text-foreground">
+            {"// "}{text.skillsTitle}
+          </h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
           {text.groups.map((group) => (
             <div
               key={group.title}
-              className="rounded-2xl border border-border bg-surface p-6 space-y-4 shadow-sm"
+              className="rounded-xs border border-border bg-surface p-5 space-y-3 font-mono"
             >
-              <h3 className="font-serif text-lg font-bold text-primary">
+              <h3 className="text-sm font-bold text-foreground">
                 {group.title}
               </h3>
-              <ul className="space-y-2 text-sm text-text-secondary">
+              <ul className="space-y-1.5 text-xs text-text-secondary font-sans">
                 {group.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="text-primary font-bold">·</span>
+                  <li key={item} className="flex items-start gap-1.5">
+                    <span className="text-accent font-bold font-mono">›</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -79,12 +81,12 @@ export function AboutPageView({ locale = "en" }: { locale?: Locale }) {
       </section>
 
       {/* Education & Languages */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <section className="rounded-2xl border border-border bg-surface p-6 space-y-4 shadow-sm">
-          <h2 className="font-serif text-xl font-bold text-foreground">
-            {text.educationTitle}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <section className="rounded-xs border border-border bg-surface p-5 space-y-3 font-mono">
+          <h2 className="text-sm font-bold text-foreground">
+            {"// "}{text.educationTitle}
           </h2>
-          <ul className="space-y-3 text-sm text-text-secondary">
+          <ul className="space-y-2 text-xs text-text-secondary font-sans">
             {text.education.map((entry) => (
               <li key={entry} className="leading-relaxed">
                 {entry}
@@ -93,11 +95,11 @@ export function AboutPageView({ locale = "en" }: { locale?: Locale }) {
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-border bg-surface p-6 space-y-4 shadow-sm">
-          <h2 className="font-serif text-xl font-bold text-foreground">
-            {text.languagesTitle}
+        <section className="rounded-xs border border-border bg-surface p-5 space-y-3 font-mono">
+          <h2 className="text-sm font-bold text-foreground">
+            {"// "}{text.languagesTitle}
           </h2>
-          <ul className="space-y-3 text-sm text-text-secondary">
+          <ul className="space-y-2 text-xs text-text-secondary font-sans">
             {text.languages.map((entry) => (
               <li key={entry} className="leading-relaxed">
                 {entry}
