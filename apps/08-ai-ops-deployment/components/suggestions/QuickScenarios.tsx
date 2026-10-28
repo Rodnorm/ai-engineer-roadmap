@@ -244,16 +244,21 @@ export function QuickScenarios({ onSelectScenario, selectedId }: QuickScenariosP
 
   return (
     <div className="space-y-3">
-      <div>
-        <h3 className="text-sm font-bold text-[var(--text-primary)]">
-          {t.scenarios.title}
-        </h3>
-        <p className="text-xs text-[var(--text-muted)]">
-          {t.scenarios.subtitle}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-primary)]">
+            {"//"} {t.scenarios.title}
+          </h3>
+          <p className="text-[11px] font-sans text-[var(--text-muted)]">
+            {t.scenarios.subtitle}
+          </p>
+        </div>
+        <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">
+          CATALOG: 12_SRE_TEST_PROFILES
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
         {SCENARIO_CATALOG.map((scenario) => {
           const dictItem = t.scenarios.items[scenario.id];
           const isSelected = selectedId === scenario.id;
@@ -262,17 +267,17 @@ export function QuickScenarios({ onSelectScenario, selectedId }: QuickScenariosP
             <button
               key={scenario.id}
               onClick={() => onSelectScenario(scenario)}
-              className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+              className={`p-2.5 rounded-xs border text-left transition-all flex flex-col justify-between cursor-pointer ${
                 isSelected
-                  ? "bg-blue-600/15 border-blue-500/50 shadow-sm"
-                  : "border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-card)]"
+                  ? "bg-cyan-500/10 border-[var(--border-active)] shadow-sm"
+                  : "border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--card-hover-border)]"
               }`}
             >
               <div>
-                <div className="flex items-center justify-between gap-1.5 mb-1.5">
+                <div className="flex items-center justify-between gap-1.5 mb-1">
                   <div className="flex items-center gap-1.5">
                     {getScenarioIcon(scenario.category)}
-                    <span className="text-[10px] font-mono font-bold uppercase text-[var(--text-muted)]">
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--sre-cyan)]">
                       {scenario.category}
                     </span>
                   </div>
@@ -281,16 +286,16 @@ export function QuickScenarios({ onSelectScenario, selectedId }: QuickScenariosP
                   </span>
                 </div>
 
-                <h4 className="text-xs font-bold text-[var(--text-primary)] line-clamp-1">
+                <h4 className="text-xs font-mono font-bold text-[var(--text-primary)] line-clamp-1">
                   {dictItem?.title || scenario.titleKey}
                 </h4>
-                <p className="text-[11px] text-[var(--text-muted)] mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-[11px] text-[var(--text-muted)] font-sans mt-0.5 line-clamp-2 leading-relaxed">
                   {dictItem?.description || scenario.descriptionKey}
                 </p>
               </div>
 
-              <div className="mt-2.5 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono">
-                <span className="text-blue-400 font-medium truncate max-w-[150px]">
+              <div className="mt-2 pt-1.5 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono">
+                <span className="text-[var(--sre-cyan)] font-medium truncate max-w-[150px]">
                   {dictItem?.focus || scenario.focusKey}
                 </span>
                 <span className="text-[var(--text-muted)]">{scenario.testCount}x req</span>
