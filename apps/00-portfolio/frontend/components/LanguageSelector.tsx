@@ -25,8 +25,8 @@ export function LanguageSelector() {
   };
 
   return (
-    <div className="relative inline-flex flex-shrink-0 items-center gap-0.5 rounded-xl border border-border bg-surface p-0.5 text-xs transition-colors duration-200 sm:gap-1.5 sm:p-1">
-      <Globe className="ml-1 hidden h-3.5 w-3.5 flex-shrink-0 text-text-muted sm:block" aria-hidden="true" />
+    <div className="relative inline-flex flex-shrink-0 items-center gap-0.5 rounded-xs border border-border bg-surface p-0.5 text-xs transition-colors duration-200 sm:gap-1 sm:p-0.5 font-mono">
+      <Globe className="ml-1 hidden h-3 w-3 flex-shrink-0 text-text-muted sm:block" aria-hidden="true" />
       <div className="flex items-center gap-0" role="group" aria-label="Language selector">
         {LOCALES.map((locale) => {
           const isActive = locale === currentLocale;
@@ -36,9 +36,9 @@ export function LanguageSelector() {
               type="button"
               onClick={() => handleSelectLocale(locale)}
               aria-pressed={isActive}
-              className={`rounded-lg px-1.5 py-1 text-[10px] font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary sm:px-2 sm:text-xs ${
+              className={`rounded-xs px-1.5 py-0.5 text-[10px] font-mono font-semibold transition-all focus:outline-none focus:ring-1 focus:ring-primary ${
                 isActive
-                  ? "bg-primary text-white font-bold shadow-sm"
+                  ? "bg-foreground text-background font-bold shadow-xs"
                   : "text-text-muted hover:text-foreground hover:bg-surface-muted"
               }`}
               title={LOCALE_LABELS[locale]}
