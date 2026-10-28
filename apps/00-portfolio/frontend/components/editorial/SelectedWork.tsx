@@ -147,16 +147,21 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
 
   return (
     <section ref={sectionRef} className="space-y-6 pt-4" aria-label={text.workTitle}>
-      <div className="border-b border-border pb-4">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          {text.workTitle}
-        </h2>
-        <p className="text-text-muted text-sm mt-1">{text.workIntro}</p>
+      <div className="border-b border-border pb-4 flex items-center justify-between">
+        <div>
+          <h2 className="font-mono text-sm uppercase tracking-wider font-bold text-foreground">
+            {"// "}{text.workTitle}
+          </h2>
+          <p className="text-text-muted font-mono text-xs mt-1">{text.workIntro}</p>
+        </div>
+        <span className="font-mono text-xs text-text-muted hidden sm:inline">
+          INDEX 01 — 03
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
         {/* Left Column: Interactive Project List */}
-        <div className="md:col-span-6 lg:col-span-6 space-y-6">
+        <div className="md:col-span-6 lg:col-span-6 space-y-4">
           {projects.map((project) => {
             const isActive = project.id === activeId;
             return (
@@ -166,28 +171,28 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                   if (el) itemRefs.current.set(project.id, el);
                   else itemRefs.current.delete(project.id);
                 }}
-                className={`p-6 sm:p-7 rounded-lg border transition-all duration-200 ${
+                className={`p-5 sm:p-6 rounded-xs border transition-all duration-150 ${
                   isActive
-                    ? "border-primary bg-surface shadow-sm"
-                    : "border-border bg-surface/50 hover:border-primary/40"
+                    ? "border-foreground bg-surface shadow-xs"
+                    : "border-border bg-surface/40 hover:border-text-muted"
                 }`}
                 onFocus={() => handleItemFocus(project.id)}
                 onBlur={handleItemBlur}
               >
                 {/* Meta and Status */}
-                <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-block w-2 h-2 rounded-full transition-opacity ${
-                        isActive ? "bg-primary opacity-100" : "opacity-0"
+                      className={`inline-block w-1.5 h-1.5 rounded-full transition-opacity ${
+                        isActive ? "bg-emerald-500 opacity-100" : "opacity-0"
                       }`}
                       aria-hidden="true"
                     />
                     <span className="font-mono text-xs font-semibold text-text-muted">
-                      {project.number}
+                      [{project.number}]
                     </span>
-                    <span className="text-border" aria-hidden="true">·</span>
-                    <span className="text-xs uppercase tracking-wider font-semibold text-primary">
+                    <span className="text-border font-mono" aria-hidden="true">/</span>
+                    <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-text-secondary">
                       {project.typeLabel}
                     </span>
                   </div>
@@ -197,28 +202,28 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                     onClick={(e) => handleManualSelect(project.id, e)}
                     aria-pressed={isActive}
                     aria-label={`${text.previewAriaLabel} ${project.title}`}
-                    className="text-xs font-medium text-text-muted hover:text-foreground border border-border rounded px-2 py-0.5 transition-colors focus-visible:outline-primary"
+                    className="text-[10px] font-mono uppercase font-semibold text-text-muted hover:text-foreground border border-border rounded-xs px-2 py-0.5 transition-colors focus-visible:outline-primary"
                   >
-                    {isActive ? text.activeLabel : text.previewLabel}
+                    {isActive ? `[ ${text.activeLabel} ]` : text.previewLabel}
                   </button>
                 </div>
 
                 {/* Title */}
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
                   {project.title}
                 </h3>
 
                 {/* Summary */}
-                <p className="text-sm leading-relaxed text-text-secondary mt-2 mb-4">
+                <p className="text-xs sm:text-sm leading-relaxed text-text-secondary mt-1.5 mb-3.5">
                   {project.summary}
                 </p>
 
                 {/* Tech tags */}
-                <div className="flex flex-wrap gap-1.5 mb-5" aria-label={text.techAriaLabel}>
+                <div className="flex flex-wrap gap-1.5 mb-4" aria-label={text.techAriaLabel}>
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded bg-surface-muted border border-border text-xs font-mono text-text-secondary"
+                      className="px-1.5 py-0.5 rounded-xs bg-surface-muted border border-border text-[11px] font-mono text-text-secondary"
                     >
                       {tag}
                     </span>
@@ -228,15 +233,15 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
                 {/* Independent crawlable navigation link */}
                 <Link
                   href={project.href}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline group"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-foreground hover:text-accent group"
                 >
                   <span>{text.readCase}</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   <span className="sr-only"> — {project.title}</span>
                 </Link>
 
                 {/* Mobile linear preview: displayed directly beneath project card on < 768px */}
-                <div className="mt-5 md:hidden border-t border-border pt-4">
+                <div className="mt-4 md:hidden border-t border-border pt-4">
                   {renderPreviewContent(project.id, text)}
                 </div>
               </article>
@@ -246,13 +251,13 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
 
         {/* Right Column: Desktop Sticky Preview Card (hidden on mobile) */}
         <div className="hidden md:block md:col-span-6 lg:col-span-6 sticky top-20">
-          <div className="p-6 lg:p-8 rounded-lg border border-border bg-surface shadow-md space-y-4">
+          <div className="p-5 lg:p-6 rounded-xs border border-border bg-surface space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3 text-xs font-mono text-text-muted">
-              <span>SELECTED PREVIEW</span>
-              <span className="font-semibold text-primary">{activeCounter}</span>
+              <span>// ARCHITECTURE_PREVIEW</span>
+              <span className="font-semibold text-foreground">[{activeCounter}]</span>
             </div>
 
-            <div className="min-h-[360px] flex flex-col justify-center">
+            <div className="min-h-[340px] flex flex-col justify-center">
               {renderPreviewContent(activeId, text)}
             </div>
           </div>
@@ -265,37 +270,39 @@ export function SelectedWork({ locale = "en" }: SelectedWorkProps) {
 function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalContent>) {
   if (id === "ai-review-platform") {
     return (
-      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
+      <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-mono font-semibold text-primary">R&D PLATFORM WORKBENCH</span>
-          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-            Production slice
+          <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
+            // WORKBENCH_PLATFORM
+          </span>
+          <span className="px-2 py-0.5 rounded-xs border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+            ● PRODUCTION_SLICE
           </span>
         </div>
-        <p className="text-sm font-semibold text-foreground">
+        <p className="text-sm font-sans font-semibold text-foreground">
           Human-in-the-Loop Document Verification Flow
         </p>
-        <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-          <div className="p-2.5 rounded bg-surface border border-border">
-            <span className="text-primary block font-bold">01. INGEST</span>
-            PDF & Markdown parsing
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="p-2.5 rounded-xs bg-surface border border-border">
+            <span className="text-text-secondary block font-bold text-[10px]">01. INGEST</span>
+            <span className="text-text-muted text-[11px]">PDF & Markdown parsing</span>
           </div>
-          <div className="p-2.5 rounded bg-surface border border-border">
-            <span className="text-primary block font-bold">02. MAP</span>
-            Model field extraction
+          <div className="p-2.5 rounded-xs bg-surface border border-border">
+            <span className="text-text-secondary block font-bold text-[10px]">02. MAP</span>
+            <span className="text-text-muted text-[11px]">Model field extraction</span>
           </div>
-          <div className="p-2.5 rounded bg-surface border border-border">
-            <span className="text-primary block font-bold">03. REVIEW</span>
-            Optimistic lock (HTTP 409)
+          <div className="p-2.5 rounded-xs bg-surface border border-border">
+            <span className="text-text-secondary block font-bold text-[10px]">03. REVIEW</span>
+            <span className="text-text-muted text-[11px]">Optimistic lock (HTTP 409)</span>
           </div>
-          <div className="p-2.5 rounded bg-surface border border-border">
-            <span className="text-primary block font-bold">04. EXPORT</span>
-            Audit-logged Excel / CSV
+          <div className="p-2.5 rounded-xs bg-surface border border-border">
+            <span className="text-text-secondary block font-bold text-[10px]">04. EXPORT</span>
+            <span className="text-text-muted text-[11px]">Audit-logged Excel / CSV</span>
           </div>
         </div>
-        <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-muted">
+        <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-text-muted">
           <span>800+ test suite (project)</span>
-          <span className="font-mono">Python / FastAPI</span>
+          <span>Python / FastAPI</span>
         </div>
       </div>
     );
@@ -303,27 +310,29 @@ function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalCon
 
   if (id === "pocket-rag") {
     return (
-      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
+      <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-mono font-semibold text-primary">POCKET RAG QUERY</span>
-          <span className="px-2 py-0.5 rounded bg-surface-muted text-text-muted text-[11px] font-mono">
+          <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
+            // POCKET_RAG_QUERY
+          </span>
+          <span className="px-2 py-0.5 rounded-xs bg-surface-muted border border-border text-text-muted text-[10px]">
             {text.previewSampleBadge}
           </span>
         </div>
-        <div className="p-3 rounded bg-surface border border-border text-xs space-y-1.5">
-          <p className="font-medium text-foreground">
+        <div className="p-3 rounded-xs bg-surface border border-border text-xs space-y-1.5">
+          <p className="font-medium text-foreground font-sans">
             {text.pocketRagQuery.question}
           </p>
           <p className="text-text-muted text-[11px]">
-            {text.pocketRagQuery.sourcesLabel}: <span className="text-primary font-mono">[Doc: mietvertrag_beispiel.pdf §4]</span>
+            {text.pocketRagQuery.sourcesLabel}: <span className="text-foreground">[Doc: mietvertrag_beispiel.pdf §4]</span>
           </p>
         </div>
-        <div className="p-3 rounded bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed">
+        <div className="p-3 rounded-xs bg-surface/70 border border-border text-xs text-text-secondary leading-relaxed font-sans">
           {text.pocketRagQuery.answer}
         </div>
-        <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-muted">
+        <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-text-muted">
           <span>Local SQLite Vectors</span>
-          <span className="font-mono">5 German Sample PDFs</span>
+          <span>5 German Sample PDFs</span>
         </div>
       </div>
     );
@@ -331,29 +340,31 @@ function renderPreviewContent(id: string, text: ReturnType<typeof getPersonalCon
 
   if (id === "agent-workspace") {
     return (
-      <div className="p-5 rounded-lg bg-surface-card border border-border space-y-4">
+      <div className="p-4 sm:p-5 rounded-xs bg-surface-card border border-border space-y-4 font-mono">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-mono font-semibold text-primary">AGENT WORKSPACE SESSION</span>
-          <span className="px-2 py-0.5 rounded bg-surface-muted text-text-muted text-[11px] font-mono">
+          <span className="font-semibold text-text-secondary uppercase tracking-wider text-[11px]">
+            // AGENT_SESSION
+          </span>
+          <span className="px-2 py-0.5 rounded-xs bg-surface-muted border border-border text-text-muted text-[10px]">
             {text.previewSampleBadge}
           </span>
         </div>
-        <div className="p-3 rounded bg-surface border border-border text-xs space-y-2">
-          <div className="flex items-center gap-1.5 text-text-muted text-[11px] font-mono">
-            <Terminal className="w-3.5 h-3.5 text-primary" />
+        <div className="p-3 rounded-xs bg-surface border border-border text-xs space-y-2">
+          <div className="flex items-center gap-1.5 text-text-muted text-[11px]">
+            <Terminal className="w-3.5 h-3.5 text-accent" />
             <span>{"tool_call: list_tasks({ status: \"pending\" })"}</span>
           </div>
-          <div className="p-2 rounded bg-surface-muted text-[11px] font-mono text-text-secondary">
+          <div className="p-2 rounded-xs bg-surface-muted text-[11px] text-text-secondary">
             → [TASK-102] {text.agentWorkspaceDemo.taskLabel}
           </div>
         </div>
-        <div className="p-3 rounded bg-surface/70 border border-border/80 text-xs text-text-secondary leading-relaxed flex items-start gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+        <div className="p-3 rounded-xs bg-surface/70 border border-border text-xs text-text-secondary leading-relaxed flex items-start gap-2 font-sans">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
           <span>{text.agentWorkspaceDemo.streamStatus}</span>
         </div>
-        <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-muted">
+        <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-text-muted">
           <span>{text.agentWorkspaceDemo.offlineProvider}</span>
-          <span className="font-mono">MCP 2026 Compatible</span>
+          <span>MCP 2026 Compatible</span>
         </div>
       </div>
     );
