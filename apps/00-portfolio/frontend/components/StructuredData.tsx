@@ -1,17 +1,53 @@
 import { SITE_URL } from "@/lib/i18n";
 import { GITHUB_URL, LINKEDIN_URL } from "@/lib/personal-content";
 
-export function StructuredData() {
-  const jsonLd = {
+export type StructuredDataProps = {
+  type?: "ProfilePage" | "WebPage";
+  url?: string;
+  name?: string;
+};
+
+export function buildStructuredData({
+  type = "ProfilePage",
+  url = SITE_URL,
+  name = "Rodrigo Normando — Senior Software Engineer",
+}: StructuredDataProps = {}) {
+  const pageEntity =
+    type === "ProfilePage"
+      ? {
+          "@type": "ProfilePage",
+          "@id": `${url}/#profile`,
+          url,
+          name,
+          mainEntity: {
+            "@id": `${SITE_URL}/#person`,
+          },
+          about: {
+            "@id": `${SITE_URL}/#person`,
+          },
+        }
+      : {
+          "@type": "WebPage",
+          "@id": `${url}/#webpage`,
+          url,
+          name,
+          about: {
+            "@id": `${SITE_URL}/#person`,
+          },
+        };
+
+  return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Person",
         "@id": `${SITE_URL}/#person`,
         name: "Rodrigo Normando",
-        jobTitle: "Senior Software Engineer",
-        description: "Senior Software Engineer specialized in accessible frontend engineering and applied AI systems.",
         url: SITE_URL,
+        image: `${SITE_URL}/profile.jpg`,
+        jobTitle: "Senior Software Engineer",
+        description:
+          "Senior Software Engineer specialized in accessible frontend engineering and applied AI systems.",
         sameAs: [LINKEDIN_URL, GITHUB_URL],
         address: {
           "@type": "PostalAddress",
@@ -28,17 +64,13 @@ export function StructuredData() {
           "@id": `${SITE_URL}/#person`,
         },
       },
-      {
-        "@type": "ProfilePage",
-        "@id": `${SITE_URL}/#profile`,
-        url: SITE_URL,
-        name: "Rodrigo Normando — Senior Software Engineer",
-        about: {
-          "@id": `${SITE_URL}/#person`,
-        },
-      },
+      pageEntity,
     ],
   };
+}
+
+export function StructuredData(props: StructuredDataProps) {
+  const jsonLd = buildStructuredData(props);
 
   return (
     <script
