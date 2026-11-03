@@ -80,3 +80,24 @@ docker exec <container> node -p 'JSON.stringify({node:process.version,brotli:pro
 Expect Node.js 24.22.1 for this pinned image. Vendors can backport the Brotli fix
 without changing the reported Brotli version, so use the Node security release
 and image identity as the patch evidence, not only the Brotli version string.
+
+### Python backends and Debian Brotli
+
+CPython itself does not bundle the Brotli decoder. No `Brotli` or `brotlicffi`
+package is present in the committed Python requirements locks. Native system
+libraries are separate: curl can depend on Debian's `libbrotli1`.
+
+All five backend Dockerfiles upgrade `libbrotli1` if installed and require at
+least `1.1.0-2+deb13u1`, the Debian trixie backport for CVE-2026-111497:
+https://lists.debian.org/debian-security-announce/2026/msg00498.html
+
+The check runs after package installation and fails the build if the patched
+Debian package is unavailable. It does not install Brotli in images without it.
+Rebuild and replace the Python backend containers as well. Verify with:
+
+```bash
+docker exec <backend-container> dpkg-query -W libbrotli1
+```
+
+If absent, this system decoder is not installed. If present, compare the full
+Debian package revision (including `+deb13u1`), not just upstream `1.1.0`.

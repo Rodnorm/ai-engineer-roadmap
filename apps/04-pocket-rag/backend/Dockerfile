@@ -23,6 +23,15 @@ COPY --chown=user:user . .
 RUN mkdir -p /data /app/data/uploads /home/user/.cache && \
     chown -R user:user /app /home/user /data
 
+# CVE-2026-111497: update system Brotli when present (including curl dependencies).
+RUN set -eu; \
+    if [ "$(dpkg-query -W -f='${db:Status-Status}' libbrotli1 2>/dev/null || true)" = installed ]; then \
+        apt-get update; \
+        apt-get install -y --no-install-recommends --only-upgrade libbrotli1; \
+        dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libbrotli1)" ge '1.1.0-2+deb13u1'; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
 USER user
 
 EXPOSE 8000
