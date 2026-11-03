@@ -16,6 +16,15 @@ RUN pip install --no-cache-dir -r requirements.lock
 COPY --chown=app:app . .
 RUN chown -R app:app /app /data
 
+# CVE-2026-111497: update system Brotli when present (including curl dependencies).
+RUN set -eu; \
+    if [ "$(dpkg-query -W -f='${db:Status-Status}' libbrotli1 2>/dev/null || true)" = installed ]; then \
+        apt-get update; \
+        apt-get install -y --no-install-recommends --only-upgrade libbrotli1; \
+        dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libbrotli1)" ge '1.1.0-2+deb13u1'; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
 USER app
 
 EXPOSE 8000
